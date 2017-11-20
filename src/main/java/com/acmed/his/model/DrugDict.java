@@ -26,7 +26,7 @@ public class DrugDict {
     private String specName;
 
     @ApiModelProperty("常用名")
-    private System commName;
+    private String commName;
 
     @ApiModelProperty("拼音码")
     private String pinYin;
