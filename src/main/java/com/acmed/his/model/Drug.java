@@ -1,15 +1,21 @@
 package com.acmed.his.model;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import tk.mybatis.mapper.annotation.NameStyle;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * 药品库
  * Created by Darren on 2017-11-20
  **/
+@Data
+@Table(name = "t_b_drug")
+@NameStyle
 public class Drug {
 
     @Id

@@ -10,23 +10,25 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * 附加收费
+ *
+ * 检查单
+ *
  * Created by Darren on 2017-11-20
  **/
 @Data
-@Table(name = "t_b_charge")
+@Table(name = "t_b_inspect")
 @NameStyle
-public class Charge {
+public class Inspect {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty("处置id")
+    @ApiModelProperty("检查id")
     private Integer id;
 
     @ApiModelProperty("处方id")
     private Integer prescriptionId;
 
-    @ApiModelProperty("挂号单号id")
+    @ApiModelProperty("挂号单号")
     private Integer applyId;
 
     @ApiModelProperty("患者id")
@@ -38,8 +40,20 @@ public class Charge {
     @ApiModelProperty("科室")
     private String dept;
 
-    @ApiModelProperty("费用类型")
+    @ApiModelProperty("检验检查类型")
+    private String aim;
+
+    @ApiModelProperty("检验检查类型")
+    private String part;
+
+    @ApiModelProperty("检验检查类型")
     private String category;
+
+    @ApiModelProperty("病情摘要")
+    private String summary;
+
+    @ApiModelProperty("检查诊断")
+    private String diagnosis;
 
     @ApiModelProperty("费用")
     private Double fee;

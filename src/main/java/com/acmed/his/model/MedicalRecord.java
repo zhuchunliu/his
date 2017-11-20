@@ -1,33 +1,26 @@
 package com.acmed.his.model;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * 附加收费
+ * 病历
+ *
  * Created by Darren on 2017-11-20
  **/
 @Data
-@Table(name = "t_b_charge")
+@Table(name = "t_b_medicalrecord")
 @NameStyle
-public class Charge {
+public class MedicalRecord {
 
+    @ApiModelProperty("挂号单号")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty("处置id")
     private Integer id;
-
-    @ApiModelProperty("处方id")
-    private Integer prescriptionId;
-
-    @ApiModelProperty("挂号单号id")
-    private Integer applyId;
 
     @ApiModelProperty("患者id")
     private Integer patientId;
@@ -38,11 +31,26 @@ public class Charge {
     @ApiModelProperty("科室")
     private String dept;
 
-    @ApiModelProperty("费用类型")
-    private String category;
+    @ApiModelProperty("1 初诊、0 复诊")
+    private String isFirst;
 
-    @ApiModelProperty("费用")
-    private Double fee;
+    @ApiModelProperty("发病日期")
+    private String onSetDate;
+
+    @ApiModelProperty("主诉")
+    private String chiefComplaint;
+
+    @ApiModelProperty("神志：血压、血氧、血糖、瞳孔（左、右）、呼吸、脉搏")
+    private String physicalExam;
+
+    @ApiModelProperty("诊断信息")
+    private String diagnosis;
+
+    @ApiModelProperty("医嘱")
+    private String advice;
+
+    @ApiModelProperty("是否传染病 0：否；1：是")
+    private String isContagious;
 
     @ApiModelProperty("创建时间")
     private String createAt;
