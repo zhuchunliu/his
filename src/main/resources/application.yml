@@ -4,7 +4,7 @@ spring:
   application:
     name: his
   datasource:
-      url: jdbc:mysql://115.29.47.72:3306/acmed?characterEncoding=utf8&useSSL=true
+      url: jdbc:mysql://115.29.47.72:3306/his?characterEncoding=utf8&useSSL=true
       username: acmed
       password: acmed8686
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,10 +23,10 @@ spring:
       poolPreparedStatements: true
       maxOpenPreparedStatements: 20
 
-redis:
-  ip: 192.168.1.123
-  port: 6379
-  password: acmed
+#redis:
+#  ip: 192.168.1.123
+#  port: 6379
+#  password: acmed
 mybatis:
   mapperLocations: classpath*:mapping/*.xml
   config-location: classpath:mybatis-config.xml
