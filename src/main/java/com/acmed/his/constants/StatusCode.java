@@ -1,0 +1,81 @@
+package com.acmed.his.constants;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 类说明 
+ * @author Eric
+ * @version 创建时间：2017年3月28日 下午4:17:08 
+ */
+public enum StatusCode {
+	// -1为通用失败（根据ApiResult.java中的构造方法注释而来）
+	FAIL(-1, "common fail"),
+	// 0为成功
+	SUCCESS(0, "success"),
+	EMPTY_SIGN (10001,"签名为空"),
+	EMPTY_TIMESTAMP (10002,"时间戳为空"),
+	EMPTY_APP_KEY (10003,"App Key为空"),
+	ERROR_TIMESTAMP (10004,"时间出错误"),
+	OUT_TIMESTAMP (10005,"时间戳超时"),
+	ERROR_AUTH (10006,"认证失败"),
+	
+	ERROR_PARAM (10007,"参数错误"),
+	ERROR_RETRY (10008,"重复发送"),
+	
+	EMPTY_PHONE (10009,"手机号为空"),
+	RROR_PHONE (10010,"手机号不合法"),
+	REPEAT_PHONE(10011,"手机号重复"),
+
+	ERROR_PASSWD (10012,"密码错误"),
+
+	ERROR_REFRESHTOKEN (10013,"refreshToken不存在或已失效"),
+	ERROR_REPEATRECORD(10014, "记录重复");
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(StatusCode.class);
+
+	private int code;
+	private String msg;
+
+	StatusCode(int code, String msg){
+		this.code = code;
+		this.msg = msg;
+	}
+
+	public static int getCode(String define){
+		try {
+			return StatusCode.valueOf(define).code;
+		} catch (IllegalArgumentException e) {
+			LOGGER.error("undefined error code: {}", define);
+			return FAIL.getErrorCode();
+		}
+	}
+
+	public static String getMsg(String define){
+		try {
+			return StatusCode.valueOf(define).msg;
+		} catch (IllegalArgumentException e) {
+			LOGGER.error("undefined error code: {}", define);
+			return FAIL.getErrorMsg();
+		}
+
+	}
+
+	public static String getMsg(int code){
+		for(StatusCode err : StatusCode.values()){
+			if(err.code==code){
+				return err.msg;
+			}
+		}
+		return "errorCode not defined ";
+	}
+
+	public int getErrorCode(){
+		return code;
+	}
+
+	public String getErrorMsg(){
+		return msg;
+	}
+}
+ 
