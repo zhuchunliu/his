@@ -1,7 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.Org;
-import tk.mybatis.mapper.common.Mapper;
+import com.acmed.his.util.TkMapper;
 
 /**
  * OrgMapper
@@ -9,5 +9,5 @@ import tk.mybatis.mapper.common.Mapper;
  * @author jimson
  * @date 2017/11/20
  */
-public interface OrgMapper extends Mapper<Org> {
+public interface OrgMapper extends TkMapper<Org> {
 }

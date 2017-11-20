@@ -1,7 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.User;
-import tk.mybatis.mapper.common.Mapper;
+import com.acmed.his.util.TkMapper;
 
 /**
  * UserMapper
@@ -9,5 +9,5 @@ import tk.mybatis.mapper.common.Mapper;
  * @author jimson
  * @date 2017/11/20
  */
-public interface UserMapper extends Mapper<User> {
+public interface UserMapper extends TkMapper<User> {
 }

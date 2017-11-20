@@ -1,7 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.UserVsRole;
-import tk.mybatis.mapper.common.Mapper;
+import com.acmed.his.util.TkMapper;
 
 /**
  * UserVsRoleMapper
@@ -9,5 +9,5 @@ import tk.mybatis.mapper.common.Mapper;
  * @author jimson
  * @date 2017/11/20
  */
-public interface UserVsRoleMapper extends Mapper<UserVsRole> {
+public interface UserVsRoleMapper extends TkMapper<UserVsRole> {
 }
