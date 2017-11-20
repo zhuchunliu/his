@@ -1,6 +1,5 @@
 package com.acmed.his.api;
 
-import com.acmed.his.model.AdviceTpl;
 import com.acmed.his.service.AdviceTplManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tk.mybatis.mapper.entity.Example;
 
 /**
  * Created by Darren on 2017-11-20
