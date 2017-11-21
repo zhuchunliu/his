@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.PermissionMapper">
+    <resultMap id="permission" type="com.acmed.his.model.Permission">
+        <id property="id" column="id"></id>
+        <result property="perCode" column="percode"></result>
+        <result property="perName" column="pername"></result>
+        <result property="perDesc" column="perdesc"></result>
+        <result property="category" column="category"></result>
+    </resultMap>
+
+    <select id="getPrescripTplList" parameterType="java.lang.Integer" resultMap="permission">
+        select id,percode,pername,perdesc, category from t_p_s_permission
+        where id in (select pid from t_p_s_role_vs_permission where rid = #{roleId})
+    </select>
+</mapper>

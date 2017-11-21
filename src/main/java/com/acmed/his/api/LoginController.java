@@ -1,10 +1,7 @@
 package com.acmed.his.api;
 
 import com.acmed.his.constants.CommonConstants;
-import com.acmed.his.dao.UserMapper;
-import com.acmed.his.model.User;
 import com.acmed.his.pojo.RequestToken;
-import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.service.LoginManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
@@ -16,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
