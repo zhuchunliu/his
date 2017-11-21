@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * 患者信息
@@ -60,10 +61,10 @@ public class Patient {
     private String unionid;
 
     @ApiModelProperty("创建时间")
-    private String createAt;
+    private Date createAt;
 
     @ApiModelProperty("修改时间")
-    private String modifyAt;
+    private Date modifyAt;
 
     @ApiModelProperty("创建用户")
     private String createBy;

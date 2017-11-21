@@ -20,7 +20,7 @@ public class DicItem {
 
     @Id
     @ApiModelProperty("字典项编码")
-    private String dicItemId;
+    private String dicItemCode;
 
     @ApiModelProperty("字典项名称")
     private String dicItemName;
