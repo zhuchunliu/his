@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * 药品库
@@ -76,4 +77,16 @@ public class Drug {
 
     @ApiModelProperty("药品备注")
     private String memo;
+
+    @ApiModelProperty("创建时间")
+    private Date createAt;
+
+    @ApiModelProperty("修改时间")
+    private Date modifyAt;
+
+    @ApiModelProperty("创建用户")
+    private String createBy;
+
+    @ApiModelProperty("修改用户")
+    private String modifyBy;
 }

@@ -35,9 +35,6 @@ public class Charge {
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
 
-    @ApiModelProperty("科室")
-    private String dept;
-
     @ApiModelProperty("费用类型")
     private String category;
 
@@ -55,4 +52,10 @@ public class Charge {
 
     @ApiModelProperty("修改用户")
     private String modifyBy;
+
+    @ApiModelProperty("科室名字")
+    private String deptName;
+
+    @ApiModelProperty("科室id")
+    private Integer dept;
 }

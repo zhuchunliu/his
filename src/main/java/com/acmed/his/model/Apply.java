@@ -72,4 +72,10 @@ public class Apply {
 
     @ApiModelProperty("状态 0:未就诊;1:已就诊")
     private String status;
+
+    @ApiModelProperty("科室名字")
+    private String deptName;
+
+    @ApiModelProperty("科室id")
+    private Integer dept;
 }

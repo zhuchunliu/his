@@ -64,4 +64,7 @@ public class MedicalRecord {
 
     @ApiModelProperty("修改用户")
     private String modifyBy;
+
+    @ApiModelProperty("科室名字")
+    private String deptName;
 }
