@@ -36,7 +36,7 @@ public class MedicalRecord {
     private String isFirst;
 
     @ApiModelProperty("发病日期")
-    private String onSetDate;
+    private Date onSetDate;
 
     @ApiModelProperty("主诉")
     private String chiefComplaint;
