@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.PrescriptionTplItemMapper">
+    <resultMap id="prescriptionTplItem" type="com.acmed.his.model.PrescriptionTplItem">
+        <id property="id" column="id"></id>
+        <result property="tplId" column="tplid"></result>
+        <result property="drugId" column="drugid"></result>
+        <result property="drugCategory" column="drugcategory"></result>
+        <result property="drugName" column="drugname"></result>
+        <result property="dose" column="dose"></result>
+        <result property="way" column="way"></result>
+        <result property="frequency" column="frequency"></result>
+        <result property="num" column="num"></result>
+        <result property="course" column="course"></result>
+        <result property="memo" column="memo"></result>
+    </resultMap>
+
+    <select id="getPrescripTplItemList" parameterType="java.lang.Integer" resultMap="prescriptionTplItem">
+        select * from t_b_prescription_tpl_item where tplid = #{tplId}
+    </select>
+
+    <delete id="deleteByTplId" parameterType="java.lang.Integer">
+        DELETE FROM t_b_prescription_tpl_item where tplid = #{tplId}
+    </delete>
+</mapper>

@@ -30,5 +30,5 @@ public class AdviceTpl {
     private String advice;
 
     @ApiModelProperty("是否有效 0：无效; 1:有效")
-    private String isvalid;
+    private String isValid;
 }

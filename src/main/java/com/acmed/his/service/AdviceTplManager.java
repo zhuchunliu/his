@@ -19,7 +19,7 @@ public class AdviceTplManager {
     public void add(){
         AdviceTpl adviceTpl = new AdviceTpl();
         adviceTpl.setAdvice("advice");
-        adviceTpl.setIsvalid("0");
+        adviceTpl.setIsValid("0");
         adviceTpl.setOrgCode(10001);
         adviceTplMapper.insert(adviceTpl);
     }

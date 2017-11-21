@@ -17,7 +17,7 @@ import java.io.Serializable;
 
 @Log4j
 public @Data
-class ResponseResult implements Serializable {
+class ResponseResult<T> implements Serializable {
     @ApiModelProperty(value="返回状态 success / error")
     private  boolean success=false;//返回状态：success / error
     @ApiModelProperty(value="返回状态代码")
@@ -25,7 +25,7 @@ class ResponseResult implements Serializable {
     @ApiModelProperty(value="返回消息")
     private String msg;
     @ApiModelProperty(value="返回结果")
-    private Object result;
+    private T result;
 
     public boolean isSuccess()
     {

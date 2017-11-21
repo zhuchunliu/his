@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.PrescriptionTplMapper">
+    <resultMap id="adviceTpl" type="com.acmed.his.model.PrescriptionTpl">
+        <id property="id" column="id"></id>
+        <result property="orgCode" column="orgcode"></result>
+        <result property="tplName" column="tplname"></result>
+        <result property="pinYin" column="pinyin"></result>
+        <result property="category" column="category"></result>
+        <result property="diagnosis" column="diagnosis"></result>
+        <result property="advice" column="advice"></result>
+        <result property="description" column="description"></result>
+    </resultMap>
+
+    <select id="getPrescripTplList" parameterType="java.lang.Integer" resultMap="adviceTpl">
+        select * from t_b_prescription_tpl where orgcode = #{orgCode}
+    </select>
+</mapper>
