@@ -26,4 +26,16 @@ public class CommonConstants {
 
     /**空闲中*/
     public static final String CAROUT_FREE_STATUS = "20";
+
+    /**验证码超时秒数*/
+    public static final Integer VALID_CODE_EXPIRE_SECONDS = 60;
+
+    /**登录信息超时秒数*/
+    public static final Integer LOGININFO_EXPIRE_SECONDS = 1800;
+
+    /**发送短信回执成功码*/
+    public static final String SMS_ERRORMSG_OK = "OK";
+
+    /**用户Header token*/
+    public static final String USER_HEADER_TOKEN = "Authorization";
 }

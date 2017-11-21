@@ -1,4 +1,4 @@
-package com.acmed.his;
+package com.acmed.his.config;
 /**
  *
  * Created by Eric on 2017-05-11.

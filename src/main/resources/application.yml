@@ -23,10 +23,11 @@ spring:
       poolPreparedStatements: true
       maxOpenPreparedStatements: 20
 
-#redis:
-#  ip: 192.168.1.123
-#  port: 6379
-#  password: acmed
+redis:
+  ip: 192.168.1.123
+  port: 6379
+  password: acmed
+
 mybatis:
   mapperLocations: classpath*:mapping/*.xml
   config-location: classpath:mybatis-config.xml

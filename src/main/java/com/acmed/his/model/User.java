@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Date;
 @Data
 @Table(name = "t_p_s_user")
 @NameStyle
-public class User {
+public class User implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty("id")
@@ -75,4 +76,7 @@ public class User {
 
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;
+
+    @ApiModelProperty("微信openid")
+    private String openid;
 }
