@@ -2,18 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.PrescriptionTplMapper">
-    <resultMap id="adviceTpl" type="com.acmed.his.model.AdviceTpl">
-        <id column="id" property="id"></id>
-        <result column="orgCode" property="orgcode"></result>
-        <result column="tplName" property="tplname"></result>
-        <result column="pinYin" property="pinyin"></result>
-        <result column="category" property="category"></result>
-        <result column="diagnosis" property="diagnosis"></result>
-        <result column="advice" property="advice"></result>
-        <result column="description" property="description"></result>
+    <resultMap id="adviceTpl" type="com.acmed.his.model.PrescriptionTpl">
+        <id property="id" column="id"></id>
+        <result property="orgCode" column="orgcode"></result>
+        <result property="tplName" column="tplname"></result>
+        <result property="pinYin" column="pinyin"></result>
+        <result property="category" column="category"></result>
+        <result property="diagnosis" column="diagnosis"></result>
+        <result property="advice" column="advice"></result>
+        <result property="description" column="description"></result>
     </resultMap>
 
-    <select id="getList" parameterType="java.lang.Integer" resultMap="adviceTpl">
-        select * from t_b_advice_tpl where orgcode = #{orgcode}
+    <select id="getPrescripTplList" parameterType="java.lang.Integer" resultMap="adviceTpl">
+        select * from t_b_prescription_tpl where orgcode = #{orgCode}
     </select>
 </mapper>

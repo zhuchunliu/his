@@ -3,13 +3,13 @@
                 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.AdviceTplMapper">
 <resultMap id="adviceTpl" type="com.acmed.his.model.AdviceTpl">
-    <id column="id" property="id"></id>
-    <result column="orgCode" property="orgcode"></result>
-    <result column="category" property="advice"></result>
-    <result column="isValid" property="isvalid"></result>
+    <id property="id" column="id"></id>
+    <result property="orgCode" column="orgcode"></result>
+    <result property="advice" column="advice"></result>
+    <result property="isValid" column="isvalid"></result>
 </resultMap>
 
-<select id="getList" parameterType="java.lang.Integer" resultMap="adviceTpl">
-    select * from t_b_advice_tpl where orgcode = #{orgcode}
+<select id="getAdviceTplList" parameterType="java.lang.Integer" resultMap="adviceTpl">
+    select * from t_b_advice_tpl where orgcode = #{orgCode}
 </select>
 </mapper>
