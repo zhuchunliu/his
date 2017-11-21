@@ -7,6 +7,7 @@ import tk.mybatis.mapper.annotation.NameStyle;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * 病历
@@ -53,10 +54,10 @@ public class MedicalRecord {
     private String isContagious;
 
     @ApiModelProperty("创建时间")
-    private String createAt;
+    private Date createAt;
 
     @ApiModelProperty("修改时间")
-    private String modifyAt;
+    private Date modifyAt;
 
     @ApiModelProperty("创建用户")
     private String createBy;
