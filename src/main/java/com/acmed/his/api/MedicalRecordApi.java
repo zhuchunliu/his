@@ -1,7 +1,6 @@
 package com.acmed.his.api;
 
 import com.acmed.his.model.MedicalRecord;
-import com.acmed.his.pojo.mo.DocotorAndPatientId;
 import com.acmed.his.service.MedicalRecordManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
