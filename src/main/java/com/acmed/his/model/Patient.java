@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -40,7 +41,7 @@ public class Patient {
     private String mobile;
 
     @ApiModelProperty("体重")
-    private Double weight;
+    private BigDecimal weight;
 
     @ApiModelProperty("职业")
     private String prof;

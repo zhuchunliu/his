@@ -30,7 +30,8 @@ public enum StatusCode {
 	ERROR_PASSWD (10012,"密码错误"),
 
 	ERROR_REFRESHTOKEN (10013,"refreshToken不存在或已失效"),
-	ERROR_REPEATRECORD(10014, "记录重复");
+	ERROR_REPEATRECORD(10014, "记录重复"),
+	ERROR_GETOPENIDECORD(10015,"获取openid异常");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatusCode.class);
 
