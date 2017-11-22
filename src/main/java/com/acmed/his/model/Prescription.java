@@ -39,7 +39,7 @@ public class Prescription {
     @ApiModelProperty("科室")
     private String dept;
 
-    @ApiModelProperty("处方类型")
+    @ApiModelProperty("处方类型 1:药，2：检查")
     private String category;
 
     @ApiModelProperty("总费用")

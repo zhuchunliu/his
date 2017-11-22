@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.PrescriptionMapper">
+
+    <resultMap id="permissionDto" type="com.acmed.his.model.Prescription">
+        <id property="id" column="id"></id>
+        <result property="applyId" column="applyid"></result>
+        <result property="prescriptionNo" column="prescriptionno"></result>
+        <result property="patientId" column="patientid"></result>
+        <result property="orgCode" column="orgcode"></result>
+        <result property="dept" column="dept"></result>
+        <result property="category" column="category"></result>
+        <result property="fee" column="fee"></result>
+        <result property="isPaid" column="ispaid"></result>
+        <result property="feeType" column="feetype"></result>
+        <result property="createAt" column="createat"></result>
+        <result property="modifyAt" column="modifyat"></result>
+        <result property="createBy" column="createby"></result>
+        <result property="modifyBy" column="modifyby"></result>
+        <result property="deptName" column="deptname"></result>
+    </resultMap>
+
+    <resultMap id="preTitleDto" type="com.acmed.his.model.dto.PreTitleDto">
+        <result property="id" column="id"></result>
+        <result property="prescriptionNo" column="prescriptionNo"></result>
+    </resultMap>
+
+
+    <select id="getByNo" parameterType="java.lang.String" resultMap="permissionDto">
+        select * from t_b_prescription where prescriptionNo = #{prescriptionNo}
+    </select>
+
+    <select id="getPreByApply" resultMap="preTitleDto">
+        select id,prescriptionno from t_b_prescription where applyid = #{applyId}
+    </select>
+</mapper>

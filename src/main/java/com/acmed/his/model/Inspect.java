@@ -40,13 +40,13 @@ public class Inspect {
     @ApiModelProperty("科室")
     private String dept;
 
-    @ApiModelProperty("检验检查类型")
+    @ApiModelProperty("检查目的")
     private String aim;
 
-    @ApiModelProperty("检验检查类型")
+    @ApiModelProperty("检查部位")
     private String part;
 
-    @ApiModelProperty("检验检查类型")
+    @ApiModelProperty("检查类型")
     private String category;
 
     @ApiModelProperty("病情摘要")
