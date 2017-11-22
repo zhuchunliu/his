@@ -6,9 +6,12 @@ import com.acmed.his.dao.RoleVsPermissionMapper;
 import com.acmed.his.model.Permission;
 import com.acmed.his.model.Role;
 import com.acmed.his.model.RoleVsPermission;
+import com.acmed.his.pojo.mo.RoleMo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,9 +38,12 @@ public class RoleManager {
 
     /**
      * 保存、更新角色信息
-     * @param role
      */
-    public void save(Role role){
+    public void save(RoleMo roleMo){
+        Role role = new Role();
+        BeanUtils.copyProperties(roleMo,role);
+        role.setRemoved("0");
+        role.setCreateTime(new Date());
         if(null == role.getId()){
             roleMapper.insert(role);
         }else{
@@ -59,7 +65,9 @@ public class RoleManager {
      * @param id
      */
     public void delRole(Integer id){
-        roleMapper.deleteByPrimaryKey(id);
+        Role role = roleMapper.selectByPrimaryKey(id);
+        role.setRemoved("1");
+        roleMapper.updateByPrimaryKey(role);
     }
 
 

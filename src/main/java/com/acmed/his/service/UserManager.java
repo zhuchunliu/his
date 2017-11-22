@@ -6,9 +6,12 @@ import com.acmed.his.dao.UserVsRoleMapper;
 import com.acmed.his.model.Role;
 import com.acmed.his.model.User;
 import com.acmed.his.model.UserVsRole;
+import com.acmed.his.pojo.mo.UserMo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,9 +39,13 @@ public class UserManager {
 
     /**
      * 新增，编辑用户信息
-     * @param user
+     * @param userMo
      */
-    public void save(User user){
+    public void save(UserMo userMo){
+        User user = new User();
+        BeanUtils.copyProperties(userMo,user);
+        user.setCreateAt(new Date());
+        user.setRemoved("0");
         if(null == user.getId()){
             userMapper.insert(user);
         }else{
@@ -60,7 +67,9 @@ public class UserManager {
      * @param id
      */
     public void delUser(Integer id){
-        userMapper.deleteByPrimaryKey(id);
+        User user = userMapper.selectByPrimaryKey(id);
+        user.setRemoved("1");
+        userMapper.updateByPrimaryKey(user);
     }
 
     /**
@@ -85,7 +94,7 @@ public class UserManager {
      * @param rid
      * @param uid
      */
-    public void delUserRole(Integer rid, Integer uid) {
+    public void delUserRole(Integer uid, Integer rid) {
         UserVsRole userVsRole = new UserVsRole();
         userVsRole.setRid(rid);
         userVsRole.setUid(uid);

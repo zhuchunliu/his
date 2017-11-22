@@ -3,15 +3,19 @@ package com.acmed.his.api;
 import com.acmed.his.model.Role;
 import com.acmed.his.model.User;
 import com.acmed.his.model.UserVsRole;
+import com.acmed.his.pojo.mo.RoleMo;
+import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.service.UserManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,21 +30,27 @@ public class UserApi {
 
     @ApiOperation(value = "新增/编辑 用户信息")
     @PostMapping("/save")
-    public ResponseResult saveUser(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody User user){
-        userManager.save(user);
+    public ResponseResult saveUser(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody UserMo userMo){
+        userManager.save(userMo);
         return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "获取用户列表")
     @GetMapping("/list")
-    public ResponseResult<List<User>> getUserList(){
-        return ResponseUtil.setSuccessResult(userManager.getUserList());
+    public ResponseResult<List<UserMo>> getUserList(){
+        List<UserMo> list = new ArrayList<>();
+        UserMo userMo = new UserMo();
+        userManager.getUserList().forEach((obj)->{
+            BeanUtils.copyProperties(obj,userMo);list.add(userMo);});
+        return ResponseUtil.setSuccessResult(list);
     }
 
     @ApiOperation(value = "获取用户详情")
     @GetMapping("/detail")
-    public ResponseResult<User> getUserDetail(@ApiParam("用户主键") @RequestParam("id") Integer id){
-        return ResponseUtil.setSuccessResult(userManager.getUserDetail(id));
+    public ResponseResult<UserMo> getUserDetail(@ApiParam("用户主键") @RequestParam("id") Integer id){
+        UserMo userMo = new UserMo();
+        BeanUtils.copyProperties(userManager.getUserDetail(id),userMo);
+        return ResponseUtil.setSuccessResult(userMo);
     }
 
     @ApiOperation(value = "删除用户信息")
@@ -52,9 +62,11 @@ public class UserApi {
 
     @ApiOperation(value = "获取用户权限列表")
     @GetMapping("/permission/list")
-    public ResponseResult<List<Role>> getPermissionByRole(@ApiParam("用户主键") @RequestParam("uid") Integer uid) {
-
-        return ResponseUtil.setSuccessResult(userManager.getRoleByUser(uid));
+    public ResponseResult<List<RoleMo>> getPermissionByRole(@ApiParam("用户主键") @RequestParam("uid") Integer uid) {
+        List<RoleMo> list = new ArrayList<>();
+        RoleMo roleMo = new RoleMo();
+        userManager.getRoleByUser(uid).forEach((obj)->{BeanUtils.copyProperties(obj,roleMo);list.add(roleMo);});
+        return ResponseUtil.setSuccessResult(list);
 
     }
 
@@ -68,9 +80,9 @@ public class UserApi {
 
     @ApiOperation(value = "删除用户绑定的权限信息")
     @DeleteMapping("/permission/del")
-    public ResponseResult delRolePermission(@ApiParam("角色主键") @RequestParam("rid") Integer rid,
-                                            @ApiParam("用户主键") @RequestParam("uid") Integer uid) {
-        userManager.delUserRole(rid,uid);
+    public ResponseResult delRolePermission(@ApiParam("用户主键") @RequestParam("uid") Integer uid,
+                                            @ApiParam("角色主键") @RequestParam("rid") Integer rid) {
+        userManager.delUserRole(uid,rid);
         return ResponseUtil.setSuccessResult();
 
     }

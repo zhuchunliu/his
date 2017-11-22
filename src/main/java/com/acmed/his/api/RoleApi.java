@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.model.Role;
 import com.acmed.his.model.RoleVsPermission;
 import com.acmed.his.pojo.mo.PermissionMo;
+import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.service.RoleManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
@@ -29,21 +30,26 @@ public class RoleApi {
 
     @ApiOperation(value = "新增/编辑 角色信息")
     @PostMapping("/save")
-    public ResponseResult saveRole(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody Role role){
-        roleManager.save(role);
+    public ResponseResult saveRole(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody RoleMo roleMo){
+        roleManager.save(roleMo);
         return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "获取角色列表")
     @GetMapping("/list")
-    public ResponseResult<List<Role>> getRoleList(){
-        return ResponseUtil.setSuccessResult(roleManager.getRoleList());
+    public ResponseResult<List<RoleMo>> getRoleList(){
+        List<RoleMo> list = new ArrayList<>();
+        RoleMo roleMo = new RoleMo();
+        roleManager.getRoleList().forEach((obj)->{BeanUtils.copyProperties(obj,roleMo);list.add(roleMo);});
+        return ResponseUtil.setSuccessResult(list);
     }
 
     @ApiOperation(value = "获取角色详情")
     @GetMapping("/detail")
-    public ResponseResult<Role> getRoleDetail(@ApiParam("角色主键") @RequestParam("id") Integer id){
-        return ResponseUtil.setSuccessResult(roleManager.getRoleDetail(id));
+    public ResponseResult<RoleMo> getRoleDetail(@ApiParam("角色主键") @RequestParam("id") Integer id){
+        RoleMo roleMo = new RoleMo();
+        BeanUtils.copyProperties(roleManager.getRoleDetail(id),roleMo);
+        return ResponseUtil.setSuccessResult(roleMo);
     }
 
     @ApiOperation(value = "删除角色信息")

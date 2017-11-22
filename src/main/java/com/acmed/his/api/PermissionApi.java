@@ -1,6 +1,5 @@
 package com.acmed.his.api;
 
-import com.acmed.his.model.DiagnosisTpl;
 import com.acmed.his.model.Permission;
 import com.acmed.his.pojo.mo.PermissionMo;
 import com.acmed.his.service.PermissionManager;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Darren on 2017/11/21.
@@ -45,7 +43,7 @@ public class PermissionApi {
 
     @ApiOperation(value = "获取权限详情")
     @GetMapping("/detail")
-    public ResponseResult<Permission> getPermissionDetail(@ApiParam("权限主键") @RequestParam("id") Integer id){
+    public ResponseResult<PermissionMo> getPermissionDetail(@ApiParam("权限主键") @RequestParam("id") Integer id){
         PermissionMo mo = new PermissionMo();
         BeanUtils.copyProperties(permissionManager.getPermissionDetail(id),mo);
         return ResponseUtil.setSuccessResult(mo);

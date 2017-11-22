@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.pojo.RequestToken;
+import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.service.LoginManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;

@@ -10,8 +10,8 @@
         <result property="category" column="category"></result>
     </resultMap>
 
-    <select id="getPrescripTplList" parameterType="java.lang.Integer" resultMap="permission">
+    <select id="getPermissionByRole" parameterType="java.lang.Integer" resultMap="permission">
         select id,percode,pername,perdesc, category from t_p_s_permission
-        where id in (select pid from t_p_s_role_vs_permission where rid = #{roleId})
+        where id in (select pid from t_p_s_role_vs_permission where rid = #{rid})
     </select>
 </mapper>
