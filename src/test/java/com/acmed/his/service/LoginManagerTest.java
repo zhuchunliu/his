@@ -30,15 +30,6 @@ public class LoginManagerTest {
         }
     }
 
-    @Test
-    public void getUserByToken(){
-        try {
-            Object object = loginManager.getUserByToken("j==gN4kTcwE2S3N3RUd1QDhWcPRjMjVDN1YDN0AjNyETM1EjMS9EVD9ER");
-            System.err.print(object);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Test
     public void getTokenByOpenid() {

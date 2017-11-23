@@ -1,11 +1,11 @@
 package com.acmed.his.api;
 
-import com.acmed.his.model.Role;
-import com.acmed.his.model.User;
 import com.acmed.his.model.UserVsRole;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.service.UserManager;
+import com.acmed.his.support.AccessToken;
+import com.acmed.his.support.AccessInfo;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -37,7 +37,7 @@ public class UserApi {
 
     @ApiOperation(value = "获取用户列表")
     @GetMapping("/list")
-    public ResponseResult<List<UserMo>> getUserList(){
+    public ResponseResult<List<UserMo>> getUserList(@AccessToken AccessInfo accessInfo){
         List<UserMo> list = new ArrayList<>();
         UserMo userMo = new UserMo();
         userManager.getUserList().forEach((obj)->{
@@ -47,7 +47,8 @@ public class UserApi {
 
     @ApiOperation(value = "获取用户详情")
     @GetMapping("/detail")
-    public ResponseResult<UserMo> getUserDetail(@ApiParam("用户主键") @RequestParam("id") Integer id){
+    public ResponseResult<UserMo> getUserDetail(@ApiParam("用户主键") @RequestParam("id") Integer id,
+                                                @AccessToken(required = false) AccessInfo accessInfo){
         UserMo userMo = new UserMo();
         BeanUtils.copyProperties(userManager.getUserDetail(id),userMo);
         return ResponseUtil.setSuccessResult(userMo);

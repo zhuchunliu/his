@@ -62,16 +62,6 @@ public class LoginController {
     }
 
 
-    @ApiOperation("根据token获取用户信息")
-    @GetMapping(value = "/token")
-    public ResponseResult<UserInfo> token(
-            @ApiParam(value = "header中必须传token") @RequestHeader(value = CommonConstants.USER_HEADER_TOKEN) String token){
-        Object object = loginManager.getUserByToken(token);
-        UserInfo userInfo = new UserInfo();
-        BeanUtils.copyProperties(object,userInfo);
-        return ResponseUtil.setSuccessResult(userInfo);
-    }
-
 
     @ApiOperation("刷新token")
     @GetMapping(value = "/tokenRefresh")

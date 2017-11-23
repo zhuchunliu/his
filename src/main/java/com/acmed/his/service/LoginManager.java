@@ -41,7 +41,6 @@ public class LoginManager {
     @Autowired
     private PatientMapper patientMapper;
 
-
     /**
      * 用户登录
      * @param loginName
@@ -55,32 +54,13 @@ public class LoginManager {
             return result;
         }
         User user = (User) result.getResult();
-        RequestToken requestToken = this.getToken(loginName);
+        RequestToken requestToken = this.getToken(String.format(RedisKeyConstants.USER_PAD,user.getId()));
         redisTemplate.opsForHash().put(requestToken.getToken(), loginName, user);//存储redis,供后续controller调用
         logger.info("登录成功，返回的token是：" + requestToken.getToken());
 
         return ResponseUtil.setSuccessResult(requestToken);
     }
 
-    /**
-     * 根据token获取用户信息
-     * @param token
-     * @return
-     */
-    public Object getUserByToken(String token) {
-        String loginId = Optional.ofNullable(token)
-                .map(TokenUtil::getFromToken).map(ResponseResult::getResult)
-                .map(val ->(RequestToken)val).map(RequestToken::getLoginid).orElse(null);
-        if(null == loginId){
-            return null;
-        }
-        if(loginId.startsWith("PATIENT")){
-            return Optional.ofNullable(redisTemplate.opsForHash().get(token,loginId)).
-                    map(((val)->(Patient)val)).orElse(new Patient());
-        }
-        return Optional.ofNullable(redisTemplate.opsForHash().get(token,loginId)).
-                map(((val)->(User)val)).orElse(new User());
-    }
 
     /**
      * 根据openid获取token
@@ -99,14 +79,14 @@ public class LoginManager {
         String loginid = null;
 
         if(null != user){
-            loginid = String.format(RedisKeyConstants.DOCTOR_PRE,user.getId());
+            loginid = String.format(RedisKeyConstants.USER_WEIXIN,user.getId());
         }
         if(null == user){
             new Example(Patient.class);
             example.createCriteria().andEqualTo("openid",openid);
             patient = Optional.ofNullable(patientMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
             if(null != patient){
-                loginid = String.format(RedisKeyConstants.PATIENT_PRE,patient.getId());
+                loginid = String.format(RedisKeyConstants.PATIENT_WEIXIN,patient.getId());
             }
         }
         if(null == user && null == patient){
@@ -136,12 +116,6 @@ public class LoginManager {
         requestToken.setToken(token);
         requestToken.setLoginid(loginid);
         requestToken.setRemoteip(ip);
-
-        if(null != user){
-            redisTemplate.opsForHash().put(requestToken.getToken(), loginid, user);//存储redis,供后续controller调用
-        }else{
-            redisTemplate.opsForHash().put(requestToken.getToken(), loginid, patient);//存储redis,供后续controller调用
-        }
 
         return requestToken;
 

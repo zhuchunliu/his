@@ -27,4 +27,8 @@
     <select id="getUserByLoginNameOrPhone" parameterType="java.lang.String" resultMap="userMap">
         select * from t_p_s_user where username = #{loginName} OR mobile = #{loginName}
     </select>
+
+    <select id="getUserByOpenid" parameterType="java.lang.String" resultMap="userMap">
+        select * from t_p_s_user where openid = #{openid}
+    </select>
 </mapper>
