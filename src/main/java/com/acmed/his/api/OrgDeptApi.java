@@ -4,6 +4,8 @@ import com.acmed.his.pojo.mo.DeptMo;
 import com.acmed.his.pojo.mo.OrgMo;
 import com.acmed.his.service.DeptManager;
 import com.acmed.his.service.OrgManager;
+import com.acmed.his.support.AccessInfo;
+import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -30,8 +32,9 @@ public class OrgDeptApi {
 
     @ApiOperation(value = "新增/编辑 机构信息")
     @PostMapping("/org/save")
-    public ResponseResult saveRole(@ApiParam("orgCode等于null:新增; orgCode不等于null：编辑") @RequestBody OrgMo orgMo){
-        orgManager.saveOrg(orgMo);
+    public ResponseResult saveRole(@ApiParam("orgCode等于null:新增; orgCode不等于null：编辑") @RequestBody OrgMo orgMo,
+                                   @AccessToken AccessInfo info){
+        orgManager.saveOrg(orgMo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
@@ -55,8 +58,9 @@ public class OrgDeptApi {
 
     @ApiOperation(value = "删除机构信息")
     @DeleteMapping("/org/del")
-    public ResponseResult delRole(@ApiParam("机构主键") @RequestParam("orgCode") Integer orgCode){
-        orgManager.delOrg(orgCode);
+    public ResponseResult delRole(@ApiParam("机构主键") @RequestParam("orgCode") Integer orgCode,
+                                  @AccessToken AccessInfo info){
+        orgManager.delOrg(orgCode,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 

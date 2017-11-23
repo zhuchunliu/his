@@ -3,6 +3,7 @@ package com.acmed.his.service;
 import com.acmed.his.dao.DeptMapper;
 import com.acmed.his.model.Dept;
 import com.acmed.his.pojo.mo.DeptMo;
+import com.acmed.his.pojo.vo.UserInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2017-11-22

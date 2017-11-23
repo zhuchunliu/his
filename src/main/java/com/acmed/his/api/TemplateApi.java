@@ -19,8 +19,8 @@ import java.util.Optional;
 /**
  * Created by Darren on 2017-11-20
  **/
+@Api(tags = "模板信息",description = "诊断模板、医嘱模板、处方模板")
 @RestController
-@Api("模板信息")
 @RequestMapping("/tpl")
 public class TemplateApi {
 
