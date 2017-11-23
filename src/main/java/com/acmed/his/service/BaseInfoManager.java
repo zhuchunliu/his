@@ -112,7 +112,7 @@ public class BaseInfoManager {
             dicType.setDicTypeCode(UUIDUtil.generate());
             return dicTypeMapper.insert(dicType);
         }else {
-            return dicTypeMapper.updateByPrimaryKey(dicType);
+            return dicTypeMapper.updateByPrimaryKeySelective(dicType);
         }
 
     }

@@ -139,7 +139,7 @@ public class PatientManager {
                 // 信息已录入 没有绑定微信号
                 patient.setOpenid(openid);
                 patient.setModifyAt(now);
-                patientMapper.updateByPrimaryKey(patient);
+                patientMapper.updateByPrimaryKeySelective(patient);
             }
             BeanUtils.copyProperties(patient,patientInfoVo);
         }else {
