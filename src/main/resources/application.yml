@@ -24,9 +24,9 @@ spring:
       maxOpenPreparedStatements: 20
 
 redis:
-  ip: 192.168.1.123
-  port: 6379
-  password: acmed
+  ip: 115.29.47.72
+  port: 6877
+  password: acmedhis123456
 
 mybatis:
   mapperLocations: classpath*:mapping/*.xml
