@@ -5,6 +5,7 @@ import com.acmed.his.pojo.mo.WxRegistPatientMo;
 import com.acmed.his.service.PatientManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @author jimson
  * @date 2017/11/22
  */
+@Api("患者")
 @RestController
 public class PatientApi {
     @Autowired

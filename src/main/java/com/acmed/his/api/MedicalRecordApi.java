@@ -4,6 +4,7 @@ import com.acmed.his.model.MedicalRecord;
 import com.acmed.his.service.MedicalRecordManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @author jimson
  * @date 2017/11/21
  */
+@Api("病例")
 @RestController
 public class MedicalRecordApi {
     @Autowired
