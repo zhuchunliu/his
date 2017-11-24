@@ -3,13 +3,14 @@ package com.acmed.his.pojo.mo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Darren on 2017-11-22
  **/
 @Data
-public class UserMo {
+public class UserMo implements Serializable{
     @ApiModelProperty("id")
     private Integer id;
 

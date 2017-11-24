@@ -66,13 +66,13 @@ public class User implements Serializable{
     private String modifyBy;
 
     @ApiModelProperty("注册时间")
-    private Date createAt;
+    private String createAt;
 
     @ApiModelProperty("修改时间")
-    private Date modifyAt;
+    private String modifyAt;
 
     @ApiModelProperty("最后登录时间")
-    private Date lastLogin;
+    private String lastLogin;
 
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;

@@ -47,8 +47,7 @@ public class UserApi {
 
     @ApiOperation(value = "获取用户详情")
     @GetMapping("/detail")
-    public ResponseResult<UserMo> getUserDetail(@ApiParam("用户主键") @RequestParam("id") Integer id,
-                                                @AccessToken(required = false) AccessInfo accessInfo){
+    public ResponseResult<UserMo> getUserDetail(@ApiParam("用户主键") @RequestParam("id") Integer id){
         UserMo userMo = new UserMo();
         BeanUtils.copyProperties(userManager.getUserDetail(id),userMo);
         return ResponseUtil.setSuccessResult(userMo);

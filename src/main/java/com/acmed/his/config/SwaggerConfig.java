@@ -4,6 +4,7 @@ package com.acmed.his.config;
  * Created by Eric on 2017-05-11.
  */
 
+import com.acmed.his.support.AccessToken;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -25,7 +26,7 @@ public class SwaggerConfig {
 
     @Bean
     public Docket createRestApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.SWAGGER_2).ignoredParameterTypes(AccessToken.class)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.acmed"))

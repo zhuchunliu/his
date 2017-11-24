@@ -13,7 +13,6 @@ import java.util.Date;
  **/
 @Data
 public class UserInfo {
-    @Id
     @ApiModelProperty("id")
     private Integer id;
 

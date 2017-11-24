@@ -1,6 +1,7 @@
 package com.acmed.his.pojo.mo;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 
 /**

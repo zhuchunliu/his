@@ -4,15 +4,14 @@ package com.acmed.his.support;
 import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.PatientMapper;
-import com.acmed.his.dao.UserMapper;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.User;
 import com.acmed.his.pojo.RequestToken;
 import com.acmed.his.service.PatientManager;
+import com.acmed.his.service.UserManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.TokenUtil;
-import com.google.common.io.BaseEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.MethodParameter;
@@ -29,14 +28,12 @@ import java.util.Optional;
  **/
 public class AccessTokenResolver implements HandlerMethodArgumentResolver  {
 
-    private PatientMapper patientMapper;
-    private UserMapper userMapper;
+    private UserManager userManager;
     private PatientManager patientManager;
 
 
     public AccessTokenResolver(ApplicationContext applicationContext) {
-        this.patientMapper = applicationContext.getBean(PatientMapper.class);
-        this.userMapper = applicationContext.getBean(UserMapper.class);
+        this.userManager = applicationContext.getBean(UserManager.class);
         this.patientManager = applicationContext.getBean(PatientManager.class);
     }
 
@@ -68,17 +65,17 @@ public class AccessTokenResolver implements HandlerMethodArgumentResolver  {
         Integer source = null;
         if(loginId.startsWith("PATIENT_WX")){
             source = 1;
-            patient = patientMapper.selectByPrimaryKey(Integer.parseInt(loginId.substring("PATIENT_WX".length())));
-            user = Optional.ofNullable(patient.getOpenid()).map((obj)->userMapper.getUserByOpenid(obj)).orElse(null);
+            patient = patientManager.getPatientById(Integer.parseInt(loginId.substring("PATIENT_WX".length())));
+            user = Optional.ofNullable(patient.getOpenid()).map((obj)->userManager.getUserByOpenid(obj)).orElse(null);
         }
         else if(loginId.startsWith("USER_WX")){
             source = 2;
-            user = userMapper.selectByPrimaryKey(Integer.parseInt(loginId.substring("USER_WX".length())));
+            user = userManager.getUserDetail(Integer.parseInt(loginId.substring("USER_WX".length())));
             patient = Optional.ofNullable(user.getOpenid()).map((obj)->patientManager.getPatientByOpenid(obj)).orElse(null);
         }
         else if(loginId.startsWith("USER_PAD")){
             source = 3;
-            user = userMapper.selectByPrimaryKey(Integer.parseInt(loginId.substring("USER_PAD".length())));
+            user = userManager.getUserDetail(Integer.parseInt(loginId.substring("USER_PAD".length())));
         }
 
         return new AccessInfo(patient,user,source);

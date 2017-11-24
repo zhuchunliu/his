@@ -9,9 +9,11 @@ import com.acmed.his.model.UserVsRole;
 import com.acmed.his.pojo.mo.UserMo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -41,10 +43,11 @@ public class UserManager {
      * 新增，编辑用户信息
      * @param userMo
      */
+    @CacheEvict(value = "user",key = "#userMo.id")
     public void save(UserMo userMo){
         User user = new User();
         BeanUtils.copyProperties(userMo,user);
-        user.setCreateAt(new Date());
+        user.setCreateAt(LocalDateTime.now().toString());
         user.setRemoved("0");
         if(null == user.getId()){
             userMapper.insert(user);
@@ -58,6 +61,7 @@ public class UserManager {
      * @param id
      * @return
      */
+    @Cacheable(value = "user",key = "#id")
     public User getUserDetail(Integer id){
         return userMapper.selectByPrimaryKey(id);
     }
@@ -66,11 +70,14 @@ public class UserManager {
      * 删除用户信息
      * @param id
      */
+    @CacheEvict(value = "user",key = "#id")
     public void delUser(Integer id){
         User user = userMapper.selectByPrimaryKey(id);
         user.setRemoved("1");
         userMapper.updateByPrimaryKey(user);
     }
+
+
 
     /**
      * 获取用户绑定的权限信息
@@ -99,5 +106,16 @@ public class UserManager {
         userVsRole.setRid(rid);
         userVsRole.setUid(uid);
         userVsRoleMapper.delete(userVsRole);
+    }
+
+    /**
+     * 根据openid获取用户信息
+     *
+     * @param openid
+     * @return
+     */
+    @Cacheable(value = "user",key = "#openid")
+    public User getUserByOpenid(String openid){
+        return userMapper.getUserByOpenid(openid);
     }
 }

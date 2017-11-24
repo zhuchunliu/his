@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * Created by Darren on 2017-11-20
@@ -36,4 +37,17 @@ public class FeeItem {
 
     @ApiModelProperty("药品备注")
     private String memo;
+
+    @ApiModelProperty("注册时间")
+    private String createAt;
+
+    @ApiModelProperty("修改时间")
+    private String modifyAt;
+
+    @ApiModelProperty("创建人")
+    private String createBy;
+
+    @ApiModelProperty("修改人")
+    private String modifyBy;
+
 }
