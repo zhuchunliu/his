@@ -21,7 +21,7 @@ public class PrescriptionTpl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty("模板id")
+    @ApiModelProperty("处方模板id")
     private Integer id;
 
     @ApiModelProperty("医疗机构编码")
@@ -44,4 +44,19 @@ public class PrescriptionTpl {
 
     @ApiModelProperty("描述")
     private String description;
+
+    @ApiModelProperty("是否有效 0:无；1：有")
+    private String isValid;
+
+    @ApiModelProperty("注册时间")
+    private String createAt;
+
+    @ApiModelProperty("修改时间")
+    private String modifyAt;
+
+    @ApiModelProperty("创建人")
+    private String createBy;
+
+    @ApiModelProperty("修改人")
+    private String modifyBy;
 }

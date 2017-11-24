@@ -9,7 +9,7 @@
     <result property="isValid" column="isvalid"></result>
 </resultMap>
 
-<select id="getAdviceTplList" parameterType="java.lang.Integer" resultMap="adviceTpl">
-    select * from t_b_advice_tpl where orgcode = #{orgCode}
+<select id="getAdviceTplList"  resultMap="adviceTpl">
+    select * from t_b_advice_tpl where orgcode = #{orgCode} and isvalid = #{isValid}
 </select>
 </mapper>

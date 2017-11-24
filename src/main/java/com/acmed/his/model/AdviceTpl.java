@@ -20,7 +20,7 @@ public class AdviceTpl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty("诊疗项目id")
+    @ApiModelProperty("医嘱模板id")
     private Integer id;
 
     @ApiModelProperty("医疗机构编码")
@@ -31,4 +31,16 @@ public class AdviceTpl {
 
     @ApiModelProperty("是否有效 0：无效; 1:有效")
     private String isValid;
+
+    @ApiModelProperty("注册时间")
+    private String createAt;
+
+    @ApiModelProperty("修改时间")
+    private String modifyAt;
+
+    @ApiModelProperty("创建人")
+    private String createBy;
+
+    @ApiModelProperty("修改人")
+    private String modifyBy;
 }

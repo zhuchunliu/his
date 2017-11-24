@@ -10,5 +10,5 @@ import java.util.List;
  * Created by Darren on 2017-11-20
  **/
 public interface AdviceTplMapper extends TkMapper<AdviceTpl> {
-    List<AdviceTpl> getAdviceTplList(@Param("orgCode") Integer orgCode);
+    List<AdviceTpl> getAdviceTplList(@Param("orgCode") Integer orgCode,@Param("isValid")String isValid);
 }

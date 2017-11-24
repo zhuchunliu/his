@@ -10,5 +10,5 @@ import java.util.List;
  * Created by Darren on 2017-11-20
  **/
 public interface DiagnosisTplMapper extends TkMapper<DiagnosisTpl>{
-    List<DiagnosisTpl> getDiagnosisTplList(@Param("orgCode") Integer orgCode);
+    List<DiagnosisTpl> getDiagnosisTplList(@Param("orgCode") Integer orgCode,@Param("isValid") String isValid);
 }

@@ -27,21 +27,24 @@ public class FeeItemApi {
     private FeeItemManager feeItemManager;
 
     @ApiOperation(value = "新增/编辑 收费项目信息")
-    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true) })
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
-    public ResponseResult saveFeeItem(@ApiParam("id等于null:新增; feeItemCode不等于null：编辑") @RequestBody FeeItemMo feeItemMo,
+    public ResponseResult saveFeeItem(@ApiParam("id等于null:新增; feeItemCode不等于null：编辑") @RequestBody FeeItemMo mo,
                                       @AccessToken AccessInfo info){
-        feeItemManager.saveFeeItem(feeItemMo,info.getUser());
+        feeItemManager.saveFeeItem(mo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "获取收费项目列表")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/list")
-    public ResponseResult<List<FeeItemMo>> getFeeItemList(){
+    public ResponseResult<List<FeeItemMo>> getFeeItemList(@AccessToken AccessInfo info){
         List<FeeItemMo> list = new ArrayList<>();
-        FeeItemMo feeItemMo = new FeeItemMo();
-        feeItemManager.getFeeItemList().forEach((obj)->{
-            BeanUtils.copyProperties(obj,feeItemMo);list.add(feeItemMo);});
+
+        feeItemManager.getFeeItemList(info.getUser().getOrgCode()).forEach((obj)->{
+            FeeItemMo feeItemMo = new FeeItemMo();
+            BeanUtils.copyProperties(obj,feeItemMo);
+            list.add(feeItemMo);});
         return ResponseUtil.setSuccessResult(list);
     }
 
@@ -55,7 +58,7 @@ public class FeeItemApi {
 
     @ApiOperation(value = "删除收费项目信息")
     @DeleteMapping("/del")
-    @ApiImplicitParams({ @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true) })
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     public ResponseResult delFeeItem(@ApiParam("收费项目主键") @RequestParam("id") Integer id,
                                      @AccessToken AccessInfo info){
         feeItemManager.delFeeItem(id,info.getUser());

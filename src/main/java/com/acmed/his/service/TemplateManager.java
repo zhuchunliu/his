@@ -1,15 +1,21 @@
 package com.acmed.his.service;
 
 import com.acmed.his.dao.*;
-import com.acmed.his.model.AdviceTpl;
-import com.acmed.his.model.DiagnosisTpl;
-import com.acmed.his.model.PrescriptionTpl;
-import com.acmed.his.model.PrescriptionTplItem;
+import com.acmed.his.model.*;
+import com.acmed.his.pojo.mo.AdviceTplMo;
+import com.acmed.his.pojo.mo.DiagnosisTplMo;
+import com.acmed.his.pojo.mo.PrescriptionTplMo;
+import com.acmed.his.pojo.vo.UserInfo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 模板
@@ -30,6 +36,9 @@ public class TemplateManager {
     @Autowired
     private PrescriptionTplItemMapper prescriptionTplItemMapper;
 
+    @Autowired
+    private DrugMapper drugMapper;
+
 
 
     /**
@@ -38,7 +47,7 @@ public class TemplateManager {
      * @return
      */
     public List<DiagnosisTpl> getDiagnosisTplList(Integer orgCode){
-        return diagnosisTplMapper.getDiagnosisTplList(orgCode);
+        return diagnosisTplMapper.getDiagnosisTplList(orgCode,"1");
     }
 
     /**
@@ -55,19 +64,34 @@ public class TemplateManager {
      * @param id 诊断模板主键
      * @return
      */
-    public void delDiagnosisTpl(Integer id){
-        diagnosisTplMapper.deleteByPrimaryKey(id);
+    public void delDiagnosisTpl(Integer id, UserInfo userInfo){
+        DiagnosisTpl diagnosisTpl = diagnosisTplMapper.selectByPrimaryKey(id);
+        diagnosisTpl.setIsValid("0");
+        diagnosisTpl.setModifyAt(LocalDateTime.now().toString());
+        diagnosisTpl.setModifyBy(userInfo.getId().toString());
+        diagnosisTplMapper.updateByPrimaryKey(diagnosisTpl);
     }
 
     /**
      * 新增/编辑 诊断模板
-     * @param diagnosisTpl 诊断模板
+     * @param mo 诊断模板
      * @return
      */
-    public void saveDiagnosisTpl(DiagnosisTpl diagnosisTpl){
-        if(null == diagnosisTpl.getId()){
+    public void saveDiagnosisTpl(DiagnosisTplMo mo, UserInfo userInfo){
+        if(null == mo.getId()){
+            DiagnosisTpl diagnosisTpl = new DiagnosisTpl();
+            BeanUtils.copyProperties(mo,diagnosisTpl);
+            diagnosisTpl.setCreateAt(LocalDateTime.now().toString());
+            diagnosisTpl.setCreateBy(userInfo.getId().toString());
+            diagnosisTpl.setOrgCode(userInfo.getOrgCode());
+            diagnosisTpl.setIsValid("1");
             diagnosisTplMapper.insert(diagnosisTpl);
         }else{
+            DiagnosisTpl diagnosisTpl = diagnosisTplMapper.selectByPrimaryKey(mo.getId());
+            BeanUtils.copyProperties(mo,diagnosisTpl);
+            diagnosisTpl.setModifyAt(LocalDateTime.now().toString());
+            diagnosisTpl.setModifyBy(userInfo.getId().toString());
+            diagnosisTpl.setIsValid("1");
             diagnosisTplMapper.updateByPrimaryKey(diagnosisTpl);
         }
     }
@@ -78,7 +102,7 @@ public class TemplateManager {
      * @return
      */
     public List<AdviceTpl> getAdviceTplList(Integer orgCode){
-        return adviceTplMapper.getAdviceTplList(orgCode);
+        return adviceTplMapper.getAdviceTplList(orgCode,"1");
     }
 
     /**
@@ -95,19 +119,34 @@ public class TemplateManager {
      * @param id 诊断模板主键
      * @return
      */
-    public void delAdviceTpl(Integer id){
-        adviceTplMapper.deleteByPrimaryKey(id);
+    public void delAdviceTpl(Integer id,UserInfo userInfo){
+        AdviceTpl adviceTpl = adviceTplMapper.selectByPrimaryKey(id);
+        adviceTpl.setModifyAt(LocalDateTime.now().toString());
+        adviceTpl.setModifyBy(userInfo.getId().toString());
+        adviceTpl.setIsValid("0");
+        adviceTplMapper.updateByPrimaryKey(adviceTpl);
     }
 
     /**
      * 新增/编辑 医嘱模板
-     * @param adviceTpl 医嘱模板
+     * @param mo 医嘱模板
      * @return
      */
-    public void saveAdviceTpl(AdviceTpl adviceTpl){
-        if(null == adviceTpl.getId()){
+    public void saveAdviceTpl(AdviceTplMo mo, UserInfo userInfo){
+        if(null == mo.getId()){
+            AdviceTpl adviceTpl = new AdviceTpl();
+            BeanUtils.copyProperties(mo,adviceTpl);
+            adviceTpl.setCreateAt(LocalDateTime.now().toString());
+            adviceTpl.setCreateBy(userInfo.getId().toString());
+            adviceTpl.setOrgCode(userInfo.getOrgCode());
+            adviceTpl.setIsValid("1");
             adviceTplMapper.insert(adviceTpl);
         }else{
+            AdviceTpl adviceTpl = adviceTplMapper.selectByPrimaryKey(mo.getId());
+            BeanUtils.copyProperties(mo,adviceTpl);
+            adviceTpl.setIsValid("1");
+            adviceTpl.setModifyAt(LocalDateTime.now().toString());
+            adviceTpl.setModifyBy(userInfo.getId().toString());
             adviceTplMapper.updateByPrimaryKey(adviceTpl);
         }
     }
@@ -118,7 +157,7 @@ public class TemplateManager {
      * @return
      */
     public List<PrescriptionTpl> getPrescripTplList(Integer orgCode){
-        return prescriptionTplMapper.getPrescripTplList(orgCode);
+        return prescriptionTplMapper.getPrescripTplList(orgCode,"1");
     }
 
     /**
@@ -136,22 +175,59 @@ public class TemplateManager {
      * @return
      */
     @Transactional
-    public void delPrescripTpl(Integer id){
-        prescriptionTplItemMapper.deleteByTplId(id);
-        prescriptionTplMapper.deleteByPrimaryKey(id);
+    public void delPrescripTpl(Integer id,UserInfo userInfo){
+        PrescriptionTpl prescriptionTpl = prescriptionTplMapper.selectByPrimaryKey(id);
+        prescriptionTpl.setModifyAt(LocalDateTime.now().toString());
+        prescriptionTpl.setModifyBy(userInfo.getId().toString());
+        prescriptionTpl.setIsValid("0");
+        prescriptionTplMapper.updateByPrimaryKey(prescriptionTpl);
     }
 
     /**
      * 新增/编辑 医嘱模板
-     * @param prescriptionTpl 处方模板
+     * @param mo 处方模板
      * @return
      */
-    public void savePrescripTpl(PrescriptionTpl prescriptionTpl){
-        if(null == prescriptionTpl.getId()){
+    public boolean savePrescripTpl(PrescriptionTplMo mo, UserInfo userInfo){
+        PrescriptionTpl prescriptionTpl = null;
+        List<PrescriptionTplItem> preItemList = new ArrayList<>();
+        if(null == mo.getId()){
+            prescriptionTpl = new PrescriptionTpl();
+            BeanUtils.copyProperties(mo,prescriptionTpl);
+            prescriptionTpl.setOrgCode(userInfo.getOrgCode());
+            prescriptionTpl.setCreateAt(LocalDateTime.now().toString());
+            prescriptionTpl.setCreateBy(userInfo.getId().toString());
+            prescriptionTpl.setIsValid("1");
             prescriptionTplMapper.insert(prescriptionTpl);
+
+            prescriptionTpl = prescriptionTplMapper.selectRecentTpl(prescriptionTpl);
+
         }else{
+            prescriptionTpl = prescriptionTplMapper.selectByPrimaryKey(mo.getId());
+            BeanUtils.copyProperties(mo,prescriptionTpl);
+            prescriptionTpl.setModifyAt(LocalDateTime.now().toString());
+            prescriptionTpl.setModifyBy(userInfo.getId().toString());
             prescriptionTplMapper.updateByPrimaryKey(prescriptionTpl);
+
+            Example example = new Example(PrescriptionTplItem.class);
+            example.createCriteria().andEqualTo("tplId",prescriptionTpl.getId());
+            preItemList = prescriptionTplItemMapper.selectByExample(example);
         }
+        if( null == prescriptionTpl){
+            return false;
+        }
+        int tplId = prescriptionTpl.getId();
+        mo.getItemList().forEach((obj)->{
+            PrescriptionTplItem item = new PrescriptionTplItem();
+            BeanUtils.copyProperties(obj,item);
+            item.setTplId(tplId);
+            item.setDrugName(Optional.ofNullable(obj.getDrugId()).
+                    map(id->drugMapper.selectByPrimaryKey(id)).map((drug -> drug.getName())).orElse(null));
+            prescriptionTplItemMapper.insert(item);
+        });
+
+        preItemList.forEach(obj->prescriptionTplItemMapper.deleteByPrimaryKey(obj));
+        return true;
     }
 
 
@@ -164,35 +240,5 @@ public class TemplateManager {
         return prescriptionTplItemMapper.getPrescripTplItemList(tplId);
     }
 
-    /**
-     * 获取处方模板详情
-     * @param id 处方模板详情主键
-     * @return
-     */
-    public PrescriptionTplItem getPrescripTplItem(Integer id){
-        return prescriptionTplItemMapper.selectByPrimaryKey(id);
-    }
-
-    /**
-     * 删除处方模板详情
-     * @param id 处方模板详情主键
-     * @return
-     */
-    public void delPrescripTplItem(Integer id){
-        prescriptionTplItemMapper.deleteByPrimaryKey(id);
-    }
-
-    /**
-     * 新增/编辑 医嘱模板详情
-     * @param prescriptionTplItem 处方模板详情
-     * @return
-     */
-    public void savePrescriptionTplItem(PrescriptionTplItem prescriptionTplItem){
-        if(null == prescriptionTplItem.getId()){
-            prescriptionTplItemMapper.insert(prescriptionTplItem);
-        }else{
-            prescriptionTplItemMapper.updateByPrimaryKey(prescriptionTplItem);
-        }
-    }
 
 }

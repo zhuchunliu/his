@@ -11,7 +11,7 @@
         <result property="memo" column="memo"></result>
     </resultMap>
 
-    <select id="getDiagnosisTplList" parameterType="java.lang.Integer" resultMap="diagnosisTpl">
-        select * from t_b_diagnosis_tpl where orgcode = #{orgCode}
+    <select id="getDiagnosisTplList" resultMap="diagnosisTpl">
+        select * from t_b_diagnosis_tpl where orgcode = #{orgCode} and isvalid = #{isValid}
     </select>
 </mapper>

@@ -10,6 +10,7 @@ import com.acmed.his.support.AccessInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,26 +27,30 @@ public class FeeItemManager {
      * 获取收费列表
      * @return
      */
-    public List<FeeItem> getFeeItemList(){
-        return feeItemMapper.selectAll();
+    public List<FeeItem> getFeeItemList(Integer orgCode){
+        Example example = new Example(FeeItem.class);
+        example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("isValid","1");
+        return feeItemMapper.selectByExample(example);
     }
 
     /**
      * 新增、编辑收费项目
      * @param mo
      */
-    public void saveFeeItem(FeeItemMo mo, UserInfo user){
-        FeeItem item = new FeeItem();
-        BeanUtils.copyProperties(mo,item);
-        if(null == item.getId()){
+    public void saveFeeItem(FeeItemMo mo, UserInfo userInfo){
+        if(null == mo.getId()){
+            FeeItem item = new FeeItem();
+            BeanUtils.copyProperties(mo,item);
             item.setIsValid("1");
-            item.setOrgCode(user.getOrgCode());
+            item.setOrgCode(userInfo.getOrgCode());
             item.setCreateAt(LocalDateTime.now().toString());
-            item.setCreateBy(user.toString());
+            item.setCreateBy(userInfo.getId().toString());
             feeItemMapper.insert(item);
         }else{
+            FeeItem item = feeItemMapper.selectByPrimaryKey(mo.getId());
+            BeanUtils.copyProperties(mo,item);
             item.setModifyAt(LocalDateTime.now().toString());
-            item.setModifyAt(user.toString());
+            item.setModifyBy(userInfo.getId().toString());
             feeItemMapper.updateByPrimaryKey(item);
         }
     }
@@ -62,11 +67,11 @@ public class FeeItemManager {
      * 删除收费详情
      * @param id
      */
-    public void delFeeItem(Integer id,UserInfo user){
+    public void delFeeItem(Integer id,UserInfo userInfo){
         FeeItem item = feeItemMapper.selectByPrimaryKey(id);
         item.setIsValid("0");
         item.setModifyAt(LocalDateTime.now().toString());
-        item.setModifyBy(user.getId().toString());
+        item.setModifyBy(userInfo.getId().toString());
         feeItemMapper.updateByPrimaryKey(item);
     }
 }

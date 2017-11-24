@@ -20,7 +20,7 @@ public class DiagnosisTpl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty("诊疗项目id")
+    @ApiModelProperty("诊断模板id")
     private Integer id;
 
     @ApiModelProperty("医疗机构编码")
@@ -37,4 +37,16 @@ public class DiagnosisTpl {
 
     @ApiModelProperty("药品备注")
     private String memo;
+
+    @ApiModelProperty("注册时间")
+    private String createAt;
+
+    @ApiModelProperty("修改时间")
+    private String modifyAt;
+
+    @ApiModelProperty("创建人")
+    private String createBy;
+
+    @ApiModelProperty("修改人")
+    private String modifyBy;
 }
