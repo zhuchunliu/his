@@ -1,11 +1,12 @@
 package com.acmed.his.config;
 
+import com.acmed.his.exceptions.handler.ServiceExceptionHandler;
 import com.acmed.his.support.AccessTokenResolver;
-import javafx.application.Application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -32,6 +33,12 @@ public class CorsConfig extends WebMvcConfigurerAdapter {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         super.addArgumentResolvers(argumentResolvers);
         argumentResolvers.add(new AccessTokenResolver(applicationContext));
+    }
+
+    @Autowired
+    public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
+        super.configureHandlerExceptionResolvers(exceptionResolvers);
+        exceptionResolvers.add(new ServiceExceptionHandler());
     }
 
 }

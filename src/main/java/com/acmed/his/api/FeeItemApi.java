@@ -18,7 +18,7 @@ import java.util.List;
  * Created by Darren on 2017-11-22
  **/
 @RestController
-@Api("收费项目管理")
+@Api(tags = "收费项目管理")
 @RequestMapping("/fee")
 public class FeeItemApi {
 

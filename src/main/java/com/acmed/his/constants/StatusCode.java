@@ -31,7 +31,8 @@ public enum StatusCode {
 
 	ERROR_REFRESHTOKEN (10013,"refreshToken不存在或已失效"),
 	ERROR_REPEATRECORD(10014, "记录重复"),
-	ERROR_GETOPENIDECORD(10015,"获取openid异常");
+	ERROR_GETOPENIDECORD(10015,"获取openid异常"),
+	ERROR_TOKEN (10016,"Token不存在或已失效"),;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatusCode.class);
 

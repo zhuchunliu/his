@@ -2,14 +2,17 @@ package com.acmed.his.support;
 
 
 import com.acmed.his.constants.CommonConstants;
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.dao.UserMapper;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.User;
 import com.acmed.his.pojo.RequestToken;
 import com.acmed.his.service.PatientManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.TokenUtil;
+import com.google.common.io.BaseEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.MethodParameter;
@@ -54,7 +57,7 @@ public class AccessTokenResolver implements HandlerMethodArgumentResolver  {
         HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
         String token = servletRequest.getHeader(CommonConstants.USER_HEADER_TOKEN);
         if(StringUtils.isEmpty(token)){
-            return new AccessInfo();
+            throw new BaseException(StatusCode.ERROR_TOKEN);
         }
 
         String loginId = Optional.ofNullable(token)
