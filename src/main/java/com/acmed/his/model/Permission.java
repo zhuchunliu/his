@@ -43,11 +43,12 @@ public class Permission {
     @ApiModelProperty("类型:菜单,操作权限，按钮")
     private String category;
 
+    @ApiModelProperty("操作人")
     private String operatorUserId;
 
     @ApiModelProperty("创建时间")
-    private Date createTime;
+    private String createTime;
 
     @ApiModelProperty("修改时间")
-    private Date modifyTime;
+    private String modifyTime;
 }

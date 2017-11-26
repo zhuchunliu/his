@@ -31,14 +31,14 @@ public class Dept {
     @ApiModelProperty("科室")
     private String dept;
 
-    @ApiModelProperty("状态")
+    @ApiModelProperty("状态 0:启用，1：禁用")
     private String status;
 
     @ApiModelProperty("创建时间")
-    private Date createAt;
+    private String createAt;
 
     @ApiModelProperty("修改时间")
-    private Date modifyAt;
+    private String modifyAt;
 
     @ApiModelProperty("创建人")
     private String createBy;

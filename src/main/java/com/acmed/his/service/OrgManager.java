@@ -7,10 +7,10 @@ import com.acmed.his.pojo.vo.UserInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Darren on 2017-11-22
@@ -26,7 +26,9 @@ public class OrgManager {
      * @return
      */
     public List<Org> getOrgList(){
-        return orgMapper.selectAll();
+        Example example = new Example(Org.class);
+        example.createCriteria().andEqualTo("removed", "0");
+        return orgMapper.selectByExample(example);
     }
 
     /**
@@ -34,16 +36,19 @@ public class OrgManager {
      * @param mo
      */
     public void saveOrg(OrgMo mo, UserInfo userInfo){
-        Org org = new Org();
-        BeanUtils.copyProperties(mo,org);
-        org.setRemoved("0");
-        if(null == org.getOrgCode()){
-            org.setCreateAt(new Date());
-            org.setCreateBy(Optional.ofNullable(userInfo).map((obj)->obj.getId().toString()).orElse(null));
+
+        if(null == mo.getOrgCode()){
+            Org org = new Org();
+            BeanUtils.copyProperties(mo,org);
+            org.setRemoved("0");
+            org.setCreateAt(LocalDateTime.now().toString());
+            org.setCreateBy(userInfo.getId().toString());
             orgMapper.insert(org);
         }else{
-            org.setModifyAt(new Date());
-            org.setModifyBy(Optional.ofNullable(userInfo).map((obj)->obj.getId().toString()).orElse(null));
+            Org org = orgMapper.selectByPrimaryKey(mo.getOrgCode());
+            BeanUtils.copyProperties(mo,org);
+            org.setModifyAt(LocalDateTime.now().toString());
+            org.setModifyBy(userInfo.getId().toString());
             orgMapper.updateByPrimaryKey(org);
         }
     }
@@ -62,9 +67,9 @@ public class OrgManager {
      */
     public void delOrg(Integer orgCode,UserInfo userInfo){
         Org org = orgMapper.selectByPrimaryKey(orgCode);
-        org.setModifyAt(new Date());
+        org.setModifyAt(LocalDateTime.now().toString());
         org.setRemoved("1");
-        org.setModifyBy(Optional.ofNullable(userInfo).map((obj)->obj.getId().toString()).orElse(null));
+        org.setModifyBy(userInfo.getId().toString());
         orgMapper.updateByPrimaryKey(org);
     }
 }

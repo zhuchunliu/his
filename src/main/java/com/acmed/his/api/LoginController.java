@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Darren on 2017-11-21
  **/
 @RestController
-@Api("登录接口")
+@Api(tags ="登录接口")
 @RequestMapping("/login")
 public class LoginController {
 

@@ -16,7 +16,4 @@ public class DeptMo {
 
     @ApiModelProperty("科室")
     private String dept;
-
-    @ApiModelProperty("状态")
-    private String status;
 }

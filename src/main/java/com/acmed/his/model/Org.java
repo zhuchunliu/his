@@ -65,27 +65,27 @@ public class Org {
     @ApiModelProperty("纬度")
     private String lat;
 
-    @ApiModelProperty("创建时间")
-    private Date createAt;
-
-    @ApiModelProperty("修改时间")
-    private Date modifyAt;
-
-    @ApiModelProperty("删除标识:0 未删除,1:删除")
-    private String removed;
-
-    @ApiModelProperty("创建人")
-    private String createBy;
-
-    @ApiModelProperty("修改人")
-    private String modifyBy;
-
     @ApiModelProperty("截止时间")
-    private Date expireTime;
+    private String expireTime;
 
     @ApiModelProperty("代理商")
     private String supply;
 
     @ApiModelProperty("是否就医北上广医院")
     private String isRecommend;
+
+    @ApiModelProperty("删除标识:0 未删除,1:删除")
+    private String removed;
+
+    @ApiModelProperty("创建时间")
+    private String createAt;
+
+    @ApiModelProperty("修改时间")
+    private String modifyAt;
+
+    @ApiModelProperty("创建人")
+    private String createBy;
+
+    @ApiModelProperty("修改人")
+    private String modifyBy;
 }

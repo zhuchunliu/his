@@ -43,7 +43,7 @@ public class OrgMo {
     @ApiModelProperty("县")
     private String country;
 
-    @ApiModelProperty("状态：0启用,1停止")
+    @ApiModelProperty("状态 0:启用，1：禁用")
     private String status;
 
     @ApiModelProperty("经度")
@@ -53,7 +53,7 @@ public class OrgMo {
     private String lat;
 
     @ApiModelProperty("截止时间")
-    private Date expireTime;
+    private String expireTime;
 
     @ApiModelProperty("代理商")
     private String supply;

@@ -1,5 +1,6 @@
 package com.acmed.his.service;
 
+import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.dao.DeptMapper;
 import com.acmed.his.model.Dept;
 import com.acmed.his.pojo.mo.DeptMo;
@@ -9,9 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Darren on 2017-11-22
@@ -28,7 +28,7 @@ public class DeptManager {
      */
     public List<Dept> getDeptList(Integer orgCode){
         Example example = new Example(Dept.class);
-        example.createCriteria().andEqualTo("orgCode",orgCode);
+        example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("status",CommonConstants.ENABLED_STATUS);
         return deptMapper.selectByExample(example);
     }
 
@@ -36,14 +36,21 @@ public class DeptManager {
      * 新增、编辑科室
      * @param mo
      */
-    public void saveDept(DeptMo mo){
-        Dept dept = new Dept();
-        BeanUtils.copyProperties(mo,dept);
-        if(null == dept.getId()){
-            dept.setCreateAt(new Date());
+    public void saveDept(DeptMo mo,UserInfo userInfo){
+
+
+        if(null == mo.getId()){
+            Dept dept = new Dept();
+            BeanUtils.copyProperties(mo,dept);
+            dept.setStatus(CommonConstants.ENABLED_STATUS);
+            dept.setCreateBy(userInfo.getId().toString());
+            dept.setCreateAt(LocalDateTime.now().toString());
             deptMapper.insert(dept);
         }else{
-            dept.setModifyAt(new Date());
+            Dept dept = deptMapper.selectByPrimaryKey(mo.getId());
+            BeanUtils.copyProperties(mo,dept);
+            dept.setModifyBy(userInfo.getId().toString());
+            dept.setModifyAt(LocalDateTime.now().toString());
             deptMapper.updateByPrimaryKey(dept);
         }
     }
@@ -60,8 +67,11 @@ public class DeptManager {
      * 删除科室
      * @param id
      */
-    public void delDept(Integer id){
-
-        deptMapper.deleteByPrimaryKey(id);
+    public void delDept(Integer id,UserInfo userInfo){
+        Dept dept = deptMapper.selectByPrimaryKey(id);
+        dept.setStatus(CommonConstants.DISABLED_STATUS);
+        dept.setModifyAt(LocalDateTime.now().toString());
+        dept.setModifyBy(userInfo.getId().toString());
+        deptMapper.updateByPrimaryKey(dept);
     }
 }

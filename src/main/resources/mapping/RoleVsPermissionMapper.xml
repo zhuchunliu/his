@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.RoleVsPermissionMapper">
+
+    <insert id="addRolePermission" >
+        insert into t_p_s_role_vs_permission(pid,rid)
+        select id as pid,#{rid} from t_p_s_permission 
+        where id in
+        <foreach collection="pids" open="(" close=")" separator="," item="item">#{item}</foreach>
+        and id not in (select pid from t_p_s_role_vs_permission where rid = #{rid})
+
+    </insert>
+</mapper>

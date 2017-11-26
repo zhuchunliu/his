@@ -37,11 +37,12 @@ public class Role {
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;
 
+    @ApiModelProperty("操作人")
     private String operatorUserId;
 
     @ApiModelProperty("创建时间")
-    private Date createTime;
+    private String createTime;
 
     @ApiModelProperty("修改时间")
-    private Date modifyTime;
+    private String modifyTime;
 }

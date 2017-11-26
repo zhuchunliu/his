@@ -1,11 +1,15 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.model.Permission;
 import com.acmed.his.pojo.mo.PermissionMo;
 import com.acmed.his.service.PermissionManager;
+import com.acmed.his.support.AccessInfo;
+import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
@@ -19,16 +23,18 @@ import java.util.List;
  * Created by Darren on 2017/11/21.
  */
 @RestController
-@Api("权限管理")
+@Api(tags = "权限管理")
 @RequestMapping("/permission")
 public class PermissionApi {
     @Autowired
     private PermissionManager permissionManager;
 
     @ApiOperation(value = "新增/编辑 权限信息")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
-    public ResponseResult savePermission(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PermissionMo permissionMo){
-        permissionManager.save(permissionMo);
+    public ResponseResult savePermission(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PermissionMo permissionMo,
+                                         @AccessToken AccessInfo info){
+        permissionManager.save(permissionMo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
@@ -36,8 +42,12 @@ public class PermissionApi {
     @GetMapping("/list")
     public ResponseResult<List<PermissionMo>> getPermissionList(){
         List<PermissionMo> list = new ArrayList<>();
-        PermissionMo mo = new PermissionMo();
-        permissionManager.getPermissionList().forEach((obj)-> {BeanUtils.copyProperties(obj,mo);list.add(mo);});
+
+        permissionManager.getPermissionList().forEach(obj-> {
+            PermissionMo mo = new PermissionMo();
+            BeanUtils.copyProperties(obj,mo);
+            list.add(mo);
+        });
         return ResponseUtil.setSuccessResult(list);
     }
 

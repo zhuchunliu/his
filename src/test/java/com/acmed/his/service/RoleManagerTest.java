@@ -3,6 +3,7 @@ package com.acmed.his.service;
 import com.acmed.his.HisApplication;
 import com.acmed.his.model.RoleVsPermission;
 import com.acmed.his.pojo.mo.RoleMo;
+import com.acmed.his.pojo.vo.UserInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,10 @@ public class RoleManagerTest {
     public void save(){
         RoleMo role = new RoleMo();
         role.setRoleCode("admin");
-        roleManager.save(role);
+        roleManager.save(role,new UserInfo());
 
         role.setRoleCode("doctor");
-        roleManager.save(role);
+        roleManager.save(role,new UserInfo());
     }
 
     @Test
@@ -39,7 +40,7 @@ public class RoleManagerTest {
         RoleMo role = new RoleMo();
         role.setId(1);
         role.setRoleCode("admin-update");
-        roleManager.save(role);
+        roleManager.save(role,new UserInfo());
 
     }
 
@@ -50,7 +51,7 @@ public class RoleManagerTest {
 
     @Test
     public void delRole(){
-        roleManager.delRole(2);
+        roleManager.delRole(2,new UserInfo());
     }
 
 
@@ -61,21 +62,11 @@ public class RoleManagerTest {
     }
 
 
-    @Test
-    public void addRolePermission() {
-        RoleVsPermission roleVsPermission = new RoleVsPermission();
-        roleVsPermission.setRid(1);
-        roleVsPermission.setPid(1);
-        roleManager.addRolePermission(roleVsPermission);
 
-
-        roleVsPermission.setRid(1);
-        roleVsPermission.setPid(2);
-        roleManager.addRolePermission(roleVsPermission);
-    }
 
     @Test
     public void delRolePermission() {
         roleManager.delRolePermission(1,2);
     }
+
 }

@@ -12,5 +12,6 @@
     <select id="getRoleByUser" parameterType="java.lang.Integer" resultMap="role">
         select id,rolecode,rolename,roledesc from t_p_s_role
          where id in (select rid from t_p_s_user_vs_role where uid = #{uid})
+         and removed = '0'
     </select>
 </mapper>

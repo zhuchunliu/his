@@ -1,16 +1,13 @@
-package com.acmed.his.pojo.mo;
+package com.acmed.his.pojo.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.util.Date;
-
 /**
- * Created by Darren on 2017-11-22
+ * Created by Darren on 2017-11-26
  **/
 @Data
-public class UserMo implements Serializable{
+public class UserVo {
     @ApiModelProperty("id")
     private Integer id;
 
@@ -19,9 +16,6 @@ public class UserMo implements Serializable{
 
     @ApiModelProperty("用户名")
     private String userName;
-
-    @ApiModelProperty("密码")
-    private String passWd;
 
     @ApiModelProperty("性别")
     private String gender;
@@ -32,12 +26,6 @@ public class UserMo implements Serializable{
     @ApiModelProperty("所属机构")
     private Integer orgCode;
 
-    @ApiModelProperty(value = "机构名称",hidden = true)
-    private String orgName;
-
-    @ApiModelProperty(value = "科室名称",hidden = true)
-    private String deptName;
-
     @ApiModelProperty("科室")
     private Integer dept;
 
@@ -46,5 +34,4 @@ public class UserMo implements Serializable{
 
     @ApiModelProperty("状态：0启用,1禁用")
     private String status;
-
 }

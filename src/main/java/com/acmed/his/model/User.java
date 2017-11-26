@@ -59,6 +59,18 @@ public class User implements Serializable{
     @ApiModelProperty("状态")
     private String status;
 
+    @ApiModelProperty("最后登录时间")
+    private String lastLogin;
+
+    @ApiModelProperty("删除标识:0 未删除,1:删除")
+    private String removed;
+
+    @ApiModelProperty("微信openid")
+    private String openid;
+
+    @ApiModelProperty("微信绑定的unionid")
+    private String unionid;
+
     @ApiModelProperty("创建人")
     private String createBy;
 
@@ -70,13 +82,4 @@ public class User implements Serializable{
 
     @ApiModelProperty("修改时间")
     private String modifyAt;
-
-    @ApiModelProperty("最后登录时间")
-    private String lastLogin;
-
-    @ApiModelProperty("删除标识:0 未删除,1:删除")
-    private String removed;
-
-    @ApiModelProperty("微信openid")
-    private String openid;
 }

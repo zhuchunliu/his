@@ -1,13 +1,17 @@
 package com.acmed.his.api;
 
-import com.acmed.his.model.Role;
+import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.model.RoleVsPermission;
 import com.acmed.his.pojo.mo.PermissionMo;
 import com.acmed.his.pojo.mo.RoleMo;
+import com.acmed.his.pojo.mo.RoleVsPermissionMo;
 import com.acmed.his.service.RoleManager;
+import com.acmed.his.support.AccessInfo;
+import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
@@ -21,7 +25,7 @@ import java.util.List;
  * Created by Darren on 2017/11/21.
  */
 @RestController
-@Api("角色管理")
+@Api(tags = "角色管理",description = "角色设定/角色-权限绑定")
 @RequestMapping("/role")
 public class RoleApi {
 
@@ -29,9 +33,11 @@ public class RoleApi {
     private RoleManager roleManager;
 
     @ApiOperation(value = "新增/编辑 角色信息")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
-    public ResponseResult saveRole(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody RoleMo roleMo){
-        roleManager.save(roleMo);
+    public ResponseResult saveRole(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody RoleMo roleMo,
+                                   @AccessToken AccessInfo info){
+        roleManager.save(roleMo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
@@ -39,8 +45,12 @@ public class RoleApi {
     @GetMapping("/list")
     public ResponseResult<List<RoleMo>> getRoleList(){
         List<RoleMo> list = new ArrayList<>();
-        RoleMo roleMo = new RoleMo();
-        roleManager.getRoleList().forEach((obj)->{BeanUtils.copyProperties(obj,roleMo);list.add(roleMo);});
+
+        roleManager.getRoleList().forEach(obj->{
+            RoleMo roleMo = new RoleMo();
+            BeanUtils.copyProperties(obj,roleMo);
+            list.add(roleMo);
+        });
         return ResponseUtil.setSuccessResult(list);
     }
 
@@ -53,9 +63,11 @@ public class RoleApi {
     }
 
     @ApiOperation(value = "删除角色信息")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @DeleteMapping("/del")
-    public ResponseResult delRole(@ApiParam("角色主键") @RequestParam("id") Integer id){
-        roleManager.delRole(id);
+    public ResponseResult delRole(@ApiParam("角色主键") @RequestParam("id") Integer id,
+                                  @AccessToken AccessInfo info){
+        roleManager.delRole(id,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
@@ -64,8 +76,9 @@ public class RoleApi {
     @GetMapping("/permission/list")
     public ResponseResult<List<PermissionMo>> getPermissionByRole(@ApiParam("角色主键") @RequestParam("rid") Integer rid) {
         List<PermissionMo> list = new ArrayList<>();
-        PermissionMo mo = new PermissionMo();
-        roleManager.getPermissionByRole(rid).forEach((obj) -> {
+
+        roleManager.getPermissionByRole(rid).forEach(obj -> {
+            PermissionMo mo = new PermissionMo();
             BeanUtils.copyProperties(obj, mo);
             list.add(mo);
         });
@@ -75,8 +88,8 @@ public class RoleApi {
 
     @ApiOperation(value = "绑定角色对应的全息信息")
     @PostMapping("/permission/add")
-    public ResponseResult addRolePermission(@ApiParam("角色权限") @RequestBody RoleVsPermission roleVsPermission) {
-        roleManager.addRolePermission(roleVsPermission);
+    public ResponseResult addRolePermission(@ApiParam("角色权限") @RequestBody RoleVsPermissionMo mo) {
+        roleManager.addRolePermission(mo);
         return ResponseUtil.setSuccessResult();
 
     }

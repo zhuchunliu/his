@@ -3,6 +3,7 @@ package com.acmed.his.service;
 import com.acmed.his.HisApplication;
 import com.acmed.his.model.Permission;
 import com.acmed.his.pojo.mo.PermissionMo;
+import com.acmed.his.pojo.vo.UserInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeanUtils;
@@ -35,12 +36,12 @@ public class PermissionManagerTest {
         mo.setCategory("1");
         mo.setPerCode("AddUser");
         mo.setPerDesc("添加用户");
-        permissionManager.save(mo);
+        permissionManager.save(mo,new UserInfo());
 
         mo.setCategory("1");
         mo.setPerCode("DelUser");
         mo.setPerDesc("删除用户");
-        permissionManager.save(mo);
+        permissionManager.save(mo,new UserInfo());
     }
 
     @Test
@@ -50,7 +51,7 @@ public class PermissionManagerTest {
         mo.setCategory("1");
         mo.setPerCode("AddUser");
         mo.setPerDesc("添加用户-update");
-        permissionManager.save(mo);
+        permissionManager.save(mo,new UserInfo());
 
     }
 

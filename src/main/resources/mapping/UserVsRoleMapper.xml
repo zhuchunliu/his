@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.UserVsRoleMapper">
+
+    <insert id="addUserRole" >
+        insert into t_p_s_user_vs_role(rid,uid)
+        select id as rid,#{uid} from t_p_s_role
+        where id in
+        <foreach collection="rids" open="(" close=")" separator="," item="item">#{item}</foreach>
+        and id not in (select rid from t_p_s_user_vs_role where uid = #{uid})
+
+    </insert>
+</mapper>
