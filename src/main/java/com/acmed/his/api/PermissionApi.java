@@ -1,6 +1,7 @@
 package com.acmed.his.api;
 
 import com.acmed.his.constants.CommonConstants;
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.Permission;
 import com.acmed.his.pojo.mo.PermissionMo;
 import com.acmed.his.service.PermissionManager;
@@ -62,8 +63,8 @@ public class PermissionApi {
     @ApiOperation(value = "删除权限信息")
     @DeleteMapping("/del")
     public ResponseResult delPermission(@ApiParam("权限主键") @RequestParam("id") Integer id){
-        permissionManager.delPermission(id);
-        return ResponseUtil.setSuccessResult();
+        boolean flag = permissionManager.delPermission(id);
+        return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"权限删除失败，请先删除当前权限的子权限！");
     }
 
 }

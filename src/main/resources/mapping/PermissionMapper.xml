@@ -14,4 +14,14 @@
         select id,percode,pername,perdesc, category from t_p_s_permission
         where id in (select pid from t_p_s_role_vs_permission where rid = #{rid})
     </select>
+
+    <select id="hasPermission" resultType="java.lang.Integer">
+        select count(1) from t_p_s_user_vs_role ur
+        join t_p_s_role role on ur.rid = role.id
+        join t_p_s_role_vs_permission rp on role.id = rp.rid
+        join t_p_s_permission per on rp.pid = per.id
+        where ur.uid = #{uid} and role.removed = '0'
+        and  (percode like CONCAT(#{prefix},'%') or percode like CONCAT(#{prefix},#{path}))
+
+    </select>
 </mapper>

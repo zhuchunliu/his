@@ -1,13 +1,17 @@
 package com.acmed.his.config;
 
 import com.acmed.his.exceptions.handler.ServiceExceptionHandler;
+import com.acmed.his.filter.AccessInterceptor;
 import com.acmed.his.support.AccessTokenResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
@@ -16,9 +20,22 @@ import java.util.List;
  * Created by Issac on 2017/5/19.
  */
 @Configuration
+@EnableWebMvc
 public class CorsConfig extends WebMvcConfigurerAdapter {
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private Environment environment;
+
+    private String getActiveProfile() {
+        String[] profiles = environment.getActiveProfiles();
+        if (profiles.length != 0) {
+            return profiles[0];
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -35,10 +52,22 @@ public class CorsConfig extends WebMvcConfigurerAdapter {
         argumentResolvers.add(new AccessTokenResolver(applicationContext));
     }
 
-    @Autowired
+    @Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
         super.configureHandlerExceptionResolvers(exceptionResolvers);
         exceptionResolvers.add(new ServiceExceptionHandler());
     }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        if(!getActiveProfile().equals("dev")) {
+            registry.addInterceptor(new AccessInterceptor(applicationContext));
+        }
+        super.addInterceptors(registry);
+    }
+
+
+
+
 
 }

@@ -14,6 +14,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2017/11/21.
@@ -70,13 +71,26 @@ public class PermissionManager {
      * @param id
      */
     @Transactional
-    public void delPermission(Integer id){
-        Example example = new Example(RoleVsPermission.class);
+    public boolean delPermission(Integer id){
+        Example example = new Example(Permission.class);
+        example.createCriteria().andEqualTo("pid",id);
+        if(Optional.ofNullable(permissionMapper.selectByExample(example)).map(obj->!(obj.size()==0)).orElse(false)){
+            return false;
+        }
+        example = new Example(RoleVsPermission.class);
         example.createCriteria().andEqualTo("pid",id);
         roleVsPermissionMapper.deleteByExample(example);
         permissionMapper.deleteByPrimaryKey(id);
 
-        // TODO:删除父权限，子权限怎么处理
+        return true;
     }
 
+    /**
+     * 判断用户是否有权限访问
+     * @param uid
+     * @param path
+     */
+    public boolean hasPermission(String uid, String path) {
+        return permissionMapper.hasPermission(uid,path.split("/")[1],path.substring(1))>0;
+    }
 }
