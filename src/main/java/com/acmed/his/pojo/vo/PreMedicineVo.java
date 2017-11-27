@@ -33,8 +33,8 @@ public class PreMedicineVo {
         this.applyId = prescription.getApplyId();
         if(null != preItemList && 0 != preItemList.size()){
             itemList = new ArrayList<>();
-            Item item = new Item();
-            preItemList.forEach((obj)->{
+            preItemList.forEach(obj->{
+                Item item = new Item();
                 BeanUtils.copyProperties(obj,item);
                 itemList.add(item);
             });
@@ -42,8 +42,8 @@ public class PreMedicineVo {
 
         if(null != preChargeList && 0 != preChargeList.size()){
             chargeList = new ArrayList<>();
-            Charge charge = new Charge();
-            preChargeList.forEach((obj)->{
+            preChargeList.forEach(obj->{
+                Charge charge = new Charge();
                 BeanUtils.copyProperties(obj,charge);
                 chargeList.add(charge);
             });
@@ -74,8 +74,8 @@ public class PreMedicineVo {
         @ApiModelProperty("费用类型")
         private String category;
 
-        @ApiModelProperty("费用")
-        private Double fee;
+//        @ApiModelProperty("费用")
+//        private Double fee;
     }
 
 }

@@ -10,4 +10,5 @@ import lombok.Data;
 public class PreTitleDto {
     private Integer id;
     private String prescriptionNo;
+    private String category;
 }

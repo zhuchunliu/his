@@ -9,4 +9,11 @@
     </delete>
 
 
+    <insert id="insertItem">
+        insert into t_b_prescription_item(prescriptionid,drugid,applyid,
+        category,drugname,way,num,frequency,course,fee)
+        VALUES ((select id from t_b_prescription where prescriptionno = #{prescriptionNo}),#{item.drugId},
+        #{item.applyId},
+        #{item.category},#{item.drugName},#{item.way},#{item.num},#{item.frequency},#{item.course},#{item.fee})
+    </insert>
 </mapper>

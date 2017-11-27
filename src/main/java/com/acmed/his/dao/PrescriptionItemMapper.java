@@ -14,4 +14,5 @@ public interface PrescriptionItemMapper extends TkMapper<PrescriptionItem> {
     void delByPreId(@Param("prescriptionId") Integer prescriptionId);
 
 
+    void insertItem(@Param("item") PrescriptionItem item,@Param("prescriptionNo")String prescriptionNo);
 }

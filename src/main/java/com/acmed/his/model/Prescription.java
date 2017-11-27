@@ -37,7 +37,10 @@ public class Prescription {
     private Integer orgCode;
 
     @ApiModelProperty("科室")
-    private String dept;
+    private Integer dept;
+
+    @ApiModelProperty("科室名字")
+    private String deptName;
 
     @ApiModelProperty("处方类型 1:药，2：检查")
     private String category;
@@ -63,6 +66,5 @@ public class Prescription {
     @ApiModelProperty("修改用户")
     private String modifyBy;
 
-    @ApiModelProperty("科室名字")
-    private String deptName;
+
 }

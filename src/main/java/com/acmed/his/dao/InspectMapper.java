@@ -9,4 +9,6 @@ import org.apache.ibatis.annotations.Param;
  **/
 public interface InspectMapper extends TkMapper<Inspect> {
     void delByPreId(@Param("prescriptionId") Integer prescriptionId);
+
+    void insertInspect(@Param("inspect") Inspect inspect, @Param("prescriptionNo") String prescriptionNo);
 }

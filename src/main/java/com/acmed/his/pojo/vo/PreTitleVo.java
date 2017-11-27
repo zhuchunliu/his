@@ -14,9 +14,12 @@ public class PreTitleVo {
     private Integer id;
     @ApiModelProperty("编号")
     private String number;
+    @ApiModelProperty("处方类型 1:药品处方，2：检查处方")
+    private String category;
 
     public PreTitleVo(PreTitleDto dto){
         this.id = dto.getId();
         this.number = dto.getPrescriptionNo();
+        this.category = dto.getCategory();
     }
 }

@@ -31,8 +31,9 @@ public class PreInspectVo {
         this.applyId = prescription.getApplyId();
         if(null != preInspectist && 0 != preInspectist.size()){
             inspectList = new ArrayList<>();
-            PreInspectVo.Inspect inspect = new PreInspectVo.Inspect();
+
             preInspectist.forEach((obj)->{
+                PreInspectVo.Inspect inspect = new PreInspectVo.Inspect();
                 BeanUtils.copyProperties(obj,inspect);
                 inspectList.add(inspect);
             });
@@ -40,8 +41,8 @@ public class PreInspectVo {
 
         if(null != preChargeList && 0 != preChargeList.size()){
             chargeList = new ArrayList<>();
-            PreInspectVo.Charge charge = new PreInspectVo.Charge();
             preChargeList.forEach((obj)->{
+                PreInspectVo.Charge charge = new PreInspectVo.Charge();
                 BeanUtils.copyProperties(obj,charge);
                 chargeList.add(charge);
             });
@@ -73,7 +74,7 @@ public class PreInspectVo {
         @ApiModelProperty("费用类型")
         private String category;
 
-        @ApiModelProperty("费用")
-        private Double fee;
+//        @ApiModelProperty("费用")
+//        private Double fee;
     }
 }

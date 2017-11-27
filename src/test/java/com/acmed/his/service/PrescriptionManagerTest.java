@@ -5,6 +5,7 @@ import com.acmed.his.model.dto.PreTitleDto;
 import com.acmed.his.pojo.mo.PreInspectMo;
 import com.acmed.his.pojo.mo.PreMedicineMo;
 import com.acmed.his.pojo.vo.PreMedicineVo;
+import com.acmed.his.pojo.vo.UserInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,18 +45,16 @@ public class PrescriptionManagerTest {
         List<PreMedicineMo.Charge> chargeList = new ArrayList<>();
         PreMedicineMo.Charge charge = new PreMedicineMo().new Charge();
         charge.setCategory("1");
-        charge.setFee(112d);
         chargeList.add(charge);
 
         charge = new PreMedicineMo().new Charge();
         charge.setCategory("2");
-        charge.setFee(130d);
         chargeList.add(charge);
 
         mo.setChargeList(chargeList);
         mo.setItemList(itemList);
 
-        prescriptionManager.savePreMedicine(mo);
+        prescriptionManager.savePreMedicine(mo,new UserInfo());
     }
 
     @Test
@@ -76,18 +75,17 @@ public class PrescriptionManagerTest {
         List<PreInspectMo.Charge> chargeList = new ArrayList<>();
         PreInspectMo.Charge charge = new PreInspectMo().new Charge();
         charge.setCategory("1");
-        charge.setFee(230d);
         chargeList.add(charge);
 
         charge = new PreInspectMo().new Charge();
         charge.setCategory("2");
-        charge.setFee(200d);
         chargeList.add(charge);
 
         mo.setChargeList(chargeList);
         mo.setInspectList(inspectList);
 
-        prescriptionManager.savePreInspect(mo);
+        prescriptionManager.savePreInspect(mo,new UserInfo()
+        );
     }
 
     @Test

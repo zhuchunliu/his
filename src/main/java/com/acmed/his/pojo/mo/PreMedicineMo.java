@@ -47,9 +47,6 @@ public class PreMedicineMo {
     public class Charge{
         @ApiModelProperty("费用类型")
         private String category;
-
-        @ApiModelProperty("费用")
-        private Double fee;
     }
 
 }

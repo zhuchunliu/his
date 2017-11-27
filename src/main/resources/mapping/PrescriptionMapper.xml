@@ -24,6 +24,7 @@
     <resultMap id="preTitleDto" type="com.acmed.his.model.dto.PreTitleDto">
         <result property="id" column="id"></result>
         <result property="prescriptionNo" column="prescriptionNo"></result>
+        <result property="category" column="category"></result>
     </resultMap>
 
 
@@ -32,6 +33,6 @@
     </select>
 
     <select id="getPreByApply" resultMap="preTitleDto">
-        select id,prescriptionno from t_b_prescription where applyid = #{applyId}
+        select id,prescriptionno,category from t_b_prescription where applyid = #{applyId}
     </select>
 </mapper>
