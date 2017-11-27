@@ -18,18 +18,19 @@ import org.springframework.web.bind.annotation.*;
  */
 @Api("病例")
 @RestController
+@RequestMapping("medicalRecord")
 public class MedicalRecordApi {
     @Autowired
     private MedicalRecordManager medicalRecordManager;
 
     @ApiOperation(value = "添加病例")
-    @PostMapping("medicalRecord/add")
+    @PostMapping("add")
     public ResponseResult addMedicalRecord(@ApiParam("病例参数") @RequestBody MedicalRecord medicalRecord){
         return ResponseUtil.setSuccessResult(medicalRecordManager.addMedicalRecord(medicalRecord));
     }
 
-    @ApiOperation(value = "查询病例")
-    @GetMapping("medicalRecords/patientId")
+    @ApiOperation(value = "查询病人病例列表")
+    @GetMapping("patientId")
     public ResponseResult addMedicalRecord(@ApiParam("参数")  Integer patientId){
         return ResponseUtil.setSuccessResult(medicalRecordManager.getMedicalRecordListByPatientId(patientId,null));
     }

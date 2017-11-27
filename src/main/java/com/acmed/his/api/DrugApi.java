@@ -7,10 +7,7 @@ import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * DrugApi
@@ -19,20 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2017/11/23
  */
 @Api("药品管理")
+@RequestMapping("drug")
 @RestController
 public class DrugApi {
     @Autowired
     private DrugManager drugManager;
 
     @ApiOperation(value = "添加")
-    @PostMapping("/drug/save")
+    @PostMapping("save")
     public ResponseResult saveDrug(@RequestBody Drug drug){
         drugManager.saveDrug(drug);
         return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "条件查询")
-    @GetMapping("/drugs/drug")
+    @GetMapping("bydrug")
     public ResponseResult selectDrugsByDrug(Drug drug){
         return ResponseUtil.setSuccessResult(drugManager.getDrugsByDrug(drug));
     }

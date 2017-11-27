@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Api("患者")
 @RestController
+@RequestMapping("patient")
 public class PatientApi {
     @Autowired
     private PatientManager patientManager;
@@ -28,32 +29,32 @@ public class PatientApi {
      * @return ResponseResult
      */
     @ApiOperation(value = "第三方添加患者信息")
-    @PostMapping("patient/add")
+    @PostMapping("add")
     public ResponseResult addPatient(@RequestBody Patient patient){
         int add = patientManager.add(patient);
         return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "微信注册")
-    @PostMapping("patient/wxregister")
+    @PostMapping("wxregister")
     public ResponseResult wxRegister(@RequestBody WxRegistPatientMo wxRegistPatientMo){
         return patientManager.wxRegistPatient(wxRegistPatientMo);
     }
 
     @ApiOperation(value = "根据id查询病患信息")
-    @GetMapping("patient/id")
+    @GetMapping("id")
     public ResponseResult getPatientById(Integer id){
         return ResponseUtil.setSuccessResult(patientManager.getPatientById(id));
     }
 
     @ApiOperation(value = "根据身份证号查询病患信息")
-    @GetMapping("patient/idCard")
+    @GetMapping("idCard")
     public ResponseResult getPatientByIdCard(String idCard){
         return ResponseUtil.setSuccessResult(patientManager.getPatientByIdCard(idCard));
     }
 
     @ApiOperation(value = "根据姓名查询")
-    @GetMapping("patient/name")
+    @GetMapping("name")
     public ResponseResult getPatientByName(String name){
         return ResponseUtil.setSuccessResult(patientManager.getPatientByUserName(name));
     }
