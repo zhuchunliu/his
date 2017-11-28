@@ -12,8 +12,11 @@ public class CommonConstants {
     /**禁用状态*/
     public static final String DISABLED_STATUS = "1";
 
-    /**登录信息超时秒数*/
-    public static final Integer LOGININFO_EXPIRE_SECONDS = 1800;
+    /**PAD上TOKEN有效时长*/
+    public static final Integer LOGININFO_EXPIRE_SECONDS = 7 * 24 * 60;
+
+    /**微信TOKEN有效时长*/
+    public static final Integer LOGININFO_WEIXIN_EXPIRE_SECONDS = Integer.MAX_VALUE;
 
     /**发送短信回执成功码*/
     public static final String SMS_ERRORMSG_OK = "OK";

@@ -11,9 +11,11 @@ import com.acmed.his.pojo.RequestToken;
 import com.acmed.his.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -29,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Darren on 2017-11-21
  **/
 @Service
-public class LoginManager {
+public class LoginManager implements InitializingBean{
     private Logger logger = Logger.getLogger(LoginManager.class);
 
     @Autowired
@@ -40,6 +42,7 @@ public class LoginManager {
 
     @Autowired
     private PatientMapper patientMapper;
+
 
     /**
      * 用户登录
@@ -55,7 +58,6 @@ public class LoginManager {
         }
         User user = (User) result.getResult();
         RequestToken requestToken = this.getToken(String.format(RedisKeyConstants.USER_PAD,user.getId()));
-        redisTemplate.opsForHash().put(requestToken.getToken(), loginName, user);//存储redis,供后续controller调用
         logger.info("登录成功，返回的token是：" + requestToken.getToken());
 
         return ResponseUtil.setSuccessResult(requestToken);
@@ -110,7 +112,7 @@ public class LoginManager {
             map.put(tokenkey, token);
             hash.putAll(rediskey,map);
         }
-        redisTemplate.expire(rediskey, CommonConstants.LOGININFO_EXPIRE_SECONDS, TimeUnit.SECONDS);
+        redisTemplate.expire(rediskey, CommonConstants.LOGININFO_WEIXIN_EXPIRE_SECONDS, TimeUnit.SECONDS);
 
         RequestToken requestToken = new RequestToken();
         requestToken.setToken(token);
@@ -182,6 +184,33 @@ public class LoginManager {
         return ResponseUtil.setErrorMeg(StatusCode.ERROR_AUTH, "用户认证失败");
     }
 
+
+    public void tokenRefresh(String token) {
+        String loginId = Optional.ofNullable(token)
+                .map(TokenUtil::getFromToken).map(ResponseResult::getResult)
+                .map(val ->(RequestToken)val).map(RequestToken::getLoginid).orElse(null);
+        if(loginId.startsWith("USER_PAD"))
+        redisTemplate.expire(String.format(RedisKeyConstants.USERKEY_PRE, loginId), CommonConstants.LOGININFO_EXPIRE_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 退出登录
+     * @param token
+     */
+    public void logout(String token) {
+        String loginId = Optional.ofNullable(token)
+                .map(TokenUtil::getFromToken).map(ResponseResult::getResult)
+                .map(val ->(RequestToken)val).map(RequestToken::getLoginid).orElse(null);
+        if(!StringUtils.isEmpty(loginId)) {
+            redisTemplate.opsForHash().delete(String.format(RedisKeyConstants.USERKEY_PRE, loginId), RedisKeyConstants.USERTOKEN_PRE);
+        }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+    }
 
 
 }

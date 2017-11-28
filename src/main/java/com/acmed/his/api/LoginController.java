@@ -12,12 +12,8 @@ import com.soecode.wxtools.exception.WxErrorException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Darren on 2017-11-21
@@ -29,9 +25,6 @@ public class LoginController {
 
     @Autowired
     private LoginManager loginManager;
-
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     @Autowired
     private WxManager wxManager;
@@ -67,7 +60,15 @@ public class LoginController {
     @GetMapping(value = "/tokenRefresh")
     public ResponseResult<UserInfo> tokenRefresh(
             @ApiParam(value = "header中必须传token") @RequestHeader(value = CommonConstants.USER_HEADER_TOKEN) String token){
-        redisTemplate.expire(token, CommonConstants.LOGININFO_EXPIRE_SECONDS, TimeUnit.SECONDS);
+        loginManager.tokenRefresh(token);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation("退出登录")
+    @GetMapping(value = "/logout")
+    public ResponseResult<UserInfo> logout(
+            @ApiParam(value = "header中必须传token") @RequestHeader(value = CommonConstants.USER_HEADER_TOKEN) String token){
+        loginManager.logout(token);
         return ResponseUtil.setSuccessResult();
     }
 

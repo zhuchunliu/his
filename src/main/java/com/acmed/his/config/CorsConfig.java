@@ -1,26 +1,30 @@
 package com.acmed.his.config;
 
 import com.acmed.his.exceptions.handler.ServiceExceptionHandler;
-import com.acmed.his.filter.AccessInterceptor;
+import com.acmed.his.filter.RequestWrapperFilter;
+import com.acmed.his.filter.interceptor.AccessInterceptor;
+import com.acmed.his.filter.interceptor.GateInterceptor;
 import com.acmed.his.support.AccessTokenResolver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import javax.servlet.DispatcherType;
 import java.util.List;
 
 /**
  * Created by Issac on 2017/5/19.
  */
 @Configuration
-@EnableWebMvc
 public class CorsConfig extends WebMvcConfigurerAdapter {
     @Autowired
     private ApplicationContext applicationContext;
@@ -47,6 +51,12 @@ public class CorsConfig extends WebMvcConfigurerAdapter {
     }
 
     @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+        super.addResourceHandlers(registry);
+    }
+
+    @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         super.addArgumentResolvers(argumentResolvers);
         argumentResolvers.add(new AccessTokenResolver(applicationContext));
@@ -63,7 +73,16 @@ public class CorsConfig extends WebMvcConfigurerAdapter {
         if(!getActiveProfile().equals("dev")) {
             registry.addInterceptor(new AccessInterceptor(applicationContext));
         }
+        registry.addInterceptor(new GateInterceptor());
         super.addInterceptors(registry);
+    }
+
+    @Bean
+    public FilterRegistrationBean requestWrapperFilterRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(new RequestWrapperFilter());
+        registration.setDispatcherTypes(DispatcherType.REQUEST);
+        return registration;
     }
 
 
