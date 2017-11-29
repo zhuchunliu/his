@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @author jimson
  * @date 2017/11/21
  */
-@Api("病例")
+@Api(tags = "病例")
 @RestController
 @RequestMapping("medicalRecord")
 public class MedicalRecordApi {

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("manufacturer")
-@Api("药厂")
+@Api(tags = "药厂")
 public class ManufacturerApi {
     @Autowired
     private DrugManager drugManager;

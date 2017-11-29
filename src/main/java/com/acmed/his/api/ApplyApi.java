@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2017/11/20
  */
 @RestController
-@Api("挂号")
+@Api(tags = "挂号")
 @RequestMapping("/apply")
 public class ApplyApi {
     @Autowired

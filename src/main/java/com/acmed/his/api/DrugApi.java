@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * @author jimson
  * @date 2017/11/23
  */
-@Api("药品管理")
+@Api(tags = "药品管理")
 @RequestMapping("drug")
 @RestController
 public class DrugApi {

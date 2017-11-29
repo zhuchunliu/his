@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * @author jimson
  * @date 2017/11/21
  */
-@Api("基础信息")
+@Api(tags = "基础信息")
 @RestController
 public class BaseInfoApi {
     @Autowired
@@ -30,7 +30,7 @@ public class BaseInfoApi {
     }
 
     @ApiOperation(value = "根据首字母查询行政区划列表")
-    @GetMapping("area/irst")
+    @GetMapping("area/first")
     public ResponseResult getAreasByFirst(@ApiParam("首字母大写") @RequestParam("first") String first){
         return ResponseUtil.setSuccessResult(baseInfoManager.getAreasByFirst(first));
     }

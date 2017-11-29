@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2017/11/23
  */
 @RestController
-@Api("供应商")
+@Api(tags = "供应商")
 @RequestMapping("supply")
 public class SupplyApi {
     @Autowired
