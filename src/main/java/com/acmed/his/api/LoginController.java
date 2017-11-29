@@ -7,11 +7,14 @@ import com.acmed.his.pojo.mo.UserLoginMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.service.LoginManager;
 import com.acmed.his.service.WxManager;
+import com.acmed.his.support.AccessInfo;
+import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.soecode.wxtools.exception.WxErrorException;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
@@ -90,6 +93,13 @@ public class LoginController {
             @ApiParam(value = "header中必须传token") @RequestHeader(value = CommonConstants.USER_HEADER_TOKEN) String token){
         loginManager.logout(token);
         return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation("根据token获取用户信息")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
+    @GetMapping(value = "/user")
+    public ResponseResult<UserInfo> getUser(@AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(info.getUser());
     }
 
 }

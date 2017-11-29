@@ -34,13 +34,10 @@ public class AccessInterceptor implements HandlerInterceptor {
     private LoginManager loginManager;
     private RedisTemplate redisTemplate;
 
-
     public AccessInterceptor(ApplicationContext applicationContext) {
         this.permissionManager = applicationContext.getBean(PermissionManager.class);
         this.loginManager = applicationContext.getBean(LoginManager.class);
-        this.redisTemplate = applicationContext.getBean("redisTemplate",RedisTemplate.class);
-        this.redisTemplate.setKeySerializer(new StringRedisSerializer());
-        this.redisTemplate.setValueSerializer(new StringRedisSerializer());
+        this.redisTemplate = applicationContext.getBean("stringRedisTemplate",RedisTemplate.class);
     }
 
     @Override

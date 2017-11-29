@@ -20,4 +20,9 @@ public class ErrorMsg {
         this.statusCode = ex.getStatusCode();
         this.msg = this.statusCode.getErrorMsg();
     }
+
+    public ErrorMsg(StatusCode statusCode,String msg){
+        this.statusCode = statusCode;
+        this.msg = msg;
+    }
 }

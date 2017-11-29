@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -31,13 +32,14 @@ import java.util.concurrent.TimeUnit;
  * Created by Darren on 2017-11-21
  **/
 @Service
-public class LoginManager implements InitializingBean{
+public class LoginManager {
     private Logger logger = Logger.getLogger(LoginManager.class);
 
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
+    @Qualifier(value="stringRedisTemplate")
     private RedisTemplate redisTemplate;
 
     @Autowired
@@ -205,11 +207,6 @@ public class LoginManager implements InitializingBean{
         }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-    }
 
 
 }

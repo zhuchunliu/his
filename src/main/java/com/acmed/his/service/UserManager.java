@@ -8,7 +8,6 @@ import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.MD5Util;
-import com.acmed.his.util.PassWordUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -60,7 +59,7 @@ public class UserManager {
      * 新增，编辑用户信息
      * @param mo
      */
-//    @CacheEvict(value = "user",key = "#mo.id")
+    @CacheEvict(value = "user",key = "#mo.id")
     public void save(UserMo mo, UserInfo userInfo){
         //如果前端没有设置机构信息，则为当前设置用户同一机构【老板加人】；前端设置机构【管理员后台加老板用户操作】
         mo.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
@@ -86,6 +85,7 @@ public class UserManager {
             user.setModifyBy(userInfo.getId().toString());
             userMapper.updateByPrimaryKey(user);
         }
+
     }
 
     /**
@@ -93,7 +93,7 @@ public class UserManager {
      * @param id
      * @return
      */
-//    @Cacheable(value = "user",key = "#id")
+    @Cacheable(value = "user",key = "#id")
     public User getUserDetail(Integer id){
         return userMapper.selectByPrimaryKey(id);
     }
@@ -102,7 +102,7 @@ public class UserManager {
      * 删除用户信息
      * @param id
      */
-//    @CacheEvict(value = "user",key = "#id")
+    @CacheEvict(value = "user",key = "#id")
     public void delUser(Integer id,UserInfo userInfo){
         User user = userMapper.selectByPrimaryKey(id);
         user.setRemoved("1");

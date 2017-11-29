@@ -21,7 +21,7 @@
         join t_p_s_role_vs_permission rp on role.id = rp.rid
         join t_p_s_permission per on rp.pid = per.id
         where ur.uid = #{uid} and role.removed = '0'
-        and  (percode like CONCAT(#{prefix},'%') or percode like CONCAT(#{prefix},#{path}))
+        and  (percode like CONCAT(#{prefix},'%') or percode like CONCAT(#{path},'%'))
 
     </select>
 </mapper>

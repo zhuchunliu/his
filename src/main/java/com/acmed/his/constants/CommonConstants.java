@@ -13,7 +13,7 @@ public class CommonConstants {
     public static final String DISABLED_STATUS = "1";
 
     /**PAD上TOKEN有效时长*/
-    public static final Integer LOGININFO_EXPIRE_SECONDS = 7 * 24 * 60;
+    public static final Integer LOGININFO_EXPIRE_SECONDS = 7 * 24 * 60 * 60;
 
     /**微信TOKEN有效时长*/
     public static final Integer LOGININFO_WEIXIN_EXPIRE_SECONDS = Integer.MAX_VALUE;
