@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
@@ -59,8 +60,11 @@ public class UserManager {
      * 新增，编辑用户信息
      * @param mo
      */
-    @CacheEvict(value = "user",key = "#mo.id")
-    public void save(UserMo mo, UserInfo userInfo){
+    @Caching(evict = {
+            @CacheEvict(value = "user",key = "#mo.id"),
+            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+    })
+    public User save(UserMo mo, UserInfo userInfo){
         //如果前端没有设置机构信息，则为当前设置用户同一机构【老板加人】；前端设置机构【管理员后台加老板用户操作】
         mo.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
                 Optional.ofNullable(orgMapper.selectByPrimaryKey(mo.getOrgCode())).map(org->org.getOrgName()).orElse(null));
@@ -78,12 +82,14 @@ public class UserManager {
             user.setCreateBy(userInfo.getId().toString());
             user.setRemoved("0");
             userMapper.insert(user);
+            return user;
         }else{
             User user = userMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,user);
             user.setModifyAt(LocalDateTime.now().toString());
             user.setModifyBy(userInfo.getId().toString());
             userMapper.updateByPrimaryKey(user);
+            return user;
         }
 
     }
@@ -102,13 +108,17 @@ public class UserManager {
      * 删除用户信息
      * @param id
      */
-    @CacheEvict(value = "user",key = "#id")
-    public void delUser(Integer id,UserInfo userInfo){
+    @Caching(evict = {
+            @CacheEvict(value = "user",key = "#id"),
+            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+    })
+    public User delUser(Integer id,UserInfo userInfo){
         User user = userMapper.selectByPrimaryKey(id);
         user.setRemoved("1");
         user.setModifyAt(LocalDateTime.now().toString());
         user.setModifyBy(userInfo.getId().toString());
         userMapper.updateByPrimaryKey(user);
+        return user;
     }
 
 
@@ -148,6 +158,7 @@ public class UserManager {
      * @param openid
      * @return
      */
+    @Cacheable(value="user",key = "#openid")
     public User getUserByOpenid(String openid){
         return userMapper.getUserByOpenid(openid);
     }

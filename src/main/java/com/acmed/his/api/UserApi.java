@@ -61,6 +61,14 @@ public class UserApi {
         return ResponseUtil.setSuccessResult(userVo);
     }
 
+    @ApiOperation(value = "获取用户详情")
+    @GetMapping("/openid")
+    public ResponseResult<UserVo> getUserDetailOpen(@ApiParam("用户主键") @RequestParam("openid") Integer openid){
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(userManager.getUserByOpenid(openid.toString()),userVo);
+        return ResponseUtil.setSuccessResult(userVo);
+    }
+
     @ApiOperation(value = "删除用户信息")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @DeleteMapping("/del")
