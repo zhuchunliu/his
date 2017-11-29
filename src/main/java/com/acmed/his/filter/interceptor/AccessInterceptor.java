@@ -81,7 +81,10 @@ public class AccessInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object o, ModelAndView modelAndView) throws Exception {
-        loginManager.tokenRefresh(request.getHeader(CommonConstants.USER_HEADER_TOKEN));//重新刷新token有效时长
+        String token = request.getHeader(CommonConstants.USER_HEADER_TOKEN);
+        if(!StringUtils.isEmpty(token) && !request.getServletPath().contains("logout")){
+            loginManager.tokenRefresh(token);
+        }
     }
 
     @Override

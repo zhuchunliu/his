@@ -7,6 +7,7 @@ import com.acmed.his.model.UserVsRole;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.MD5Util;
 import com.acmed.his.util.PassWordUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,8 @@ public class UserManager {
                 Optional.ofNullable(deptMapper.selectByPrimaryKey(mo.getDept())).map(dept->dept.getDept()).orElse(null));
         mo.setDept(Optional.ofNullable(mo.getDept()).orElse(userInfo.getDept()));
 
-        mo.setPassWd(Optional.ofNullable(mo.getPassWd()).map(PassWordUtil::encode).map(obj->obj.getResult().toString()).orElse(null));
+        mo.setPassWd(Optional.ofNullable(mo.getPassWd()).map(MD5Util::encode).orElse(null));
+
         if(null == mo.getId()){
             User user = new User();
             BeanUtils.copyProperties(mo,user);

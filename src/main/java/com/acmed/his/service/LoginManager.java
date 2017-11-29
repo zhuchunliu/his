@@ -51,7 +51,7 @@ public class LoginManager implements InitializingBean{
      * @return
      * @throws Exception
      */
-    public ResponseResult userlogin(String loginName, String passwd) throws Exception{
+    public ResponseResult<RequestToken> userlogin(String loginName, String passwd) throws Exception{
         ResponseResult result = this.validateUser(loginName, passwd);
         if(!result.isSuccess()){
             return result;
@@ -172,12 +172,11 @@ public class LoginManager implements InitializingBean{
         if (null == user || null == user.getId()) {
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_AUTH, "当前登录用户信息获取失败");
         }
+        passwd = MD5Util.encode(passwd);
         //redis中验证码或者数据库密码一致，即认证通过
         String validCode = Optional.ofNullable(redisTemplate.opsForValue().get(loginName)).map(Object::toString)
                 .orElse("");
-        String origPass = Optional.ofNullable(PassWordUtil.validate(passwd))
-                .map(ResponseResult::getResult).map(Object::toString).orElse("");
-        if ((StringUtils.isNotBlank(validCode) && validCode.equals(origPass)) || PassWordUtil.validate(passwd, user.getPassWd())) {
+        if ((StringUtils.isNotBlank(validCode) && validCode.equalsIgnoreCase(passwd)) || passwd.equalsIgnoreCase(user.getPassWd())) {
             return ResponseUtil.setSuccessResult(user);
         }
 
