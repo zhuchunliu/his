@@ -65,4 +65,9 @@ public class ApplyManagerTest {
         applyManager.updateApply(apply);
     }
 
+    @Test
+    public void getApplyDoctorVoList() throws Exception {
+        applyManager.getApplyDoctorVoList(1,null,null);
+    }
+
 }

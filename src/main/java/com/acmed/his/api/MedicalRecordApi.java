@@ -2,6 +2,8 @@ package com.acmed.his.api;
 
 import com.acmed.his.model.MedicalRecord;
 import com.acmed.his.service.MedicalRecordManager;
+import com.acmed.his.support.AccessInfo;
+import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -27,7 +29,8 @@ public class MedicalRecordApi {
 
     @ApiOperation(value = "添加病例")
     @PostMapping("add")
-    public ResponseResult addMedicalRecord(@ApiParam("病例参数") @RequestBody MedicalRecord medicalRecord){
+    public ResponseResult addMedicalRecord(@ApiParam("病例参数") @RequestBody MedicalRecord medicalRecord,@AccessToken AccessInfo info){
+        medicalRecord.setCreateBy(info.getUserId().toString());
         return ResponseUtil.setSuccessResult(medicalRecordManager.addMedicalRecord(medicalRecord));
     }
 

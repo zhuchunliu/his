@@ -3,7 +3,11 @@ package com.acmed.his.api;
 import com.acmed.his.model.Apply;
 import com.acmed.his.pojo.mo.ApplyIdAndStatus;
 import com.acmed.his.pojo.mo.DeptIdAndStatus;
+import com.acmed.his.pojo.mo.DeptIdAndStatusAndDate;
+import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.service.ApplyManager;
+import com.acmed.his.support.AccessInfo;
+import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -48,7 +52,7 @@ public class ApplyApi {
         return ResponseUtil.setSuccessResult(applyByOrgCode);
     }
 
-    @ApiOperation(value = "根据orgCode查询列表")
+    @ApiOperation(value = "根据挂号单id查询")
     @GetMapping("id")
     public ResponseResult<Apply> id(Integer id){
         Apply applyById = applyManager.getApplyById(id);
@@ -67,14 +71,24 @@ public class ApplyApi {
 
     @ApiOperation(value = "修改状态")
     @PutMapping("status")
-    public ResponseResult updateStatus(ApplyIdAndStatus model){
+    public ResponseResult updateStatus(ApplyIdAndStatus model,@AccessToken AccessInfo info){
         Integer id = model.getId();
         String status = model.getStatus();
         Apply apply = new Apply();
         apply.setId(id);
         apply.setStatus(status);
+        // 添加修改人的id
+        apply.setModifyBy(info.getUserId().toString());
         applyManager.updateApply(apply);
         return ResponseUtil.setSuccessResult();
     }
 
+    @ApiOperation(value = "根据科室id和状态查询当天的就诊列表")
+    @GetMapping("idandstatusanddate")
+    public ResponseResult<List<ApplyDoctorVo>> idandstatus(DeptIdAndStatusAndDate model){
+        Integer id = model.getDeptId();
+        String status = model.getStatus();
+        String date = model.getDate();
+        return ResponseUtil.setSuccessResult(applyManager.getApplyDoctorVoList(id,status,date));
+    }
 }

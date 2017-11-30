@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +28,7 @@ public class MedicalRecordManager {
      * @return 0 失败 1成功
      */
     public int addMedicalRecord(MedicalRecord medicalRecord){
-        Date now = new Date();
+        String now = LocalDateTime.now().toString();
         medicalRecord.setCreateAt(now);
         medicalRecord.setModifyAt(now);
         return medicalRecordMapper.insert(medicalRecord);

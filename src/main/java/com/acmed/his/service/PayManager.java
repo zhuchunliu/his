@@ -7,6 +7,7 @@ import com.acmed.his.model.PayStatements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -29,7 +30,7 @@ public class PayManager {
      * @return 0失败  1成功
      */
     public int addPayStatements(PayStatements payStatements){
-        payStatements.setCreateAt(new Date());
+        payStatements.setCreateAt(LocalDateTime.now().toString());
         return payStatementsMapper.insert(payStatements);
     }
 
@@ -39,7 +40,7 @@ public class PayManager {
      * @return 0失败  1成功
      */
     public int updatePayStatements(PayStatements payStatements){
-        payStatements.setModifyAt(new Date());
+        payStatements.setModifyAt(LocalDateTime.now().toString());
         return payStatementsMapper.updateByPrimaryKeySelective(payStatements);
     }
 
@@ -49,7 +50,7 @@ public class PayManager {
      * @return 0失败  1成功
      */
     public int addPayRefuse(PayRefuse payRefuse){
-        payRefuse.setCreateAt(new Date());
+        payRefuse.setCreateAt(LocalDateTime.now().toString());
         return payRefuseMapper.insert(payRefuse);
     }
 
@@ -59,7 +60,7 @@ public class PayManager {
      * @return 0失败  1成功
      */
     public int updatePayRefuse(PayRefuse payRefuse){
-        payRefuse.setModifyAt(new Date());
+        payRefuse.setModifyAt(LocalDateTime.now().toString());
         return payRefuseMapper.updateByPrimaryKeySelective(payRefuse);
     }
 }

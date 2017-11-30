@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -48,13 +49,17 @@ public class PatientManager {
             // 表示已经注册过
             return 0;
         }
-        Date now = new Date();
+        String now = LocalDateTime.now().toString();
         patient.setId(null);
         patient.setOpenid(null);
         patient.setUnionid(null);
         patient.setCreateAt(now);
         patient.setModifyAt(now);
         return patientMapper.insert(patient);
+    }
+
+    public int update(Patient patient){
+        return patientMapper.updateByPrimaryKeySelective(patient);
     }
 
     /**
@@ -114,7 +119,7 @@ public class PatientManager {
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
         }
         String idCard = wxRegistPatientMo.getIdCard();
-        Date now = new Date();
+        String now = LocalDateTime.now().toString();
         PatientInfoVo patientInfoVo = new PatientInfoVo();
         Example example = new Example(Patient.class);
         example.createCriteria().orEqualTo("openId",openid).orEqualTo("idCard",idCard);

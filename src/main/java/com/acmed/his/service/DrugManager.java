@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class DrugManager {
      * @return 0失败 1成功
      */
     public int saveDrug(Drug drug){
-        Date date = new Date();
+        String date = LocalDateTime.now().toString();
         if (drug.getId()!=null){
             drug.setModifyAt(date);
             return drugMapper.updateByPrimaryKeySelective(drug);

@@ -1,27 +1,18 @@
-package com.acmed.his.model;
+package com.acmed.his.pojo.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import tk.mybatis.mapper.annotation.NameStyle;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * 挂号
+ * ApplyDoctorVo
  *
- * Created by Darren on 2017-11-20
- **/
+ * @author jimson
+ * @date 2017/11/30
+ */
 @Data
-@Table(name = "t_b_apply")
-@NameStyle
-public class Apply {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ApplyDoctorVo {
     @ApiModelProperty("挂号单id")
     private Integer id;
 
@@ -56,10 +47,10 @@ public class Apply {
     private String feeType;
 
     @ApiModelProperty("创建时间")
-    private String createAt;
+    private Date createAt;
 
     @ApiModelProperty("修改时间")
-    private String modifyAt;
+    private Date modifyAt;
 
     @ApiModelProperty("创建用户")
     private String createBy;
@@ -84,4 +75,10 @@ public class Apply {
 
     @ApiModelProperty("总费用")
     private Double totalFee;
+
+    @ApiModelProperty("号码")
+    private String mobile;
+
+    @ApiModelProperty("身份证")
+    private String idCard;
 }

@@ -10,9 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-import static org.junit.Assert.*;
 
 /**
  * DrugManagerTest
@@ -48,8 +47,8 @@ public class DrugManagerTest {
         drug.setRetailPrice(23.0);
         drug.setMarkonpercent(1.0);
         drug.setMemo("备注");
-        drug.setCreateAt(new Date());
-        drug.setModifyAt(new Date());
+        drug.setCreateAt(LocalDateTime.now().toString());
+        drug.setModifyAt(LocalDateTime.now().toString());
         drug.setCreateBy(1+"");
         drug.setModifyBy("1");
         System.out.println(drugManager.saveDrug(drug));

@@ -51,10 +51,10 @@ public class PayStatements {
     private String payStatus;
 
     @ApiModelProperty("创建时间")
-    private Date createAt;
+    private String createAt;
 
     @ApiModelProperty("修改时间")
-    private Date modifyAt;
+    private String modifyAt;
 
     @ApiModelProperty("创建用户")
     private String createBy;

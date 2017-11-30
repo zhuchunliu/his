@@ -2,6 +2,8 @@ package com.acmed.his.api;
 
 import com.acmed.his.model.Drug;
 import com.acmed.his.service.DrugManager;
+import com.acmed.his.support.AccessInfo;
+import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -26,7 +28,8 @@ public class DrugApi {
 
     @ApiOperation(value = "添加")
     @PostMapping("save")
-    public ResponseResult saveDrug(@RequestBody Drug drug){
+    public ResponseResult saveDrug(@RequestBody Drug drug,@AccessToken AccessInfo info){
+        drug.setCreateBy(info.getUserId().toString());
         drugManager.saveDrug(drug);
         return ResponseUtil.setSuccessResult();
     }
