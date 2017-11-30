@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * MedicalRecordApi
  *
@@ -31,7 +33,7 @@ public class MedicalRecordApi {
 
     @ApiOperation(value = "查询病人病例列表")
     @GetMapping("patientId")
-    public ResponseResult addMedicalRecord(@ApiParam("参数")  Integer patientId){
+    public ResponseResult<List<MedicalRecord>> addMedicalRecord(@ApiParam("参数")  Integer patientId){
         return ResponseUtil.setSuccessResult(medicalRecordManager.getMedicalRecordListByPatientId(patientId,null));
     }
 }

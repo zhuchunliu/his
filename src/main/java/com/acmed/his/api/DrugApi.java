@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * DrugApi
  *
@@ -31,7 +33,8 @@ public class DrugApi {
 
     @ApiOperation(value = "条件查询")
     @GetMapping("bydrug")
-    public ResponseResult selectDrugsByDrug(Drug drug){
-        return ResponseUtil.setSuccessResult(drugManager.getDrugsByDrug(drug));
+    public ResponseResult<List<Drug>> selectDrugsByDrug(Drug drug){
+        List<Drug> drugsByDrug = drugManager.getDrugsByDrug(drug);
+        return ResponseUtil.setSuccessResult(drugsByDrug);
     }
 }

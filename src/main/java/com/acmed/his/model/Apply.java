@@ -78,4 +78,7 @@ public class Apply {
 
     @ApiModelProperty("科室id")
     private Integer dept;
+
+    @ApiModelProperty("年龄")
+    private Integer age;
 }

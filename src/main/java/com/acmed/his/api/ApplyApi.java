@@ -11,6 +11,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 /**
  * ApplyApi
@@ -41,23 +43,26 @@ public class ApplyApi {
 
     @ApiOperation(value = "根据orgCode查询列表")
     @GetMapping("orgCode")
-    public ResponseResult orgCode(Integer orgCode){
-        return ResponseUtil.setSuccessResult(applyManager.getApplyByOrgCode(orgCode));
+    public ResponseResult<List<Apply>> orgCode(Integer orgCode){
+        List<Apply> applyByOrgCode = applyManager.getApplyByOrgCode(orgCode);
+        return ResponseUtil.setSuccessResult(applyByOrgCode);
     }
 
     @ApiOperation(value = "根据orgCode查询列表")
     @GetMapping("id")
-    public ResponseResult id(Integer id){
-        return ResponseUtil.setSuccessResult(applyManager.getApplyById(id));
+    public ResponseResult<Apply> id(Integer id){
+        Apply applyById = applyManager.getApplyById(id);
+        return ResponseUtil.setSuccessResult(applyById);
     }
 
 
     @ApiOperation(value = "根据科室id和状态查询当天的就诊列表")
     @GetMapping("idandstatus")
-    public ResponseResult idandstatus(DeptIdAndStatus model){
+    public ResponseResult<List<Apply>> idandstatus(DeptIdAndStatus model){
         Integer id = model.getDeptId();
         String status = model.getStatus();
-        return ResponseUtil.setSuccessResult(applyManager.getApplyByDeptIdAndStatus(id,status));
+        List<Apply> applyByDeptIdAndStatus = applyManager.getApplyByDeptIdAndStatus(id, status);
+        return ResponseUtil.setSuccessResult(applyByDeptIdAndStatus);
     }
 
     @ApiOperation(value = "修改状态")
@@ -68,7 +73,8 @@ public class ApplyApi {
         Apply apply = new Apply();
         apply.setId(id);
         apply.setStatus(status);
-        return ResponseUtil.setSuccessResult(applyManager.updateApply(apply));
+        applyManager.updateApply(apply);
+        return ResponseUtil.setSuccessResult();
     }
 
 }

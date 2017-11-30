@@ -104,7 +104,7 @@ public class PatientManager {
      * @param wxRegistPatientMo 注册参数
      * @return ResponseResult
      */
-    public ResponseResult wxRegistPatient(WxRegistPatientMo wxRegistPatientMo){
+    public ResponseResult<PatientInfoVo> wxRegistPatient(WxRegistPatientMo wxRegistPatientMo){
         //获取openid
         String openid = null;
         try {

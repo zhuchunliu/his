@@ -6,6 +6,7 @@ import com.acmed.his.dao.DicTypeMapper;
 import com.acmed.his.model.Area;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.DicType;
+import com.acmed.his.pojo.vo.DicDetailVo;
 import com.acmed.his.util.UUIDUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,8 +147,8 @@ public class BaseInfoManager {
      * 查询所有字典
      * @return List<Map<String,String>>
      */
-    public List<Map<String,String>> getAllDicItems(){
-        List<Map<String,String>> list = new ArrayList<>();
+    public List<DicDetailVo> getAllDicItems(){
+        List<DicDetailVo> list = new ArrayList<>();
         List<DicItem> dicItems = dicItemMapper.selectAll();
         if (dicItems.size()==0){
             return list;
@@ -157,18 +158,18 @@ public class BaseInfoManager {
             String dicTypeCode = d.getDicTypeCode();
             String dicItemCode = d.getDicItemCode();
             String dicItemName = d.getDicItemName();
-            Map<String,String> map = new HashMap<>();
-            map.put("dicTypeCode",dicTypeCode);
-            map.put("dicItemCode",dicItemCode);
-            map.put("dicItemName",dicItemName);
+            DicDetailVo vo = new DicDetailVo();
+            vo.setDicTypeCode(dicTypeCode);
+            vo.setDicItemCode(dicItemCode);
+            vo.setDicItemName(dicItemName);
             for (DicType dt : dicTypes){
                 String dicTypeCode1 = dt.getDicTypeCode();
                 String dicTypeName = dt.getDicTypeName();
                 String productCode = dt.getProductCode();
                 if (StringUtils.equals(dicTypeCode1,dicTypeCode)){
-                    map.put("dicTypeName",dicTypeName);
-                    map.put("productCode",productCode);
-                    list.add(map);
+                    vo.setDicTypeName(dicTypeName);
+                    vo.setProductCode(productCode);
+                    list.add(vo);
                 }
             }
         }

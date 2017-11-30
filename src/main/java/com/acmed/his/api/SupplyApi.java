@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * SupplyApi
  *
@@ -31,13 +33,13 @@ public class SupplyApi {
 
     @ApiOperation(value = "根据id查询")
     @GetMapping("id")
-    public ResponseResult getSupplyById(Integer id){
+    public ResponseResult<Supply> getSupplyById(Integer id){
         return ResponseUtil.setSuccessResult(drugManager.getSupplyById(id));
     }
 
     @ApiOperation(value = "列表")
     @GetMapping("list")
-    public ResponseResult getAllSupply(){
+    public ResponseResult<List<Supply>> getAllSupply(){
         return ResponseUtil.setSuccessResult(drugManager.getAllSupply());
     }
 }
