@@ -2,7 +2,8 @@ package com.acmed.his.config;
 
 import com.acmed.his.exceptions.handler.ServiceExceptionHandler;
 import com.acmed.his.filter.RequestWrapperFilter;
-import com.acmed.his.filter.interceptor.AccessInterceptor;
+import com.acmed.his.filter.interceptor.AccessPermissionInterceptor;
+import com.acmed.his.filter.interceptor.AccessTokenInterceptor;
 import com.acmed.his.filter.interceptor.GateInterceptor;
 import com.acmed.his.support.AccessTokenResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +51,11 @@ public class CorsConfig extends WebMvcConfigurerAdapter {
                 .maxAge(3600);
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-        super.addResourceHandlers(registry);
-    }
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+//        super.addResourceHandlers(registry);
+//    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -70,10 +71,12 @@ public class CorsConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new GateInterceptor(applicationContext));
         if(!getActiveProfile().equals("dev")) {
-            registry.addInterceptor(new AccessInterceptor(applicationContext));
+            registry.addInterceptor(new AccessTokenInterceptor(applicationContext));
+            registry.addInterceptor(new AccessPermissionInterceptor(applicationContext));
         }
-        registry.addInterceptor(new GateInterceptor());
+
         super.addInterceptors(registry);
     }
 

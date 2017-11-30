@@ -9,11 +9,13 @@ import com.acmed.his.service.LoginManager;
 import com.acmed.his.service.PermissionManager;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.TokenUtil;
+import io.swagger.annotations.ApiImplicitParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,15 +30,11 @@ import java.util.Optional;
  *
  * Created by Darren on 2017-11-27
  **/
-public class AccessInterceptor implements HandlerInterceptor {
+public class AccessTokenInterceptor implements HandlerInterceptor {
 
-    private PermissionManager permissionManager;
-    private LoginManager loginManager;
     private RedisTemplate redisTemplate;
 
-    public AccessInterceptor(ApplicationContext applicationContext) {
-        this.permissionManager = applicationContext.getBean(PermissionManager.class);
-        this.loginManager = applicationContext.getBean(LoginManager.class);
+    public AccessTokenInterceptor(ApplicationContext applicationContext) {
         this.redisTemplate = applicationContext.getBean("stringRedisTemplate",RedisTemplate.class);
     }
 
@@ -47,11 +45,18 @@ public class AccessInterceptor implements HandlerInterceptor {
         if(path.contains("swagger") || path.contains("api-docs") || path.equals("/login")){
             return true;
         }
+
+        if(o instanceof HandlerMethod){
+            HandlerMethod hm = (HandlerMethod)o;
+            if(null == hm.getMethodAnnotation(ApiImplicitParam.class)){
+                return true;
+            }
+        }
+
         String token = request.getHeader(CommonConstants.USER_HEADER_TOKEN);
         if(StringUtils.isEmpty(token)){
             throw new BaseException(StatusCode.ERROR_TOKEN);
         }
-
         String loginId = Optional.ofNullable(token)
                 .map(TokenUtil::getFromToken).map(ResponseResult::getResult)
                 .map(val ->(RequestToken)val).map(RequestToken::getLoginid).orElse(null);
@@ -61,27 +66,13 @@ public class AccessInterceptor implements HandlerInterceptor {
         if(null == map || !map.containsKey(RedisKeyConstants.USERTOKEN_PRE) || !map.get(RedisKeyConstants.USERTOKEN_PRE).equals(token)){//token不存在或过期
             throw new BaseException(StatusCode.ERROR_TOKEN);
         }
-        if(loginId.startsWith("PATIENT_WX")){//患者权限暂不控制
-            return true;
-        } else{
-            String uid = loginId.startsWith("USER_PAD")?loginId.substring("USER_PAD".length()):loginId.substring("USER_WX".length());
-            boolean flag =  permissionManager.hasPermission(uid,path);
-            if(!flag){
-                response.setContentType("application/json;charset=UTF-8");
-                PrintWriter writer = response.getWriter();
-                writer.write("{\"success\":false,\"statusCode\":\""+StatusCode.ERROR_PREMISSION+"\",\"msg\":\""+StatusCode.ERROR_PREMISSION.getErrorMsg()+"\"}");
-                writer.close();
-            }
-            return flag;
-        }
+        request.setAttribute("loginId",loginId);
+        return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object o, ModelAndView modelAndView) throws Exception {
-        String token = request.getHeader(CommonConstants.USER_HEADER_TOKEN);
-        if(!StringUtils.isEmpty(token) && !request.getServletPath().contains("logout")){
-            loginManager.tokenRefresh(token);
-        }
+
     }
 
     @Override
