@@ -46,12 +46,6 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        if(o instanceof HandlerMethod){
-            HandlerMethod hm = (HandlerMethod)o;
-            if(null == hm.getMethodAnnotation(ApiImplicitParam.class)){
-                return true;
-            }
-        }
 
         String token = request.getHeader(CommonConstants.USER_HEADER_TOKEN);
         if(StringUtils.isEmpty(token)){
