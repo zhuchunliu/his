@@ -18,21 +18,29 @@ public class AdviceTplVo {
     @ApiModelProperty("诊断分类")
     private String categoryName;
 
+    @ApiModelProperty("医嘱分类:字典中获取")
+    private String category;
+
     private List<Detail> list;
 
     public AdviceTplVo(DicItem dicItem, List<AdviceTpl> detailList) {
         this.categoryName = null == dicItem?null:dicItem.getDicItemName();
+        this.category = dicItem.getDicItemCode();
         list = new ArrayList<>();
         for(AdviceTpl tpl :detailList){
             list.add(new Detail(tpl));
         }
     }
 
+    public AdviceTplVo(DicItem dicItem) {
+        this.categoryName = dicItem.getDicItemName();
+        this.category = dicItem.getDicItemCode();
+    }
+
     @Data
     public class Detail {
         public Detail(AdviceTpl tpl){
             this.id = tpl.getId();
-            this.category = tpl.getCategory();
             this.advice = tpl.getAdvice();
         }
 
@@ -42,8 +50,7 @@ public class AdviceTplVo {
         @ApiModelProperty("医嘱")
         private String advice;
 
-        @ApiModelProperty("医嘱分类:字典中获取")
-        private String category;
+
     }
 
 }

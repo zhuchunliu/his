@@ -1,6 +1,7 @@
 package com.acmed.his.pojo.vo;
 
 import com.acmed.his.model.Prescription;
+import com.acmed.his.model.PrescriptionItem;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -9,11 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 检查处方
- * Created by Darren on 2017-11-22
+ * Created by Darren on 2017-11-30
  **/
 @Data
-public class PreInspectVo {
+public class PreVo {
     @ApiModelProperty
     private Integer id;
 
@@ -21,19 +21,23 @@ public class PreInspectVo {
     private Integer applyId;
 
     @ApiModelProperty("药品集合")
-    private List<PreInspectVo.Inspect> inspectList;
+    private List<PreVo.Inspect> inspectList;
 
     @ApiModelProperty("附加费")
-    private List<PreInspectVo.Charge> chargeList;
+    private List<PreVo.Charge> chargeList;
 
-    public PreInspectVo(Prescription prescription, List<com.acmed.his.model.Inspect> preInspectist, List<com.acmed.his.model.Charge> preChargeList) {
+    @ApiModelProperty("药品集合")
+    private List<PreVo.Item> itemList;
+
+    public PreVo(Prescription prescription, List<com.acmed.his.model.Inspect> preInspectist,
+                 List<com.acmed.his.model.Charge> preChargeList, List<com.acmed.his.model.PrescriptionItem> preItemList) {
         this.id = prescription.getId();
         this.applyId = prescription.getApplyId();
         if(null != preInspectist && 0 != preInspectist.size()){
             inspectList = new ArrayList<>();
 
             preInspectist.forEach((obj)->{
-                PreInspectVo.Inspect inspect = new PreInspectVo.Inspect();
+                PreVo.Inspect inspect = new PreVo.Inspect();
                 BeanUtils.copyProperties(obj,inspect);
                 inspectList.add(inspect);
             });
@@ -42,12 +46,23 @@ public class PreInspectVo {
         if(null != preChargeList && 0 != preChargeList.size()){
             chargeList = new ArrayList<>();
             preChargeList.forEach((obj)->{
-                PreInspectVo.Charge charge = new PreInspectVo.Charge();
+                PreVo.Charge charge = new PreVo.Charge();
                 BeanUtils.copyProperties(obj,charge);
                 chargeList.add(charge);
             });
         }
+
+        if(null != preItemList && 0 != preItemList.size()){
+            itemList = new ArrayList<>();
+            preItemList.forEach(obj->{
+                PreVo.Item item = new PreVo.Item();
+                BeanUtils.copyProperties(obj,item);
+                itemList.add(item);
+            });
+        }
     }
+
+
 
     @Data
     public class Inspect{
@@ -69,12 +84,34 @@ public class PreInspectVo {
 
         @ApiModelProperty("费用")
         private Double fee;
+
     }
 
     @Data
     public class Charge{
         @ApiModelProperty("费用类型")
         private String category;
+
+        @ApiModelProperty("费用")
+        private Double fee;
+    }
+
+    @Data
+    public class Item{
+        @ApiModelProperty("药品id")
+        private Integer drugId;
+
+        @ApiModelProperty("途径")
+        private String way;
+
+        @ApiModelProperty("数量")
+        private Integer num;
+
+        @ApiModelProperty("频率")
+        private Integer frequency;
+
+        @ApiModelProperty("疗程")
+        private Integer course;
 
         @ApiModelProperty("费用")
         private Double fee;

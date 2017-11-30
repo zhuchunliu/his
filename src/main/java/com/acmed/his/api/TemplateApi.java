@@ -10,6 +10,7 @@ import com.acmed.his.pojo.mo.DiagnosisTplMo;
 import com.acmed.his.pojo.mo.PrescriptionTplMo;
 import com.acmed.his.pojo.vo.AdviceTplVo;
 import com.acmed.his.pojo.vo.DiagnosisTplVo;
+import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.TemplateManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -21,9 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by Darren on 2017-11-20
@@ -38,6 +37,9 @@ public class TemplateApi {
 
     @Autowired
     private DicItemMapper dicItemMapper;
+
+    @Autowired
+    private BaseInfoManager baseInfoManager;
 
     @ApiOperation(value = "新增/编辑 诊断模板")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
@@ -57,25 +59,37 @@ public class TemplateApi {
     public ResponseResult<List<DiagnosisTplVo>> getDiagnosisList(@AccessToken AccessInfo info){
         List<DiagnosisTplVo> list = new ArrayList<>();
 
+
         List<DiagnosisTpl> sourceList = templateManager.getDiagnosisTplList(info.getUser().getOrgCode());
+        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DIAGNOSIS.getCode());
+        Map<String,DicItem> dicMap= new HashMap<>();
+        for(DicItem dicItem :dicItemList){
+            dicMap.put(dicItem.getDicItemCode(),dicItem);
+        }
+
         String preCategory = null;
         List<DiagnosisTpl> detailList = new ArrayList<>();
+        Set<String> categorySet = new HashSet<>();
         for(DiagnosisTpl tpl :sourceList){
             preCategory = Optional.ofNullable(preCategory).orElse(tpl.getCategory());
+            categorySet.add(preCategory);
             if(preCategory.equals(tpl.getCategory())){
                 detailList.add(tpl);
             }else{
-                DicItem dicItem = new DicItem();
-                dicItem.setDicItemCode(preCategory);dicItem.setDicTypeCode(DicTypeEnum.DIAGNOSIS.getCode());
-                list.add(new DiagnosisTplVo(dicItemMapper.selectOne(dicItem),detailList));
+                list.add(new DiagnosisTplVo(dicMap.get(preCategory),detailList));
+                dicMap.remove(preCategory);
                 detailList.clear();
                 detailList.add(tpl);
                 preCategory = tpl.getCategory();
             }
         }
-        DicItem dicItem = new DicItem();
-        dicItem.setDicItemCode(preCategory);dicItem.setDicTypeCode(DicTypeEnum.DIAGNOSIS.getCode());
-        list.add(new DiagnosisTplVo(dicItemMapper.selectOne(dicItem),detailList));
+
+        list.add(new DiagnosisTplVo(dicMap.get(preCategory),detailList));
+        dicMap.remove(preCategory);
+
+        for(String code : dicMap.keySet()){
+            list.add(new DiagnosisTplVo(dicMap.get(code)));
+        }
         return ResponseUtil.setSuccessResult(list);
     }
 
@@ -118,6 +132,13 @@ public class TemplateApi {
         List<AdviceTplVo> list = new ArrayList<>();
 
         List<AdviceTpl> sourceList = templateManager.getAdviceTplList(info.getUser().getOrgCode());
+
+        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.ADVICE.getCode());
+        Map<String,DicItem> dicMap= new HashMap<>();
+        for(DicItem dicItem :dicItemList){
+            dicMap.put(dicItem.getDicItemCode(),dicItem);
+        }
+
         String preCategory = null;
         List<AdviceTpl> detailList = new ArrayList<>();
         for(AdviceTpl tpl :sourceList){
@@ -125,17 +146,19 @@ public class TemplateApi {
             if(preCategory.equals(tpl.getCategory())){
                 detailList.add(tpl);
             }else{
-                DicItem dicItem = new DicItem();
-                dicItem.setDicItemCode(preCategory);dicItem.setDicTypeCode(DicTypeEnum.ADVICE.getCode());
-                list.add(new AdviceTplVo(dicItemMapper.selectOne(dicItem),detailList));
+                list.add(new AdviceTplVo(dicMap.get(preCategory),detailList));
+                dicMap.remove(preCategory);
                 detailList.clear();
                 detailList.add(tpl);
                 preCategory = tpl.getCategory();
             }
         }
-        DicItem dicItem = new DicItem();
-        dicItem.setDicItemCode(preCategory);dicItem.setDicTypeCode(DicTypeEnum.ADVICE.getCode());
-        list.add(new AdviceTplVo(dicItemMapper.selectOne(dicItem),detailList));
+        list.add(new AdviceTplVo(dicMap.get(preCategory),detailList));
+        dicMap.remove(preCategory);
+
+        for(String code : dicMap.keySet()){
+            list.add(new AdviceTplVo(dicMap.get(code)));
+        }
         return ResponseUtil.setSuccessResult(list);
     }
 

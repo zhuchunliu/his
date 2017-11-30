@@ -67,6 +67,9 @@ public class PreMedicineVo {
 
         @ApiModelProperty("疗程")
         private Integer course;
+
+        @ApiModelProperty("费用")
+        private Double fee;
     }
 
     @Data
@@ -74,8 +77,8 @@ public class PreMedicineVo {
         @ApiModelProperty("费用类型")
         private String category;
 
-//        @ApiModelProperty("费用")
-//        private Double fee;
+        @ApiModelProperty("费用")
+        private Double fee;
     }
 
 }
