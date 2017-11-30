@@ -11,5 +11,6 @@
 
 <select id="getAdviceTplList"  resultMap="adviceTpl">
     select * from t_b_advice_tpl where orgcode = #{orgCode} and isvalid = #{isValid}
+    order by category desc,createat desc
 </select>
 </mapper>

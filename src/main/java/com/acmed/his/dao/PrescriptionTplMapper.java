@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Darren on 2017-11-20
  **/
 public interface PrescriptionTplMapper extends TkMapper<PrescriptionTpl>{
-    List<PrescriptionTpl> getPrescripTplList(@Param("orgCode") Integer orgCode,@Param("isValid")String isValid);
+    List<PrescriptionTpl> getPrescripTplList(@Param("orgCode") Integer orgCode,@Param("isValid")String isValid,@Param("category")String category);
 
     PrescriptionTpl selectRecentTpl(PrescriptionTpl prescriptionTpl);
 }

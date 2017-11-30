@@ -14,4 +14,8 @@ public class AdviceTplMo {
     @ApiModelProperty("医嘱")
     private String advice;
 
+    @ApiModelProperty("诊断分类:字典中获取")
+    private String category;
+
+
 }

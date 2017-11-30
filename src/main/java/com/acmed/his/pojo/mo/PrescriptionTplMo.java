@@ -20,7 +20,7 @@ public class PrescriptionTplMo {
     @ApiModelProperty("拼音码")
     private String pinYin;
 
-    @ApiModelProperty("处方模板类型 0：西药处方; 1:中药处方")
+    @ApiModelProperty("处方模板类型")
     private String category;
 
     @ApiModelProperty("诊断信息")

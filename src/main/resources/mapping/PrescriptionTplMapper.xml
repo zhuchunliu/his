@@ -20,6 +20,9 @@
 
     <select id="getPrescripTplList"  resultMap="prescriptionTpl">
         select * from t_b_prescription_tpl where orgcode = #{orgCode} and isvalid = #{isValid}
+        <if test="@Ognl@isNotEmpty(category)">
+            and category = #{category}
+        </if>
     </select>
 
     <select id="selectRecentTpl" resultType="com.acmed.his.model.PrescriptionTpl" resultMap="prescriptionTpl">

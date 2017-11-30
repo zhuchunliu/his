@@ -156,8 +156,8 @@ public class TemplateManager {
      * @param orgCode 机构编码
      * @return
      */
-    public List<PrescriptionTpl> getPrescripTplList(Integer orgCode){
-        return prescriptionTplMapper.getPrescripTplList(orgCode,"1");
+    public List<PrescriptionTpl> getPrescripTplList(Integer orgCode,String category){
+        return prescriptionTplMapper.getPrescripTplList(orgCode,"1",category);
     }
 
     /**

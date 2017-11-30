@@ -5,7 +5,7 @@
 
     <update id="statisFee">
       update t_b_apply
-      set fee = (select SUM(fee) from t_b_prescription where applyid = #{id})
+      set totalfee = (select SUM(fee) from t_b_prescription where applyid = #{id})
       where id = #{id}
     </update>
 </mapper>

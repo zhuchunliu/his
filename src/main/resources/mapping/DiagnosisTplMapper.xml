@@ -13,5 +13,6 @@
 
     <select id="getDiagnosisTplList" resultMap="diagnosisTpl">
         select * from t_b_diagnosis_tpl where orgcode = #{orgCode} and isvalid = #{isValid}
+        order by category desc,createat desc
     </select>
 </mapper>

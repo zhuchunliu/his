@@ -2,24 +2,28 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.constants.StatusCode;
-import com.acmed.his.model.AdviceTpl;
-import com.acmed.his.model.PrescriptionTpl;
-import com.acmed.his.model.PrescriptionTplItem;
+import com.acmed.his.consts.DicTypeEnum;
+import com.acmed.his.dao.DicItemMapper;
+import com.acmed.his.model.*;
 import com.acmed.his.pojo.mo.AdviceTplMo;
 import com.acmed.his.pojo.mo.DiagnosisTplMo;
 import com.acmed.his.pojo.mo.PrescriptionTplMo;
+import com.acmed.his.pojo.vo.AdviceTplVo;
+import com.acmed.his.pojo.vo.DiagnosisTplVo;
 import com.acmed.his.service.TemplateManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.*;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2017-11-20
@@ -32,11 +36,17 @@ public class TemplateApi {
     @Autowired
     private TemplateManager templateManager;
 
+    @Autowired
+    private DicItemMapper dicItemMapper;
+
     @ApiOperation(value = "新增/编辑 诊断模板")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/diagnosis/save")
     public ResponseResult saveDiagnosisList(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody DiagnosisTplMo mo,
                                             @AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(mo.getCategory())){
+            return ResponseUtil.setParamEmptyError("category");
+        }
         templateManager.saveDiagnosisTpl(mo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
@@ -44,15 +54,31 @@ public class TemplateApi {
     @ApiOperation(value = "获取指定机构下的诊断模板")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/diagnosis/list")
-    public ResponseResult<List<DiagnosisTplMo>> getDiagnosisList(@AccessToken AccessInfo info){
-        List<DiagnosisTplMo> list = new ArrayList<>();
-        templateManager.getDiagnosisTplList(info.getUser().getOrgCode()).forEach((obj)->{
-            DiagnosisTplMo mo = new DiagnosisTplMo();
-            BeanUtils.copyProperties(obj,mo);
-            list.add(mo);
-        });
+    public ResponseResult<List<DiagnosisTplVo>> getDiagnosisList(@AccessToken AccessInfo info){
+        List<DiagnosisTplVo> list = new ArrayList<>();
+
+        List<DiagnosisTpl> sourceList = templateManager.getDiagnosisTplList(info.getUser().getOrgCode());
+        String preCategory = null;
+        List<DiagnosisTpl> detailList = new ArrayList<>();
+        for(DiagnosisTpl tpl :sourceList){
+            preCategory = Optional.ofNullable(preCategory).orElse(tpl.getCategory());
+            if(preCategory.equals(tpl.getCategory())){
+                detailList.add(tpl);
+            }else{
+                DicItem dicItem = new DicItem();
+                dicItem.setDicItemCode(preCategory);dicItem.setDicTypeCode(DicTypeEnum.DIAGNOSIS.getCode());
+                list.add(new DiagnosisTplVo(dicItemMapper.selectOne(dicItem),detailList));
+                detailList.clear();
+                detailList.add(tpl);
+                preCategory = tpl.getCategory();
+            }
+        }
+        DicItem dicItem = new DicItem();
+        dicItem.setDicItemCode(preCategory);dicItem.setDicTypeCode(DicTypeEnum.DIAGNOSIS.getCode());
+        list.add(new DiagnosisTplVo(dicItemMapper.selectOne(dicItem),detailList));
         return ResponseUtil.setSuccessResult(list);
     }
+
 
     @ApiOperation(value = "获取诊断模板详情")
     @GetMapping("/diagnosis/detail")
@@ -77,6 +103,9 @@ public class TemplateApi {
     @PostMapping("/advice/save")
     public ResponseResult saveAdviceTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody AdviceTplMo mo,
                                         @AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(mo.getCategory())){
+            return ResponseUtil.setParamEmptyError("category");
+        }
         templateManager.saveAdviceTpl(mo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
@@ -84,13 +113,29 @@ public class TemplateApi {
     @ApiOperation(value = "获取指定机构下的医嘱模板")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/advice/list")
-    public ResponseResult<List<AdviceTplMo>> getAdviceList(@AccessToken AccessInfo info){
-        List<AdviceTplMo> list = new ArrayList<>();
-        templateManager.getAdviceTplList(info.getUser().getOrgCode()).forEach((obj)->{
-            AdviceTplMo mo = new AdviceTplMo();
-            BeanUtils.copyProperties(obj,mo);
-            list.add(mo);
-        });
+    public ResponseResult<List<AdviceTplVo>> getAdviceList(@AccessToken AccessInfo info){
+
+        List<AdviceTplVo> list = new ArrayList<>();
+
+        List<AdviceTpl> sourceList = templateManager.getAdviceTplList(info.getUser().getOrgCode());
+        String preCategory = null;
+        List<AdviceTpl> detailList = new ArrayList<>();
+        for(AdviceTpl tpl :sourceList){
+            preCategory = Optional.ofNullable(preCategory).orElse(tpl.getCategory());
+            if(preCategory.equals(tpl.getCategory())){
+                detailList.add(tpl);
+            }else{
+                DicItem dicItem = new DicItem();
+                dicItem.setDicItemCode(preCategory);dicItem.setDicTypeCode(DicTypeEnum.ADVICE.getCode());
+                list.add(new AdviceTplVo(dicItemMapper.selectOne(dicItem),detailList));
+                detailList.clear();
+                detailList.add(tpl);
+                preCategory = tpl.getCategory();
+            }
+        }
+        DicItem dicItem = new DicItem();
+        dicItem.setDicItemCode(preCategory);dicItem.setDicTypeCode(DicTypeEnum.ADVICE.getCode());
+        list.add(new AdviceTplVo(dicItemMapper.selectOne(dicItem),detailList));
         return ResponseUtil.setSuccessResult(list);
     }
 
@@ -117,6 +162,9 @@ public class TemplateApi {
     @PostMapping("/prescripTpl/save")
     public ResponseResult savePrescripTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PrescriptionTplMo mo,
                                           @AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(mo.getCategory())){
+            return ResponseUtil.setParamEmptyError("category");
+        }
         boolean flag = templateManager.savePrescripTpl(mo,info.getUser());
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方模板失败");
     }
@@ -124,9 +172,10 @@ public class TemplateApi {
     @ApiOperation(value = "获取指定机构下的处方模板")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/prescripTpl/list")
-    public ResponseResult<List<PrescriptionTplMo>> getPrescripTplList(@AccessToken AccessInfo info){
+    public ResponseResult<List<PrescriptionTplMo>> getPrescripTplList(@AccessToken AccessInfo info,
+                                                                      @ApiParam("模板类型") @RequestParam(value = "category",required = false) String category){
         List<PrescriptionTplMo> list = new ArrayList<>();
-        templateManager.getPrescripTplList(info.getUser().getOrgCode()).forEach((obj)->{
+        templateManager.getPrescripTplList(info.getUser().getOrgCode(),category).forEach((obj)->{
             PrescriptionTplMo mo = new PrescriptionTplMo();
             BeanUtils.copyProperties(obj,mo);
             list.add(mo);

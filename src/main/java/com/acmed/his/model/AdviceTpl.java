@@ -26,6 +26,9 @@ public class AdviceTpl {
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
 
+    @ApiModelProperty("诊断分类:字典中获取")
+    private String category;
+
     @ApiModelProperty("医嘱")
     private String advice;
 
