@@ -59,6 +59,10 @@ public class DrugManagerTest {
         drug.setId(2);
         drugManager.getDrugsByDrug(drug);
     }
+    @Test
+    public void getDrugsByPinYinLike() throws Exception {
+        drugManager.getDrugsByPinYinLike("Y");
+    }
 
     @Test
     public void saveManufacturer() throws Exception {

@@ -59,6 +59,11 @@ public class DrugManager {
         return drugMapper.select(drug);
     }
 
+    public List<Drug> getDrugsByPinYinLike(String pinYin){
+        Example example = new Example(Drug.class);
+        example.createCriteria().andLike("pinYin","%"+pinYin+"%");
+        return drugMapper.selectByExample(example);
+    }
     /**
      * 存在id 则更新药厂   不存在则添加
      * @param manufacturer 药品生产商参数
