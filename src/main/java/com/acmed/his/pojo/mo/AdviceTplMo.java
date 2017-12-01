@@ -2,6 +2,7 @@ package com.acmed.his.pojo.mo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by Darren on 2017-11-24
@@ -17,5 +18,6 @@ public class AdviceTplMo {
     @ApiModelProperty("诊断分类:字典中获取")
     private String category;
 
-
+    @ApiModelProperty("备注")
+    private String memo;
 }

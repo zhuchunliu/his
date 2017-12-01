@@ -32,6 +32,9 @@ public class AdviceTpl {
     @ApiModelProperty("医嘱")
     private String advice;
 
+    @ApiModelProperty("备注")
+    private String memo;
+
     @ApiModelProperty("是否有效 0：无效; 1:有效")
     private String isValid;
 

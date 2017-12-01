@@ -21,14 +21,14 @@ public class DiagnosisTplVo {
     private String category;
 
     @ApiModelProperty("模板")
-    private List<Detail> list;
+    private List<DiagnosisDetail> list;
 
     public DiagnosisTplVo(DicItem dicItem, List<DiagnosisTpl> detailList) {
         this.categoryName = null == dicItem?null:dicItem.getDicItemName();
         this.category = dicItem.getDicItemCode();
         list = new ArrayList<>();
         for(DiagnosisTpl tpl :detailList){
-            list.add(new Detail(tpl));
+            list.add(new DiagnosisDetail(tpl));
         }
 
     }
@@ -39,7 +39,7 @@ public class DiagnosisTplVo {
     }
 
     @Data
-    public class Detail {
+    public class DiagnosisDetail {
         @ApiModelProperty("诊疗项目id")
         private Integer id;
 
@@ -49,7 +49,7 @@ public class DiagnosisTplVo {
         @ApiModelProperty("药品备注")
         private String memo;
 
-        public Detail(DiagnosisTpl tpl) {
+        public DiagnosisDetail(DiagnosisTpl tpl) {
             this.id = tpl.getId();
             this.diagnosis = tpl.getDiagnosis();
             this.memo = tpl.getMemo();
