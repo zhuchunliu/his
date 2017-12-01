@@ -49,7 +49,7 @@ public class PrescriptionApi {
 
 
 
-    @ApiOperation(value = "保存药品处方")
+    @ApiOperation(value = "保存药品处方",hidden = true)
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/medicine")
     public ResponseResult savePreMedicine(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PreMedicineMo mo,
@@ -61,7 +61,7 @@ public class PrescriptionApi {
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方失败");
     }
 
-    @ApiOperation(value = "新增检查处方")
+    @ApiOperation(value = "新增检查处方",hidden = true)
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/inspect")
     public ResponseResult savePreInspect(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PreInspectMo mo,
@@ -78,13 +78,13 @@ public class PrescriptionApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
-    @ApiOperation(value = "获取药品处方")
+    @ApiOperation(value = "获取药品处方",hidden = true)
     @GetMapping("/medicine")
     public ResponseResult<PreMedicineVo> getPreMedicine(@ApiParam("id 主键") @RequestParam("id") Integer id){
         return ResponseUtil.setSuccessResult(preManager.getPreMedicine(id));
     }
 
-    @ApiOperation(value = "获取检查处方")
+    @ApiOperation(value = "获取检查处方",hidden = true)
     @GetMapping("/inspect")
     public ResponseResult<PreInspectVo> getPreInspect(@ApiParam("id 主键") @RequestParam("id") Integer id){
         return ResponseUtil.setSuccessResult(preManager.getPreInspect(id));
