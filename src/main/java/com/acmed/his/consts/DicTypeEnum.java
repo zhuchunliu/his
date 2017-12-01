@@ -5,11 +5,23 @@ package com.acmed.his.consts;
  **/
 public enum DicTypeEnum {
 
-    ADVICE("adviceTpl","医嘱模板类型"),
-    DIAGNOSIS("diagnosisTpl","诊断模板类型"),
-    PRE_DRUG("preDrugTpl","药品处方模板类型"),
-    PRE_INSPECT("preInspectTpl","检查处方模板类型");
-
+    USER_CATEGORY("UserCategory","用户类型"),
+    ORG_CATEGORY("OrgCategory","机构类型"),
+    DRUG_CLASSIFICATION("DrugClassification","药品类型"),
+    CHARGE_CATEGORY("ChargeCategory","附加费用类型"),
+    FEE_ITEM("FeeItem","诊疗项目类型"),
+    INSPECT_CATEGORY("InspectCategory","检查单类型"),
+    PERMISSION("Permission","权限类型"),
+    ADVICE_TPL("AdviceTpl","医嘱模板类型"),
+    DIAGNOSIS_TPL("DiagnosisTpl","诊断模板类型"),
+    PRESCRIPTION("Prescription","处方类型"),
+    PRE_DRUG_TPL("PreDrugTpl","药品处方模板类型"),
+    PRE_INSPECT_TPL("PreInspectTpl","检查处方模板类型"),
+    PACK_UNIT("PackUnit","包装单位"),
+    PAYMENT_METHOD("PaymentMethod","付费方式"),
+    ROUTE_OF_DRUG("RouteOfDrug","用药类型"),
+    DOSAGE_FORM("DosageForm","剂型"),
+    APPLY_CATEGORY("ApplyCategory","挂号费类型");
     DicTypeEnum(String code,String name){
         this.code = code;
         this.name = name;

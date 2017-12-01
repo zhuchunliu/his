@@ -61,7 +61,7 @@ public class TemplateApi {
 
 
         List<DiagnosisTpl> sourceList = templateManager.getDiagnosisTplList(info.getUser().getOrgCode());
-        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DIAGNOSIS.getCode());
+        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DIAGNOSIS_TPL.getCode());
         Map<String,DicItem> dicMap= new HashMap<>();
         for(DicItem dicItem :dicItemList){
             dicMap.put(dicItem.getDicItemCode(),dicItem);
@@ -133,7 +133,7 @@ public class TemplateApi {
 
         List<AdviceTpl> sourceList = templateManager.getAdviceTplList(info.getUser().getOrgCode());
 
-        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.ADVICE.getCode());
+        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.ADVICE_TPL.getCode());
         Map<String,DicItem> dicMap= new HashMap<>();
         for(DicItem dicItem :dicItemList){
             dicMap.put(dicItem.getDicItemCode(),dicItem);

@@ -1,6 +1,7 @@
 package com.acmed.his.model;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
@@ -28,6 +29,9 @@ public class FeeItem {
 
     @ApiModelProperty("费用类别:使用字典")
     private String feeCategory;
+
+    @ApiModelProperty("具体费用类型，feeCategory关联的子类型")
+    private String category;
 
     @ApiModelProperty("项目价格")
     private Float itemPrice;
