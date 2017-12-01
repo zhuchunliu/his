@@ -25,14 +25,15 @@ public class ApplyManagerTest {
     @Test
     public void addApply() throws Exception {
         Apply apply = new Apply();
-        apply.setClinicNo("121212");
         apply.setOrgCode(1);
         apply.setOrgName("和谐医院");
         apply.setPatientId(1);
         apply.setPatientName("王二");
         apply.setGender("1");
-        apply.setPinYin("weeee111");
+        apply.setPinYin("WE");
         apply.setDept(1);
+        apply.setStatus("0");
+        apply.setIsPaid("1");
         apply.setDeptName("内科");
         applyManager.addApply(apply);
     }

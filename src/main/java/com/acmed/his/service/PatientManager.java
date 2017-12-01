@@ -5,6 +5,7 @@ import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.Patient;
 import com.acmed.his.pojo.mo.WxRegistPatientMo;
 import com.acmed.his.pojo.vo.PatientInfoVo;
+import com.acmed.his.util.PinYinUtil;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.soecode.wxtools.exception.WxErrorException;
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,6 +50,7 @@ public class PatientManager {
             return 0;
         }
         String now = LocalDateTime.now().toString();
+        patient.setInputCode(PinYinUtil.getPinYinHeadChar(patient.getUserName()));
         patient.setId(null);
         patient.setOpenid(null);
         patient.setUnionid(null);
@@ -131,6 +132,7 @@ public class PatientManager {
             BeanUtils.copyProperties(wxRegistPatientMo,patient);
             patient.setId(null);
             patient.setOpenid(openid);
+            patient.setInputCode(patient.getUserName());
             patient.setUnionid(null);
             patient.setCreateAt(now);
             patient.setModifyAt(now);

@@ -67,4 +67,7 @@ public class MedicalRecord {
 
     @ApiModelProperty("科室名字")
     private String deptName;
+
+    @ApiModelProperty("挂号表id")
+    private Integer applyId;
 }

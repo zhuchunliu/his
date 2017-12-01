@@ -1,6 +1,7 @@
 package com.acmed.his.api;
 
 import com.acmed.his.model.MedicalRecord;
+import com.acmed.his.model.dto.MedicalReDto;
 import com.acmed.his.service.MedicalRecordManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -38,5 +39,17 @@ public class MedicalRecordApi {
     @GetMapping("patientId")
     public ResponseResult<List<MedicalRecord>> addMedicalRecord(@ApiParam("参数")  Integer patientId){
         return ResponseUtil.setSuccessResult(medicalRecordManager.getMedicalRecordListByPatientId(patientId,null));
+    }
+
+    @ApiOperation(value = "查询患者就诊列表")
+    @GetMapping("getMedicalReList")
+    public ResponseResult<List<MedicalReDto>> getMedicalReList(@ApiParam("参数")  Integer patientId){
+        return ResponseUtil.setSuccessResult(medicalRecordManager.getMedicalReDtoList(patientId));
+    }
+
+    @ApiOperation(value = "根据病历id查询病历详情")
+    @GetMapping("id")
+    public ResponseResult<MedicalRecord> get(@ApiParam("病历id")  Integer id){
+        return ResponseUtil.setSuccessResult(medicalRecordManager.getMedicalRecordById(id));
     }
 }

@@ -32,7 +32,6 @@ public class DrugManagerTest {
         drug.setDrgCode("123");
         drug.setOrgCode(1);
         drug.setName("药药药");
-        drug.setPinYin("yyy");
         drug.setSpec("瓶");
         drug.setCategory("0");
         drug.setClassification("0");

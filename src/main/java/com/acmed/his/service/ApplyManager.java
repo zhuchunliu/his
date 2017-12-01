@@ -47,6 +47,7 @@ public class ApplyManager {
         String now = LocalDateTime.now().toString();
         apply.setCreateAt(now);
         apply.setModifyAt(now);
+        apply.setFee(1.00);
         // 0表示未支付
         apply.setIsPaid("0");
         // 未就诊

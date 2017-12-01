@@ -2,13 +2,13 @@ package com.acmed.his.service;
 
 import com.acmed.his.dao.MedicalRecordMapper;
 import com.acmed.his.model.MedicalRecord;
+import com.acmed.his.model.dto.MedicalReDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,5 +60,21 @@ public class MedicalRecordManager {
         return medicalRecordMapper.selectByExample(example);
     }
 
+    /**
+     * 获取患者就诊记录
+     * @param patientId 患者id
+     * @return 患者就诊记录
+     */
+    public List<MedicalReDto> getMedicalReDtoList(Integer patientId){
+        return medicalRecordMapper.getMedicalReDto(patientId);
+    }
 
+    /**
+     * 根据的查询病例详情
+     * @param id id
+     * @return 病例详情
+     */
+    public MedicalRecord getMedicalRecordById(Integer id){
+        return medicalRecordMapper.selectByPrimaryKey(id);
+    }
 }

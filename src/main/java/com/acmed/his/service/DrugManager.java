@@ -6,6 +6,7 @@ import com.acmed.his.dao.SupplyMapper;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.Manufacturer;
 import com.acmed.his.model.Supply;
+import com.acmed.his.util.PinYinUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -43,6 +44,7 @@ public class DrugManager {
             return drugMapper.updateByPrimaryKeySelective(drug);
         }else {
             drug.setCreateAt(date);
+            drug.setPinYin(PinYinUtil.getPinYinHeadChar(drug.getName()));
             return drugMapper.insert(drug);
         }
 
