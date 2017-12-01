@@ -1,21 +1,28 @@
-package com.acmed.his.pojo.mo;
+package com.acmed.his.pojo.vo;
 
+import com.acmed.his.pojo.mo.PrescriptionTplMo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 /**
- * Created by Darren on 2017-11-24
+ * Created by Darren on 2017-12-01
  **/
 @Data
-public class PrescriptionTplMo {
-
+public class PrescriptionTplVo {
     @ApiModelProperty("模板id")
     private Integer id;
 
     @ApiModelProperty("模板名称")
     private String tplName;
+
+    @ApiModelProperty("模板类型")
+    private String category;
+
+    @ApiModelProperty("模板类型名称")
+    private String categoryName;
 
     @ApiModelProperty("诊断信息")
     private String diagnosis;
@@ -27,16 +34,19 @@ public class PrescriptionTplMo {
     private String description;
 
     @ApiModelProperty("模板明细")
-    private List<Item> itemList;
+    private List<PrescriptionTplMo.Item> itemList;
 
     @ApiModelProperty("模板明细")
-    private List<InspectDetail> inspectList;
+    private List<PrescriptionTplMo.InspectDetail> inspectList;
 
     @Data
     public class Item {
 
-        @ApiModelProperty("药品Id")
+        @ApiModelProperty("用药id")
         private Integer drugId;
+
+        @ApiModelProperty("药品类型")
+        private String drugCategory;
 
         @ApiModelProperty("单次剂量")
         private Integer dose;

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.InspectTplMapper">
+    <delete id="deleteByTplId" parameterType="java.lang.Integer">
+        DELETE FROM t_b_inspect_tpl where tplid = #{tplId}
+    </delete>
+
+    <insert id="insertItem">
+        insert into t_b_inspect_tpl(tplid,
+        aim,part,category,memo)
+        VALUES (
+        <if test="@Ognl@isNotEmpty(inspect.tplId)">
+            #{inspect.tplId},
+        </if>
+        <if test="@Ognl@isEmpty(inspect.tplId)">
+            (select id from t_b_prescription_tpl
+            where orgcode = #{tpl.orgCode}) and tplname = #{tpl.tplName}
+            and createby = #{tpl.createBy} and createat = #{tpl.createAt}),
+        </if>
+
+        #{inspect.aim},#{inspect.part},#{inspect.category},#{inspect.memo})
+    </insert>
+</mapper>

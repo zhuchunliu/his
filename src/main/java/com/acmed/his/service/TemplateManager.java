@@ -6,6 +6,7 @@ import com.acmed.his.pojo.mo.AdviceTplMo;
 import com.acmed.his.pojo.mo.DiagnosisTplMo;
 import com.acmed.his.pojo.mo.PrescriptionTplMo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.PinYinUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +38,9 @@ public class TemplateManager {
 
     @Autowired
     private DrugMapper drugMapper;
+
+    @Autowired
+    private InspectTplMapper inspectTplMapper;
 
 
 
@@ -188,45 +191,59 @@ public class TemplateManager {
      * @param mo 处方模板
      * @return
      */
+    @Transactional
     public boolean savePrescripTpl(PrescriptionTplMo mo, UserInfo userInfo){
         PrescriptionTpl prescriptionTpl = null;
-        List<PrescriptionTplItem> preItemList = new ArrayList<>();
         if(null == mo.getId()){
             prescriptionTpl = new PrescriptionTpl();
             BeanUtils.copyProperties(mo,prescriptionTpl);
+            prescriptionTpl.setCategory((null != mo.getItemList() && mo.getItemList().size()!=0)?"1":"2");
             prescriptionTpl.setOrgCode(userInfo.getOrgCode());
+            prescriptionTpl.setPinYin(Optional.ofNullable(mo.getTplName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             prescriptionTpl.setCreateAt(LocalDateTime.now().toString());
             prescriptionTpl.setCreateBy(userInfo.getId().toString());
             prescriptionTpl.setIsValid("1");
+            prescriptionTpl.setPinYin(Optional.ofNullable(mo.getTplName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             prescriptionTplMapper.insert(prescriptionTpl);
-
-            prescriptionTpl = prescriptionTplMapper.selectRecentTpl(prescriptionTpl);
 
         }else{
             prescriptionTpl = prescriptionTplMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,prescriptionTpl);
+            prescriptionTpl.setPinYin(Optional.ofNullable(mo.getTplName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             prescriptionTpl.setModifyAt(LocalDateTime.now().toString());
             prescriptionTpl.setModifyBy(userInfo.getId().toString());
             prescriptionTplMapper.updateByPrimaryKey(prescriptionTpl);
 
-            Example example = new Example(PrescriptionTplItem.class);
-            example.createCriteria().andEqualTo("tplId",prescriptionTpl.getId());
-            preItemList = prescriptionTplItemMapper.selectByExample(example);
+            prescriptionTplItemMapper.deleteByTplId(prescriptionTpl.getId());
+            inspectTplMapper.deleteByTplId(prescriptionTpl.getId());
         }
-        if( null == prescriptionTpl){
-            return false;
-        }
-        int tplId = prescriptionTpl.getId();
-        mo.getItemList().forEach((obj)->{
-            PrescriptionTplItem item = new PrescriptionTplItem();
-            BeanUtils.copyProperties(obj,item);
-            item.setTplId(tplId);
-            item.setDrugName(Optional.ofNullable(obj.getDrugId()).
-                    map(id->drugMapper.selectByPrimaryKey(id)).map((drug -> drug.getName())).orElse(null));
-            prescriptionTplItemMapper.insert(item);
-        });
 
-        preItemList.forEach(obj->prescriptionTplItemMapper.deleteByPrimaryKey(obj));
+        PrescriptionTpl finalPrescriptionTpl = prescriptionTpl;
+        if(null != mo.getItemList() && 0 != mo.getItemList().size()) {
+            mo.getItemList().forEach((obj) -> {
+                PrescriptionTplItem item = new PrescriptionTplItem();
+                BeanUtils.copyProperties(obj, item);
+                item.setTplId(finalPrescriptionTpl.getId());
+                Drug drug = Optional.ofNullable(obj.getDrugId()).
+                        map(id -> drugMapper.selectByPrimaryKey(id)).orElse(null);
+                if(null != drug){
+                    item.setDrugName(drug.getName());
+                    item.setDrugCategory(drug.getCategory());
+                }
+
+                prescriptionTplItemMapper.insertItem(item, finalPrescriptionTpl);
+            });
+        }
+
+        if(null != mo.getInspectList() && 0 != mo.getInspectList().size()) {
+            mo.getInspectList().forEach(obj -> {
+                InspectTpl inspectTpl = new InspectTpl();
+                BeanUtils.copyProperties(obj, inspectTpl);
+                inspectTpl.setTplId(finalPrescriptionTpl.getId());
+                inspectTplMapper.insertItem(inspectTpl, finalPrescriptionTpl);
+            });
+        }
+
         return true;
     }
 
@@ -238,6 +255,17 @@ public class TemplateManager {
      */
     public List<PrescriptionTplItem> getPrescripTplItemList(Integer tplId){
         return prescriptionTplItemMapper.getPrescripTplItemList(tplId);
+    }
+
+    /**
+     * 获取处方模板详情列表
+     * @param tplId 处方模板主键
+     * @return
+     */
+    public List<InspectTpl> getInspectTplList(Integer tplId){
+        Example example = new Example(InspectTpl.class);
+        example.createCriteria().andEqualTo("tplId",tplId);
+        return inspectTplMapper.selectByExample(example);
     }
 
 

@@ -58,6 +58,9 @@ public class Inspect {
     @ApiModelProperty("费用")
     private Double fee;
 
+    @ApiModelProperty("备注")
+    private String memo;
+
     @ApiModelProperty("创建时间")
     private String createAt;
 

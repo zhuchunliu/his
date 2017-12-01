@@ -53,4 +53,7 @@ public class PrescriptionItem {
 
     @ApiModelProperty("费用")
     private Double fee;
+
+    @ApiModelProperty("备注")
+    private String memo;
 }

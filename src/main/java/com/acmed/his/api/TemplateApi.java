@@ -10,6 +10,7 @@ import com.acmed.his.pojo.mo.DiagnosisTplMo;
 import com.acmed.his.pojo.mo.PrescriptionTplMo;
 import com.acmed.his.pojo.vo.AdviceTplVo;
 import com.acmed.his.pojo.vo.DiagnosisTplVo;
+import com.acmed.his.pojo.vo.PrescriptionTplVo;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.TemplateManager;
 import com.acmed.his.support.AccessInfo;
@@ -34,9 +35,6 @@ public class TemplateApi {
 
     @Autowired
     private TemplateManager templateManager;
-
-    @Autowired
-    private DicItemMapper dicItemMapper;
 
     @Autowired
     private BaseInfoManager baseInfoManager;
@@ -185,9 +183,7 @@ public class TemplateApi {
     @PostMapping("/prescripTpl/save")
     public ResponseResult savePrescripTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PrescriptionTplMo mo,
                                           @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(mo.getCategory())){
-            return ResponseUtil.setParamEmptyError("category");
-        }
+
         boolean flag = templateManager.savePrescripTpl(mo,info.getUser());
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方模板失败");
     }
@@ -195,12 +191,13 @@ public class TemplateApi {
     @ApiOperation(value = "获取指定机构下的处方模板")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/prescripTpl/list")
-    public ResponseResult<List<PrescriptionTplMo>> getPrescripTplList(@AccessToken AccessInfo info,
+    public ResponseResult<List<PrescriptionTplVo>> getPrescripTplList(@AccessToken AccessInfo info,
                                                                       @ApiParam("模板类型") @RequestParam(value = "category",required = false) String category){
-        List<PrescriptionTplMo> list = new ArrayList<>();
+        List<PrescriptionTplVo> list = new ArrayList<>();
         templateManager.getPrescripTplList(info.getUser().getOrgCode(),category).forEach((obj)->{
-            PrescriptionTplMo mo = new PrescriptionTplMo();
+            PrescriptionTplVo mo = new PrescriptionTplVo();
             BeanUtils.copyProperties(obj,mo);
+            mo.setCategoryName("1".equals(mo.getCategory())?"药品处方":"检查处方");
             list.add(mo);
         });
         return ResponseUtil.setSuccessResult(list);
@@ -208,8 +205,8 @@ public class TemplateApi {
 
     @ApiOperation(value = "获取处方模板")
     @GetMapping("/prescripTpl/detail")
-    public ResponseResult<PrescriptionTplMo> getPrescripTplDetail(@ApiParam("模板主键") @RequestParam("id") Integer id){
-        PrescriptionTplMo mo = new PrescriptionTplMo();
+    public ResponseResult<PrescriptionTplVo> getPrescripTplDetail(@ApiParam("模板主键") @RequestParam("id") Integer id){
+        PrescriptionTplVo mo = new PrescriptionTplVo();
         BeanUtils.copyProperties(templateManager.getPrescripTpl(id),mo);
 
         List<PrescriptionTplMo.Item> itemList = new ArrayList<>();
@@ -219,6 +216,14 @@ public class TemplateApi {
             itemList.add(item);
         });
         mo.setItemList(itemList);
+
+        List<PrescriptionTplMo.InspectDetail> inspectList = new ArrayList<>();
+        templateManager.getInspectTplList(mo.getId()).forEach(obj->{
+            PrescriptionTplMo.InspectDetail item = new PrescriptionTplMo().new InspectDetail();
+            BeanUtils.copyProperties(obj,item);
+            inspectList.add(item);
+        });
+        mo.setInspectList(inspectList);
         return ResponseUtil.setSuccessResult(mo);
     }
 
