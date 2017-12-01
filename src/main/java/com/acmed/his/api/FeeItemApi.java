@@ -38,10 +38,12 @@ public class FeeItemApi {
     @ApiOperation(value = "获取收费项目列表")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/list")
-    public ResponseResult<List<FeeItemMo>> getFeeItemList(@AccessToken AccessInfo info){
+    public ResponseResult<List<FeeItemMo>> getFeeItemList(@AccessToken AccessInfo info,
+                                                          @ApiParam("费用类别大项") @RequestParam(value = "feeCategory",required = false) String feeCategory,
+                                                          @ApiParam("费用类型西乡") @RequestParam(value = "category",required = false) String category){
         List<FeeItemMo> list = new ArrayList<>();
 
-        feeItemManager.getFeeItemList(info.getUser().getOrgCode()).forEach((obj)->{
+        feeItemManager.getFeeItemList(info.getUser().getOrgCode(),feeCategory,category).forEach((obj)->{
             FeeItemMo feeItemMo = new FeeItemMo();
             BeanUtils.copyProperties(obj,feeItemMo);
             list.add(feeItemMo);});

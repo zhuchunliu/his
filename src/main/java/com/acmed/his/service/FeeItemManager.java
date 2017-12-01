@@ -7,6 +7,7 @@ import com.acmed.his.model.User;
 import com.acmed.his.pojo.mo.FeeItemMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.support.AccessInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,15 @@ public class FeeItemManager {
      * 获取收费列表
      * @return
      */
-    public List<FeeItem> getFeeItemList(Integer orgCode){
+    public List<FeeItem> getFeeItemList(Integer orgCode,String feeCategory,String category){
         Example example = new Example(FeeItem.class);
-        example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("isValid","1");
+        Example.Criteria criteria = example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("isValid","1");
+        if(!StringUtils.isEmpty(feeCategory)){
+            criteria.andEqualTo("feeCategory",feeCategory);
+        }
+        if(!StringUtils.isEmpty(category)){
+            criteria.andEqualTo("category",category);
+        }
         return feeItemMapper.selectByExample(example);
     }
 
