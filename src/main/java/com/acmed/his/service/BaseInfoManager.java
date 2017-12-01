@@ -10,13 +10,11 @@ import com.acmed.his.pojo.vo.DicDetailVo;
 import com.acmed.his.util.UUIDUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * BaseInfoManager
@@ -186,5 +184,12 @@ public class BaseInfoManager {
         example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode);
         example.setOrderByClause("sn desc");
         return dicItemMapper.selectByExample(example);
+    }
+
+//    @Cacheable
+    public DicItem getDicItem(String dicTypeCode,String dicItemCode){
+        Example example = new Example(DicItem.class);
+        example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("dicItemCode",dicItemCode);
+        return Optional.ofNullable(dicItemMapper.selectByExample(example)).filter(obj->obj.size()!=0).map(obj->obj.get(0)).orElse(new DicItem());
     }
 }

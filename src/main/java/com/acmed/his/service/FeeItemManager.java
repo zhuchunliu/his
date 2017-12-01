@@ -15,6 +15,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2017-11-22
@@ -46,7 +47,17 @@ public class FeeItemManager {
      */
     public void saveFeeItem(FeeItemMo mo, UserInfo userInfo){
         if(null == mo.getId()){
-            FeeItem item = new FeeItem();
+            FeeItem item = this.getFeeItemDetail(userInfo.getOrgCode(),mo.getFeeCategory(),mo.getCategory());
+            if(null != item){
+                item.setModifyAt(LocalDateTime.now().toString());
+                item.setModifyBy(userInfo.getId().toString());
+                item.setMemo(mo.getMemo());
+                item.setItemPrice(mo.getItemPrice());
+                feeItemMapper.updateByPrimaryKey(item);
+                return;
+            }
+
+            item = new FeeItem();
             BeanUtils.copyProperties(mo,item);
             item.setIsValid("1");
             item.setOrgCode(userInfo.getOrgCode());
@@ -80,5 +91,16 @@ public class FeeItemManager {
         item.setModifyAt(LocalDateTime.now().toString());
         item.setModifyBy(userInfo.getId().toString());
         feeItemMapper.updateByPrimaryKey(item);
+    }
+
+    /**
+     * 获取收费详情
+     * @param feeCategory
+     * @param category
+     */
+    public FeeItem getFeeItemDetail(Integer orgCode,String feeCategory,String category){
+        Example example = new Example(FeeItem.class);
+        example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("feeCategory",feeCategory).andEqualTo("category",category);
+        return Optional.ofNullable(feeItemMapper.selectByExample(example)).filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(null);
     }
 }

@@ -1,5 +1,6 @@
 package com.acmed.his.service;
 
+import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.PreTitleDto;
@@ -49,7 +50,7 @@ public class PrescriptionManager {
     private DrugMapper drugMapper;
 
     @Autowired
-    private FeeItemMapper feeItemMapper;
+    private FeeItemManager feeItemManager;
 
     @Autowired
     private CommonManager commonManager;
@@ -109,8 +110,7 @@ public class PrescriptionManager {
                 Charge charge = new Charge();
                 BeanUtils.copyProperties(prescription,charge,"id");
                 charge.setCategory(info.getCategory());
-                charge.setFee(Optional.ofNullable(feeItemMapper.selectByPrimaryKey(Integer.parseInt(info.getCategory()))).
-                                filter(obj->obj.getItemPrice()!=null).
+                charge.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory())).
                                 map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
                 price += charge.getFee();
                 chargeMapper.insertCharge(charge,prescription.getPrescriptionNo());
@@ -161,8 +161,7 @@ public class PrescriptionManager {
                 BeanUtils.copyProperties(prescription,inspect,"id");
                 BeanUtils.copyProperties(info, inspect);
                 inspect.setApplyId(mo.getApplyId());
-                inspect.setFee(Optional.ofNullable(feeItemMapper.selectByPrimaryKey(Integer.parseInt(info.getCategory()))).
-                        filter(obj->obj.getItemPrice()!=null).
+                inspect.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory())).
                         map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
                 inspectMapper.insertInspect(inspect,prescription.getPrescriptionNo());
                 price += inspect.getFee();
@@ -175,8 +174,7 @@ public class PrescriptionManager {
                 BeanUtils.copyProperties(prescription,charge,"id");
                 charge.setPrescriptionId(prescription.getId());
                 charge.setCategory(info.getCategory());
-                charge.setFee(Optional.ofNullable(feeItemMapper.selectByPrimaryKey(Integer.parseInt(info.getCategory()))).
-                        filter(obj->obj.getItemPrice()!=null).
+                charge.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory())).
                         map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
                 price += charge.getFee();
                 chargeMapper.insertCharge(charge,prescription.getPrescriptionNo());
@@ -315,8 +313,7 @@ public class PrescriptionManager {
                 BeanUtils.copyProperties(prescription,inspect,"id");
                 BeanUtils.copyProperties(info, inspect);
                 inspect.setApplyId(mo.getApplyId());
-                inspect.setFee(Optional.ofNullable(feeItemMapper.selectByPrimaryKey(Integer.parseInt(info.getCategory()))).
-                        filter(obj->obj.getItemPrice()!=null).
+                inspect.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory())).
                         map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
                 inspectMapper.insertInspect(inspect,prescription.getPrescriptionNo());
                 price += inspect.getFee();
@@ -328,8 +325,7 @@ public class PrescriptionManager {
                 Charge charge = new Charge();
                 BeanUtils.copyProperties(prescription,charge,"id");
                 charge.setCategory(info.getCategory());
-                charge.setFee(Optional.ofNullable(feeItemMapper.selectByPrimaryKey(Integer.parseInt(info.getCategory()))).
-                        filter(obj->obj.getItemPrice()!=null).
+                charge.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory())).
                         map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
                 price += charge.getFee();
                 chargeMapper.insertCharge(charge,prescription.getPrescriptionNo());
