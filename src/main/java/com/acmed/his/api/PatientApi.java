@@ -8,6 +8,7 @@ import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,21 +47,25 @@ public class PatientApi {
 
     @ApiOperation(value = "根据id查询病患信息")
     @GetMapping("id")
-    public ResponseResult<Patient> getPatientById(Integer id){
+    public ResponseResult<Patient> getPatientById(@ApiParam("患者id") @RequestParam(value = "id" )Integer id){
         return ResponseUtil.setSuccessResult(patientManager.getPatientById(id));
     }
 
     @ApiOperation(value = "根据身份证号查询病患信息")
     @GetMapping("idCard")
-    public ResponseResult<Patient> getPatientByIdCard(String idCard){
+    public ResponseResult<Patient> getPatientByIdCard(@ApiParam("患者身份证号") @RequestParam(value = "idCard" )String idCard){
         return ResponseUtil.setSuccessResult(patientManager.getPatientByIdCard(idCard));
     }
 
     @ApiOperation(value = "根据姓名查询")
     @GetMapping("name")
-    public ResponseResult<List<Patient>> getPatientByName(String name){
+    public ResponseResult<List<Patient>> getPatientByName(@ApiParam("患者姓名") @RequestParam(value = "name" )String name){
         return ResponseUtil.setSuccessResult(patientManager.getPatientByUserName(name));
     }
 
-
+    @ApiOperation(value = "根据拼音模糊查询")
+    @GetMapping("pinyin")
+    public ResponseResult<List<Patient>> getPatientLikePinYin(@ApiParam("患者姓名拼音") @RequestParam(value = "pinYin" )String pinYin){
+        return ResponseUtil.setSuccessResult(patientManager.getPatientLikePinYin(pinYin));
+    }
 }

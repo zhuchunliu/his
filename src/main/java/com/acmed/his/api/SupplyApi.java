@@ -6,6 +6,7 @@ import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class SupplyApi {
 
     @ApiOperation(value = "根据id查询")
     @GetMapping("id")
-    public ResponseResult<Supply> getSupplyById(Integer id){
+    public ResponseResult<Supply> getSupplyById(@ApiParam("供应商id") @RequestParam(value = "id" )Integer id){
         return ResponseUtil.setSuccessResult(drugManager.getSupplyById(id));
     }
 

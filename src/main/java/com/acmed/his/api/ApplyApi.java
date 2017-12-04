@@ -12,6 +12,7 @@ import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,21 +41,21 @@ public class ApplyApi {
 
     @ApiOperation(value = "根据患者id 查询列表")
     @GetMapping("patientId")
-    public ResponseResult patientId(Integer patientId){
+    public ResponseResult patientId(@ApiParam("患者id") @RequestParam(value = "patientId") Integer patientId){
         return ResponseUtil.setSuccessResult(applyManager.getApplyByPatientId(patientId));
     }
 
 
     @ApiOperation(value = "根据orgCode查询列表")
     @GetMapping("orgCode")
-    public ResponseResult<List<Apply>> orgCode(Integer orgCode){
+    public ResponseResult<List<Apply>> orgCode(@ApiParam("机构code") @RequestParam(value = "orgCode" )Integer orgCode){
         List<Apply> applyByOrgCode = applyManager.getApplyByOrgCode(orgCode);
         return ResponseUtil.setSuccessResult(applyByOrgCode);
     }
 
     @ApiOperation(value = "根据挂号单id查询")
     @GetMapping("id")
-    public ResponseResult<Apply> id(Integer id){
+    public ResponseResult<Apply> id(@ApiParam("挂号单id") @RequestParam(value = "id" ) Integer id){
         Apply applyById = applyManager.getApplyById(id);
         return ResponseUtil.setSuccessResult(applyById);
     }
@@ -62,7 +63,7 @@ public class ApplyApi {
 
     @ApiOperation(value = "根据科室id和状态查询当天的就诊列表")
     @GetMapping("idandstatus")
-    public ResponseResult<List<Apply>> idandstatus(DeptIdAndStatus model){
+    public ResponseResult<List<Apply>> idandstatus(@ApiParam("条件查询")DeptIdAndStatus model){
         Integer id = model.getDeptId();
         String status = model.getStatus();
         List<Apply> applyByDeptIdAndStatus = applyManager.getApplyByDeptIdAndStatus(id, status);

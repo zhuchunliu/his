@@ -59,10 +59,24 @@ public class DrugManager {
         return drugMapper.select(drug);
     }
 
+    /**
+     * 拼音模糊查询药品详情列表
+     * @param pinYin 拼音
+     * @return 列表
+     */
     public List<Drug> getDrugsByPinYinLike(String pinYin){
         Example example = new Example(Drug.class);
         example.createCriteria().andLike("pinYin","%"+pinYin+"%");
         return drugMapper.selectByExample(example);
+    }
+
+    /**
+     * 根据id查询药品详情
+     * @param id 药品id
+     * @return 药品详情
+     */
+    public Drug getDrugById(Integer id){
+        return drugMapper.selectByPrimaryKey(id);
     }
     /**
      * 存在id 则更新药厂   不存在则添加

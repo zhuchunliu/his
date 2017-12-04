@@ -44,8 +44,14 @@ public class DrugApi {
 
     @ApiOperation(value = "拼音模糊查询")
     @GetMapping("pinyin")
-    public ResponseResult<List<Drug>> selectDrugsByDrug(@ApiParam("拼音模糊查询")String pinYin){
+    public ResponseResult<List<Drug>> selectDrugsByDrug(@ApiParam("拼音模糊查询") @RequestParam(value = "pinYin") String pinYin){
         List<Drug> drugsByDrug = drugManager.getDrugsByPinYinLike(pinYin);
         return ResponseUtil.setSuccessResult(drugsByDrug);
+    }
+
+    @ApiOperation(value = "根据id查询药品详情")
+    @GetMapping("id")
+    public ResponseResult<Drug> selectDrugsById(@ApiParam("药品id") @RequestParam("id") Integer id){
+        return ResponseUtil.setSuccessResult(drugManager.getDrugById(id));
     }
 }

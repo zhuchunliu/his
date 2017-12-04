@@ -91,7 +91,7 @@ public class BaseInfoApi {
 
     @ApiOperation(value = "根据字典类型查找字典列表")
     @GetMapping("/dicItem/dicTypeCode")
-    public ResponseResult<List<DicItem>> getDicItemsByDicTypeCode(@ApiParam("dicTypeCode == null  新增  不然修改")@RequestParam String dicTypeCode){
+    public ResponseResult<List<DicItem>> getDicItemsByDicTypeCode(@ApiParam("dicTypeCode == null  新增  不然修改")@RequestParam("dicTypeCode") String dicTypeCode){
         List<DicItem> dicItemsByDicTypeCode = baseInfoManager.getDicItemsByDicTypeCode(dicTypeCode);
         return ResponseUtil.setSuccessResult(dicItemsByDicTypeCode);
     }

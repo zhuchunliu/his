@@ -160,4 +160,15 @@ public class PatientManager {
         // TODO 跟登录返回一致
         return ResponseUtil.setSuccessResult(patientInfoVo);
     }
+
+    /**
+     * 根据患者姓名拼音查询患者信息列表
+     * @param pinYin 拼音
+     * @return 患者列表
+     */
+    public List<Patient> getPatientLikePinYin(String pinYin){
+        Example example = new Example(Patient.class);
+        example.createCriteria().andLike("inputCode","%"+pinYin+"%");
+        return patientMapper.selectByExample(example);
+    }
 }
