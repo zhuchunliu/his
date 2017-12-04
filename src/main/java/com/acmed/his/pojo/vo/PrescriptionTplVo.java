@@ -72,6 +72,12 @@ public class PrescriptionTplVo {
         @ApiModelProperty("备注")
         private String memo;
 
+        @ApiModelProperty("单价")
+        private Double fee;
+
+        @ApiModelProperty("药品规格")
+        private String spec;
+
 
     }
 

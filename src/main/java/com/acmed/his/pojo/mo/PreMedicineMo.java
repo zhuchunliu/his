@@ -26,7 +26,7 @@ public class PreMedicineMo {
     private List<Charge> chargeList;
 
     @Data
-    public class Item{
+    public static class Item{
         @ApiModelProperty("药品id")
         private Integer drugId;
 
@@ -44,7 +44,7 @@ public class PreMedicineMo {
     }
 
     @Data
-    public class Charge{
+    public static class Charge{
         @ApiModelProperty("费用类型")
         private String category;
     }

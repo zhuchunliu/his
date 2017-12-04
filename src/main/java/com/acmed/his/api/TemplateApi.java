@@ -12,6 +12,7 @@ import com.acmed.his.pojo.vo.AdviceTplVo;
 import com.acmed.his.pojo.vo.DiagnosisTplVo;
 import com.acmed.his.pojo.vo.PrescriptionTplVo;
 import com.acmed.his.service.BaseInfoManager;
+import com.acmed.his.service.DrugManager;
 import com.acmed.his.service.TemplateManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -38,6 +39,9 @@ public class TemplateApi {
 
     @Autowired
     private BaseInfoManager baseInfoManager;
+
+    @Autowired
+    private DrugManager drugManager;
 
     @ApiOperation(value = "新增/编辑 诊断模板")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
@@ -213,6 +217,11 @@ public class TemplateApi {
         templateManager.getPrescripTplItemList(mo.getId()).forEach(obj->{
             PrescriptionTplVo.Item item = new PrescriptionTplVo().new Item();
             BeanUtils.copyProperties(obj,item);
+            Drug drug = Optional.ofNullable(item.getDrugId()).map(drugManager::getDrugById).orElse(null);
+            if(null != drug) {
+                item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));
+                item.setSpec(drug.getSpec());
+            }
             itemList.add(item);
         });
         mo.setItemList(itemList);

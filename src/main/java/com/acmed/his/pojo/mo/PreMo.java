@@ -26,7 +26,7 @@ public class PreMo {
     private List<PreMo.Inspect> inspectList;
 
     @Data
-    public class Item{
+    public static class Item{
         @ApiModelProperty("药品id")
         private Integer drugId;
 
@@ -47,13 +47,13 @@ public class PreMo {
     }
 
     @Data
-    public class Charge{
+    public static class Charge{
         @ApiModelProperty("费用类型")
         private String category;
     }
 
     @Data
-    public class Inspect{
+    public static class Inspect{
 
         @ApiModelProperty("检查目的")
         private String aim;

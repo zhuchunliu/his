@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @SpringBootApplication
 @EnableCaching
@@ -28,5 +29,12 @@ public class HisApplication {
 		fastConverter.setFastJsonConfig(fastJsonConfig);
 		HttpMessageConverter<?> converter = fastConverter;
 		return new HttpMessageConverters(converter);
+
+//		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+////		FastJsonConfig fastJsonConfig = new FastJsonConfig();
+////		fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
+////		fastConverter.setFastJsonConfig(fastJsonConfig);
+////		HttpMessageConverter<?> converter = fastConverter;
+//		return new HttpMessageConverters(converter);
 	}
 }

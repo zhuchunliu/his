@@ -24,7 +24,7 @@ public class PreInspectMo {
     private List<PreInspectMo.Charge> chargeList;
 
     @Data
-    public class Inspect{
+    public static class Inspect{
 
         @ApiModelProperty("检查目的")
         private String aim;
@@ -44,7 +44,7 @@ public class PreInspectMo {
     }
 
     @Data
-    public class Charge{
+    public static class Charge{
         @ApiModelProperty("费用类型")
         private String category;
     }

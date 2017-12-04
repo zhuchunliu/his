@@ -33,7 +33,7 @@ public class PrescriptionTplMo {
     private List<InspectDetail> inspectList;
 
     @Data
-    public class Item {
+    public static class Item {
 
         @ApiModelProperty("药品Id")
         private Integer drugId;
@@ -58,7 +58,7 @@ public class PrescriptionTplMo {
     }
 
     @Data
-    public class InspectDetail{
+    public static class InspectDetail{
         @ApiModelProperty("检查目的")
         private String aim;
 
