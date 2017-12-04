@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2017-11-30
@@ -57,6 +58,7 @@ public class PreVo {
             preItemList.forEach(obj->{
                 PreVo.Item item = new PreVo.Item();
                 BeanUtils.copyProperties(obj,item);
+                item.setTotalFee(Optional.ofNullable(item.getNum()).orElse(0)*Optional.ofNullable(item.getFee()).orElse(0d));
                 itemList.add(item);
             });
         }
@@ -85,6 +87,9 @@ public class PreVo {
         @ApiModelProperty("费用")
         private Double fee;
 
+        @ApiModelProperty("备注")
+        private String memo;
+
     }
 
     @Data
@@ -101,6 +106,9 @@ public class PreVo {
         @ApiModelProperty("药品id")
         private Integer drugId;
 
+        @ApiModelProperty("用药名称")
+        private String drugName;
+
         @ApiModelProperty("途径")
         private String way;
 
@@ -110,10 +118,19 @@ public class PreVo {
         @ApiModelProperty("频率")
         private Integer frequency;
 
-        @ApiModelProperty("疗程")
-        private Integer course;
+        @ApiModelProperty("单次剂量")
+        private Integer dose;
 
-        @ApiModelProperty("费用")
+        @ApiModelProperty("单价")
         private Double fee;
+
+        @ApiModelProperty("备注")
+        private String memo;
+
+        @ApiModelProperty("药品编码")
+        private String drugCode;
+
+        @ApiModelProperty("总价")
+        private Double totalFee;
     }
 }

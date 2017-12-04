@@ -65,8 +65,8 @@ public class PreMedicineVo {
         @ApiModelProperty("频率")
         private Integer frequency;
 
-        @ApiModelProperty("疗程")
-        private Integer course;
+        @ApiModelProperty("单次剂量")
+        private Integer dose;
 
         @ApiModelProperty("费用")
         private Double fee;

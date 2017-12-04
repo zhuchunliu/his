@@ -35,6 +35,9 @@ public class PrescriptionTplItem {
     @ApiModelProperty("药品名称")
     private String drugName;
 
+    @ApiModelProperty("药品编码")
+    private String drugCode;
+
     @ApiModelProperty("单次剂量")
     private Integer dose;
 
@@ -46,9 +49,6 @@ public class PrescriptionTplItem {
 
     @ApiModelProperty("天数")
     private Integer num;
-
-    @ApiModelProperty("疗程")
-    private Integer course;
 
     @ApiModelProperty("备注")
     private String memo;

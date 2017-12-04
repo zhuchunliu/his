@@ -26,8 +26,8 @@
 
     <insert id="insertItem">
         insert into t_b_prescription_tpl_item(tplid,
-        drugid,drugcategory,drugname,dose,way,
-        frequency,num,course,memo)
+        drugid,drugcategory,drugname,drugcode,dose,way,
+        frequency,num,memo)
         VALUES (
         <if test="@Ognl@isNotEmpty(item.tplId)">
             #{item.tplId},
@@ -38,7 +38,7 @@
             and createby = #{tpl.createBy} and createat = #{tpl.createAt}),
         </if>
 
-        #{item.drugId},#{item.drugCategory},#{item.drugName},#{item.dose},#{item.way},
-        #{item.frequency},#{item.num},#{item.course},#{item.memo})
+        #{item.drugId},#{item.drugCategory},#{item.drugName},#{item.drugCode},#{item.dose},#{item.way},
+        #{item.frequency},#{item.num},#{item.memo})
     </insert>
 </mapper>

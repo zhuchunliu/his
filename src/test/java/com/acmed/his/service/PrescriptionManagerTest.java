@@ -33,7 +33,7 @@ public class PrescriptionManagerTest {
         List<PreMedicineMo.Item> itemList = new ArrayList<>();
         PreMedicineMo.Item item = new PreMedicineMo().new Item();
         item.setDrugId(1);
-        item.setCourse(1);
+        item.setDose(1);
         item.setFrequency(300);
         itemList.add(item);
 

@@ -39,6 +39,9 @@ public class PrescriptionItem {
     @ApiModelProperty("用药名称")
     private String drugName;
 
+    @ApiModelProperty("药品编码")
+    private String drugCode;
+
     @ApiModelProperty("途径")
     private String way;
 
@@ -48,8 +51,8 @@ public class PrescriptionItem {
     @ApiModelProperty("频率")
     private Integer frequency;
 
-    @ApiModelProperty("疗程")
-    private Integer course;
+    @ApiModelProperty("单次剂量")
+    private Integer dose;
 
     @ApiModelProperty("费用")
     private Double fee;

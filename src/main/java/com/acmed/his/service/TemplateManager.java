@@ -229,6 +229,7 @@ public class TemplateManager {
                 if(null != drug){
                     item.setDrugName(drug.getName());
                     item.setDrugCategory(drug.getCategory());
+                    item.setDrugCode(drug.getDrgCode());
                 }
 
                 prescriptionTplItemMapper.insertItem(item, finalPrescriptionTpl);

@@ -209,17 +209,17 @@ public class TemplateApi {
         PrescriptionTplVo mo = new PrescriptionTplVo();
         BeanUtils.copyProperties(templateManager.getPrescripTpl(id),mo);
 
-        List<PrescriptionTplMo.Item> itemList = new ArrayList<>();
+        List<PrescriptionTplVo.Item> itemList = new ArrayList<>();
         templateManager.getPrescripTplItemList(mo.getId()).forEach(obj->{
-            PrescriptionTplMo.Item item = new PrescriptionTplMo().new Item();
+            PrescriptionTplVo.Item item = new PrescriptionTplVo().new Item();
             BeanUtils.copyProperties(obj,item);
             itemList.add(item);
         });
         mo.setItemList(itemList);
 
-        List<PrescriptionTplMo.InspectDetail> inspectList = new ArrayList<>();
+        List<PrescriptionTplVo.InspectDetail> inspectList = new ArrayList<>();
         templateManager.getInspectTplList(mo.getId()).forEach(obj->{
-            PrescriptionTplMo.InspectDetail item = new PrescriptionTplMo().new InspectDetail();
+            PrescriptionTplVo.InspectDetail item = new PrescriptionTplVo().new InspectDetail();
             BeanUtils.copyProperties(obj,item);
             inspectList.add(item);
         });

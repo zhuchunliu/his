@@ -34,10 +34,10 @@ public class PrescriptionTplVo {
     private String description;
 
     @ApiModelProperty("模板明细")
-    private List<PrescriptionTplMo.Item> itemList;
+    private List<PrescriptionTplVo.Item> itemList;
 
     @ApiModelProperty("模板明细")
-    private List<PrescriptionTplMo.InspectDetail> inspectList;
+    private List<PrescriptionTplVo.InspectDetail> inspectList;
 
     @Data
     public class Item {
@@ -47,6 +47,12 @@ public class PrescriptionTplVo {
 
         @ApiModelProperty("药品类型")
         private String drugCategory;
+
+        @ApiModelProperty("药品名称")
+        private String drugName;
+
+        @ApiModelProperty("药品编码")
+        private String drugCode;
 
         @ApiModelProperty("单次剂量")
         private Integer dose;
@@ -65,6 +71,8 @@ public class PrescriptionTplVo {
 
         @ApiModelProperty("备注")
         private String memo;
+
+
     }
 
     @Data

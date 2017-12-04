@@ -9,11 +9,11 @@
 
     <insert id="insertInspect">
         INSERT into t_b_inspect(prescriptionid,applyid,patientid,orgcode,dept,
-        aim,part,category,summary,diagnosis,fee,
+        aim,part,category,summary,diagnosis,fee,memo,
         createat,createby,modifyat,modifyby) VALUES
         ((select id from t_b_prescription where prescriptionno = #{prescriptionNo}),
         #{inspect.applyId},#{inspect.patientId},#{inspect.orgCode},#{inspect.dept},
-        #{inspect.aim},#{inspect.part},#{inspect.category},#{inspect.summary},#{inspect.diagnosis},#{inspect.fee},
+        #{inspect.aim},#{inspect.part},#{inspect.category},#{inspect.summary},#{inspect.diagnosis},#{inspect.fee},#{inspect.memo},
         #{inspect.createAt},#{inspect.createBy},#{inspect.modifyAt},#{inspect.modifyBy})
     </insert>
 </mapper>

@@ -39,8 +39,11 @@ public class PreMo {
         @ApiModelProperty("频率")
         private Integer frequency;
 
-        @ApiModelProperty("疗程")
-        private Integer course;
+        @ApiModelProperty("单次剂量")
+        private Integer dose;
+
+        @ApiModelProperty("备注")
+        private String memo;
     }
 
     @Data
@@ -66,6 +69,9 @@ public class PreMo {
 
         @ApiModelProperty("检查诊断")
         private String diagnosis;
+
+        @ApiModelProperty("备注")
+        private String memo;
 
     }
 

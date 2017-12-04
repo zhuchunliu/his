@@ -99,9 +99,10 @@ public class PrescriptionManager {
                 item.setPrescriptionId(prescription.getId());
                 item.setApplyId(mo.getApplyId());
                 item.setDrugId(info.getDrugId());
-                item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d)*info.getNum());//总价：单价*数量
+                item.setDrugCode(drug.getDrgCode());
+                item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//总价：单价*数量
                 preItemMapper.insertItem(item,prescription.getPrescriptionNo());
-                price += item.getFee();
+                price += info.getNum() * item.getFee();
             }
         }
 
@@ -161,6 +162,7 @@ public class PrescriptionManager {
                 BeanUtils.copyProperties(prescription,inspect,"id");
                 BeanUtils.copyProperties(info, inspect);
                 inspect.setApplyId(mo.getApplyId());
+                inspect.setDept(Optional.ofNullable(prescription.getDept()).map(obj->obj.toString()).orElse(null));
                 inspect.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory())).
                         map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
                 inspectMapper.insertInspect(inspect,prescription.getPrescriptionNo());
@@ -301,9 +303,10 @@ public class PrescriptionManager {
                 item.setPrescriptionId(prescription.getId());
                 item.setApplyId(mo.getApplyId());
                 item.setDrugId(info.getDrugId());
-                item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d)*info.getNum());//总价：单价*数量
+                item.setDrugCode(drug.getDrgCode());
+                item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//总价：单价*数量
                 preItemMapper.insertItem(item,prescription.getPrescriptionNo());
-                price += item.getFee();
+                price += info.getNum() * item.getFee();
             }
         }
 
@@ -313,6 +316,7 @@ public class PrescriptionManager {
                 BeanUtils.copyProperties(prescription,inspect,"id");
                 BeanUtils.copyProperties(info, inspect);
                 inspect.setApplyId(mo.getApplyId());
+                inspect.setDept(Optional.ofNullable(prescription.getDept()).map(obj->obj.toString()).orElse(null));
                 inspect.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory())).
                         map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
                 inspectMapper.insertInspect(inspect,prescription.getPrescriptionNo());
