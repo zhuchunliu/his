@@ -8,6 +8,7 @@ import com.acmed.his.model.PayStatements;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.IdCardUtil;
+import com.acmed.his.util.date.DateStyle;
 import com.acmed.his.util.date.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -131,15 +133,8 @@ public class ApplyManager {
      * @return 当前科室的挂号列表
      */
     public List<Apply> getApplyByDeptIdAndStatus(Integer deptId,String status){
-        String now = DateUtil.DateToString(new Date(),"yyyy-MM-dd 00:00:00");
-        Example example = new Example(Apply.class);
-        if (status == null){
-            example.createCriteria().andEqualTo("dept",deptId).andEqualTo("isPaid",1).andBetween("createAt", DateUtil.StringToDate(now, "yyyy-MM-dd 00:00:00"),DateUtil.StringToDate(now,  "yyyy-MM-dd 23:59:59"));
-        }else {
-            example.createCriteria().andEqualTo("dept",deptId).andEqualTo("isPaid",1).andBetween("createAt", DateUtil.StringToDate(now, "yyyy-MM-dd 00:00:00"),DateUtil.StringToDate(now, "yyyy-MM-dd 23:59:59")).andEqualTo("status",status);
-        }
-
-        return applyMapper.selectByExample(example);
+        // TODO 暂时不管是否支付
+        return applyMapper.mohu(deptId,new Date(),status,null,null);
     }
 
     /**
@@ -161,16 +156,7 @@ public class ApplyManager {
      */
     public List<ApplyDoctorVo> getApplyDoctorVoList(Integer deptId,String date,String status){
         List<ApplyDoctorVo> resultList = new ArrayList<>();
-        if (StringUtils.isEmpty(date)){
-            date = DateUtil.DateToString(new Date(),"yyyy-MM-dd 00:00:00");
-        }
-        Example example = new Example(Apply.class);
-        if (status == null){
-            example.createCriteria().andEqualTo("dept",deptId).andBetween("createAt", DateUtil.StringToDate(date, "yyyy-MM-dd 00:00:00"),DateUtil.StringToDate(date, "yyyy-MM-dd 23:59:59"));
-        }else {
-            example.createCriteria().andEqualTo("dept",deptId).andBetween("createAt", DateUtil.StringToDate(date, "yyyy-MM-dd 00:00:00"),DateUtil.StringToDate(date, "yyyy-MM-dd 23:59:59")).andEqualTo("status",status);
-        }
-        List<Apply> applies = applyMapper.selectByExample(example);
+        List<Apply> applies = applyMapper.mohu(deptId,DateUtil.StringToDate(date, DateStyle.YYYY_MM_DD),status,null,null);
         if (applies.size()==0){
             return resultList;
         }
@@ -232,7 +218,7 @@ public class ApplyManager {
         if (date==null){
             date = new Date();
         }
-        List<Apply> applies = applyMapper.mohu(dept,date,status,param);
+        List<Apply> applies = applyMapper.mohu(dept,date,status,param,null);
         if (applies.size()==0){
             return resultList;
         }

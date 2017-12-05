@@ -72,7 +72,7 @@ public class ApplyManagerTest {
 
     @Test
     public void getApplyDoctorVoList() throws Exception {
-        applyManager.getApplyDoctorVoList(1,null,null);
+        applyManager.getApplyDoctorVoList(1,"2017-12-05",null);
     }
 
     @Test

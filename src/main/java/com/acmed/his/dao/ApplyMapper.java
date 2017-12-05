@@ -35,7 +35,8 @@ public interface ApplyMapper extends TkMapper<Apply>{
      * @param date 日期
      * @param status 状态
      * @param name 姓名
+     * @param isPaid 姓名
      * @return
      */
-    List<Apply> mohu(@Param("dept") Integer dept,@Param("date") Date date,@Param("status") String status,@Param("name") String name);
+    List<Apply> mohu(@Param("dept") Integer dept,@Param("date") Date date,@Param("status") String status,@Param("name") String name,@Param("isPaid")String isPaid);
 }
