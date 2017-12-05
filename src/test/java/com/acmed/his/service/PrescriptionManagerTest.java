@@ -31,23 +31,23 @@ public class PrescriptionManagerTest {
         mo.setApplyId(1);
         mo.setId(4);
         List<PreMedicineMo.Item> itemList = new ArrayList<>();
-        PreMedicineMo.Item item = new PreMedicineMo().new Item();
+        PreMedicineMo.Item item = new PreMedicineMo.Item();
         item.setDrugId(1);
         item.setDose(1);
         item.setFrequency(300);
         itemList.add(item);
 
-        item = new PreMedicineMo().new Item();
+        item = new PreMedicineMo.Item();
         item.setDrugId(2);
         item.setFrequency(500);
         itemList.add(item);
 
         List<PreMedicineMo.Charge> chargeList = new ArrayList<>();
-        PreMedicineMo.Charge charge = new PreMedicineMo().new Charge();
+        PreMedicineMo.Charge charge = new PreMedicineMo.Charge();
         charge.setCategory("1");
         chargeList.add(charge);
 
-        charge = new PreMedicineMo().new Charge();
+        charge = new PreMedicineMo.Charge();
         charge.setCategory("2");
         chargeList.add(charge);
 
@@ -64,20 +64,20 @@ public class PrescriptionManagerTest {
         mo.setId(2);
 
         List<PreInspectMo.Inspect> inspectList = new ArrayList<>();
-        PreInspectMo.Inspect inspect = new PreInspectMo().new Inspect();
+        PreInspectMo.Inspect inspect = new PreInspectMo.Inspect();
         inspect.setPart("大腿-a");
         inspectList.add(inspect);
 
-        inspect = new PreInspectMo().new Inspect();
+        inspect = new PreInspectMo.Inspect();
         inspect.setPart("手臂-a");
         inspectList.add(inspect);
 
         List<PreInspectMo.Charge> chargeList = new ArrayList<>();
-        PreInspectMo.Charge charge = new PreInspectMo().new Charge();
+        PreInspectMo.Charge charge = new PreInspectMo.Charge();
         charge.setCategory("1");
         chargeList.add(charge);
 
-        charge = new PreInspectMo().new Charge();
+        charge = new PreInspectMo.Charge();
         charge.setCategory("2");
         chargeList.add(charge);
 

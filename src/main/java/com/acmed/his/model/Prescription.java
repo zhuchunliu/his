@@ -54,6 +54,9 @@ public class Prescription {
     @ApiModelProperty("付费类型 字典表")
     private String feeType;
 
+    @ApiModelProperty("是否发药 0:否；1:是")
+    private String isDispensing;
+
     @ApiModelProperty("创建时间")
     private String createAt;
 

@@ -10,6 +10,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * MedicalRecordManager
@@ -76,5 +77,17 @@ public class MedicalRecordManager {
      */
     public MedicalRecord getMedicalRecordById(Integer id){
         return medicalRecordMapper.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 根据applyId查询病例详情
+     * @param applyId id
+     * @return 病例详情
+     */
+    public MedicalRecord getMedicalRecordByApplyId(Integer applyId){
+        Example example = new Example(MedicalRecord.class);
+        example.createCriteria().andEqualTo("applyId",applyId);
+
+        return Optional.ofNullable(medicalRecordMapper.selectByExample(example)).filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(null);
     }
 }

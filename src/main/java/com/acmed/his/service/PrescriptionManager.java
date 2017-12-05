@@ -11,6 +11,7 @@ import com.acmed.his.pojo.vo.PreInspectVo;
 import com.acmed.his.pojo.vo.PreMedicineVo;
 import com.acmed.his.pojo.vo.PreVo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.support.AccessInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -277,6 +278,7 @@ public class PrescriptionManager {
         prescription.setDeptName(apply.getDeptName());
         prescription.setCategory("1");
         prescription.setIsPaid("0");
+        prescription.setIsDispensing("0");
 
         if(null == mo.getId()){
             prescription.setPrescriptionNo(apply.getId()+commonManager.getNextVal("Org"+apply.getId()));
@@ -340,6 +342,21 @@ public class PrescriptionManager {
 
         applyMapper.statisFee(apply.getId());//统计总费用
         return true;
+    }
+
+
+    /**
+     * 确认发药
+     * @param id
+     * @param userInfo
+     */
+    @Transactional
+    public void dispensing(Integer id, UserInfo userInfo) {
+        Prescription prescription = preMapper.selectByPrimaryKey(id);
+        prescription.setIsDispensing("1");
+        prescription.setModifyBy(userInfo.getId().toString());
+        prescription.setModifyAt(LocalDateTime.now().toString());
+        preMapper.updateByPrimaryKey(prescription);
     }
 
 

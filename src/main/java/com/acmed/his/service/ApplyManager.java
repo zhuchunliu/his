@@ -4,7 +4,9 @@ import com.acmed.his.dao.ApplyMapper;
 import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.Patient;
+import com.acmed.his.model.PayStatements;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
+import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.IdCardUtil;
 import com.acmed.his.util.date.DateUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +39,9 @@ public class ApplyManager {
 
     @Autowired
     private CommonManager commonManager;
+
+    @Autowired
+    private PayManager payManager;
 
     /**
      * 添加挂号
@@ -189,5 +195,28 @@ public class ApplyManager {
             }
         }
         return resultList;
+    }
+
+    @Transactional
+    public void pay(int applyId,  Double fee, String feeType,UserInfo userInfo){
+        Apply apply = applyMapper.selectByPrimaryKey(applyId);
+        apply.setIsPaid("1");
+        apply.setFeeType(feeType);
+        applyMapper.updateByPrimaryKey(apply);
+
+        // TODO 付款后期完善
+        PayStatements payStatements = new PayStatements();
+        payStatements.setFee(BigDecimal.valueOf(fee));
+        payStatements.setFeeType(feeType);
+        payStatements.setCreateAt(LocalDateTime.now().toString());
+        payStatements.setCreateBy(userInfo.getId().toString());
+        payStatements.setApplyId(apply.getId());
+        payStatements.setPatientId(apply.getPatientId());
+        payManager.addPayStatements(payStatements);
+
+    }
+
+    public List<Apply> getApply(Integer orgCode, String name, String date, String status) {
+        return applyMapper.getApply(orgCode,name,date,status);
     }
 }

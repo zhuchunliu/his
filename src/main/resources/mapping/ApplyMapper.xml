@@ -2,10 +2,55 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.ApplyMapper">
+    <resultMap id="apply" type="com.acmed.his.model.Apply">
+        <id property="id" column=""></id>
+        <result property="clinicNo" column="clinicno"></result>
+        <result property="orgCode" column="orgcode"></result>
+        <result property="orgName" column="orgname"></result>
+        <result property="patientId" column="patientid"></result>
+        <result property="patientName" column="patientname"></result>
+        <result property="gender" column="gender"></result>
+        <result property="pinYin" column="pinYin"></result>
+        <result property="fee" column="fee"></result>
+        <result property="isPaid" column="ispaid"></result>
+        <result property="feeType" column="feetype"></result>
+        <result property="createAt" column="createat"></result>
+        <result property="modifyAt" column="modifyat"></result>
+        <result property="createBy" column="createby"></result>
+        <result property="modifyBy" column="modifyby"></result>
+        <result property="expire" column="expire"></result>
+        <result property="status" column="status"></result>
+        <result property="deptName" column="deptname"></result>
+        <result property="dept" column="dept"></result>
+        <result property="age" column="age"></result>
+        <result property="totalFee" column="totalfee"></result>
+    </resultMap>
 
     <update id="statisFee">
       update t_b_apply
       set totalfee = (select SUM(fee) from t_b_prescription where applyid = #{id})
       where id = #{id}
     </update>
+
+    <select id = "getApply" resultMap="apply">
+        SELECT * from t_b_apply t1
+
+        <trim prefixOverrides="and" prefix="where">
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                and orgcode = #{orgCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(name)">
+                and (patientname like CONCAT('%',#{name},'%') or clinicno like CONCAT('%',#{name},'%'))
+            </if>
+            <if test="@Ognl@isNotEmpty(date)">
+                and DATE_FORMAT(createat,'%Y-%m-%d') =  DATE_FORMAT(#{date},'%Y-%m-%d')
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 0">
+                and EXISTS (select * from t_b_prescription t2 where applyid = t1.id and t2.isdispensing = '0')
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 1">
+                and EXISTS (select * from t_b_prescription t2 where applyid = t1.id and t2.isdispensing = '1')
+            </if>
+        </trim>
+    </select>
 </mapper>
