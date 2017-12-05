@@ -60,7 +60,7 @@ public class DispensingApi {
     @Autowired
     private BaseInfoManager baseInfoManager;
 
-    @ApiOperation(value = "根据挂号id获取处方列表")
+    @ApiOperation(value = "获取发药收费列表")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/list")
     public ResponseResult<DispensingVo> getDispensingList(

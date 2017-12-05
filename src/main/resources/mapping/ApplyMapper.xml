@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.ApplyMapper">
     <resultMap id="apply" type="com.acmed.his.model.Apply">
-        <id property="id" column=""></id>
+        <id property="id" column="id"></id>
         <result property="clinicNo" column="clinicno"></result>
         <result property="orgCode" column="orgcode"></result>
         <result property="orgName" column="orgname"></result>
