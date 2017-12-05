@@ -38,4 +38,7 @@ public class DispensingVo {
 
     @ApiModelProperty("诊断信息")
     private String diagnosis;
+
+    @ApiModelProperty("是否已付费 0:否; 1:是")
+    private String isPaid;
 }
