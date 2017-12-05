@@ -219,4 +219,43 @@ public class ApplyManager {
     public List<Apply> getApply(Integer orgCode, String name, String date, String status) {
         return applyMapper.getApply(orgCode,name,date,status);
     }
+
+    /**
+     * 根据姓名或者拼音模糊查询
+     * @param param 姓名或者拼音
+     * @param status 状态  不传就是全部
+     * @param dept 科室
+     * @return List<ApplyDoctorVo>
+     */
+    public List<ApplyDoctorVo> getByPinyinOrName(String param,String status,Integer dept,Date date){
+        List<ApplyDoctorVo> resultList = new ArrayList<>();
+        if (date==null){
+            date = new Date();
+        }
+        List<Apply> applies = applyMapper.mohu(dept,date,status,param);
+        if (applies.size()==0){
+            return resultList;
+        }
+        List<Integer> patientIds = new ArrayList<>();
+        for (Apply a : applies){
+            patientIds.add(a.getPatientId());
+        }
+        Example patientExample = new Example(Patient.class);
+        patientExample.createCriteria().andIn("id",patientIds);
+        List<Patient> patients = patientMapper.selectByExample(patientExample);
+        for (Apply a : applies){
+            Integer patientId = a.getPatientId();
+            ApplyDoctorVo applyDoctorVo = new ApplyDoctorVo();
+            BeanUtils.copyProperties(a,applyDoctorVo);
+            for (Patient p : patients){
+                Integer id = p.getId();
+                if (patientId.equals(id)){
+                    applyDoctorVo.setIdCard(p.getIdCard());
+                    applyDoctorVo.setMobile(p.getMobile());
+                    resultList.add(applyDoctorVo);
+                }
+            }
+        }
+        return resultList;
+    }
 }

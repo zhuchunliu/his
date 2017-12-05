@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -91,5 +92,16 @@ public class ApplyApi {
         String status = model.getStatus();
         String date = model.getDate();
         return ResponseUtil.setSuccessResult(applyManager.getApplyDoctorVoList(id,status,date));
+    }
+
+    @ApiOperation(value = "模糊查询当前科室挂号列表（姓名或者拼音）")
+    @GetMapping("mohu")
+    public ResponseResult<List<ApplyDoctorVo>> mohu(
+            @ApiParam("姓名或者拼音首字母") @RequestParam(value = "param" )String param,
+            @ApiParam("挂号日期，不传就是默认今天") @RequestParam(value = "id" )Date date,
+            @ApiParam("状态  不传就是全部") @RequestParam(value = "id" )String status,
+            @AccessToken AccessInfo info){
+        Integer dept = info.getUser().getDept();
+        return ResponseUtil.setSuccessResult(applyManager.getByPinyinOrName(param,status,dept,date));
     }
 }

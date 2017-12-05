@@ -4,6 +4,7 @@ import com.acmed.his.model.Apply;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,4 +28,14 @@ public interface ApplyMapper extends TkMapper<Apply>{
      * @return
      */
     List<Apply> getApply(@Param("orgCode") Integer orgCode, @Param("name") String name, @Param("date") String date, @Param("status") String status);
+
+    /**
+     * 姓名模糊查询
+     * @param dept 科室id
+     * @param date 日期
+     * @param status 状态
+     * @param name 姓名
+     * @return
+     */
+    List<Apply> mohu(@Param("dept") Integer dept,@Param("date") Date date,@Param("status") String status,@Param("name") String name);
 }

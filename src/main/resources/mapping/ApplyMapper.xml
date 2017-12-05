@@ -53,4 +53,18 @@
             </if>
         </trim>
     </select>
+
+    <select id="mohu" resultType="com.acmed.his.model.Apply">
+        SELECT t1.* FROM t_b_apply t1
+        <trim prefixOverrides="and" prefix="where">
+            and t1.dept = #{dept}
+            and (patientname like CONCAT('%',#{name},'%') or pinyin like CONCAT('%',#{name},'%'))
+            <if test="@Ognl@isNotEmpty(status)">
+                and t1.status = #{status}
+            </if>
+            <if test="@Ognl@isNotEmpty(date)">
+                and DATE_FORMAT(t1.createat,'%Y-%m-%d') =  DATE_FORMAT(#{date},'%Y-%m-%d')
+            </if>
+        </trim>
+    </select>
 </mapper>
