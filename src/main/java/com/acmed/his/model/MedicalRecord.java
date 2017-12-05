@@ -29,9 +29,6 @@ public class MedicalRecord {
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
 
-    @ApiModelProperty("科室")
-    private String dept;
-
     @ApiModelProperty("1 初诊、0 复诊")
     private String isFirst;
 
@@ -64,6 +61,9 @@ public class MedicalRecord {
 
     @ApiModelProperty("修改用户")
     private String modifyBy;
+
+    @ApiModelProperty("科室id")
+    private Integer dept;
 
     @ApiModelProperty("科室名字")
     private String deptName;

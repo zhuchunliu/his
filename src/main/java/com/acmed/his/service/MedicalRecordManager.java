@@ -1,6 +1,7 @@
 package com.acmed.his.service;
 
 import com.acmed.his.dao.MedicalRecordMapper;
+import com.acmed.his.model.Apply;
 import com.acmed.his.model.MedicalRecord;
 import com.acmed.his.model.dto.MedicalReDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +24,39 @@ public class MedicalRecordManager {
     @Autowired
     private MedicalRecordMapper medicalRecordMapper;
 
+    @Autowired
+    private ApplyManager applyManager;
+
     /**
      * 添加病例
      * @param medicalRecord 参数
      * @return 0 失败 1成功
      */
     public int addMedicalRecord(MedicalRecord medicalRecord){
-        String now = LocalDateTime.now().toString();
-        medicalRecord.setCreateAt(now);
-        medicalRecord.setModifyAt(now);
-        return medicalRecordMapper.insert(medicalRecord);
+        Integer id = medicalRecord.getId();
+        if (id==null){
+            Integer applyId = medicalRecord.getApplyId();
+            Apply apply = applyManager.getApplyById(applyId);
+            if (apply == null){
+                return 0;
+            }
+            medicalRecord.setPatientId(apply.getPatientId());
+            medicalRecord.setOrgCode(apply.getOrgCode());
+            medicalRecord.setDept(apply.getDept());
+            medicalRecord.setDeptName(apply.getDeptName());
+            String now = LocalDateTime.now().toString();
+            medicalRecord.setCreateAt(now);
+            medicalRecord.setModifyAt(now);
+            medicalRecordMapper.insert(medicalRecord);
+            apply = new Apply();
+            apply.setId(applyId);
+            // 挂号单修改成已就诊
+            apply.setStatus("1");
+            applyManager.updateApply(apply);
+            return 1;
+        }else {
+            return medicalRecordMapper.updateByPrimaryKeySelective(medicalRecord);
+        }
     }
 
     /**
