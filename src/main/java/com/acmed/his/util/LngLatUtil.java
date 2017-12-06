@@ -8,8 +8,8 @@ package com.acmed.his.util;
 public class LngLatUtil {
 
 
-//    public static final double EARTH_RADIUS = 6371.393;//km 地球半径 平均值，千米
-        public static final double EARTH_RADIUS = 6378.137;
+    public static final double EARTH_RADIUS = 6371.393;//km 地球半径 平均值，千米
+//        public static final double EARTH_RADIUS = 6378.137;
     /**
      *
      * @param lng1  经度1
