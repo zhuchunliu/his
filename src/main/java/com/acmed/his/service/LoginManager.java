@@ -80,22 +80,29 @@ public class LoginManager {
         example.createCriteria().andEqualTo("openid",openid);
         User user = Optional.ofNullable(userMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
         Patient patient = null;
-        String loginid = null;
 
-        if(null != user){
-            loginid = String.format(RedisKeyConstants.USER_WEIXIN,user.getId());
+
+        String loginid = Optional.ofNullable(user).map(obj->String.format(RedisKeyConstants.USER_WEIXIN,user.getId())).orElse(null);
+
+        new Example(Patient.class);
+        example.createCriteria().andEqualTo("openid",openid);
+        patient = Optional.ofNullable(patientMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
+        if(null != patient && null == loginid){
+            loginid = String.format(RedisKeyConstants.PATIENT_WEIXIN,patient.getId());
         }
-        if(null == user){
-            new Example(Patient.class);
-            example.createCriteria().andEqualTo("openid",openid);
-            patient = Optional.ofNullable(patientMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
-            if(null != patient){
-                loginid = String.format(RedisKeyConstants.PATIENT_WEIXIN,patient.getId());
-            }
-        }
+
         if(null == user && null == patient){
-            return new RequestToken();
+            return new RequestToken(0);
         }
+        RequestToken requestToken = new RequestToken();
+        if(null != user && null != patient){
+            requestToken.setStatus(3);
+        }else if(null != user){
+            requestToken.setStatus(2);
+        }else {
+            requestToken.setStatus(1);
+        }
+
 
         //查询Redis中的Token
         HashOperations<String, Object, Object> hash = redisTemplate.opsForHash();
@@ -116,7 +123,6 @@ public class LoginManager {
         }
         redisTemplate.expire(rediskey, CommonConstants.LOGININFO_WEIXIN_EXPIRE_SECONDS, TimeUnit.SECONDS);
 
-        RequestToken requestToken = new RequestToken();
         requestToken.setToken(token);
         requestToken.setLoginid(loginid);
         requestToken.setRemoteip(ip);

@@ -59,10 +59,10 @@ public class UserApi {
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/detail")
     public ResponseResult<UserVo> getUserDetail(@ApiParam("用户主键 null:获取当前登录人的个人信息") @RequestParam(value = "id",required = false) Integer id,
-                                                @AccessToken UserInfo userInfo){
+                                                @AccessToken AccessInfo info){
         UserVo userVo = new UserVo();
         if(null == id){
-            id = userInfo.getId();
+            id = info.getUser().getId();
         }
         BeanUtils.copyProperties(userManager.getUserDetail(id),userVo);
         return ResponseUtil.setSuccessResult(userVo);
