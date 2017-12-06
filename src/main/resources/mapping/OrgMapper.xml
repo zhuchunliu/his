@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.OrgMapper">
+
+    <select id="getOrgList" resultType="com.acmed.his.model.Org">
+        select * from t_p_s_org where removed = '0'
+        AND lng BETWEEN #{lngBegin} AND #{lngEnd}
+        AND lat BETWEEN #{latBegin} AND #{latEnd};
+    </select>
+
+    <select id="getOrgListByCity" resultType="com.acmed.his.model.Org">
+        select * from t_p_s_org where removed = '0'
+      <if test="@Ognl@isNotEmpty(cityId)">
+        and (province = #{cityId} or city = #{cityId})
+      </if>
+    </select>
+</mapper>

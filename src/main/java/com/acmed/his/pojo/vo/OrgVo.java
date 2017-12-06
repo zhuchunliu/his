@@ -1,15 +1,14 @@
-package com.acmed.his.pojo.mo;
+package com.acmed.his.pojo.vo;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
- * Created by Darren on 2017-11-22
+ * Created by Darren on 2017-12-06
  **/
 @Data
-public class OrgMo {
+public class OrgVo {
     @ApiModelProperty("机构code")
     private Integer orgCode;
 
@@ -34,15 +33,6 @@ public class OrgMo {
     @ApiModelProperty("地址")
     private String address;
 
-//    @ApiModelProperty("省")
-//    private String province;
-//
-//    @ApiModelProperty("市")
-//    private String city;
-//
-//    @ApiModelProperty("县")
-//    private String country;
-
     @ApiModelProperty("状态 0:启用，1：禁用")
     private String status;
 
@@ -60,4 +50,11 @@ public class OrgMo {
 
     @ApiModelProperty("是否就医北上广医院")
     private String isRecommend;
+
+    @ApiModelProperty(value = "距离 单位：km,未格式化",hidden = true)
+    @JSONField(serialize = false)
+    private Double distanceUn;
+
+    @ApiModelProperty("距离 单位：km")
+    private String distance;
 }

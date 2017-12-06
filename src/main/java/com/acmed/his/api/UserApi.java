@@ -4,6 +4,7 @@ import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
+import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.vo.UserVo;
 import com.acmed.his.service.UserManager;
 import com.acmed.his.support.AccessInfo;
@@ -54,9 +55,14 @@ public class UserApi {
     }
 
     @ApiOperation(value = "获取用户详情")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/detail")
-    public ResponseResult<UserVo> getUserDetail(@ApiParam("用户主键") @RequestParam("id") Integer id){
+    public ResponseResult<UserVo> getUserDetail(@ApiParam("用户主键 null:获取当前登录人的个人信息") @RequestParam(value = "id",required = false) Integer id,
+                                                @AccessToken UserInfo userInfo){
         UserVo userVo = new UserVo();
+        if(null == id){
+            id = userInfo.getId();
+        }
         BeanUtils.copyProperties(userManager.getUserDetail(id),userVo);
         return ResponseUtil.setSuccessResult(userVo);
     }

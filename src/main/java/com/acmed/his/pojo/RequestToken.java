@@ -21,4 +21,9 @@ class RequestToken implements Serializable {
     private String loginid;//请求用户id,appkey
     private String category;//请求类型
     private String remoteip;//访问客户端ip地址
+
+    public static void main(String[] args) {
+        System.err.println(Math.cos(28d));
+        System.err.println(Math.cos(28d)*111);
+    }
 }
