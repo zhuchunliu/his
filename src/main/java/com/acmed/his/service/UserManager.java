@@ -1,6 +1,8 @@
 package com.acmed.his.service;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.*;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Role;
 import com.acmed.his.model.User;
 import com.acmed.his.model.UserVsRole;
@@ -8,6 +10,7 @@ import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.MD5Util;
+import com.acmed.his.util.PassWordUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -161,5 +164,27 @@ public class UserManager {
     @Cacheable(value="user",key = "#openid")
     public User getUserByOpenid(String openid){
         return userMapper.getUserByOpenid(openid);
+    }
+
+    @Caching(evict = {
+            @CacheEvict(value = "user",key = "#result.id"),
+            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+    })
+
+    /**
+     * 修改密码
+     */
+    public User changePasswd(String oldPasswd, String newPasswd, UserInfo userInfo) {
+        User user = userMapper.selectByPrimaryKey(userInfo.getId());
+        if(!user.getPassWd().equalsIgnoreCase(MD5Util.encode(oldPasswd))){
+            throw new BaseException(StatusCode.ERROR_PASSWD);
+        }
+        user.setPassWd(MD5Util.encode(newPasswd));
+        user.setModifyBy(userInfo.getId().toString());
+        user.setModifyAt(LocalDateTime.now().toString());
+        userMapper.updateByPrimaryKey(user);
+
+        //TODO 删除之前密码对应的token
+        return user;
     }
 }

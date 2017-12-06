@@ -2,6 +2,9 @@ package com.acmed.his.filter.interceptor;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.service.PermissionManager;
+import com.acmed.his.support.APIScanner;
+import com.acmed.his.support.WithoutToken;
+import com.google.common.collect.ImmutableSet;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -9,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.List;
 
 /**
  * Created by Darren on 2017-11-30
@@ -21,12 +25,24 @@ public class AccessPermissionInterceptor implements HandlerInterceptor {
         this.permissionManager = applicationContext.getBean(PermissionManager.class);
     }
 
+    private static final ImmutableSet<String> ignore;
+
+    static {
+        List<String> parseFromPackage = APIScanner.getAPIByAnnotation("com.acmed.his.api", WithoutToken.class);
+        ignore = ImmutableSet.copyOf(parseFromPackage);
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
         String path = request.getServletPath();
-        if(path.contains("swagger") || path.contains("api-docs") || path.equals("/login")){
+        if(path.contains("swagger") || path.contains("api-docs")){
             return true;
         }
+
+        if(ignore.contains(request.getMethod()+request.getServletPath())){
+            return true;
+        }
+
         String loginId = request.getAttribute("loginId").toString();
         if(loginId.startsWith("PATIENT_WX")){//患者权限暂不控制
             return true;

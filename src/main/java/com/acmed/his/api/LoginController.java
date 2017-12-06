@@ -9,6 +9,7 @@ import com.acmed.his.service.LoginManager;
 import com.acmed.his.service.WxManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -42,7 +43,7 @@ public class LoginController {
 
     @ApiOperation("用户登录")
     @PostMapping
-    @ResponseBody
+    @WithoutToken
     public ResponseResult<RequestToken> userlogin(@RequestBody UserLoginMo mo) throws Exception{
         Map<String, Object> paramMap = new WeakHashMap<>();
         paramMap.put("loginName",mo.getLoginName());

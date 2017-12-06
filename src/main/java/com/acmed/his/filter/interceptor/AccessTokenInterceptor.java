@@ -7,8 +7,11 @@ import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.pojo.RequestToken;
 import com.acmed.his.service.LoginManager;
 import com.acmed.his.service.PermissionManager;
+import com.acmed.his.support.APIScanner;
+import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.TokenUtil;
+import com.google.common.collect.ImmutableSet;
 import io.swagger.annotations.ApiImplicitParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
@@ -22,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,14 +42,24 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
         this.redisTemplate = applicationContext.getBean("stringRedisTemplate",RedisTemplate.class);
     }
 
+    private static final ImmutableSet<String> ignore;
+
+    static {
+        List<String> parseFromPackage = APIScanner.getAPIByAnnotation("com.acmed.his.api", WithoutToken.class);
+        ignore = ImmutableSet.copyOf(parseFromPackage);
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
 
         String path = request.getServletPath();
-        if(path.contains("swagger") || path.contains("api-docs") || path.equals("/login")){
+        if(path.contains("swagger") || path.contains("api-docs")){
             return true;
         }
 
+        if(ignore.contains(request.getMethod()+request.getServletPath())){
+            return true;
+        }
 
         String token = request.getHeader(CommonConstants.USER_HEADER_TOKEN);
         if(StringUtils.isEmpty(token)){

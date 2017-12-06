@@ -11,6 +11,7 @@ import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -115,4 +116,19 @@ public class UserApi {
 
     }
 
+    @ApiOperation("修改密码")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
+    @PostMapping(value = "/passwd")
+    public ResponseResult changePasswd(@ApiParam("{\"oldPasswd\":\"\",\"newPasswd\":\"\"},oldPasswd：老密码、newPasswd：新密码")  @RequestBody String param,
+                                       @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("oldPasswd")){
+            return ResponseUtil.setParamEmptyError("oldPasswd");
+        }
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("newPasswd")){
+            return ResponseUtil.setParamEmptyError("newPasswd");
+        }
+        userManager.changePasswd(JSONObject.parseObject(param).get("oldPasswd").toString(),
+                JSONObject.parseObject(param).get("newPasswd").toString(),info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
 }
