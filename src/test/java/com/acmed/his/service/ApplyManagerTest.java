@@ -39,7 +39,7 @@ public class ApplyManagerTest {
         apply.setStatus("0");
         apply.setIsPaid("1");
         apply.setDeptName("内科");
-        applyManager.addApply(apply);
+//        applyManager.addApply(apply);
     }
 
     @Test

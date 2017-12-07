@@ -27,8 +27,8 @@ class RequestToken {
     @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private String remoteip;//访问客户端ip地址
-    @ApiModelProperty("用户角色 0:尚未绑定微信; 1:患者； 2:医生; 3:医生/患者")
-    private Integer status;//0:尚未绑定; 1:患者 2:医生; 3:医生/患者
+    @ApiModelProperty("用户角色 1:患者； 2:医生; 3:医生/患者")
+    private Integer status;//1:患者 2:医生; 3:医生/患者
 
     public RequestToken(){
 

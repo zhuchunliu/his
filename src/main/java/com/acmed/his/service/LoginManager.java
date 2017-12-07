@@ -45,6 +45,9 @@ public class LoginManager {
     @Autowired
     private PatientMapper patientMapper;
 
+    @Autowired
+    private PatientManager patientManager;
+
 
     /**
      * 用户登录
@@ -91,8 +94,12 @@ public class LoginManager {
             loginid = String.format(RedisKeyConstants.PATIENT_WEIXIN,patient.getId());
         }
 
-        if(null == user && null == patient){
-            return new RequestToken(0);
+        if(null == user && null == patient){//都没有数据的时候，则手动创建一条患者信息
+            patient = new Patient();
+            patient.setOpenid(openid);
+            patientMapper.insert(patient);
+            patient = patientManager.getPatientByOpenid(openid);
+            loginid = String.format(RedisKeyConstants.PATIENT_WEIXIN,patient.getId());
         }
         RequestToken requestToken = new RequestToken();
         if(null != user && null != patient){
@@ -121,7 +128,7 @@ public class LoginManager {
             map.put(tokenkey, token);
             hash.putAll(rediskey,map);
         }
-        redisTemplate.expire(rediskey, CommonConstants.LOGININFO_WEIXIN_EXPIRE_SECONDS, TimeUnit.SECONDS);
+        redisTemplate.expire(rediskey, CommonConstants.LOGININFO_WEIXIN_EXPIRE_SECONDS, TimeUnit.DAYS);
 
         requestToken.setToken(token);
         requestToken.setLoginid(loginid);

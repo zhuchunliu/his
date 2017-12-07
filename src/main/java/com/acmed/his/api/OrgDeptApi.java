@@ -4,6 +4,7 @@ import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.pojo.mo.DeptMo;
 import com.acmed.his.pojo.mo.OrgMo;
 import com.acmed.his.pojo.vo.OrgVo;
+import com.acmed.his.service.ApplyManager;
 import com.acmed.his.service.DeptManager;
 import com.acmed.his.service.OrgManager;
 import com.acmed.his.support.AccessInfo;
@@ -33,6 +34,9 @@ public class OrgDeptApi {
 
     @Autowired
     private DeptManager deptManager;
+
+    @Autowired
+    private ApplyManager applyManager;
 
     @ApiOperation(value = "新增/编辑 机构信息")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
@@ -69,6 +73,7 @@ public class OrgDeptApi {
             BeanUtils.copyProperties(obj,vo);
             Double distance = LngLatUtil.Distance(lng,lat,Double.parseDouble(obj.getLng()),Double.parseDouble(obj.getLat()));
             if(distance <= range) {
+                vo.setApplyNum(applyManager.getApplyNum(vo.getOrgCode()));
                 vo.setDistanceUn(distance);
                 vo.setDistance(format.format(distance));
                 list.add(vo);
@@ -85,10 +90,6 @@ public class OrgDeptApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
-    public static void main(String[] args) {
-        System.err.println(new DecimalFormat("#.00").format(1324332423.456d));
-    }
-
 
     @ApiOperation(value = "获取机构详情")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
@@ -100,6 +101,7 @@ public class OrgDeptApi {
             orgCode = info.getUser().getOrgCode();
         }
         BeanUtils.copyProperties(orgManager.getOrgDetail(orgCode),mo);
+        mo.setApplyNum(applyManager.getApplyNum(mo.getOrgCode()));
         return ResponseUtil.setSuccessResult(mo);
     }
 

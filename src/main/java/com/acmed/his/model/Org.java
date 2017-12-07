@@ -74,6 +74,9 @@ public class Org {
     @ApiModelProperty("是否就医北上广医院")
     private String isRecommend;
 
+    @ApiModelProperty("医院简介")
+    private String introduction;
+
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;
 

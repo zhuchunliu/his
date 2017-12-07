@@ -51,9 +51,15 @@ public class OrgVo {
     @ApiModelProperty("是否就医北上广医院")
     private String isRecommend;
 
+    @ApiModelProperty("医院简介")
+    private String introduction;
+
     @ApiModelProperty(value = "距离 单位：km,未格式化",hidden = true)
     @JSONField(serialize = false)
     private Double distanceUn;
+
+    @ApiModelProperty("挂号量")
+    private Integer applyNum;
 
     @ApiModelProperty("距离 单位：km")
     private String distance;

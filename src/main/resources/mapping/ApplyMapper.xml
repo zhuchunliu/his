@@ -72,4 +72,8 @@
             </if>
         </trim>
     </select>
+
+    <select id="getApplyNum" resultType="java.lang.Integer">
+        select count(1) from t_b_apply where orgcode = #{orgCode}
+    </select>
 </mapper>

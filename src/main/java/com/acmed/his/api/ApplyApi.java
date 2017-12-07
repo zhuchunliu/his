@@ -1,7 +1,9 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.model.Apply;
 import com.acmed.his.pojo.mo.ApplyIdAndStatus;
+import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.mo.DeptIdAndStatus;
 import com.acmed.his.pojo.mo.DeptIdAndStatusAndDate;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
@@ -11,6 +13,7 @@ import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +37,11 @@ public class ApplyApi {
     private ApplyManager applyManager;
 
     @ApiOperation(value = "添加挂号信息")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("add")
-    public ResponseResult add(@RequestBody Apply apply){
-        applyManager.addApply(apply);
+    public ResponseResult add(@RequestBody ApplyMo mo,
+                              @AccessToken AccessInfo info){
+        applyManager.addApply(mo,info.getPatientId());
         return ResponseUtil.setSuccessResult();
     }
 

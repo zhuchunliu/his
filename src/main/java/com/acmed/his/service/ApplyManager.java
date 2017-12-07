@@ -5,9 +5,12 @@ import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.PayStatements;
+import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
+import com.acmed.his.pojo.vo.PatientInfoVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.IdCardUtil;
+import com.acmed.his.util.PinYinUtil;
 import com.acmed.his.util.date.DateStyle;
 import com.acmed.his.util.date.DateUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ApplyManager
@@ -40,26 +44,38 @@ public class ApplyManager {
     private PatientMapper patientMapper;
 
     @Autowired
+    private PatientManager patientManager;
+
+    @Autowired
     private CommonManager commonManager;
 
     @Autowired
     private PayManager payManager;
 
+    @Autowired
+    private OrgManager orgManager;
+
+    @Autowired
+    private DeptManager deptManager;
+
     /**
      * 添加挂号
-     * @param apply 属性
+     * @param mo 属性
+     * @param patientId 患者主键
      * @return 0失败  1 成功
      */
-    public int addApply(Apply apply){
-        apply.setId(null);
-        String now = LocalDateTime.now().toString();
-        apply.setCreateAt(now);
-        apply.setModifyAt(now);
-        apply.setFee(1.00);
-        // 0表示未支付
-        apply.setIsPaid("0");
-        // 未就诊
+    public int addApply(ApplyMo mo, Integer patientId){
+        Apply apply = new Apply();
+        BeanUtils.copyProperties(mo,apply);
+        apply.setPatientId(patientId);
+        apply.setCreateBy(patientId.toString());
+        apply.setCreateAt(LocalDateTime.now().toString());
         apply.setStatus("0");
+        apply.setIsPaid("0");
+        apply.setFee(1d);
+        apply.setOrgName(Optional.ofNullable(mo.getOrgCode()).map(orgManager::getOrgDetail).map(obj->obj.getOrgName()).orElse(null));
+        apply.setDeptName(Optional.ofNullable(mo.getDept()).map(deptManager::getDeptDetail).map(obj->obj.getDept()).orElse(null));
+
         // 医疗机构编码
         Integer orgCode = apply.getOrgCode();
         // 根据医疗机构id 和 时间查询数字 +1 就是现在的就诊号
@@ -67,7 +83,20 @@ public class ApplyManager {
         String formatVal = commonManager.getFormatVal(orgCode + "applyCode", "000000000");
         apply.setClinicNo(formatVal);
         // 插入
-        return applyMapper.insert(apply);
+        applyMapper.insert(apply);
+
+        Patient patient = patientManager.getPatientById(patientId);
+        if(null != patient){
+            patient.setUserName(apply.getPatientName());
+            patient.setGender(apply.getGender());
+            patient.setMobile(mo.getMobile());
+            patient.setIdCard(mo.getIdcard());
+            patient.setSocialCard(mo.getSocialCard());
+            patient.setInputCode(PinYinUtil.getPinYinHeadChar(patient.getUserName()));
+            patientManager.update(patient);
+        }
+
+        return 1;
     }
 
     /**
@@ -243,5 +272,14 @@ public class ApplyManager {
             }
         }
         return resultList;
+    }
+
+    /**
+     * 获取指定机构的就诊量
+     * @param orgCode
+     * @return
+     */
+    public Integer getApplyNum(Integer orgCode) {
+        return applyMapper.getApplyNum(orgCode);
     }
 }

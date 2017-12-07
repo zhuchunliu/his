@@ -46,6 +46,9 @@ public class OrgMo {
     @ApiModelProperty("状态 0:启用，1：禁用")
     private String status;
 
+    @ApiModelProperty("医院简介")
+    private String introduction;
+
     @ApiModelProperty("经度")
     private String lng;
 
