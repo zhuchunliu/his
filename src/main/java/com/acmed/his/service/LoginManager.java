@@ -23,6 +23,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -97,6 +98,7 @@ public class LoginManager {
         if(null == user && null == patient){//都没有数据的时候，则手动创建一条患者信息
             patient = new Patient();
             patient.setOpenid(openid);
+            patient.setCreateAt(LocalDateTime.now().toString());
             patientMapper.insert(patient);
             patient = patientManager.getPatientByOpenid(openid);
             loginid = String.format(RedisKeyConstants.PATIENT_WEIXIN,patient.getId());

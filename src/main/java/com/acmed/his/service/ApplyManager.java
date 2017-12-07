@@ -64,6 +64,7 @@ public class ApplyManager {
      * @param patientId 患者主键
      * @return 0失败  1 成功
      */
+    @Transactional
     public int addApply(ApplyMo mo, Integer patientId){
         Apply apply = new Apply();
         BeanUtils.copyProperties(mo,apply);
@@ -86,12 +87,15 @@ public class ApplyManager {
         applyMapper.insert(apply);
 
         Patient patient = patientManager.getPatientById(patientId);
-        if(null != patient){
+        if(null != patient && StringUtils.isEmpty(patient.getModifyAt())){//第一次挂号的时候，将挂号页面数据带入个人信息表中
+
             patient.setUserName(apply.getPatientName());
             patient.setGender(apply.getGender());
             patient.setMobile(mo.getMobile());
             patient.setIdCard(mo.getIdcard());
             patient.setSocialCard(mo.getSocialCard());
+            patient.setModifyAt(LocalDateTime.now().toString());
+            patient.setModifyBy(patientId.toString());
             patient.setInputCode(PinYinUtil.getPinYinHeadChar(patient.getUserName()));
             patientManager.update(patient);
         }
