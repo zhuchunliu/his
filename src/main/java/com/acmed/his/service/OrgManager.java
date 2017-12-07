@@ -119,12 +119,12 @@ public class OrgManager {
      * @param lng 经度
      * @param lat 纬度
      * @param range 直线距离
-     *
+     * @param orgName 机构名称
      * @return
      */
-    public List<Org> getOrgList(Double lng, Double lat,Double range) {
+    public List<Org> getOrgList(Double lng, Double lat,Double range,String orgName) {
         Double offset = range * 1.5 / 100; //防止误差，先夸大范围
-        List<Org> list = orgMapper.getOrgList(lng-offset,lng+offset,lat-offset,lat+offset);
+        List<Org> list = orgMapper.getOrgList(lng-offset,lng+offset,lat-offset,lat+offset,orgName);
         return list;
     }
 }

@@ -6,7 +6,10 @@
     <select id="getOrgList" resultType="com.acmed.his.model.Org">
         select * from t_p_s_org where removed = '0'
         AND lng BETWEEN #{lngBegin} AND #{lngEnd}
-        AND lat BETWEEN #{latBegin} AND #{latEnd};
+        AND lat BETWEEN #{latBegin} AND #{latEnd}
+        <if test="@Ognl@isNotEmpty(orgName)">
+            and orgname like CONCAT('%',#{orgName},'%')
+        </if>
     </select>
 
     <select id="getOrgListByCity" resultType="com.acmed.his.model.Org">

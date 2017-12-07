@@ -7,6 +7,7 @@ import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.mo.DeptIdAndStatus;
 import com.acmed.his.pojo.mo.DeptIdAndStatusAndDate;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
+import com.acmed.his.pojo.vo.ApplyVo;
 import com.acmed.his.service.ApplyManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -16,9 +17,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -46,9 +49,20 @@ public class ApplyApi {
     }
 
     @ApiOperation(value = "根据患者id 查询列表")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("patientId")
-    public ResponseResult patientId(@ApiParam("患者id") @RequestParam(value = "patientId") Integer patientId){
-        return ResponseUtil.setSuccessResult(applyManager.getApplyByPatientId(patientId));
+    public ResponseResult<ApplyVo> patientId(@ApiParam("患者id") @RequestParam(value = "patientId",required = false) Integer patientId,
+                                    @AccessToken AccessInfo info){
+        if(null == patientId){
+            patientId = info.getPatientId();
+        }
+        List<ApplyVo> list = new ArrayList<>();
+        applyManager.getApplyByPatientId(patientId).forEach(obj->{
+            ApplyVo applyVo = new ApplyVo();
+            BeanUtils.copyProperties(obj,applyVo);
+            list.add(applyVo);
+        });
+        return ResponseUtil.setSuccessResult(list);
     }
 
 

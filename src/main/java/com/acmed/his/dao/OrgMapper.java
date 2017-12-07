@@ -19,10 +19,12 @@ public interface OrgMapper extends TkMapper<Org> {
      * @param lngEnd 结束经度
      * @param latBegin 开始纬度
      * @param latEnd 结束纬度
+     * @param orgName 医院名称
      * @return
      */
     List<Org> getOrgList(@Param("lngBegin") double lngBegin, @Param("lngEnd")double lngEnd,
-                         @Param("latBegin") double latBegin, @Param("latEnd") double latEnd);
+                         @Param("latBegin") double latBegin, @Param("latEnd") double latEnd,
+                         @Param("orgName") String orgName);
 
     /**
      * 根据城市获取机构信息
