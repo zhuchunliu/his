@@ -46,3 +46,7 @@ pagehelper:
     reasonable: true
     supportMethodsArguments: true
     params: count=countSql
+
+weixin:
+  appid: wx3d71d42f9956d861
+  secret: 0cfc86874245070901f8b7059376fb1c

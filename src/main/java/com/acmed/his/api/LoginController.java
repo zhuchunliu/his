@@ -70,8 +70,8 @@ public class LoginController {
             @ApiParam(value = "code") @RequestParam("code") String code){
         String openid = null;
         try {
-            openid = wxManager.getOPenidByCode(code);
-        } catch (WxErrorException e) {
+            openid = wxManager.getOpenid(code);
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
         }
