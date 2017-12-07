@@ -68,14 +68,14 @@ public class LoginController {
     @WithoutToken
     public ResponseResult<RequestToken> openid(
             @ApiParam(value = "code") @RequestParam("code") String code){
-//        String openid = null;
-//        try {
-//            openid = wxManager.getOpenid(code);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
-//        }
-        RequestToken requestToken =  loginManager.getTokenByOpenid(code);
+        String openid = null;
+        try {
+            openid = wxManager.getOpenid(code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
+        }
+        RequestToken requestToken =  loginManager.getTokenByOpenid(openid);
         return ResponseUtil.setSuccessResult(requestToken);
     }
 
