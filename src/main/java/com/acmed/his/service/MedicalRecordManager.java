@@ -4,6 +4,7 @@ import com.acmed.his.dao.MedicalRecordMapper;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.MedicalRecord;
 import com.acmed.his.model.dto.MedicalReDto;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -33,9 +34,9 @@ public class MedicalRecordManager {
      * @return 0 失败 1成功
      */
     public int addMedicalRecord(MedicalRecord medicalRecord){
-        Integer id = medicalRecord.getId();
-        if (id==null){
-            Integer applyId = medicalRecord.getApplyId();
+        String id = medicalRecord.getId();
+        if (StringUtils.isEmpty(id)){
+            String applyId = medicalRecord.getApplyId();
             Apply apply = applyManager.getApplyById(applyId);
             if (apply == null){
                 return 0;

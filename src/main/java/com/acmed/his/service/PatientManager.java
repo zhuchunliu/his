@@ -68,7 +68,7 @@ public class PatientManager {
      * @param id 患者id
      * @return Patient
      */
-    public Patient getPatientById(Integer id){
+    public Patient getPatientById(String id){
         return patientMapper.selectByPrimaryKey(id);
     }
 

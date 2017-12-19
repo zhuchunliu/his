@@ -21,10 +21,13 @@ public class MedicalRecord {
 
     @ApiModelProperty("挂号单号")
     @Id
-    private Integer id;
+    private String id;
+
+    @ApiModelProperty("挂号表id")
+    private String applyId;
 
     @ApiModelProperty("患者id")
-    private Integer patientId;
+    private String patientId;
 
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
@@ -68,6 +71,5 @@ public class MedicalRecord {
     @ApiModelProperty("科室名字")
     private String deptName;
 
-    @ApiModelProperty("挂号表id")
-    private Integer applyId;
+
 }

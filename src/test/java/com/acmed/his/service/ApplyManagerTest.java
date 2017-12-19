@@ -31,7 +31,7 @@ public class ApplyManagerTest {
         Apply apply = new Apply();
         apply.setOrgCode(1);
         apply.setOrgName("和谐医院");
-        apply.setPatientId(1);
+        apply.setPatientId("1");
         apply.setPatientName("王二");
         apply.setGender("1");
         apply.setPinYin("WE");
@@ -44,12 +44,12 @@ public class ApplyManagerTest {
 
     @Test
     public void getApplyByPatientId() throws Exception {
-        applyManager.getApplyByPatientId(1);
+        applyManager.getApplyByPatientId("1");
     }
 
     @Test
     public void getApplyById() throws Exception {
-        applyManager.getApplyById(2);
+        applyManager.getApplyById("2");
     }
 
     @Test
@@ -65,7 +65,7 @@ public class ApplyManagerTest {
     @Test
     public void updateApply() throws Exception {
         Apply apply = new Apply();
-        apply.setId(3);
+        apply.setId("3");
         apply.setOrgName("和谐医院232332");
         applyManager.updateApply(apply);
     }

@@ -30,13 +30,13 @@ public class PayStatements {
     private String source;
 
     @ApiModelProperty("处方id")
-    private Integer prescriptionId;
+    private String prescriptionId;
 
     @ApiModelProperty("挂号单号id")
-    private Integer applyId;
+    private String applyId;
 
     @ApiModelProperty("患者id")
-    private Integer patientId;
+    private String patientId;
 
     @ApiModelProperty("付款账号")
     private String payerAccount;

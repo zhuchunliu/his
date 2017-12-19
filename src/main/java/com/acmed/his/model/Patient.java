@@ -21,9 +21,8 @@ import java.util.Date;
 @NameStyle
 public class Patient {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty("主键")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("用户姓名")
     private String userName;

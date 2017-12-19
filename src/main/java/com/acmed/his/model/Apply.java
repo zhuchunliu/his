@@ -21,9 +21,8 @@ import java.util.Date;
 public class Apply {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty("挂号单id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("挂号单号 医疗机构id+排序")
     private String clinicNo;
@@ -35,7 +34,7 @@ public class Apply {
     private String orgName;
 
     @ApiModelProperty("患者id")
-    private Integer patientId;
+    private String patientId;
 
     @ApiModelProperty("患者姓名")
     private String patientName;

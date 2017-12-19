@@ -22,7 +22,7 @@ import java.util.List;
 public class DispensingPreVo {
 
     @ApiModelProperty("处方主键")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("处方编号")
     private String prescriptionNo;

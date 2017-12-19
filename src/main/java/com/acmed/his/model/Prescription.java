@@ -20,18 +20,17 @@ import javax.persistence.Table;
 @NameStyle
 public class Prescription {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty("处方id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("挂号单号")
-    private Integer applyId;
+    private String applyId;
 
     @ApiModelProperty("处方编号,医疗机构id+排序")
     private String prescriptionNo;
 
     @ApiModelProperty("患者id")
-    private Integer patientId;
+    private String patientId;
 
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;

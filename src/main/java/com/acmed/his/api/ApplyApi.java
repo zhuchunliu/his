@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -51,9 +52,9 @@ public class ApplyApi {
     @ApiOperation(value = "根据患者id 查询列表")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("patientId")
-    public ResponseResult<ApplyVo> patientId(@ApiParam("患者id") @RequestParam(value = "patientId",required = false) Integer patientId,
+    public ResponseResult<ApplyVo> patientId(@ApiParam("患者id") @RequestParam(value = "patientId",required = false) String patientId,
                                     @AccessToken AccessInfo info){
-        if(null == patientId){
+        if(StringUtils.isEmpty(patientId)){
             patientId = info.getPatientId();
         }
         List<ApplyVo> list = new ArrayList<>();
@@ -75,7 +76,7 @@ public class ApplyApi {
 
     @ApiOperation(value = "根据挂号单id查询")
     @GetMapping("id")
-    public ResponseResult<Apply> id(@ApiParam("挂号单id") @RequestParam(value = "id" ) Integer id){
+    public ResponseResult<Apply> id(@ApiParam("挂号单id") @RequestParam(value = "id" ) String id){
         Apply applyById = applyManager.getApplyById(id);
         return ResponseUtil.setSuccessResult(applyById);
     }
@@ -96,7 +97,7 @@ public class ApplyApi {
         Integer id = model.getId();
         String status = model.getStatus();
         Apply apply = new Apply();
-        apply.setId(id);
+        apply.setId(id.toString());
         apply.setStatus(status);
         // 添加修改人的id
         apply.setModifyBy(info.getUserId().toString());

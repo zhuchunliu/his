@@ -17,7 +17,7 @@ public interface ApplyMapper extends TkMapper<Apply>{
      * 统计挂号单总费用 ，暂时只统计了处方费用
      * @param id
      */
-    void statisFee(@Param("id") Integer id);
+    void statisFee(@Param("id") String id);
 
     /**
      * 获取发挂号单列表【发药收费用】

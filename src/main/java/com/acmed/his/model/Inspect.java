@@ -21,18 +21,17 @@ import javax.persistence.Table;
 public class Inspect {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty("检查id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("处方id")
-    private Integer prescriptionId;
+    private String prescriptionId;
 
     @ApiModelProperty("挂号单号")
-    private Integer applyId;
+    private String applyId;
 
     @ApiModelProperty("患者id")
-    private Integer patientId;
+    private String patientId;
 
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;

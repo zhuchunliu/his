@@ -65,11 +65,11 @@ public class ApplyManager {
      * @return 0失败  1 成功
      */
     @Transactional
-    public int addApply(ApplyMo mo, Integer patientId){
+    public int addApply(ApplyMo mo, String patientId){
         Apply apply = new Apply();
         BeanUtils.copyProperties(mo,apply);
         apply.setPatientId(patientId);
-        apply.setCreateBy(patientId.toString());
+        apply.setCreateBy(patientId);
         apply.setCreateAt(LocalDateTime.now().toString());
         apply.setStatus("0");
         apply.setIsPaid("0");
@@ -133,7 +133,7 @@ public class ApplyManager {
      * @param patientId 患者id
      * @return List<Apply> 挂号列表
      */
-    public List<Apply> getApplyByPatientId(Integer patientId){
+    public List<Apply> getApplyByPatientId(String patientId){
         Example example = new Example(Apply.class);
         example.setOrderByClause("createAt desc");
         example.createCriteria().andEqualTo("patientId",patientId);
@@ -145,7 +145,7 @@ public class ApplyManager {
      * @param id 挂号id 主键
      * @return Apply
      */
-    public Apply getApplyById(Integer id){
+    public Apply getApplyById(String id){
         return applyMapper.selectByPrimaryKey(id);
     }
 
@@ -193,7 +193,7 @@ public class ApplyManager {
         if (applies.size()==0){
             return resultList;
         }
-        List<Integer> patientIds = new ArrayList<>();
+        List<String> patientIds = new ArrayList<>();
         for (Apply a : applies){
             patientIds.add(a.getPatientId());
         }
@@ -201,11 +201,11 @@ public class ApplyManager {
         patientExample.createCriteria().andIn("id",patientIds);
         List<Patient> patients = patientMapper.selectByExample(patientExample);
         for (Apply a : applies){
-            Integer patientId = a.getPatientId();
+            String patientId = a.getPatientId();
             ApplyDoctorVo applyDoctorVo = new ApplyDoctorVo();
             BeanUtils.copyProperties(a,applyDoctorVo);
             for (Patient p : patients){
-                Integer id = p.getId();
+                String id = p.getId();
                 if (patientId.equals(id)){
                     applyDoctorVo.setIdCard(p.getIdCard());
                     applyDoctorVo.setMobile(p.getMobile());
@@ -255,7 +255,7 @@ public class ApplyManager {
         if (applies.size()==0){
             return resultList;
         }
-        List<Integer> patientIds = new ArrayList<>();
+        List<String> patientIds = new ArrayList<>();
         for (Apply a : applies){
             patientIds.add(a.getPatientId());
         }
@@ -263,11 +263,11 @@ public class ApplyManager {
         patientExample.createCriteria().andIn("id",patientIds);
         List<Patient> patients = patientMapper.selectByExample(patientExample);
         for (Apply a : applies){
-            Integer patientId = a.getPatientId();
+            String patientId = a.getPatientId();
             ApplyDoctorVo applyDoctorVo = new ApplyDoctorVo();
             BeanUtils.copyProperties(a,applyDoctorVo);
             for (Patient p : patients){
-                Integer id = p.getId();
+                String id = p.getId();
                 if (patientId.equals(id)){
                     applyDoctorVo.setIdCard(p.getIdCard());
                     applyDoctorVo.setMobile(p.getMobile());

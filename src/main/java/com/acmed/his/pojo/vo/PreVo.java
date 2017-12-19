@@ -16,10 +16,10 @@ import java.util.Optional;
 @Data
 public class PreVo {
     @ApiModelProperty
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("挂号单号")
-    private Integer applyId;
+    private String applyId;
 
     @ApiModelProperty("药品集合")
     private List<PreVo.Inspect> inspectList;

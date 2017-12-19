@@ -47,7 +47,7 @@ public class PatientApi {
 
     @ApiOperation(value = "根据id查询病患信息")
     @GetMapping("id")
-    public ResponseResult<Patient> getPatientById(@ApiParam("患者id") @RequestParam(value = "id" )Integer id){
+    public ResponseResult<Patient> getPatientById(@ApiParam("患者id") @RequestParam(value = "id" )String id){
         return ResponseUtil.setSuccessResult(patientManager.getPatientById(id));
     }
 

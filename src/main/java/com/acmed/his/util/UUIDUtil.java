@@ -11,13 +11,12 @@ public class UUIDUtil
   
   public static String generate()
   {
-	  String str=UUID.randomUUID().toString();
-	    str = StringUtils.replace(str, "-", "");
-	    return str;
+	    return String.format("%s%s",StringUtils.replace(UUID.randomUUID().toString(), "-", ""),
+                RandomUtil.generateString(4));
   }
   
   public static void main(String[] args)
   {
-    System.out.println(generate());
+    System.out.println(generate()+"  "+generate().length());
   }
 }

@@ -65,7 +65,7 @@ public class AccessTokenResolver implements HandlerMethodArgumentResolver  {
         Integer source = null;
         if(loginId.startsWith("PATIENT_WX")){
             source = 1;
-            patient = patientManager.getPatientById(Integer.parseInt(loginId.substring("PATIENT_WX".length())));
+            patient = patientManager.getPatientById(loginId.substring("PATIENT_WX".length()));
             user = Optional.ofNullable(patient.getOpenid()).map((obj)->userManager.getUserByOpenid(obj)).orElse(null);
         }
         else if(loginId.startsWith("USER_WX")){

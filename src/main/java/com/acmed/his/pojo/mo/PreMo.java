@@ -14,7 +14,7 @@ public class PreMo {
     private Integer id;
 
     @ApiModelProperty("挂号单号")
-    private Integer applyId;
+    private String applyId;
 
     @ApiModelProperty("药品集合")
     private List<PreMo.Item> itemList;

@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Darren on 2017-11-20
  **/
 public interface PrescriptionItemMapper extends TkMapper<PrescriptionItem> {
-    void delByPreId(@Param("prescriptionId") Integer prescriptionId);
+    void delByPreId(@Param("prescriptionId") String prescriptionId);
 
 
     void insertItem(@Param("item") PrescriptionItem item,@Param("prescriptionNo")String prescriptionNo);
