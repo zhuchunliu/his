@@ -20,7 +20,7 @@ public class PrescriptionManagerTest {
 
     @Test
     public void getPreByApply() {
-        prescriptionManager.getPreByApply(1).forEach((obj)->System.err.println(obj));
+        prescriptionManager.getPreByApply("1").forEach((obj)->System.err.println(obj));
     }
 
 

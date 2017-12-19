@@ -1,7 +1,6 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.Prescription;
-import com.acmed.his.model.dto.PreTitleDto;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,5 +12,5 @@ import java.util.List;
 public interface PrescriptionMapper extends TkMapper<Prescription>{
     Prescription getByNo(@Param("prescriptionNo") String prescriptionNo);
 
-    List<PreTitleDto> getPreByApply(@Param("applyId") Integer applyId);
+    List<Prescription> getPreByApply(@Param("applyId") String applyId);
 }

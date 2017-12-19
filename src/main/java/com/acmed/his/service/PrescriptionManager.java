@@ -3,10 +3,13 @@ package com.acmed.his.service;
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
-import com.acmed.his.model.dto.PreTitleDto;
 import com.acmed.his.pojo.mo.PreMo;
 import com.acmed.his.pojo.vo.PreVo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.DateTimeUtil;
+import com.acmed.his.util.PinYinUtil;
+import com.acmed.his.util.UUIDUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -40,9 +43,6 @@ public class PrescriptionManager {
     private ChargeMapper chargeMapper;
 
     @Autowired
-    private ApplyMapper applyMapper;
-
-    @Autowired
     private DrugMapper drugMapper;
 
     @Autowired
@@ -51,13 +51,27 @@ public class PrescriptionManager {
     @Autowired
     private CommonManager commonManager;
 
+    @Autowired
+    private ApplyManager applyManager;
+
+    @Autowired
+    private ApplyMapper applyMapper;
+
+    @Autowired
+    private PatientManager patientManager;
+
+    @Autowired
+    private MedicalRecordManager recordManager;
 
 
-    public List<PreTitleDto> getPreByApply(Integer applyId) {
+    /**
+     * 根据挂号单查找处方列表
+     * @param applyId
+     * @return
+     */
+    public List<Prescription> getPreByApply(String applyId) {
         return preMapper.getPreByApply(applyId);
     }
-
-
 
     /**
      * 获取处方
@@ -67,16 +81,19 @@ public class PrescriptionManager {
     public PreVo getPre(Integer id) {
         Example example = new Example(Charge.class);
         example.createCriteria().andEqualTo("prescriptionId",id);
+        example.orderBy("id").asc();
         List<Charge> chargeList = chargeMapper.selectByExample(example);
 
         example = new Example(Inspect.class);
         example.createCriteria().andEqualTo("prescriptionId",id);
+        example.orderBy("id").asc();
         List<Inspect> preInspectList = inspectMapper.selectByExample(example);
 
         Prescription prescription = preMapper.selectByPrimaryKey(id);
 
         example = new Example(PrescriptionItem.class);
         example.createCriteria().andEqualTo("prescriptionId",id);
+        example.orderBy("id").asc();
         List<PrescriptionItem> preItemList = preItemMapper.selectByExample(example);
         return new PreVo(prescription,preInspectList,chargeList,preItemList);
     }
@@ -90,81 +107,19 @@ public class PrescriptionManager {
     @Transactional
     public boolean savePre(PreMo mo, UserInfo userInfo) {
 
-        Apply apply = applyMapper.selectByPrimaryKey(mo.getApplyId());
-        if(null == apply){
-            logger.error("保存药品处方失败，找不到挂号单： "+mo.getApplyId());
-            return false;
-        }
-        Prescription prescription = Optional.ofNullable(mo.getId()).map(id->preMapper.selectByPrimaryKey(id)).orElse(new Prescription());
-        prescription.setApplyId(mo.getApplyId());
-        prescription.setPatientId(apply.getPatientId());
-        prescription.setOrgCode(apply.getOrgCode());
-        prescription.setDept(apply.getDept());
-        prescription.setDeptName(apply.getDeptName());
-        prescription.setCategory("1");
-        prescription.setIsPaid("0");
-        prescription.setIsDispensing("0");
+        //step1:处理患者信息
+        Patient patient = this.handlePatient(mo,userInfo);
 
-        if(null == mo.getId()){
-            prescription.setPrescriptionNo(apply.getId()+commonManager.getNextVal("Org"+apply.getId()));
-            prescription.setCreateAt(LocalDateTime.now().toString());
-            prescription.setCreateBy(userInfo.getId().toString());
-            preMapper.insert(prescription);
-            prescription = preMapper.getByNo(prescription.getPrescriptionNo());
-        }else{
-            prescription.setModifyAt(LocalDateTime.now().toString());
-            prescription.setModifyBy(userInfo.getId().toString());
-            preItemMapper.delByPreId(prescription.getId());
-            chargeMapper.delByPreId(prescription.getId());
-            inspectMapper.delByPreId(prescription.getId());
-        }
+        //step2:处理挂号信息
+        Apply apply = this.handleApply(mo,patient,userInfo);
 
-        Double price = 0d;
-        if(null != mo.getItemList()) {
-            for (PreMo.Item info : mo.getItemList()) {
-                Drug drug = drugMapper.selectByPrimaryKey(info.getDrugId());
-                PrescriptionItem item = new PrescriptionItem();
-                BeanUtils.copyProperties(info,item,"id");
-                item.setDrugName(drug.getName());
-                item.setCategory(drug.getCategory());
-                item.setPrescriptionId(prescription.getId());
-                item.setApplyId(mo.getApplyId());
-                item.setDrugId(info.getDrugId());
-                item.setDrugCode(drug.getDrgCode());
-                item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//总价：单价*数量
-                preItemMapper.insertItem(item,prescription.getPrescriptionNo());
-                price += info.getNum() * item.getFee();
-            }
-        }
+        //step3:处理就诊信息
+        this.handleMedicalRecord(mo,apply,userInfo);
 
-        if(null != mo.getInspectList()) {
-            for (PreMo.Inspect info : mo.getInspectList()) {
-                Inspect inspect = new Inspect();
-                BeanUtils.copyProperties(prescription,inspect,"id");
-                BeanUtils.copyProperties(info, inspect);
-                inspect.setApplyId(mo.getApplyId());
-                inspect.setDept(Optional.ofNullable(prescription.getDept()).map(obj->obj.toString()).orElse(null));
-                inspect.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory())).
-                        map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
-                inspectMapper.insertInspect(inspect,prescription.getPrescriptionNo());
-                price += inspect.getFee();
-            }
-        }
+        //step4:保存处方信息
+        this.handlePrescription(mo,apply,userInfo);
 
-        if(null != mo.getChargeList()) {
-            for (PreMo.Charge info : mo.getChargeList()) {
-                Charge charge = new Charge();
-                BeanUtils.copyProperties(prescription,charge,"id");
-                charge.setCategory(info.getCategory());
-                charge.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory())).
-                        map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
-                price += charge.getFee();
-                chargeMapper.insertCharge(charge,prescription.getPrescriptionNo());
-            }
-        }
-        prescription.setFee(price);
-        preMapper.updateByPrimaryKey(prescription);
-
+        //step5：统计处方总费用
         applyMapper.statisFee(apply.getId());//统计总费用
         return true;
     }
@@ -183,6 +138,158 @@ public class PrescriptionManager {
         prescription.setModifyAt(LocalDateTime.now().toString());
         preMapper.updateByPrimaryKey(prescription);
     }
+
+    /**
+     * 处理处方信息
+     */
+    private void handlePrescription(PreMo mo, Apply apply, UserInfo userInfo){
+
+        Prescription prescription = Optional.ofNullable(mo.getId()).map(id->preMapper.selectByPrimaryKey(mo.getId()))
+                .orElse(new Prescription());
+
+        if(StringUtils.isEmpty(mo.getId())){//新增
+            BeanUtils.copyProperties(apply,prescription);
+            prescription.setId(UUIDUtil.generate());
+            prescription.setPrescriptionNo(apply.getId()+commonManager.getNextVal("Org"+apply.getId()));
+            prescription.setIsPaid("0");
+            prescription.setIsDispensing("0");
+            prescription.setCreateAt(LocalDateTime.now().toString());
+            prescription.setCreateBy(userInfo.getId().toString());
+            preMapper.insert(prescription);
+        }else{
+            prescription.setModifyAt(LocalDateTime.now().toString());
+            prescription.setModifyBy(userInfo.getId().toString());
+            preItemMapper.delByPreId(prescription.getId());
+            chargeMapper.delByPreId(prescription.getId());
+            inspectMapper.delByPreId(prescription.getId());
+        }
+
+        Double price = 0d;
+        for(int i=0; i< mo.getPreList().size(); i++){
+            PreMo.Pre pre = mo.getPreList().get(i);
+
+            if(null != pre.getItemList()) {
+                for (PreMo.Item info : pre.getItemList()) {
+                    Drug drug = drugMapper.selectByPrimaryKey(info.getDrugId());
+                    PrescriptionItem item = new PrescriptionItem();
+                    BeanUtils.copyProperties(info,item,"id");
+                    item.setId(UUIDUtil.generate());
+                    item.setDrugName(drug.getName());
+                    item.setCategory(drug.getCategory());
+                    item.setPrescriptionId(prescription.getId());
+                    item.setApplyId(mo.getApplyId());
+                    item.setDrugId(info.getDrugId());
+                    item.setDrugCode(drug.getDrgCode());
+                    item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//总价：单价*数量
+                    item.setGroupNum(String.valueOf(i+1));
+                    preItemMapper.insert(item);
+                    price += info.getNum() * item.getFee();
+                }
+            }
+
+            if(null != pre.getInspectList()) {
+                for (PreMo.Inspect info : pre.getInspectList()) {
+                    Inspect inspect = new Inspect();
+                    BeanUtils.copyProperties(prescription,inspect,"id");
+                    BeanUtils.copyProperties(info, inspect);
+                    inspect.setId(UUIDUtil.generate());
+                    inspect.setApplyId(mo.getApplyId());
+                    inspect.setGroupNum(String.valueOf(i+1));
+                    inspect.setDept(Optional.ofNullable(prescription.getDept()).map(obj->obj.toString()).orElse(null));
+                    inspect.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory())).
+                            map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
+                    inspectMapper.insert(inspect);
+                    price += inspect.getFee();
+                }
+            }
+
+            if(null != pre.getChargeList()) {
+                for (PreMo.Charge info : pre.getChargeList()) {
+                    Charge charge = new Charge();
+                    BeanUtils.copyProperties(prescription,charge,"id");
+                    charge.setId(UUIDUtil.generate());
+                    charge.setCategory(info.getCategory());
+                    charge.setGroupNum(String.valueOf(i+1));
+                    charge.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory())).
+                            map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
+                    price += charge.getFee();
+                    chargeMapper.insert(charge);
+                }
+            }
+        }
+
+
+        prescription.setFee(price);
+        preMapper.updateByPrimaryKey(prescription);
+    }
+
+
+    /**
+     * 处理患者信息
+     * @return
+     */
+    private Patient handlePatient(PreMo mo,UserInfo userInfo){
+        Patient patient = new Patient();
+        if(!StringUtils.isEmpty(mo.getPatient().getPatientId())){
+            patient = patientManager.getPatientById(mo.getPatient().getPatientId());
+        }else{//如果是新用户，则添加用户信息
+            BeanUtils.copyProperties(mo.getPatient(),patient);
+            patient.setId(UUIDUtil.generate());
+            patient.setInputCode(Optional.ofNullable(patient.getUserName()).map(obj->PinYinUtil.getPinYinHeadChar(obj)).orElse(null));
+            patient.setCreateBy(userInfo.getId().toString());
+            patient.setCreateAt(LocalDateTime.now().toString());
+            patientManager.add(patient);
+        }
+        return patient;
+    }
+
+    /**
+     * 处理挂号单信息
+     * @return
+     */
+    private Apply handleApply(PreMo mo,Patient patient,UserInfo userInfo){
+        Apply apply = new Apply();
+        if(!StringUtils.isEmpty(mo.getApplyId())){
+            apply = applyManager.getApplyById(mo.getApplyId());
+        }else{//如果是新挂号单，则添加新挂号单
+            apply.setId(UUIDUtil.generate());
+            apply.setOrgCode(userInfo.getOrgCode());
+            apply.setOrgName(userInfo.getOrgName());
+            apply.setDept(userInfo.getDept());
+            apply.setDeptName(userInfo.getDeptName());
+            apply.setPatientId(patient.getId());
+            apply.setPatientName(patient.getUserName());
+            apply.setGender(patient.getGender());
+            apply.setAge(Optional.ofNullable(patient.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+            apply.setStatus("1");
+            apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+            apply.setCreateAt(LocalDateTime.now().toString());
+            apply.setCreateBy(userInfo.getId().toString());
+            applyMapper.insert(apply);
+        }
+        return apply;
+    }
+
+    /**
+     * 处理病例信息
+     */
+    private void handleMedicalRecord(PreMo mo, Apply apply, UserInfo userInfo) {
+       MedicalRecord medicalRecord = Optional.ofNullable(recordManager.getMedicalRecordByApplyId(apply.getId())).orElse(new MedicalRecord());
+       BeanUtils.copyProperties(mo.getRecord(),medicalRecord);
+       BeanUtils.copyProperties(apply,medicalRecord);
+       if(StringUtils.isEmpty(medicalRecord.getId())){
+           medicalRecord.setId(UUIDUtil.generate());
+           medicalRecord.setCreateAt(LocalDateTime.now().toString());
+           medicalRecord.setCreateBy(userInfo.getId().toString());
+           recordManager.addMedicalRecord(medicalRecord);
+       }else{
+           medicalRecord.setModifyAt(LocalDateTime.now().toString());
+           medicalRecord.setModifyBy(userInfo.getId().toString());
+           recordManager.updateMedicalRecord(medicalRecord);
+       }
+
+    }
+
 
 
 }

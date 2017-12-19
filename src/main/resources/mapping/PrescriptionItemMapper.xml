@@ -7,13 +7,4 @@
     <delete id="delByPreId" parameterType="java.lang.Integer">
         DELETE from t_b_prescription_item where prescriptionid = #{prescriptionId}
     </delete>
-
-
-    <insert id="insertItem">
-        insert into t_b_prescription_item(prescriptionid,drugid,applyid,
-        category,drugname,drugcode,way,num,frequency,dose,fee,memo)
-        VALUES ((select id from t_b_prescription where prescriptionno = #{prescriptionNo}),#{item.drugId},
-        #{item.applyId},
-        #{item.category},#{item.drugName},#{item.drugCode},#{item.way},#{item.num},#{item.frequency},#{item.dose},#{item.fee},#{item.memo})
-    </insert>
 </mapper>

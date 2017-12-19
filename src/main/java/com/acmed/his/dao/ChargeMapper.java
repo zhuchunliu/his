@@ -9,6 +9,4 @@ import org.apache.ibatis.annotations.Param;
  **/
 public interface ChargeMapper extends TkMapper<Charge>{
     void delByPreId(@Param("prescriptionId") String prescriptionId);
-
-    void insertCharge(@Param("charge") Charge charge, @Param("prescriptionNo") String prescriptionNo);
 }

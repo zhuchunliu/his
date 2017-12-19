@@ -1,6 +1,6 @@
 package com.acmed.his.pojo.vo;
 
-import com.acmed.his.model.dto.PreTitleDto;
+import com.acmed.his.model.Prescription;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,15 +11,15 @@ import lombok.Data;
 public class PreTitleVo {
 
     @ApiModelProperty("主键")
-    private Integer id;
+    private String id;
     @ApiModelProperty("编号")
     private String number;
     @ApiModelProperty("处方类型 1:药品处方，2：检查处方")
     private String category;
 
-    public PreTitleVo(PreTitleDto dto){
-        this.id = dto.getId();
-        this.number = dto.getPrescriptionNo();
-        this.category = dto.getCategory();
+    public PreTitleVo(Prescription prescription){
+        this.id = prescription.getId();
+        this.number = prescription.getPrescriptionNo();
+        this.category = prescription.getCategory();
     }
 }

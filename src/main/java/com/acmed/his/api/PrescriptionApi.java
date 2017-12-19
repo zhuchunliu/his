@@ -35,21 +35,23 @@ public class PrescriptionApi {
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping
     public ResponseResult savePre(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PreMo mo,
-                                          @AccessToken AccessInfo info){
-        if(null == mo.getApplyId()){
-            return ResponseUtil.setParamEmptyError("applyId");
-        }
+                                  @AccessToken AccessInfo info){
         boolean flag = preManager.savePre(mo,info.getUser());
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方失败");
     }
 
-
+    @ApiOperation(value = "获取处方【药品+检查】")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
+    @GetMapping
+    public ResponseResult<PreVo> getPre(@ApiParam("id 主键") @RequestParam("id") Integer id){
+        return ResponseUtil.setSuccessResult(preManager.getPre(id));
+    }
 
 
 
     @ApiOperation(value = "根据挂号id获取处方列表")
     @PostMapping("/list")
-    public ResponseResult<PreTitleVo> getPreByApply(@ApiParam("挂号主键") @RequestParam("applyId") Integer applyId){
+    public ResponseResult<PreTitleVo> getPreByApply(@ApiParam("挂号主键") @RequestParam("applyId") String applyId){
         List<PreTitleVo> list = new ArrayList<>();
         preManager.getPreByApply(applyId).forEach(obj->list.add(new PreTitleVo(obj)));
         return ResponseUtil.setSuccessResult(list);
@@ -58,10 +60,5 @@ public class PrescriptionApi {
 
 
 
-    @ApiOperation(value = "获取处方【药品+检查】")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
-    @GetMapping
-    public ResponseResult<PreVo> getPre(@ApiParam("id 主键") @RequestParam("id") Integer id){
-        return ResponseUtil.setSuccessResult(preManager.getPre(id));
-    }
+
 }

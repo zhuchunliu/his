@@ -86,7 +86,7 @@ public class DispensingApi {
 
     @ApiOperation(value = "根据挂号id获取处方列表")
     @GetMapping("/pre")
-    public ResponseResult<DispensingPreVo> getDispensingDetail(@ApiParam("挂号主键") @RequestParam("applyId") Integer applyId){
+    public ResponseResult<DispensingPreVo> getDispensingDetail(@ApiParam("挂号主键") @RequestParam("applyId") String applyId){
         List<DispensingPreVo> list = new ArrayList<>();
         preManager.getPreByApply(applyId).forEach(obj->{
 

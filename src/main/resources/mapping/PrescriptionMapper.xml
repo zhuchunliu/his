@@ -21,18 +21,11 @@
         <result property="deptName" column="deptname"></result>
     </resultMap>
 
-    <resultMap id="preTitleDto" type="com.acmed.his.model.dto.PreTitleDto">
-        <result property="id" column="id"></result>
-        <result property="prescriptionNo" column="prescriptionNo"></result>
-        <result property="category" column="category"></result>
-    </resultMap>
-
-
     <select id="getByNo" parameterType="java.lang.String" resultMap="permissionDto">
         select * from t_b_prescription where prescriptionNo = #{prescriptionNo}
     </select>
 
-    <select id="getPreByApply" resultMap="preTitleDto">
-        select id,prescriptionno,category from t_b_prescription where applyid = #{applyId}
+    <select id="getPreByApply" resultType="com.acmed.his.model.Prescription">
+        select * from t_b_prescription where applyid = #{applyId}
     </select>
 </mapper>

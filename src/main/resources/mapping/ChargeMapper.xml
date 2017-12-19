@@ -6,14 +6,4 @@
     <delete id="delByPreId" parameterType="java.lang.Integer">
         DELETE from t_b_charge where prescriptionid = #{prescriptionId}
     </delete>
-
-    <insert id="insertCharge">
-      INSERT into t_b_charge(prescriptionid,applyid,patientid,orgcode,dept,deptname,
-        category,fee,
-        createat,createby,modifyat,modifyby) VALUES
-        ((select id from t_b_prescription where prescriptionno = #{prescriptionNo}),
-        #{charge.applyId},#{charge.patientId},#{charge.orgCode},#{charge.dept},#{charge.deptName},
-        #{charge.category},#{charge.fee},
-        #{charge.createAt},#{charge.createBy},#{charge.modifyAt},#{charge.modifyBy})
-    </insert>
 </mapper>

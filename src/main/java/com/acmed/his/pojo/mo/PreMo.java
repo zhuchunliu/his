@@ -10,20 +10,34 @@ import java.util.List;
  **/
 @Data
 public class PreMo {
-    @ApiModelProperty
-    private Integer id;
 
-    @ApiModelProperty("挂号单号")
+    @ApiModelProperty("处方主键")
+    private String id;
+
+    @ApiModelProperty("挂号主键 null:新开就诊；非null:挂号就诊/编辑")
     private String applyId;
 
-    @ApiModelProperty("药品集合")
-    private List<PreMo.Item> itemList;
+    @ApiModelProperty("处方集合")
+    private List<Pre> PreList;
 
-    @ApiModelProperty("附加费")
-    private List<PreMo.Charge> chargeList;
+    @ApiModelProperty("患者信息")
+    private Patient patient;
 
-    @ApiModelProperty("药品集合")
-    private List<PreMo.Inspect> inspectList;
+    @ApiModelProperty("病例")
+    private MedicalRecord record;
+
+    @Data
+    public class Pre {
+        @ApiModelProperty("药品集合")
+        private List<PreMo.Item> itemList;
+
+        @ApiModelProperty("附加费")
+        private List<PreMo.Charge> chargeList;
+
+        @ApiModelProperty("药品集合")
+        private List<PreMo.Inspect> inspectList;
+
+    }
 
     @Data
     public static class Item{
@@ -72,6 +86,57 @@ public class PreMo {
 
         @ApiModelProperty("备注")
         private String memo;
+
+    }
+
+    @Data
+    public class Patient{
+        @ApiModelProperty("用户主键 非必填 null:系统自动添加用户；not null：系统编辑用户")
+        private String patientId;
+
+        @ApiModelProperty("用户姓名")
+        private String userName;
+
+        @ApiModelProperty("性别 0:男;1:女")
+        private String gender;
+
+        @ApiModelProperty("出生日期")
+        private String dateOfBirth;
+
+        @ApiModelProperty("号码")
+        private String mobile;
+
+        @ApiModelProperty("地址")
+        private String address;
+
+        @ApiModelProperty("过敏史")
+        private String anaphylaxis;
+
+    }
+
+
+    @Data
+    public class MedicalRecord{
+        @ApiModelProperty("主诉")
+        private String chiefComplaint;
+
+        @ApiModelProperty("诊断信息")
+        private String diagnosis;
+
+        @ApiModelProperty("医嘱")
+        private String advice;
+
+        @ApiModelProperty("1 初诊、0 复诊")
+        private String isFirst;
+
+        @ApiModelProperty("发病日期")
+        private String onSetDate;
+
+        @ApiModelProperty("是否传染病 0：否；1：是")
+        private String isContagious;
+
+        @ApiModelProperty("备注")
+        private String remark;
 
     }
 

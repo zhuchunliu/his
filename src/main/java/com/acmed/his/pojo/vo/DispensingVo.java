@@ -13,7 +13,7 @@ import lombok.Data;
 public class DispensingVo {
 
     @ApiModelProperty("挂号单id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("患者姓名")
     private String patientName;

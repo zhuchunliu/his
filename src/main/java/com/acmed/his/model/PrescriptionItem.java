@@ -4,8 +4,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -58,4 +56,7 @@ public class PrescriptionItem {
 
     @ApiModelProperty("备注")
     private String memo;
+
+    @ApiModelProperty("组号")
+    private String groupNum;
 }

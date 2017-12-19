@@ -4,8 +4,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -45,6 +43,9 @@ public class Charge {
 
     @ApiModelProperty("费用")
     private Double fee;
+
+    @ApiModelProperty("组号")
+    private String groupNum;
 
     @ApiModelProperty("创建时间")
     private String createAt;

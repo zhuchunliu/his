@@ -111,10 +111,18 @@ public class MedicalRecordManager {
      * @param applyId id
      * @return 病例详情
      */
-    public MedicalRecord getMedicalRecordByApplyId(Integer applyId){
+    public MedicalRecord getMedicalRecordByApplyId(String applyId){
         Example example = new Example(MedicalRecord.class);
         example.createCriteria().andEqualTo("applyId",applyId);
 
         return Optional.ofNullable(medicalRecordMapper.selectByExample(example)).filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(null);
+    }
+
+    /**
+     * 更新病历信息
+     * @param medicalRecord
+     */
+    public void updateMedicalRecord(MedicalRecord medicalRecord) {
+        medicalRecordMapper.updateByPrimaryKey(medicalRecord);
     }
 }
