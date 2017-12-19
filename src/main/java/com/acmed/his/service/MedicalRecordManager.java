@@ -4,6 +4,7 @@ import com.acmed.his.dao.MedicalRecordMapper;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.MedicalRecord;
 import com.acmed.his.model.dto.MedicalReDto;
+import com.acmed.his.util.UUIDUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class MedicalRecordManager {
     public int addMedicalRecord(MedicalRecord medicalRecord){
         String id = medicalRecord.getId();
         if (StringUtils.isEmpty(id)){
+            medicalRecord.setId(UUIDUtil.generate());
             String applyId = medicalRecord.getApplyId();
             Apply apply = applyManager.getApplyById(applyId);
             if (apply == null){

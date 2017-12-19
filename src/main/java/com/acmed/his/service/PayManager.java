@@ -4,6 +4,7 @@ import com.acmed.his.dao.PayRefuseMapper;
 import com.acmed.his.dao.PayStatementsMapper;
 import com.acmed.his.model.PayRefuse;
 import com.acmed.his.model.PayStatements;
+import com.acmed.his.util.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class PayManager {
      * @return 0失败  1成功
      */
     public int addPayStatements(PayStatements payStatements){
+        payStatements.setId(UUIDUtil.generate());
         payStatements.setCreateAt(LocalDateTime.now().toString());
         return payStatementsMapper.insert(payStatements);
     }
@@ -50,6 +52,7 @@ public class PayManager {
      * @return 0失败  1成功
      */
     public int addPayRefuse(PayRefuse payRefuse){
+        payRefuse.setId(UUIDUtil.generate());
         payRefuse.setCreateAt(LocalDateTime.now().toString());
         return payRefuseMapper.insert(payRefuse);
     }

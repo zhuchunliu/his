@@ -8,6 +8,7 @@ import com.acmed.his.pojo.vo.PatientInfoVo;
 import com.acmed.his.util.PinYinUtil;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.util.UUIDUtil;
 import com.soecode.wxtools.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -56,6 +57,7 @@ public class PatientManager {
         patient.setUnionid(null);
         patient.setCreateAt(now);
         patient.setModifyAt(now);
+        patient.setId(UUIDUtil.generate());
         return patientMapper.insert(patient);
     }
 

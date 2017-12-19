@@ -7,10 +7,10 @@ import com.acmed.his.model.Patient;
 import com.acmed.his.model.PayStatements;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
-import com.acmed.his.pojo.vo.PatientInfoVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.IdCardUtil;
 import com.acmed.his.util.PinYinUtil;
+import com.acmed.his.util.UUIDUtil;
 import com.acmed.his.util.date.DateStyle;
 import com.acmed.his.util.date.DateUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,7 +75,7 @@ public class ApplyManager {
         apply.setFee(1d);
         apply.setOrgName(Optional.ofNullable(mo.getOrgCode()).map(orgManager::getOrgDetail).map(obj->obj.getOrgName()).orElse(null));
         apply.setDeptName(Optional.ofNullable(mo.getDept()).map(deptManager::getDeptDetail).map(obj->obj.getDept()).orElse(null));
-
+        apply.setId(UUIDUtil.generate());
         // 医疗机构编码
         Integer orgCode = apply.getOrgCode();
         // 根据医疗机构id 和 时间查询数字 +1 就是现在的就诊号
@@ -109,7 +108,7 @@ public class ApplyManager {
      * @param patient 患者信息
      * @return 0失败  1 成功
      */
-    public int addApplyBySlf(Apply apply,Patient patient){
+    public int addApplyBySelf(Apply apply,Patient patient){
         String now = LocalDateTime.now().toString();
         String idCard = patient.getIdCard();
         apply.setId(null);
@@ -124,6 +123,7 @@ public class ApplyManager {
         apply.setStatus("0");
         apply.setAge(IdCardUtil.idCardToAge(idCard));
         apply.setCreateAt(now);
+        apply.setId(UUIDUtil.generate());
         return applyMapper.insert(apply);
 
     }
