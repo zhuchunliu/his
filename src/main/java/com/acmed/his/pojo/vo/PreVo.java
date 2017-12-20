@@ -1,8 +1,7 @@
 package com.acmed.his.pojo.vo;
 
-import com.acmed.his.model.Prescription;
-import com.acmed.his.model.PrescriptionItem;
-import com.acmed.his.pojo.mo.PreMo;
+import com.acmed.his.model.*;
+import com.acmed.his.util.DateTimeUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -22,52 +21,41 @@ public class PreVo {
     private String applyId;
 
     @ApiModelProperty("处方集合")
-    private List<Pre> PreList = new ArrayList<>();
+    private List<PrescriptVo> PreList = new ArrayList<>();
 
-    @Data
-    public class Pre {
+    @ApiModelProperty("患者信息")
+    private PatientVo patient = new PatientVo();
 
-        public Pre(String type,PreVo.Item item,PreVo.Inspect inspect,PreVo.Charge charge){
-            this.type = type;
-            if(null != item)this.itemList.add(item);
-            if(null != inspect)this.inspectList.add(inspect);
-            if(null != charge)this.chargeList.add(charge);
-        }
-
-        @ApiModelProperty("1:药品处方；2：检查处方")
-        private String type;
-
-        @ApiModelProperty("药品集合")
-        private List<PreVo.Item> itemList = new ArrayList<>();
-
-        @ApiModelProperty("药品集合")
-        private List<PreVo.Inspect> inspectList = new ArrayList<>();
-
-        @ApiModelProperty("附加费")
-        private List<PreVo.Charge> chargeList = new ArrayList<>();
+    @ApiModelProperty("病例")
+    private MedicalRecordVo record = new MedicalRecordVo();
 
 
-    }
-
-    public PreVo(Prescription prescription, List<com.acmed.his.model.Inspect> preInspectist,
-                 List<com.acmed.his.model.Charge> preChargeList, List<com.acmed.his.model.PrescriptionItem> preItemList) {
+    public PreVo(Prescription prescription, List<Inspect> preInspectist,
+                 List<Charge> preChargeList, List<PrescriptionItem> preItemList, Patient patientInfo, MedicalRecord medicalRecord) {
         if(null == prescription){
             return;
         }
         this.id = prescription.getId();
         this.applyId = prescription.getApplyId();
 
-        Map<String,Pre> map = new TreeMap<>();
+        BeanUtils.copyProperties(patientInfo,this.patient);
+        this.patient.setAge(Optional.ofNullable(patientInfo.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+
+        BeanUtils.copyProperties(medicalRecord,record);
+
+
+
+        Map<String,PrescriptVo> map = new TreeMap<>();
 
 
         if(null != preItemList && 0 != preItemList.size()){
             preItemList.forEach(obj->{
-                PreVo.Item item = new PreVo.Item();
+                PreVo.ItemVo item = new PreVo.ItemVo();
                 BeanUtils.copyProperties(obj,item);
                 item.setTotalFee(Optional.ofNullable(item.getNum()).orElse(0)*Optional.ofNullable(item.getFee()).orElse(0d));
 
                 if(!map.containsKey(obj.getGroupNum())){
-                    map.put(obj.getGroupNum(),new Pre("1",item,null,null));
+                    map.put(obj.getGroupNum(),new PrescriptVo("1",item,null,null));
                 }else{
                     map.get(obj.getGroupNum()).getItemList().add(item);
                     map.get(obj.getGroupNum()).setType("1");
@@ -78,11 +66,11 @@ public class PreVo {
 
         if(null != preInspectist && 0 != preInspectist.size()){
             preInspectist.forEach((obj)->{
-                PreVo.Inspect inspect = new PreVo.Inspect();
+                PreVo.InspectVo inspect = new PreVo.InspectVo();
                 BeanUtils.copyProperties(obj,inspect);
 
                 if(!map.containsKey(obj.getGroupNum())){
-                    map.put(obj.getGroupNum(),new Pre("2",null,inspect,null));
+                    map.put(obj.getGroupNum(),new PrescriptVo("2",null,inspect,null));
                 }else{
                     map.get(obj.getGroupNum()).getInspectList().add(inspect);
                     map.get(obj.getGroupNum()).setType("2");
@@ -93,11 +81,11 @@ public class PreVo {
 
         if(null != preChargeList && 0 != preChargeList.size()){
             preChargeList.forEach((obj)->{
-                PreVo.Charge charge = new PreVo.Charge();
+                PreVo.ChargeVo charge = new PreVo.ChargeVo();
                 BeanUtils.copyProperties(obj,charge);
 
                 if(!map.containsKey(obj.getGroupNum())){
-                    map.put(obj.getGroupNum(),new Pre(null,null,null,charge));
+                    map.put(obj.getGroupNum(),new PrescriptVo(null,null,null,charge));
                 }else{
                     map.get(obj.getGroupNum()).getChargeList().add(charge);
                 }
@@ -113,10 +101,35 @@ public class PreVo {
 
     }
 
+    @Data
+    public class PrescriptVo {
+
+        public PrescriptVo(String type,PreVo.ItemVo item,PreVo.InspectVo inspect,PreVo.ChargeVo charge){
+            this.type = type;
+            if(null != item)this.itemList.add(item);
+            if(null != inspect)this.inspectList.add(inspect);
+            if(null != charge)this.chargeList.add(charge);
+        }
+
+        @ApiModelProperty("1:药品处方；2：检查处方")
+        private String type;
+
+        @ApiModelProperty("药品集合")
+        private List<PreVo.ItemVo> itemList = new ArrayList<>();
+
+        @ApiModelProperty("药品集合")
+        private List<PreVo.InspectVo> inspectList = new ArrayList<>();
+
+        @ApiModelProperty("附加费")
+        private List<PreVo.ChargeVo> chargeList = new ArrayList<>();
+
+
+    }
+
 
 
     @Data
-    public class Inspect{
+    public class InspectVo{
 
         @ApiModelProperty("检查目的")
         private String aim;
@@ -142,7 +155,7 @@ public class PreVo {
     }
 
     @Data
-    public class Charge{
+    public class ChargeVo{
         @ApiModelProperty("费用类型")
         private String category;
 
@@ -151,7 +164,7 @@ public class PreVo {
     }
 
     @Data
-    public class Item{
+    public class ItemVo{
         @ApiModelProperty("药品id")
         private Integer drugId;
 
@@ -181,5 +194,65 @@ public class PreVo {
 
         @ApiModelProperty("总价")
         private Double totalFee;
+    }
+
+    @Data
+    public class PatientVo{
+        @ApiModelProperty("用户主键 非必填 null:系统自动添加用户；not null：系统编辑用户")
+        private String patientId;
+
+        @ApiModelProperty("用户姓名")
+        private String userName;
+
+        @ApiModelProperty("性别 0:男;1:女")
+        private String gender;
+
+        @ApiModelProperty("出生日期")
+        private String dateOfBirth;
+
+        @ApiModelProperty("号码")
+        private String mobile;
+
+        @ApiModelProperty("地址")
+        private String address;
+
+        @ApiModelProperty("过敏史")
+        private String anaphylaxis;
+
+        @ApiModelProperty("身份证")
+        private String idCard;
+
+        @ApiModelProperty("社保卡")
+        private String socialCard;
+
+        @ApiModelProperty
+        private Integer age;
+
+    }
+
+
+    @Data
+    public class MedicalRecordVo{
+        @ApiModelProperty("主诉")
+        private String chiefComplaint;
+
+        @ApiModelProperty("诊断信息")
+        private String diagnosis;
+
+        @ApiModelProperty("医嘱")
+        private String advice;
+
+        @ApiModelProperty("1 初诊、0 复诊")
+        private String isFirst;
+
+        @ApiModelProperty("发病日期")
+        private String onSetDate;
+
+        @ApiModelProperty("是否传染病 0：否；1：是")
+        private String isContagious;
+
+        @ApiModelProperty("备注")
+        private String remark;
+
     }
 }

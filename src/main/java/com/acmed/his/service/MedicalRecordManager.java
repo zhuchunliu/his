@@ -118,11 +118,4 @@ public class MedicalRecordManager {
         return Optional.ofNullable(medicalRecordMapper.selectByExample(example)).filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(null);
     }
 
-    /**
-     * 更新病历信息
-     * @param medicalRecord
-     */
-    public void updateMedicalRecord(MedicalRecord medicalRecord) {
-        medicalRecordMapper.updateByPrimaryKey(medicalRecord);
-    }
 }

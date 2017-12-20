@@ -43,7 +43,7 @@ public class PrescriptionApi {
     @ApiOperation(value = "获取处方【药品+检查】")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping
-    public ResponseResult<PreVo> getPre(@ApiParam("id 主键") @RequestParam("id") Integer id){
+    public ResponseResult<PreVo> getPre(@ApiParam("id 主键") @RequestParam("id") String id){
         return ResponseUtil.setSuccessResult(preManager.getPre(id));
     }
 

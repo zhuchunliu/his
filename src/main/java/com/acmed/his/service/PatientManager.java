@@ -19,6 +19,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * PatientManager
@@ -43,12 +44,14 @@ public class PatientManager {
      */
     public int add(Patient patient){
         // 查询身份证是否已经注册过
-        Patient param = new Patient();
-        param.setIdCard(patient.getIdCard());
-        List<Patient> select = patientMapper.select(param);
-        if (select.size()!=0){
-            // 表示已经注册过
-            return 0;
+        if(!StringUtils.isEmpty(patient.getIdCard())) {
+            Patient param = new Patient();
+            param.setIdCard(patient.getIdCard());
+            List<Patient> select = patientMapper.select(param);
+            if (select.size() != 0) {
+                // 表示已经注册过
+                return 0;
+            }
         }
         String now = LocalDateTime.now().toString();
         patient.setInputCode(PinYinUtil.getPinYinHeadChar(patient.getUserName()));
@@ -57,7 +60,7 @@ public class PatientManager {
         patient.setUnionid(null);
         patient.setCreateAt(now);
         patient.setModifyAt(now);
-        patient.setId(UUIDUtil.generate());
+        patient.setId(Optional.ofNullable(patient.getId()).orElse(UUIDUtil.generate()));//新开就诊时，用户id由开诊接口创建
         return patientMapper.insert(patient);
     }
 

@@ -14,33 +14,33 @@ public class PreMo {
     @ApiModelProperty("处方主键")
     private String id;
 
-    @ApiModelProperty("挂号主键 null:新开就诊；非null:挂号就诊/编辑")
+    @ApiModelProperty("挂号主键 null:新开就诊；非null:挂号就诊")
     private String applyId;
 
     @ApiModelProperty("处方集合")
-    private List<Pre> PreList;
+    private List<PrescriptMo> PreList;
 
     @ApiModelProperty("患者信息")
-    private Patient patient;
+    private PatientMo patient;
 
     @ApiModelProperty("病例")
-    private MedicalRecord record;
+    private MedicalRecordMo record;
 
     @Data
-    public class Pre {
+    public class PrescriptMo {
         @ApiModelProperty("药品集合")
-        private List<PreMo.Item> itemList;
+        private List<PreMo.ItemMo> itemList;
 
         @ApiModelProperty("附加费")
-        private List<PreMo.Charge> chargeList;
+        private List<PreMo.ChargeMo> chargeList;
 
         @ApiModelProperty("药品集合")
-        private List<PreMo.Inspect> inspectList;
+        private List<PreMo.InspectMo> inspectList;
 
     }
 
     @Data
-    public static class Item{
+    public static class ItemMo{
         @ApiModelProperty("药品id")
         private Integer drugId;
 
@@ -61,13 +61,13 @@ public class PreMo {
     }
 
     @Data
-    public static class Charge{
+    public static class ChargeMo{
         @ApiModelProperty("费用类型")
         private String category;
     }
 
     @Data
-    public static class Inspect{
+    public static class InspectMo{
 
         @ApiModelProperty("检查目的")
         private String aim;
@@ -90,7 +90,7 @@ public class PreMo {
     }
 
     @Data
-    public class Patient{
+    public class PatientMo{
         @ApiModelProperty("用户主键 非必填 null:系统自动添加用户；not null：系统编辑用户")
         private String patientId;
 
@@ -116,7 +116,7 @@ public class PreMo {
 
 
     @Data
-    public class MedicalRecord{
+    public class MedicalRecordMo{
         @ApiModelProperty("主诉")
         private String chiefComplaint;
 
