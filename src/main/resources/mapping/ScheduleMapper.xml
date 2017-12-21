@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.ScheduleMapper">
+
+    <select id="getRecentSchedule" parameterType="java.lang.Integer" resultType="com.acmed.his.model.Schedule">
+        select * from t_b_schedule where userid = #{userid}
+        order BY startTime DESC
+        limit 1
+    </select>
+
+    <select id="getScheduleList" resultType="com.acmed.his.model.dto.ScheduleDto">
+        select * from(
+            select if(@r=userid,@n:=@n+1,@n:=1)as rownum,@r:=userid ,t3.* from(
+                select t1.id as userid,t2.monday,t2.tuesday,t2.wednesday,t2.thursday,t2.friday,t2.saturday,t2.sunday,t2.circle,t2.startTime,t2.endTime
+                from t_p_s_user t1 left JOIN t_b_schedule t2
+                on t1.id = t2.userid
+                where ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or t2.endtime is null)
+                AND t1.orgcode = #{orgCode}
+                <if test="@Ognl@isNotEmpty(deptId) ">
+                   t1.dept = #{deptId}
+                </if>
+                <if test="@Ognl@isNotEmpty(userId) ">
+                    t1.id = #{userId}
+                </if>
+            )t3, (select @n:=0)b ,(select @r='')c
+        )t4 where rownum=1
+    </select>
+
+    <select id="getPreScheduleList" resultType="com.acmed.his.model.dto.ScheduleDto">
+        select * from(
+            select if(@r=userid,@n:=@n+1,@n:=1)as rownum,@r:=userid ,t3.* from(
+                select t2.*
+                from  t_b_schedule t2
+                where ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or t2.endtime is null)
+                AND t2.userid in
+                <foreach collection="userIds" separator="," open="(" close=")" item="item">
+                  #{item}
+                </foreach>
+            )t3, (select @n:=0)b ,(select @r='')c
+        )t4 where rownum=1
+    </select>
+
+
+</mapper>

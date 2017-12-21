@@ -1,9 +1,14 @@
 package com.acmed.his.util;
 
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 /**
  * 日期帮助类
@@ -28,9 +33,26 @@ public class DateTimeUtil {
         return age;
     }
 
+    public static Date parsetDate(String date){
+        if(10 == date.length()) {
+            date+=" 00:00:00";
+        }
+        return Date.from(LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public static LocalDateTime parsetLocalDate(String date){
+        if(10 == date.length()) {
+            date+=" 00:00:00";
+        }
+        return LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
+
     public static void main(String[] args) {
         System.err.println(DateTimeUtil.getAge("1987-12-19"));
         System.err.println(DateTimeUtil.getAge("1987-12-18 10:10:10"));
         System.err.println(DateTimeUtil.getAge("1987-12-20 10:10:10"));
+        System.err.println(DateTimeUtil.parsetDate("1987-12-20 10:10:10"));
+        System.err.println(DateTimeUtil.parsetDate("1987-12-20"));
     }
 }
