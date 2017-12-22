@@ -32,24 +32,33 @@
       where id = #{id}
     </update>
 
-    <select id = "getApply" resultMap="apply">
-        SELECT * from t_b_apply t1
+    <select id = "getDispensingList" resultType="com.acmed.his.model.dto.DispensingDto">
+        SELECT apply.id,apply.clinicno,apply.patientname,apply.gender,apply.age,
+        patient.mobile,user.nickname as doctorname,
+        pre.fee,pre.isdispensing,pre.ispaid,pre.createat as diagnosedate
+        from t_b_apply apply
+        JOIN t_b_prescription pre on apply.id = pre.applyid
+        JOIN t_b_patient patient on apply.patientid = patient.id
+        JOIN t_p_s_user user on pre.createby = user.id
 
         <trim prefixOverrides="and" prefix="where">
             <if test="@Ognl@isNotEmpty(orgCode)">
-                and orgcode = #{orgCode}
+                and apply.orgcode = #{orgCode}
             </if>
             <if test="@Ognl@isNotEmpty(name)">
-                and (patientname like CONCAT('%',#{name},'%') or clinicno like CONCAT('%',#{name},'%'))
-            </if>
-            <if test="@Ognl@isNotEmpty(date)">
-                and DATE_FORMAT(createat,'%Y-%m-%d') =  DATE_FORMAT(#{date},'%Y-%m-%d')
-            </if>
-            <if test="@Ognl@isNotEmpty(status) and status == 0">
-                and EXISTS (select * from t_b_prescription t2 where applyid = t1.id and t2.isdispensing = '0')
+                and (apply.patientname like CONCAT('%',#{name},'%') or patient.mobile like CONCAT('%',#{name},'%'))
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 1">
-                and EXISTS (select * from t_b_prescription t2 where applyid = t1.id and t2.isdispensing = '1')
+                and pre.ispaid = '0'
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 2">
+                and pre.ispaid = '1' and pre.isdispensing = '0'
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 3">
+                and pre.ispaid = '2'
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 4">
+                and pre.isdispensing = '1'
             </if>
         </trim>
     </select>

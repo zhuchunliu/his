@@ -5,6 +5,7 @@ import com.acmed.his.dao.ChargeMapper;
 import com.acmed.his.dao.PrescriptionItemMapper;
 import com.acmed.his.dao.PrescriptionMapper;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.vo.DispensingPreVo;
 import com.acmed.his.pojo.vo.DispensingVo;
 import com.acmed.his.service.*;
@@ -65,26 +66,24 @@ public class DispensingApi {
     @GetMapping("/list")
     public ResponseResult<DispensingVo> getDispensingList(
             @ApiParam("患者姓名或者编号") @RequestParam(value = "name",required = false)String name,
-            @ApiParam("有效期") @RequestParam(value = "date",required = false)String date,
-            @ApiParam("1:已经发药,0:未发药") @RequestParam(value = "status",required = false)String status,
+            @ApiParam("1:未收费、2:未发药、3：已退款、4：已完成") @RequestParam(value = "status",required = false)String status,
             @AccessToken AccessInfo info){
         List<DispensingVo> list = new ArrayList<>();
-        List<Apply> applyList = applyManager.getApply(info.getUser().getOrgCode(),name,date,status);
+        List<DispensingDto> applyList = applyManager.getDispensingList(info.getUser().getOrgCode(),name,status);
         applyList.forEach(obj->{
             DispensingVo mo = new DispensingVo();
             BeanUtils.copyProperties(obj,mo);
+            if("0".equals(obj.getIsPaid())) mo.setStatus("1");
+            if("1".equals(obj.getIsPaid()) && "0".equals(obj.getIsDispensing())) mo.setStatus("2");
+            if("2".equals(obj.getIsPaid())) mo.setStatus("3");
+            if("1".equals(obj.getIsDispensing())) mo.setStatus("4");
 
-            MedicalRecord record = medicalRecordManager.getMedicalRecordByApplyId(mo.getId());
-            if(null != record){
-                mo.setDoctorName(userManager.getUserDetail(Integer.parseInt(record.getCreateBy())).getNickName());
-                mo.setDiagnosis(record.getDiagnosis());
-            }
             list.add(mo);
         });
         return ResponseUtil.setSuccessResult(list);
     }
 
-    @ApiOperation(value = "根据挂号id获取处方列表")
+    @ApiOperation(value = "根据挂号id获取处方列表",hidden = true)
     @GetMapping("/pre")
     public ResponseResult<DispensingPreVo> getDispensingDetail(@ApiParam("挂号主键") @RequestParam("applyId") String applyId){
         List<DispensingPreVo> list = new ArrayList<>();

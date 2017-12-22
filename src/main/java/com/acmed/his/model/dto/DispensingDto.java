@@ -1,15 +1,14 @@
-package com.acmed.his.pojo.vo;
+package com.acmed.his.model.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * 发药列表
- *
- * Created by Darren on 2017-12-05
+ * 收货发药
+ * Created by Darren on 2017-12-22
  **/
 @Data
-public class DispensingVo {
+public class DispensingDto {
 
     @ApiModelProperty("挂号单id")
     private String id;
@@ -38,8 +37,9 @@ public class DispensingVo {
     @ApiModelProperty("费用")
     private Double fee;
 
-    @ApiModelProperty("状态 1:未收费、2:未发药、3：已退款、4：已完成")
-    private String status;
+    @ApiModelProperty("是否发药 0:否；1:是")
+    private String isDispensing;
 
-
+    @ApiModelProperty("是否已付费 0:未付费；1：已经付费；2：已经退款")
+    private String isPaid;
 }

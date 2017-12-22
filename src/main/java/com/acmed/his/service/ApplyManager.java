@@ -5,6 +5,7 @@ import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.PayStatements;
+import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.UserInfo;
@@ -235,8 +236,8 @@ public class ApplyManager {
 
     }
 
-    public List<Apply> getApply(Integer orgCode, String name, String date, String status) {
-        return applyMapper.getApply(orgCode,name,date,status);
+    public List<DispensingDto> getDispensingList(Integer orgCode, String name,  String status) {
+        return applyMapper.getDispensingList(orgCode,name,status);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.Apply;
+import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,13 +22,13 @@ public interface ApplyMapper extends TkMapper<Apply>{
 
     /**
      * 获取发挂号单列表【发药收费用】
+     *
      * @param orgCode 机构编码
      * @param name 患者姓名,门诊编号
-     * @param date 有效期
      * @param status 发药状态：0:未发药;1:已发药
      * @return
      */
-    List<Apply> getApply(@Param("orgCode") Integer orgCode, @Param("name") String name, @Param("date") String date, @Param("status") String status);
+    List<DispensingDto> getDispensingList(@Param("orgCode") Integer orgCode, @Param("name") String name,  @Param("status") String status);
 
     /**
      * 姓名模糊查询
