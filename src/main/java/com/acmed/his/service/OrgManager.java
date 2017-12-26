@@ -60,6 +60,10 @@ public class OrgManager {
         }
     }
 
+    /**
+     * 根据机构地址信息，解析出省市县信息
+     * @param org
+     */
     private void getOrgArea(Org org){
         if(StringUtils.isEmpty(org.getAddress())){
             return;
