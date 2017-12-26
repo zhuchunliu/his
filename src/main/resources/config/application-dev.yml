@@ -50,3 +50,7 @@ pagehelper:
 weixin:
   appid: wx3d71d42f9956d861
   secret: 0cfc86874245070901f8b7059376fb1c
+  mchId: 1492994072
+  key: d165120bf9b94a47882228eadb7af40d
+  certPath: src/main/resources/apiclient_cert.p12
+  url: http://www.lanshiyihui.com:${server.port}${server.context-path}

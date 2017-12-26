@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.AccompanyingOrderMapper">
+    <select id = "selectByAccompanyingOrder" resultType="com.acmed.his.model.AccompanyingOrder">
+        SELECT * from accompanying_order t1
+        <trim prefixOverrides="and" prefix="where">
+            <if test="@Ognl@isNotEmpty(orderCode)">
+                and ordercode = #{orderCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(status)">
+                and status = #{status}
+            </if>
+            <if test="@Ognl@isNotEmpty(payStatus)">
+                and paystatus = #{payStatus}
+            </if>
+            <if test="@Ognl@isNotEmpty(payType)">
+                and paytype = #{payType}
+            </if>
+            <if test="@Ognl@isNotEmpty(realName)">
+                and realname = #{realName}
+            </if>
+            <if test="@Ognl@isNotEmpty(mobile)">
+                and mobile = #{mobile}
+            </if>
+            <if test="@Ognl@isNotEmpty(cardType)">
+                and cardtype = #{cardType}
+            </if>
+            <if test="@Ognl@isNotEmpty(cardNo)">
+                and cardno = #{cardNo}
+            </if>
+            <if test="@Ognl@isNotEmpty(medicareCard)">
+                and medicarecard = #{medicareCard}
+            </if>
+            <if test="@Ognl@isNotEmpty(deptId)">
+                and deptid = #{deptId}
+            </if>
+            <if test="@Ognl@isNotEmpty(dept)">
+                and dept = #{dept}
+            </if>
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                and orgcode = #{orgCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(orgName)">
+                and orgname = #{orgName}
+            </if>
+            <if test="@Ognl@isNotEmpty(cityId)">
+                and cityid = #{cityId}
+            </if>
+            <if test="@Ognl@isNotEmpty(cityName)">
+                and cityname = #{cityName}
+            </if>
+            <if test="@Ognl@isNotEmpty(startTime)">
+                and starttime = #{startTime}
+            </if>
+            <if test="@Ognl@isNotEmpty(endTime)">
+                and endtime = #{endTime}
+            </if>
+            <if test="@Ognl@isNotEmpty(remark)">
+                and remark = #{remark}
+            </if>
+            <if test="@Ognl@isNotEmpty(totalBalance)">
+                and totalbalance = #{totalBalance}
+            </if>
+            <if test="@Ognl@isNotEmpty(returnBalance)">
+                and returnbalance = #{returnBalance}
+            </if>
+            <if test="@Ognl@isNotEmpty(returnOrderCode)">
+                and returnordercode = #{returnOrderCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(otherOrderCode)">
+                and otherordercode = #{otherOrderCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(caseDetail)">
+                and casedetail = #{caseDetail}
+            </if>
+            <if test="@Ognl@isNotEmpty(casePictures)">
+                and casepictures = #{casePictures}
+            </if>
+            <if test="@Ognl@isNotEmpty(delFlag)">
+                and delflag = #{delFlag}
+            </if>
+            <if test="@Ognl@isNotEmpty(otherShareCode)">
+                and othersharecode = #{otherShareCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(point)">
+                and point = #{point}
+            </if>
+            <if test="@Ognl@isNotEmpty(level)">
+                and level = #{level}
+            </if>
+
+            <if test="@Ognl@isNotEmpty(createBy)">
+                and createby = #{createBy}
+            </if>
+        </trim>
+        <if test="@Ognl@isNotEmpty(orderBy)">
+            ORDER BY  #{orderBy}
+        </if>
+    </select>
+
+    <select id="selectCountNumGroupByOrgCode" resultType="com.acmed.his.model.dto.AccompanyingOrderCountDto">
+        SELECT orgcode,COUNT(ordercode) FROM accompanying_order
+        <if test="@Ognl@isNotEmpty(status)">
+            and status = #{status}
+        </if>
+        GROUP BY orgcode
+    </select>
+</mapper>

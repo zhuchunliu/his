@@ -33,7 +33,10 @@ public enum StatusCode {
 	ERROR_REPEATRECORD(10014, "记录重复"),
 	ERROR_GETOPENIDECORD(10015,"获取openid异常"),
 	ERROR_TOKEN (10016,"Token不存在或已失效"),
-	ERROR_PREMISSION (10017,"尚未获取该权限");
+	ERROR_PREMISSION (10017,"尚未获取该权限"),
+	ERROR_ORDER (10018,"订单不存在"),
+	ERROR_IS_PAY (10019,"请不要重复支付"),
+	ERROR_REFUND_ERR (10020,"退款失败");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatusCode.class);
 
