@@ -5,5 +5,4 @@ import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
 
 public interface UserMapper extends TkMapper<User> {
-    User getUserByLoginNameOrPhone(@Param("loginName") String loginName);
 }

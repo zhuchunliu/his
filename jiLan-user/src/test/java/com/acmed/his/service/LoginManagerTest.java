@@ -33,7 +33,7 @@ public class LoginManagerTest {
     @Test
     public void getTokenByOpenid() {
         try {
-            RequestToken requestToken = loginManager.getTokenByOpenid("789");
+            RequestToken requestToken = loginManager.getTokenByOpenid("oTAaixA9X74whvto1wK4H-zn9wAY");
             System.err.print(requestToken);
         } catch (Exception e) {
             e.printStackTrace();
