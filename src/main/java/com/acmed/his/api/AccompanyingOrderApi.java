@@ -12,7 +12,9 @@ import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.NumberFormtUtil;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.experimental.var;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import java.util.Map;
  * @author jimson
  * @date 2017/12/22
  */
+@Api(tags = "就医北上广")
 @RestController
 @RequestMapping("accompanying")
 public class AccompanyingOrderApi {
@@ -56,11 +59,36 @@ public class AccompanyingOrderApi {
     @Autowired
     private WxManager wxManager;
 
+    @Autowired
+    private AccompanyingInvitationManager accompanyingInvitationManager;
+
     @ApiOperation(value = "创建就医北上广订单")
     @PostMapping("createOrder")
     public ResponseResult create(@AccessToken AccessInfo info, @RequestBody AddAccompanyingOrderModel model){
+        String invitationCode = model.getInvitationCode();
+        String patientId = info.getPatientId();
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
-        accompanyingOrder.setCreateBy(info.getPatientId());
+        accompanyingOrder.setCreateBy(patientId);
+        // 查询是否有订单
+
+        List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder, null);
+        if (accompanyingOrders.size() == 0){
+            // 第一次创建
+            if (StringUtils.isNotEmpty(invitationCode)){
+                AccompanyingInvitation accompanyingInvitation = new AccompanyingInvitation();
+                accompanyingInvitation.setInvitationCode(invitationCode);
+                accompanyingInvitation.setPatientId(new Integer(patientId));
+                accompanyingInvitationManager.addAccompanyingInvitation(accompanyingInvitation);
+            }
+        }else {
+            // 不是第一次创建
+            AccompanyingInvitation bypatientId = accompanyingInvitationManager.getBypatientId(new Integer(patientId));
+            if (bypatientId == null){
+                model.setInvitationCode(null);
+            }else {
+                model.setInvitationCode(bypatientId.getInvitationCode());
+            }
+        }
         BeanUtils.copyProperties(model,accompanyingOrder);
         Dept deptDetail = deptManager.getDeptDetail(model.getDeptId());
         Integer orgCode = deptDetail.getOrgCode();

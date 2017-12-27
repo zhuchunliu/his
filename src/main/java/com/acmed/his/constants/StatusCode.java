@@ -36,7 +36,8 @@ public enum StatusCode {
 	ERROR_PREMISSION (10017,"尚未获取该权限"),
 	ERROR_ORDER (10018,"订单不存在"),
 	ERROR_IS_PAY (10019,"请不要重复支付"),
-	ERROR_REFUND_ERR (10020,"退款失败");
+	ERROR_REFUND_ERR (10020,"退款失败"),
+	ERROR_QINIU_ERR (10021,"七牛异常");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatusCode.class);
 

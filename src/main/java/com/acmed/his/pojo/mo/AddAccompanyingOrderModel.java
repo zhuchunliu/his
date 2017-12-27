@@ -72,4 +72,9 @@ public class AddAccompanyingOrderModel {
      */
     @ApiModelProperty("1  普通   2专家  3特别专家")
     private Integer level;
+    /**
+     * 邀请码
+     */
+    @ApiModelProperty("邀请码")
+    private String invitationCode;
 }

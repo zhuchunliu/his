@@ -37,6 +37,14 @@ public class OrgManager {
     }
 
     /**
+     * 获取机构列表
+     * @return
+     */
+    public List<Org> getList(Org org){
+        return orgMapper.select(org);
+    }
+
+    /**
      * 新增、编辑机构
      * @param mo
      */

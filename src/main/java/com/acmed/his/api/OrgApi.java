@@ -1,12 +1,14 @@
 package com.acmed.his.api;
 
 import com.acmed.his.constants.CommonConstants;
+import com.acmed.his.model.Org;
 import com.acmed.his.pojo.mo.OrgMo;
 import com.acmed.his.pojo.vo.OrgVo;
 import com.acmed.his.service.ApplyManager;
 import com.acmed.his.service.OrgManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.LngLatUtil;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
@@ -45,6 +47,22 @@ public class OrgApi {
                                   @AccessToken AccessInfo info){
         orgManager.saveOrg(orgMo,info.getUser());
         return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "获取就医北上广机构列表")
+    @GetMapping("/getBSGList")
+    public ResponseResult<List<OrgVo>> getBSGList(@ApiParam("市区id null:获取所有的机构信息")@RequestParam(value = "city",required = true) Integer cityId){
+        List<OrgVo> list = new ArrayList<>();
+        Org org = new Org();
+        org.setIsRecommend("1");
+        org.setCity(cityId+"");
+        orgManager.getList(org).forEach((obj)->{
+
+            OrgVo orgMo = new OrgVo();
+            BeanUtils.copyProperties(obj,orgMo);
+            list.add(orgMo);
+        });
+        return ResponseUtil.setSuccessResult(list);
     }
 
     @ApiOperation(value = "获取机构列表")

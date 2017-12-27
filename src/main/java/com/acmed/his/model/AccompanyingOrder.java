@@ -1,5 +1,6 @@
 package com.acmed.his.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
@@ -145,4 +146,6 @@ public class AccompanyingOrder{
     private String modifyAt;
     private String createBy;
     private String modifyBy;
+    @ApiModelProperty("邀请码")
+    private String invitationCode;
 }

@@ -53,4 +53,9 @@ weixin:
   mchId: 1492994072
   key: d165120bf9b94a47882228eadb7af40d
   certPath: src/main/resources/apiclient_cert.p12
-  url: http://www.lanshiyihui.com:${server.port}${server.context-path}
+  url: http://wxpaytest.lanshiyihui.com:${server.port}${server.context-path}
+qiniu:
+    bucket: jlhistest #七牛仓库
+    accessKey: h6xfCteR-MvdFwf0Y44M6q6alGKBvnD2LQwNnUg_
+    secretKey: fbSuf2EDMVETHUlx7Oo6YK5C8UeymNXJEmtN8Uh0
+    imgurl: http://qntest.lanshiyihui.com

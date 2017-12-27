@@ -7,8 +7,10 @@ import com.acmed.his.util.WaterCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,6 +67,21 @@ public class AccompanyingOrderManager {
 
     public AccompanyingOrder getByOrderCode(String orderCode){
         return accompanyingOrderMapper.selectByPrimaryKey(orderCode);
+    }
+
+    /**
+     * 根据邀请码获取列表
+     * @param invitationCode 邀请码
+     * @return
+     */
+    public List<AccompanyingOrder> getByInvitationCode(String invitationCode){
+        List<Integer> list = new ArrayList<>();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        Example example = new Example(AccompanyingOrder.class);
+        example.createCriteria().andIn("status",list).andEqualTo("invitationCode",invitationCode);
+        return accompanyingOrderMapper.selectByExample(example);
     }
 
 
