@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -95,6 +96,7 @@ public class LoginManager {
 
         if(null == user && null == patient){//都没有数据的时候，则手动创建一条患者信息
             patient = new Patient();
+            patient.setId(UUIDUtil.generate());
             patient.setOpenid(openid);
             patient.setCreateAt(LocalDateTime.now().toString());
             patientMapper.insert(patient);
