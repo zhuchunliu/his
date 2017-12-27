@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.UserMapper">
+    <resultMap id="userMap" type="com.acmed.his.model.User">
+        <id property="id" column="id"></id>
+        <result property="mobile" column="mobile"></result>
+        <result property="userName" column="username"></result>
+        <result property="passWd" column="passwd"></result>
+        <result property="gender" column="gender"></result>
+        <result property="nickName" column="nickname"></result>
+        <result property="orgCode" column="orgcode"></result>
+        <result property="orgName" column="orgname"></result>
+        <result property="deptName" column="deptname"></result>
+        <result property="dept" column="dept"></result>
+        <result property="category" column="category"></result>
+        <result property="status" column="status"></result>
+        <result property="createBy" column="createby"></result>
+        <result property="modifyBy" column="modifyby"></result>
+        <result property="createAt" column="createat"></result>
+        <result property="modifyAt" column="modifyat"></result>
+        <result property="lastLogin" column="lastlogin"></result>
+        <result property="removed" column="removed"></result>
+        <result property="openid" column="openid"></result>
+    </resultMap>
+
+    <select id="getUserByLoginNameOrPhone" parameterType="java.lang.String" resultMap="userMap">
+        select * from t_p_s_user where username = #{loginName} OR mobile = #{loginName}
+    </select>
+
+    <select id="getUserByOpenid" parameterType="java.lang.String" resultMap="userMap">
+        select * from t_p_s_user where openid = #{openid}
+    </select>
+</mapper>
