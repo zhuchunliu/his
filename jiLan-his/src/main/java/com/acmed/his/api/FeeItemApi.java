@@ -36,7 +36,6 @@ public class FeeItemApi {
     private BaseInfoManager baseInfoManager;
 
     @ApiOperation(value = "新增/编辑 收费项目信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
     public ResponseResult saveFeeItem(@ApiParam("id等于null:新增; feeItemCode不等于null：编辑") @RequestBody FeeItemMo mo,
                                       @AccessToken AccessInfo info){
@@ -52,7 +51,6 @@ public class FeeItemApi {
     }
 
     @ApiOperation(value = "获取收费项目列表")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/list")
     public ResponseResult<List<FeeItemVo>> getFeeItemList(@AccessToken AccessInfo info,
                                                           @ApiParam("费用类别大项") @RequestParam(value = "feeCategory",required = false) String feeCategory,
@@ -81,7 +79,6 @@ public class FeeItemApi {
 
     @ApiOperation(value = "删除收费项目信息")
     @DeleteMapping("/del")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     public ResponseResult delFeeItem(@ApiParam("收费项目主键") @RequestParam("id") Integer id,
                                      @AccessToken AccessInfo info){
         feeItemManager.delFeeItem(id,info.getUser());

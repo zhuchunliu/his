@@ -41,7 +41,6 @@ public class OrgApi {
     private ApplyManager applyManager;
 
     @ApiOperation(value = "新增/编辑 机构信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
     public ResponseResult saveOrg(@ApiParam("orgCode等于null:新增; orgCode不等于null：编辑") @RequestBody OrgMo orgMo,
                                   @AccessToken AccessInfo info){
@@ -111,7 +110,6 @@ public class OrgApi {
 
 
     @ApiOperation(value = "获取机构详情")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/detail")
     public ResponseResult<OrgVo> getOrgDetail(@ApiParam("机构主键 null:获取当前登录人的机构信息") @RequestParam(value = "orgCode",required = false) Integer orgCode,
                                               @AccessToken AccessInfo info){
@@ -125,7 +123,6 @@ public class OrgApi {
     }
 
     @ApiOperation(value = "删除机构信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @DeleteMapping("/del")
     public ResponseResult delRole(@ApiParam("机构主键") @RequestParam("orgCode") Integer orgCode,
                                   @AccessToken AccessInfo info){

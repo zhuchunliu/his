@@ -62,7 +62,6 @@ public class DispensingApi {
     private BaseInfoManager baseInfoManager;
 
     @ApiOperation(value = "获取发药收费列表")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/list")
     public ResponseResult<DispensingVo> getDispensingList(
             @ApiParam("患者姓名或者编号") @RequestParam(value = "name",required = false)String name,
@@ -111,7 +110,6 @@ public class DispensingApi {
     }
 
     @ApiOperation(value = "确认发药")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping
     public ResponseResult dispensing(@ApiParam("{\"id\":},id：处方主键") @RequestBody String param,
                                         @AccessToken AccessInfo info){
@@ -124,7 +122,6 @@ public class DispensingApi {
 
 
     @ApiOperation(value = "付费")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/pay")
     public ResponseResult pay(@ApiParam("{\"id\":\"\";\"fee\":\"\",\"feeType\":\"\"},id：处方主键、fee：实际付费金额、feeType：付费类型") @RequestBody String param,
                                      @AccessToken AccessInfo info){

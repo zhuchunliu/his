@@ -32,7 +32,6 @@ public class PrescriptionApi {
     private PrescriptionManager preManager;
 
     @ApiOperation(value = "保存处方【药品+检查】")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping
     public ResponseResult savePre(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PreMo mo,
                                   @AccessToken AccessInfo info){
@@ -41,7 +40,6 @@ public class PrescriptionApi {
     }
 
     @ApiOperation(value = "获取处方【药品+检查】")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping
     public ResponseResult<PreVo> getPre(@ApiParam("id 主键") @RequestParam("id") String id){
         return ResponseUtil.setSuccessResult(preManager.getPre(id));

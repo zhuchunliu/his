@@ -201,7 +201,7 @@ public class PrescriptionManager {
                     item.setPrescriptionId(prescription.getId());
                     item.setApplyId(mo.getApplyId());
                     item.setDrugId(info.getDrugId());
-                    item.setDrugCode(drug.getDrgCode());
+                    item.setDrugCode(drug.getDrugCode());
                     item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//总价：单价*数量
                     item.setGroupNum(String.valueOf(i+1));
                     preItemMapper.insert(item);

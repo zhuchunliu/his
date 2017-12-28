@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.DrugDictMapper">
+
+    <select id="getDrugDictList"  resultType="com.acmed.his.model.DrugDict">
+        select * from t_b_drugdict dict where
+        NOT EXISTS (select * from t_b_drug where drugCode = dict.code and removed= '0' and orgCode = #{orgCode} )
+        <if test="@Ognl@isNotEmpty(name)">
+            and (specName like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%'))
+        </if>
+        <if test="@Ognl@isNotEmpty(category)">
+            and category = #{category}
+        </if>
+    </select>
+
+    <select id="getDrugDictTotal"  resultType="java.lang.Integer">
+        select count(1) from t_b_drugdict dict where
+        NOT EXISTS (select * from t_b_drug where drugCode = dict.code and removed= '0' and orgCode = #{orgCode} )
+        <if test="@Ognl@isNotEmpty(name)">
+            and (specName like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%'))
+        </if>
+        <if test="@Ognl@isNotEmpty(category)">
+            and category = #{category}
+        </if>
+    </select>
+
+
+</mapper>

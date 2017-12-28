@@ -35,7 +35,6 @@ public class DeptApi {
     private DeptManager deptManager;
 
     @ApiOperation(value = "新增/编辑 科室信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
     public ResponseResult saveDept(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody DeptMo deptMo,
                                    @AccessToken AccessInfo info){
@@ -65,7 +64,6 @@ public class DeptApi {
     }
 
     @ApiOperation(value = "删除机构信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @DeleteMapping("/del")
     public ResponseResult delDept(@ApiParam("科室主键") @RequestParam("id") Integer id,
                                   @AccessToken AccessInfo info){

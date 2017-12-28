@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.DrugMapper">
+
+    <select id="getDrugList"  resultType="com.acmed.his.model.Drug">
+        select * from t_b_drug where orgCode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(name)">
+            and (name like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%'))
+        </if>
+        <if test="@Ognl@isNotEmpty(category)">
+            and category = #{category}
+        </if>
+        and removed = '0'
+    </select>
+
+    <select id="getDrugTotal"  resultType="java.lang.Integer">
+        select count(1) from t_b_drug where orgCode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(name)">
+            and (name like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%'))
+        </if>
+        <if test="@Ognl@isNotEmpty(category)">
+            and category = #{category}
+        </if>
+        and removed = '0'
+    </select>
+    
+    <insert id="saveDrugByDict">
+        INSERT INTO  t_b_drug(drugcode,orgcode,name,pinyin,spec,
+        category,packunit,unit,removed,createby,createat)
+        select code,#{info.orgCode},specname,pinyin,spec,
+        category,packunit,unit,'0',#{info.id},now()
+        from t_b_drugdict
+        where code in
+        <foreach collection="codes" open="(" close=")" separator="," item="dictcode">
+            #{dictcode}
+        </foreach>
+    </insert>
+
+
+</mapper>

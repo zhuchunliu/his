@@ -1,12 +1,16 @@
 package com.acmed.his.service;
 
+import com.acmed.his.dao.DrugDictMapper;
 import com.acmed.his.dao.DrugMapper;
 import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.dao.SupplyMapper;
 import com.acmed.his.model.Drug;
+import com.acmed.his.model.DrugDict;
 import com.acmed.his.model.Manufacturer;
 import com.acmed.his.model.Supply;
+import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.PinYinUtil;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -25,6 +29,9 @@ import java.util.List;
 public class DrugManager {
     @Autowired
     private DrugMapper drugMapper;
+
+    @Autowired
+    private DrugDictMapper drugDictMapper;
 
     @Autowired
     private ManufacturerMapper manufacturerMapper;
@@ -158,4 +165,70 @@ public class DrugManager {
         return supplyMapper.selectAll();
     }
 
+    /**
+     * 模糊搜索药品库信息
+     * @param pageNum
+     * @param pageSize
+     * @param name
+     * @param category
+     * @return
+     */
+    public List<Drug> getDrugList(Integer orgCode,String name, String category,Integer pageNum, Integer pageSize ) {
+
+        PageHelper.startPage(pageNum,pageSize);
+        return drugMapper.getDrugList(orgCode,name,category);
+
+    }
+
+    /**
+     * 模糊搜索药品库信息
+     * @param name
+     * @param category
+     * @return
+     */
+    public Integer getDrugTotal(Integer orgCode,String name, String category ) {
+
+        return drugMapper.getDrugTotal(orgCode,name,category);
+
+    }
+
+    /**
+     * 删除药品信息
+     * @param id
+     * @param info
+     */
+    public void delDrug(Integer id, UserInfo info) {
+        Drug drug = drugMapper.selectByPrimaryKey(id);
+        drug.setModifyAt(LocalDateTime.now().toString());
+        drug.setModifyBy(info.getId().toString());
+        drug.setRemoved("1");
+        drugMapper.updateByPrimaryKey(drug);
+    }
+
+    /**
+     * 获取药品字典表
+     * @param orgCode
+     * @param name
+     * @param category
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public List<DrugDict> getDrugDictList(Integer orgCode, String name, String category, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        return drugDictMapper.getDrugDictList(orgCode,name,category);
+
+    }
+
+    public int getDrugDictTotal(Integer orgCode, String name, String category) {
+        return drugDictMapper.getDrugDictTotal(orgCode,name,category);
+    }
+
+    /**
+     * 批量添加药品信息
+     * @param codes
+     */
+    public void saveDrugByDict(String[] codes,UserInfo info) {
+        drugMapper.saveDrugByDict(codes,info);
+    }
 }

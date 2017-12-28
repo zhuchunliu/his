@@ -25,7 +25,7 @@ public class Drug {
     private Integer id;
 
     @ApiModelProperty("药品编码")
-    private String drgCode;
+    private String drugCode;
 
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
@@ -72,11 +72,17 @@ public class Drug {
     @ApiModelProperty("零售价")
     private Double retailPrice;
 
+    @ApiModelProperty("库存数量")
+    private String num;
+
     @ApiModelProperty("加成率")
     private Double markonpercent;
 
     @ApiModelProperty("药品备注")
     private String memo;
+
+    @ApiModelProperty("删除标识:0 未删除,1:删除")
+    private String removed;
 
     @ApiModelProperty("创建时间")
     private String createAt;

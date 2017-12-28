@@ -41,7 +41,6 @@ public class ApplyApi {
     private ApplyManager applyManager;
 
     @ApiOperation(value = "添加挂号信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("add")
     public ResponseResult add(@RequestBody ApplyMo mo,
                               @AccessToken AccessInfo info){
@@ -50,7 +49,6 @@ public class ApplyApi {
     }
 
     @ApiOperation(value = "根据患者id 查询列表")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("patientId")
     public ResponseResult<ApplyVo> patientId(@ApiParam("患者id") @RequestParam(value = "patientId",required = false) String patientId,
                                     @AccessToken AccessInfo info){

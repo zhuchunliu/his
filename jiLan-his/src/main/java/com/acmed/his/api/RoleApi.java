@@ -33,7 +33,6 @@ public class RoleApi {
     private RoleManager roleManager;
 
     @ApiOperation(value = "新增/编辑 角色信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
     public ResponseResult saveRole(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody RoleMo roleMo,
                                    @AccessToken AccessInfo info){
@@ -63,7 +62,6 @@ public class RoleApi {
     }
 
     @ApiOperation(value = "删除角色信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @DeleteMapping("/del")
     public ResponseResult delRole(@ApiParam("角色主键") @RequestParam("id") Integer id,
                                   @AccessToken AccessInfo info){

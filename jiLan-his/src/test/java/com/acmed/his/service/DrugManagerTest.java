@@ -29,7 +29,7 @@ public class DrugManagerTest {
     @Test
     public void addDrug() throws Exception {
         Drug drug = new Drug();
-        drug.setDrgCode("123");
+        drug.setDrugCode("123");
         drug.setOrgCode(1);
         drug.setName("药药药");
         drug.setSpec("瓶");

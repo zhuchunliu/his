@@ -31,7 +31,6 @@ public class PermissionApi {
     private PermissionManager permissionManager;
 
     @ApiOperation(value = "新增/编辑 权限信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
     public ResponseResult savePermission(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PermissionMo permissionMo,
                                          @AccessToken AccessInfo info){

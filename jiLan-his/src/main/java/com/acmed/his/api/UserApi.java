@@ -34,7 +34,6 @@ public class UserApi {
     private UserManager userManager;
 
     @ApiOperation(value = "新增/编辑 用户信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
     public ResponseResult saveUser(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody UserMo userMo,
                                    @AccessToken AccessInfo info){
@@ -43,7 +42,6 @@ public class UserApi {
     }
 
     @ApiOperation(value = "获取用户列表")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/list")
     public ResponseResult<List<UserVo>> getUserList(@AccessToken AccessInfo info){
         List<UserVo> list = new ArrayList<>();
@@ -56,7 +54,6 @@ public class UserApi {
     }
 
     @ApiOperation(value = "获取用户详情")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/detail")
     public ResponseResult<UserVo> getUserDetail(@ApiParam("用户主键 null:获取当前登录人的个人信息") @RequestParam(value = "id",required = false) Integer id,
                                                 @AccessToken AccessInfo info){
@@ -77,7 +74,6 @@ public class UserApi {
     }
 
     @ApiOperation(value = "删除用户信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @DeleteMapping("/del")
     public ResponseResult delUser(@ApiParam("用户主键") @RequestParam("id") Integer id,
                                   @AccessToken AccessInfo info){
@@ -117,7 +113,6 @@ public class UserApi {
     }
 
     @ApiOperation("修改密码")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping(value = "/passwd")
     public ResponseResult changePasswd(@ApiParam("{\"oldPasswd\":\"\",\"newPasswd\":\"\"},oldPasswd：老密码、newPasswd：新密码")  @RequestBody String param,
                                        @AccessToken AccessInfo info){
@@ -133,7 +128,6 @@ public class UserApi {
     }
 
     @ApiOperation("根据token获取用户信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping(value = "/user")
     public ResponseResult<UserInfo> getUser(@AccessToken AccessInfo info){
         return ResponseUtil.setSuccessResult(info.getUser());

@@ -45,4 +45,18 @@ public class DrugDict {
 
     @ApiModelProperty("药品功效")
     private String efficacy;
+
+    @ApiModelProperty("药品规格")
+    private String spec;
+
+    @ApiModelProperty("计量单位")
+    private String unit;
+
+    @ApiModelProperty("包装单位")
+    private String packUnit;
+
+    @ApiModelProperty("创建时间")
+    private String createAt;
+
+
 }

@@ -32,7 +32,6 @@ public class ScheduleApi {
     private ScheduleManager scheduleManager;
 
     @ApiOperation(value = "设置排班信息")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @PostMapping("/save")
     public ResponseResult update(@RequestBody ScheduleMo mo,
                                    @AccessToken AccessInfo info){
@@ -41,7 +40,6 @@ public class ScheduleApi {
     }
 
     @ApiOperation(value = "获取排班列表")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/list")
     public ResponseResult<ScheduleVo> list(@ApiParam("科室主键") @RequestParam(value = "deptId",required = false) Integer deptId,
                                            @ApiParam("人员主键") @RequestParam(value = "userId",required = false) Integer userId,
@@ -59,7 +57,6 @@ public class ScheduleApi {
     }
 
     @ApiOperation(value = "复制上周")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = CommonConstants.USER_HEADER_TOKEN, value = "token", required = true)
     @GetMapping("/previous")
     public ResponseResult<ScheduleVo> list(@ApiParam("人员主键集合，逗号间隔") @RequestParam(value = "userIds",required = false) String userIds){
         List<ScheduleDto> sourceList = scheduleManager.getScheduleList(userIds);
