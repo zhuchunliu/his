@@ -70,7 +70,7 @@ public class AccompanyingOrderApi {
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setCreateBy(patientId);
         // 查询是否有订单
-        AccompanyingInvitation bypatientId = accompanyingInvitationManager.getBypatientId(info.getPatient().getId());
+        AccompanyingInvitation bypatientId = accompanyingInvitationManager.getBypatientId(new Integer(info.getPatientId()));
         if(bypatientId!=null){
             accompanyingOrder.setInvitationCode(bypatientId.getInvitationCode());
         }
@@ -381,7 +381,7 @@ public class AccompanyingOrderApi {
         List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder, null);
         if (accompanyingOrders.size() == 0){
             AccompanyingInvitation accompanyingInvitation = new AccompanyingInvitation();
-            accompanyingInvitation.setPatientId(info.getPatient().getId());
+            accompanyingInvitation.setPatientId(new Integer(info.getPatientId()));
             accompanyingInvitation.setInvitationCode(invitationCode);
             accompanyingInvitationManager.addAccompanyingInvitation(accompanyingInvitation);
         }
