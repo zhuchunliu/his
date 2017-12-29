@@ -143,7 +143,7 @@ public class PayApi {
                                 accompanyingOrder.setPayStatus(1);
                                 accompanyingOrder.setStatus(2);
                                 accompanyingOrder.setPayType(1);
-                                accompanyingOrder.setOrderCode(transaction_id);
+                                accompanyingOrder.setOtherOrderCode(transaction_id);
                                 int update = accompanyingOrderManager.update(accompanyingOrder);
                                 if (update == 1) {
                                     // 回调成功
