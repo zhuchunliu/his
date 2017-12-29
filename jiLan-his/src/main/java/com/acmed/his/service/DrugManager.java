@@ -141,6 +141,7 @@ public class DrugManager {
      */
     public int saveSupply(Supply supply){
         Integer id = supply.getId();
+        supply.setPinYin(PinYinUtil.getPinYinHeadChar(supply.getSupplyerName()));
         if (id==null){
             return supplyMapper.insert(supply);
         }else {

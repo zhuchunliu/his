@@ -81,31 +81,27 @@ public class LoginManager {
         Example example = new Example(User.class);
         example.createCriteria().andEqualTo("openid",openid);
         User user = Optional.ofNullable(userMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
-        Patient patient = null;
-
 
         String loginid = Optional.ofNullable(user).map(obj->String.format(RedisKeyConstants.USER_WEIXIN,user.getId())).orElse(null);
 
         new Example(Patient.class);
         example.createCriteria().andEqualTo("openid",openid);
-        patient = Optional.ofNullable(patientMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
-        if(null != patient && null == loginid){
-            loginid = String.format(RedisKeyConstants.PATIENT_WEIXIN,patient.getId());
-        }
-
-        if(null == user && null == patient){//都没有数据的时候，则手动创建一条患者信息
+        Patient patient = Optional.ofNullable(patientMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
+        if(null == patient){//都没有数据的时候，则手动创建一条患者信息
             patient = new Patient();
             patient.setId(UUIDUtil.generate());
             patient.setOpenid(openid);
             patient.setCreateAt(LocalDateTime.now().toString());
             patientMapper.insert(patient);
             patient = patientManager.getPatientByOpenid(openid);
+        }
+
+        if(null == loginid){
             loginid = String.format(RedisKeyConstants.PATIENT_WEIXIN,patient.getId());
         }
+
         RequestToken requestToken = new RequestToken();
-        if(null != user && null != patient){
-            requestToken.setStatus(3);
-        }else if(null != user){
+        if(null != user){
             requestToken.setStatus(2);
         }else {
             requestToken.setStatus(1);
