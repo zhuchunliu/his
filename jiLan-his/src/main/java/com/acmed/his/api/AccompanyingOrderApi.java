@@ -14,7 +14,6 @@ import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.experimental.var;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +69,7 @@ public class AccompanyingOrderApi {
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setCreateBy(patientId);
         // 查询是否有订单
-        AccompanyingInvitation bypatientId = accompanyingInvitationManager.getBypatientId(new Integer(info.getPatientId()));
+        AccompanyingInvitation bypatientId = accompanyingInvitationManager.getBypatientId(patientId);
         if(bypatientId!=null){
             accompanyingOrder.setInvitationCode(bypatientId.getInvitationCode());
         }
@@ -381,7 +380,7 @@ public class AccompanyingOrderApi {
         List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder, null);
         if (accompanyingOrders.size() == 0){
             AccompanyingInvitation accompanyingInvitation = new AccompanyingInvitation();
-            accompanyingInvitation.setPatientId(new Integer(info.getPatientId()));
+            accompanyingInvitation.setPatientId(patientId);
             accompanyingInvitation.setInvitationCode(invitationCode);
             accompanyingInvitationManager.addAccompanyingInvitation(accompanyingInvitation);
         }

@@ -26,7 +26,7 @@ public class AccompanyingInvitation {
     @ApiModelProperty("渠道id")
     private Integer userId;
     @ApiModelProperty("患者id")
-    private Integer patientId;
+    private String patientId;
     @ApiModelProperty("邀请码")
     private String invitationCode;
 }

@@ -25,7 +25,7 @@ public class AccompanyingInvitationManager {
      * @param patientId 患者id
      * @return AccompanyingInvitation
      */
-    public AccompanyingInvitation getBypatientId(Integer patientId){
+    public AccompanyingInvitation getBypatientId(String patientId){
         AccompanyingInvitation accompanyingInvitation = new AccompanyingInvitation();
         accompanyingInvitation.setPatientId(patientId);
         return accompanyingInvitationMapper.selectOne(accompanyingInvitation);
