@@ -10,11 +10,16 @@ import com.acmed.his.support.AccessToken;
 import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.*;
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.google.common.annotations.VisibleForTesting;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +36,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("pay")
+@Api(tags = "支付管理")
 public class PayApi {
 
     @Autowired
@@ -68,8 +74,8 @@ public class PayApi {
         //param.put("detail","详情");
         long currentTimestamp = WXPayUtil.getCurrentTimestamp();
         System.err.println(currentTimestamp);
-        param.put("out_trade_no",currentTimestamp+"");
-        param.put("total_fee", totalBalance.multiply(new BigDecimal(100)).toString());
+        param.put("out_trade_no",orderCode+"");
+        param.put("total_fee", totalBalance.multiply(new BigDecimal(100)).intValue()+"");
         // 客户端ip
         param.put("spbill_create_ip",request.getRemoteAddr());
         param.put("notify_url",environment.getProperty("weixin.url")+"/pay/BSGCallBack");
@@ -82,17 +88,36 @@ public class PayApi {
         String s1 = WXPayRequest.postXml(WXPayConstants.UNIFIEDORDER_URL_SUFFIX,xml);
         Map<String, String> map = WXPayUtil.xmlToMap(s1);
         System.err.println(map);
-        return ResponseUtil.setSuccessResult(map);
+        if ("SUCCESS".equals(map.get("result_code"))){
+            Map<String,String> result = new HashMap<>();
+            result.put("appId",map.get("appid"));
+            result.put("timeStamp",WXPayUtil.getCurrentTimestamp()+"");
+            result.put("nonceStr", UUIDUtil.generate());
+            result.put("package","prepay_id="+map.get("prepay_id"));
+            result.put("signType","MD5");
+            String s2 = WXPayUtil.generateSignature(result, environment.getProperty("weixin.key"));
+            result.put("paySign",s2);
+            JSONUtils.toJSONString(result);
+            System.err.println();
+            return ResponseUtil.setSuccessResult(JSONUtils.toJSONString(result));
+        }else {
+            logger.error("微信支付初始化异常--------"+map.toString());
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_PAY_INIT_ERR,"网络繁忙");
+        }
+
+
+
     }
 
     @ApiOperation("就医北上广回调")
     @RequestMapping("BSGCallBack")
     @WithoutToken
+    @Transactional
     public void BSGCallBack(HttpServletRequest req, HttpServletResponse resp){
         try {
             req.setCharacterEncoding("utf-8");
             resp.setCharacterEncoding("utf-8");
-            resp.setHeader("Content-type", "text/html;charset=UTF-8");
+            resp.setHeader("Content-type", "application/xml;charset=UTF-8");
             String resString = WXPayUtil.parseRequst(req);
             System.out.println("通知内容：" + resString);
             String respString = "fail";
@@ -102,25 +127,25 @@ public class PayApi {
                 if (!s){
                     respString = "fail";
                 }else {
-                    String status = map.get("status");
-                    if(status != null && "0".equals(status)){
-                        String result_code = map.get("result_code");
-                        if(result_code != null && "0".equals(result_code)){
-                            // 本地訂單號
-                            String out_trade_no = map.get("out_trade_no");
-                            // 第三方订单号
-                            String transaction_id = map.get("transaction_id");
-                            logger.info("微信支付订单号"+transaction_id);
-                            AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
-                            accompanyingOrder.setOrderCode(out_trade_no);
-                            accompanyingOrder.setPayStatus(0);
-                            AccompanyingOrder byOrderCode = accompanyingOrderManager.getByOrderCode(out_trade_no);
-                            if (byOrderCode != null){
+                    String return_code = map.get("return_code");
+                    String result_code = map.get("result_code");
+                    if (StringUtils.equals("SUCCESS", return_code) && StringUtils.equals("SUCCESS", result_code)) {
+                        // 本地訂單號
+                        String out_trade_no = map.get("out_trade_no");
+                        // 第三方订单号
+                        String transaction_id = map.get("transaction_id");
+                        logger.info("微信支付订单号" + transaction_id);
+                        AccompanyingOrder byOrderCode = accompanyingOrderManager.getByOrderCode(out_trade_no);
+                        if (byOrderCode != null) {
+                            if (byOrderCode.getPayStatus()==0){
+                                AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
+                                accompanyingOrder.setOrderCode(out_trade_no);
+                                accompanyingOrder.setPayStatus(1);
                                 accompanyingOrder.setStatus(2);
                                 accompanyingOrder.setPayType(1);
                                 accompanyingOrder.setOrderCode(transaction_id);
                                 int update = accompanyingOrderManager.update(accompanyingOrder);
-                                if (update == 1){
+                                if (update == 1) {
                                     // 回调成功
                                     respString = "success";
                                 }
@@ -129,7 +154,7 @@ public class PayApi {
                     }
                 }
             }
-            resp.getWriter().write(respString);
+            resp.getWriter().write("<xml><return_code><![CDATA["+respString+"]]></return_code></xml>");
         } catch (Exception e) {
             e.printStackTrace();
         }

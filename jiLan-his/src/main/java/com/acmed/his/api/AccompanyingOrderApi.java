@@ -65,37 +65,27 @@ public class AccompanyingOrderApi {
     @ApiOperation(value = "创建就医北上广订单")
     @PostMapping("createOrder")
     public ResponseResult create(@AccessToken AccessInfo info, @RequestBody AddAccompanyingOrderModel model){
-        String invitationCode = model.getInvitationCode();
         String patientId = info.getPatientId();
+        Integer isAccompanying = model.getIsAccompanying();
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setCreateBy(patientId);
         // 查询是否有订单
-
-        List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder, null);
-        if (accompanyingOrders.size() == 0){
-            // 第一次创建
-            if (StringUtils.isNotEmpty(invitationCode)){
-                AccompanyingInvitation accompanyingInvitation = new AccompanyingInvitation();
-                accompanyingInvitation.setInvitationCode(invitationCode);
-                accompanyingInvitation.setPatientId(new Integer(patientId));
-                accompanyingInvitationManager.addAccompanyingInvitation(accompanyingInvitation);
-            }
-        }else {
-            // 不是第一次创建
-            AccompanyingInvitation bypatientId = accompanyingInvitationManager.getBypatientId(new Integer(patientId));
-            if (bypatientId == null){
-                model.setInvitationCode(null);
-            }else {
-                model.setInvitationCode(bypatientId.getInvitationCode());
-            }
+        AccompanyingInvitation bypatientId = accompanyingInvitationManager.getBypatientId(info.getPatient().getId());
+        if(bypatientId!=null){
+            accompanyingOrder.setInvitationCode(bypatientId.getInvitationCode());
         }
         BeanUtils.copyProperties(model,accompanyingOrder);
         Dept deptDetail = deptManager.getDeptDetail(model.getDeptId());
         Integer orgCode = deptDetail.getOrgCode();
+        String dept = deptDetail.getDept();
         Org orgDetail = orgManager.getOrgDetail(orgCode);
         accompanyingOrder.setOrgName(orgDetail.getOrgName());
+        accompanyingOrder.setOrgCode(orgCode);
+        accompanyingOrder.setDept(dept);
+        accompanyingOrder.setStatus(1);
         Integer cityId = new Integer(orgDetail.getCity());
         accompanyingOrder.setCityId(cityId);
+        accompanyingOrder.setDelFlag(0);
         accompanyingOrder.setCityName(baseInfoManager.getAreaById(cityId).getName());
         AccompanyingPrice accompanyingPrice = accompanyingPriceManager.getByOrgCode(orgCode);
         Integer level = model.getLevel();
@@ -104,20 +94,35 @@ public class AccompanyingOrderApi {
         if (level == 1){
             BigDecimal gradeOnePrice = accompanyingPrice.getGradeOnePrice();
             accompanyingOrder.setServiceCharge(gradeOnePrice);
-            accompanyingOrder.setTotalBalance(gradeOnePrice.add(accompanyingPrice1));
+            if (isAccompanying == 1){
+                accompanyingOrder.setTotalBalance(gradeOnePrice.add(accompanyingPrice1));
+            }else {
+                accompanyingOrder.setTotalBalance(gradeOnePrice);
+            }
         }
         else if (level == 2){
             BigDecimal gradeTwoPrice = accompanyingPrice.getGradeTwoPrice();
             accompanyingOrder.setServiceCharge(gradeTwoPrice);
-            accompanyingOrder.setTotalBalance(gradeTwoPrice.add(accompanyingPrice1));
+            if (isAccompanying == 1){
+                accompanyingOrder.setTotalBalance(gradeTwoPrice.add(accompanyingPrice1));
+            }else {
+                accompanyingOrder.setTotalBalance(gradeTwoPrice);
+            }
         }
         else {
             BigDecimal gradeThreePrice = accompanyingPrice.getGradeThreePrice();
             accompanyingOrder.setServiceCharge(gradeThreePrice);
-            accompanyingOrder.setTotalBalance(gradeThreePrice.add(accompanyingPrice1));
+            if (isAccompanying == 1){
+                accompanyingOrder.setTotalBalance(gradeThreePrice.add(accompanyingPrice1));
+            }else {
+                accompanyingOrder.setTotalBalance(gradeThreePrice);
+            }
         }
-        accompanyingOrderManager.addAccompanyingOrder(accompanyingOrder);
-        return ResponseUtil.setSuccessResult();
+        AccompanyingOrder accompanyingOrder1 = accompanyingOrderManager.addAccompanyingOrder(accompanyingOrder);
+        if (accompanyingOrder1 != null){
+            return ResponseUtil.setSuccessResult(accompanyingOrder1.getOrderCode());
+        }
+        return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER_ERR,"创建订单失败");
     }
 
     @ApiOperation(value = "删除创建订单")
@@ -364,5 +369,22 @@ public class AccompanyingOrderApi {
             }
         }
         return ResponseUtil.setSuccessResult(result);
+    }
+
+    @ApiOperation(value = "结束邀请")
+    @RequestMapping("accessInvitation")
+    public ResponseResult accessInvitation(@AccessToken AccessInfo info,@RequestParam("invitationCode")String invitationCode){
+        String patientId = info.getPatientId();
+        AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
+        accompanyingOrder.setCreateBy(patientId);
+        // 查询是否有订单
+        List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder, null);
+        if (accompanyingOrders.size() == 0){
+            AccompanyingInvitation accompanyingInvitation = new AccompanyingInvitation();
+            accompanyingInvitation.setPatientId(info.getPatient().getId());
+            accompanyingInvitation.setInvitationCode(invitationCode);
+            accompanyingInvitationManager.addAccompanyingInvitation(accompanyingInvitation);
+        }
+        return ResponseUtil.setSuccessResult();
     }
 }

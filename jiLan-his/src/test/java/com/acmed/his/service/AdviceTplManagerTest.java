@@ -1,6 +1,7 @@
 package com.acmed.his.service;
 
 import com.acmed.his.HisApplication;
+import com.acmed.his.dao.AccompanyingOrderMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

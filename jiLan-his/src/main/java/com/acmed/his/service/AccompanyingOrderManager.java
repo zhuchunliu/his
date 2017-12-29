@@ -28,13 +28,19 @@ public class AccompanyingOrderManager {
     /**
      * 创建就医北上广订单
      * @param accompanyingOrder 订单
-     * @return
+     * @return 不成功 返回null
      */
-    public int addAccompanyingOrder(AccompanyingOrder accompanyingOrder){
+    public AccompanyingOrder addAccompanyingOrder(AccompanyingOrder accompanyingOrder){
         accompanyingOrder.setCreateAt(LocalDateTime.now().toString());
         accompanyingOrder.setPayStatus(0);
         accompanyingOrder.setOrderCode(WaterCodeUtil.getWaterCode());
-        return accompanyingOrderMapper.insert(accompanyingOrder);
+
+        int insert = accompanyingOrderMapper.insert(accompanyingOrder);
+        if (insert == 0){
+            return null;
+        }else {
+            return accompanyingOrder;
+        }
     }
 
     /**
