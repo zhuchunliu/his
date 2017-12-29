@@ -120,12 +120,12 @@ public class PayApi {
             resp.setHeader("Content-type", "application/xml;charset=UTF-8");
             String resString = WXPayUtil.parseRequst(req);
             logger.info("回调通知内容"+resString);
-            String respString = "fail";
+            String respString = "FAIL";
             if(resString != null && !"".equals(resString)){
                 Map<String,String> map = WXPayUtil.toMap(resString.getBytes(), "utf-8");
                 boolean s = WXPayUtil.isSignatureValid(map,environment.getProperty("weixin.key"));
                 if (!s){
-                    respString = "fail";
+                    respString = "FAIL";
                 }else {
                     String return_code = map.get("return_code");
                     String result_code = map.get("result_code");
