@@ -119,7 +119,7 @@ public class PayApi {
             resp.setCharacterEncoding("utf-8");
             resp.setHeader("Content-type", "application/xml;charset=UTF-8");
             String resString = WXPayUtil.parseRequst(req);
-            System.out.println("通知内容：" + resString);
+            logger.info("回调通知内容"+resString);
             String respString = "fail";
             if(resString != null && !"".equals(resString)){
                 Map<String,String> map = WXPayUtil.toMap(resString.getBytes(), "utf-8");
@@ -147,7 +147,7 @@ public class PayApi {
                                 int update = accompanyingOrderManager.update(accompanyingOrder);
                                 if (update == 1) {
                                     // 回调成功
-                                    respString = "success";
+                                    respString = "SUCCESS";
                                 }
                             }
                         }
@@ -156,6 +156,7 @@ public class PayApi {
             }
             resp.getWriter().write("<xml><return_code><![CDATA["+respString+"]]></return_code></xml>");
         } catch (Exception e) {
+            logger.error(e.toString());
             e.printStackTrace();
         }
     }
