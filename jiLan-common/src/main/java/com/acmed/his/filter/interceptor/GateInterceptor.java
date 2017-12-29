@@ -22,12 +22,6 @@ public class GateInterceptor implements HandlerInterceptor {
 
     private Logger logger = LoggerFactory.getLogger(GateInterceptor.class);
 
-//    private LoginManager loginManager;
-    public GateInterceptor(ApplicationContext applicationContext){
-//        this.loginManager = applicationContext.getBean(LoginManager.class);
-    }
-
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
         String path = request.getServletPath();

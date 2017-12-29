@@ -12,6 +12,7 @@ import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,6 +65,9 @@ public class LoginController {
             openid = wxManager.getOpenid(code);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
+        }
+        if(null == openid || StringUtils.isEmpty(openid)){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
         }
         RequestToken requestToken =  loginManager.getTokenByOpenid(openid);
