@@ -37,5 +37,19 @@
         </foreach>
     </insert>
 
+    <select id="getStockList" resultType="com.acmed.his.model.dto.DrugStockDto">
+        select t1.id, t1.drugcode, t1.name, t1.spec, t1.unit,
+        t2.supplyername as supplierName, t1.num, t1.bid, t1.retailprice as retailPrice,
+        t1.num * t1.bid as bidFee ,
+        t1.num * t1.retailprice as retailFee
+        FROM t_b_drug t1
+        LEFT JOIN t_b_supply t2 on t1.supply = t2.id
+        where t1.orgcode = #{orgCode}
+        and t1.removed = '0'
+        <if test="@Ognl@isNotEmpty(name) ">
+            and t1.name like concat('%', #{name} , '%')
+        </if>
+    </select>
+
 
 </mapper>

@@ -3,6 +3,7 @@ package com.acmed.his.service;
 import com.acmed.his.dao.AccompanyingInvitationMapper;
 import com.acmed.his.model.AccompanyingInvitation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

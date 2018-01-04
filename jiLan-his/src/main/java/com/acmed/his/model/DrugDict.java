@@ -55,8 +55,4 @@ public class DrugDict {
     @ApiModelProperty("包装单位")
     private String packUnit;
 
-    @ApiModelProperty("创建时间")
-    private String createAt;
-
-
 }

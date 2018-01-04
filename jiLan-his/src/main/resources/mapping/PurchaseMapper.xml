@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.PurchaseMapper">
+
+    <select id="getAuditList" resultType="com.acmed.his.model.dto.PurchaseDto">
+        select t1.id, t1.purchaseno as purchaseNo, t2.username as userName, t1.date, t1.bidfee as bidFee,
+        t3.username as auditUserName , t1.auditdate as auditDate, t4.supplyername as supplierName, t1.status
+        from t_b_purchase t1
+        LEFT JOIN t_p_s_user t2 on t1.userid = t2.id
+        LEFT JOIN t_p_s_user t3 on t1.audituserid = t3.id
+        LEFT JOIN t_b_supply t4 on t1.supplierid = t4.id
+        where t1.orgcode = #{orgCode}
+        and t1.removed = '0'
+        <if test="@Ognl@isNotEmpty(purchaseNo) ">
+            and t1.purchaseno like concat('%', #{purchaseNo} , '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(status) ">
+            and t1.status = #{status}
+        </if>
+        <if test="@Ognl@isNotEmpty(supplierId) ">
+            and t1.supplierid = #{supplierId}
+        </if>
+        <if test="@Ognl@isNotEmpty(startTime) ">
+            <![CDATA[
+              and t1.date >= #{startTime}
+            ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime) ">
+            <![CDATA[
+              and t1.date <= #{endTime}
+            ]]>
+        </if>
+    </select>
+
+
+</mapper>

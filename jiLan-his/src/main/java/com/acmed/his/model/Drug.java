@@ -73,7 +73,7 @@ public class Drug {
     private Double retailPrice;
 
     @ApiModelProperty("库存数量")
-    private String num;
+    private Double num;
 
     @ApiModelProperty("加成率")
     private Double markonpercent;
