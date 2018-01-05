@@ -16,12 +16,14 @@
                 from t_p_s_user t1 left JOIN t_b_schedule t2
                 on t1.id = t2.userid
                 where ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or t2.endtime is null)
-                AND t1.orgcode = #{orgCode}
+                <if test="@Ognl@isNotEmpty(orgCode) ">
+                  AND t1.orgcode = #{orgCode}
+                </if>
                 <if test="@Ognl@isNotEmpty(deptId) ">
-                   t1.dept = #{deptId}
+                  AND t1.dept = #{deptId}
                 </if>
                 <if test="@Ognl@isNotEmpty(userId) ">
-                    t1.id = #{userId}
+                  AND  t1.id = #{userId}
                 </if>
             )t3, (select @n:=0)b ,(select @r='')c
         )t4 where rownum=1

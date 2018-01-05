@@ -28,7 +28,7 @@ public interface ScheduleMapper extends TkMapper<Schedule> {
      * @return
      */
     List<ScheduleDto> getScheduleList(@Param("orgCode") Integer orgCode, @Param("deptId") Integer deptId,
-                                      @Param("userId") Integer userId, @Param("startTime") String startTime,
+                                      @Param("userIds") Integer userId, @Param("startTime") String startTime,
                                       @Param("endTime") String endTime);
 
     /**

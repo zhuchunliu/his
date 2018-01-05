@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.model.dto.ScheduleDto;
 import com.acmed.his.pojo.mo.ScheduleMo;
+import com.acmed.his.pojo.vo.ScheduleApplyVo;
 import com.acmed.his.pojo.vo.ScheduleVo;
 import com.acmed.his.service.ScheduleManager;
 import com.acmed.his.support.AccessInfo;
@@ -54,7 +55,7 @@ public class ScheduleApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
-    @ApiOperation(value = "复制上周")
+    @ApiOperation(value = "获取上周排班信息[复制上周用]")
     @GetMapping("/previous")
     public ResponseResult<ScheduleVo> list(@ApiParam("人员主键集合，逗号间隔") @RequestParam(value = "userIds",required = false) String userIds){
         List<ScheduleDto> sourceList = scheduleManager.getScheduleList(userIds);
@@ -67,6 +68,20 @@ public class ScheduleApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
+
+    @ApiOperation(value = "挂号医生列表")
+    @GetMapping("/apply")
+    public ResponseResult<ScheduleApplyVo> list(@ApiParam("医院code") @RequestParam(value = "orgCode",required = false) Integer orgCode,
+                                                @ApiParam("科室主键") @RequestParam(value = "deptId",required = false) Integer deptId){
+        List<ScheduleDto> sourceList = scheduleManager.getScheduleApplyList(orgCode,deptId);
+        List<ScheduleVo> list = new ArrayList<>();
+        sourceList.forEach(obj->{
+            ScheduleVo vo = new ScheduleVo();
+            BeanUtils.copyProperties(obj,vo);
+            list.add(vo);
+        });
+        return ResponseUtil.setSuccessResult(list);
+    }
 
 
 }

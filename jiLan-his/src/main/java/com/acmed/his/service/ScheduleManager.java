@@ -140,8 +140,28 @@ public class ScheduleManager {
      */
     public List<ScheduleDto> getScheduleList(String userIds) {
         int week = LocalDateTime.now().getDayOfWeek().getValue();
+        String startTime = LocalDateTime.now().minusDays(week+7-1).toString();
+        String endTime =  LocalDateTime.now().minusDays(week).toString();
+        return scheduleMapper.getPreScheduleList(startTime, endTime,userIds.split(","));
+    }
+
+    /**
+     * 挂号，医生列表
+     * @param orgCode
+     * @param deptId
+     * @return
+     */
+    public List<ScheduleDto> getScheduleApplyList(Integer orgCode, Integer deptId) {
+        int week = LocalDateTime.now().getDayOfWeek().getValue();
         String startTime = LocalDateTime.now().minusDays(week-1).toString();
         String endTime =  LocalDateTime.now().plusDays(7-week).toString();
-        return scheduleMapper.getPreScheduleList(startTime, endTime,userIds.split(","));
+        return scheduleMapper.getScheduleList(orgCode,deptId,null,startTime, endTime);
+    }
+
+    public static void main(String[] args) {
+        int week = LocalDateTime.now().getDayOfWeek().getValue();
+        String startTime = LocalDateTime.now().minusDays(week-1).toString();
+        String endTime =  LocalDateTime.now().plusDays(7-week).toString();
+        System.err.println(week+" "+startTime+" "+endTime);
     }
 }

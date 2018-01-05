@@ -45,6 +45,12 @@ public class PrescriptionItem {
     @ApiModelProperty("数量")
     private Integer num;
 
+    @ApiModelProperty("进价")
+    private Double bid;
+
+    @ApiModelProperty("零售价")
+    private Double retailPrice;
+
     @ApiModelProperty("频率")
     private Integer frequency;
 

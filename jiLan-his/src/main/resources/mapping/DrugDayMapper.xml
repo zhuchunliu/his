@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.DrugDayMapper">
+
+    <insert id="staticDrug">
+      <![CDATA[
+        insert INTO t_r_drug_day(orgcode,drugcode,num,bid,retailprice,bidfee,retailfee,date)
+        select #{orgCode} as orgcode,drugcode,
+        sum(num) as num, FORMAT(sum(num*bid)/sum(num),2) as bid,format(sum(num*retailprice)/sum(num),2) retailprice,
+        SUM(num*bid) as bidfee,SUM(fee) as retailfee,
+        DATE_FORMAT(NOW(),'%Y-%m-%d') as date
+        from t_b_prescription_item where prescriptionid in (select id from t_b_prescription where orgcode = 1)
+        GROUP BY drugcode ASC
+      ]]>
+    </insert>
+</mapper>

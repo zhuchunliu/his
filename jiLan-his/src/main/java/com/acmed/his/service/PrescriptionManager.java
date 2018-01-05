@@ -152,12 +152,22 @@ public class PrescriptionManager {
      * @param userInfo
      */
     @Transactional
-    public void dispensing(Integer id, UserInfo userInfo) {
+    public void dispensing(String id, UserInfo userInfo) {
         Prescription prescription = preMapper.selectByPrimaryKey(id);
         prescription.setIsDispensing("1");
         prescription.setModifyBy(userInfo.getId().toString());
         prescription.setModifyAt(LocalDateTime.now().toString());
         preMapper.updateByPrimaryKey(prescription);
+
+        //扣除库存
+        Example example = new Example(PrescriptionItem.class);
+        example.createCriteria().andEqualTo("prescriptionId",id);
+        List<PrescriptionItem> list = preItemMapper.selectByExample(example);
+        list.forEach(obj->{
+            Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+            drug.setNum(drug.getNum()-obj.getNum());
+            drugMapper.updateByPrimaryKey(drug);
+        });
     }
 
     /**
@@ -202,7 +212,9 @@ public class PrescriptionManager {
                     item.setApplyId(mo.getApplyId());
                     item.setDrugId(info.getDrugId());
                     item.setDrugCode(drug.getDrugCode());
-                    item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//总价：单价*数量
+                    item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d));//存当前进价
+                    item.setRetailPrice(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//存当前零售价
+                    item.setFee(item.getNum() * item.getRetailPrice());//总价：单价*数量
                     item.setGroupNum(String.valueOf(i+1));
                     preItemMapper.insert(item);
                     price += info.getNum() * item.getFee();
