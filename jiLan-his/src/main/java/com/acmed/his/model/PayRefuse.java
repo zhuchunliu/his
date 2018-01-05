@@ -23,10 +23,13 @@ public class PayRefuse {
     @ApiModelProperty("退费流水号")
     private String id;
 
-    @ApiModelProperty("付费类型")
+    @ApiModelProperty("机构编码")
+    private Integer orgCode;
+
+    @ApiModelProperty("付费类型 现金 支付宝 微信 ")
     private String feeType;
 
-    @ApiModelProperty("来源")
+    @ApiModelProperty("来源  挂号  附加  检查  处方")
     private String source;
 
     @ApiModelProperty("处方id")

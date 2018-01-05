@@ -23,10 +23,13 @@ public class PayStatements {
     @ApiModelProperty("支付流水号")
     private String id;
 
-    @ApiModelProperty("付费类型")
+    @ApiModelProperty("付费类型 现金 支付宝 微信 ")
     private String feeType;
 
-    @ApiModelProperty("来源")
+    @ApiModelProperty("机构编码")
+    private Integer orgCode;
+
+    @ApiModelProperty("来源  挂号  附加  检查  处方")
     private String source;
 
     @ApiModelProperty("处方id")
@@ -47,7 +50,7 @@ public class PayStatements {
     @ApiModelProperty("支付费用")
     private BigDecimal fee;
 
-    @ApiModelProperty("支付状态")
+    @ApiModelProperty("支付状态  0 未支付   1已支付 2 已退款")
     private String payStatus;
 
     @ApiModelProperty("创建时间")

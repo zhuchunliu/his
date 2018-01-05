@@ -217,6 +217,13 @@ public class ApplyManager {
         return resultList;
     }
 
+    /**
+     * 支付
+     * @param applyId
+     * @param fee
+     * @param feeType
+     * @param userInfo
+     */
     @Transactional
     public void pay(int applyId,  Double fee, String feeType,UserInfo userInfo){
         Apply apply = applyMapper.selectByPrimaryKey(applyId);

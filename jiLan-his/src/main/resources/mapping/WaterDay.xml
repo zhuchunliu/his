@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.WaterDayMapper">
+
+    <select id="getDailyDataByDate" resultType="com.acmed.his.model.WaterDay">
+        SELECT
+        tb1.orgcode, -- 机构id
+        DATE(${date}) as date,
+        IFNULL(tb2.wxpaymoney,0) as wxpaymoney, -- 微信支付总金额
+        IFNULL(tb2.wxpaynum,0) as wxpaynum, -- 微信支付次数
+        IFNULL(tb3.alipaymoney,0) as alipaymoney,  -- 支付宝支付总金额
+        IFNULL(tb3.alipaynum,0) as alipaynum,  -- 支付宝支付总金额
+        IFNULL(tb4.xianjin,0) as cash,  -- 收款现金
+        IFNULL(tb4.xianjinnum,0) as cashnum,  -- 收款现金
+        IFNULL(tb5.jiuzhennum,0) as  registerednum, -- 就诊数
+        IFNULL(tb5.jiuzhenmoney,0) as  registeredmoney, -- 就诊收入
+        IFNULL(tb8.chufangnum,0) as  prescriptionnum, -- 处方数
+        IFNULL(tb8.chufangmoney,0) as  prescriptionmoney, -- 处方收入
+        IFNULL(tb6.paynum,0) as  paynum,  -- 支付数
+        IFNULL(tb6.paymoney,0) as  paymoney,  -- 支付金额
+        IFNULL(tb7.refundnum,0) as  refundnum,-- 退款次数
+        IFNULL(tb7.refundmoney,0) as  refundmoney  -- 退款总金额
+        FROM t_p_s_org tb1
+        LEFT JOIN (-- 微信支付   收入
+                SELECT tb0.orgcode,SUM(tb0.fee) wxpaymoney,COUNT(tb0.id) wxpaynum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 1 AND DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        ) as tb2 ON tb2.orgcode = tb1.orgcode
+        LEFT JOIN (-- 支付宝支付 收入
+                SELECT tb0.orgcode,SUM(tb0.fee) alipaymoney,COUNT(tb0.id) alipaynum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 2 AND DATE(tb0.createat) = DATE(${date}) GROUP BY  tb0.orgcode
+        ) as tb3 ON tb3.orgcode = tb1.orgcode
+        LEFT JOIN (-- 现金 收入
+                SELECT tb0.orgcode,SUM(tb0.fee) xianjin,COUNT(tb0.id) xianjinnum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 0 AND DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        ) as tb4 ON tb4.orgcode = tb1.orgcode
+        LEFT JOIN (-- 挂号 收入
+                SELECT tb0.orgcode,COUNT(tb0.id) jiuzhennum ,SUM(tb0.fee) jiuzhenmoney  FROM t_b_pay_statements tb0 WHERE  tb0.source =1 AND DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        ) as tb5 ON tb5.orgcode = tb1.orgcode
+        LEFT JOIN (-- 总 收入
+                SELECT tb0.orgcode,COUNT(tb0.id) paynum,SUM(tb0.fee) paymoney FROM t_b_pay_statements tb0 WHERE DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        ) as tb6 ON tb6.orgcode = tb1.orgcode
+        LEFT JOIN ( -- 总 退款
+                SELECT tb0.orgcode,COUNT(tb0.id) refundnum,SUM(tb0.fee) refundmoney FROM t_b_pay_refuse tb0 WHERE  DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        )	as tb7 ON tb7.orgcode = tb1.orgcode
+        LEFT JOIN (-- 处方 收入
+                SELECT tb0.orgcode,COUNT(tb0.id) chufangnum ,SUM(tb0.fee) chufangmoney FROM t_b_pay_statements tb0 WHERE  tb0.source =2  AND DATE(tb0.createat) = DATE(${date})	 GROUP BY tb0.orgcode
+        ) as tb8 ON tb8.orgcode = tb1.orgcode
+    </select>
+    
+    
+    <select id="getByDate" resultType="com.acmed.his.model.WaterDay">
+        SELECT tb1.* FROM t_r_water_day tb1 WHERE DATE(tb1.date) = DATE(${date})
+    </select>
+</mapper>
