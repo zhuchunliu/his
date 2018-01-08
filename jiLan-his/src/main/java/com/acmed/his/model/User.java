@@ -59,6 +59,24 @@ public class User implements Serializable{
     @ApiModelProperty("状态")
     private String status;
 
+    @ApiModelProperty("挂号费")
+    private Double applyfee;
+
+    @ApiModelProperty("门诊级别")
+    private String diagnosLevel;
+
+    @ApiModelProperty("医生职称")
+    private String duty;
+
+    @ApiModelProperty("擅长")
+    private String expertin;
+
+    @ApiModelProperty("简介")
+    private String introduction;
+
+    @ApiModelProperty("头像")
+    private String avatar;
+
     @ApiModelProperty("最后登录时间")
     private String lastLogin;
 

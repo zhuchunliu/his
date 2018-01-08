@@ -12,6 +12,12 @@ public class ScheduleVo {
     @ApiModelProperty("用户主键表")
     private Integer userid;
 
+    @ApiModelProperty("用户名")
+    private String userName;
+
+    @ApiModelProperty("头像")
+    private String avatar;
+
     @ApiModelProperty("周一排班情况")
     private String monday;
 

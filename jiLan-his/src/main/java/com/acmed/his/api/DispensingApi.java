@@ -116,7 +116,7 @@ public class DispensingApi {
         if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
             return ResponseUtil.setParamEmptyError("id");
         }
-        preManager.dispensing(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+        preManager.dispensing(JSONObject.parseObject(param).getString("id"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
