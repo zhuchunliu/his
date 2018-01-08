@@ -1,6 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.Schedule;
+import com.acmed.his.model.dto.ScheduleApplyDto;
 import com.acmed.his.model.dto.ScheduleDto;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,23 +23,24 @@ public interface ScheduleMapper extends TkMapper<Schedule> {
      * 根据查询条件获取排班列表
      * @param orgCode
      * @param deptId
-     * @param userId
+     * @param userIds
      * @param startTime
      * @param endTime
      * @return
      */
     List<ScheduleDto> getScheduleList(@Param("orgCode") Integer orgCode, @Param("deptId") Integer deptId,
-                                      @Param("userIds") Integer userId, @Param("startTime") String startTime,
+                                      @Param("userIds") List<String> userIds, @Param("startTime") String startTime,
                                       @Param("endTime") String endTime);
 
     /**
-     * 获取上周排班列表
+     * 获取排班信息
      *
+     * @param orgCode
+     * @param deptId
      * @param startTime
      * @param endTime
-     * @param userIds
      * @return
      */
-    List<ScheduleDto> getPreScheduleList(@Param("startTime") String startTime, @Param("endTime") String endTime,
-                                      @Param("userIds") String[] userIds);
+    List<ScheduleApplyDto> getScheduleApplyList(@Param("orgCode") Integer orgCode, @Param("deptId") Integer deptId,
+                                                @Param("startTime") String startTime,@Param("endTime") String endTime);
 }

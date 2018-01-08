@@ -186,7 +186,7 @@ public class BaseInfoManager {
         return dicItemMapper.selectByExample(example);
     }
 
-//    @Cacheable
+    @Cacheable
     public DicItem getDicItem(String dicTypeCode,String dicItemCode){
         Example example = new Example(DicItem.class);
         example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("dicItemCode",dicItemCode);

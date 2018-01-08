@@ -25,7 +25,7 @@ public enum DicTypeEnum {
     ORG_LEVEL("OrgLevel","机构等级"),
     SCHEDULE("Schedule","排班类型"),
     DUTY("Duty","职称等级"),
-    DIAGNOS_LEVEL("DiagnosLevel","门诊类型");
+    DIAGNOSIS_LEVEL("DiagnosisLevel","门诊类型");
     DicTypeEnum(String code,String name){
         this.code = code;
         this.name = name;

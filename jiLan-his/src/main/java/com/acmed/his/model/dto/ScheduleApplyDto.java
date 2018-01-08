@@ -4,15 +4,31 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * Created by Darren on 2017-12-21
+ * Created by Darren on 2018-01-08
  **/
 @Data
-public class ScheduleDto {
+public class ScheduleApplyDto {
+
     @ApiModelProperty("用户主键表")
     private Integer userid;
 
     @ApiModelProperty("用户名")
     private String userName;
+
+    @ApiModelProperty("挂号费")
+    private Double applyFee;
+
+    @ApiModelProperty("门诊级别")
+    private String diagnosLevel;
+
+    @ApiModelProperty("医生职称")
+    private String duty;
+
+    @ApiModelProperty("擅长")
+    private String expertin;
+
+    @ApiModelProperty("简介")
+    private String introduction;
 
     @ApiModelProperty("头像")
     private String avatar;
@@ -43,7 +59,4 @@ public class ScheduleDto {
 
     @ApiModelProperty("周日排班情况")
     private String sunday;
-
-    @ApiModelProperty("是否自动循环 0:否；1:是")
-    private String circle;
 }

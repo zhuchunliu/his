@@ -12,36 +12,53 @@
     <select id="getScheduleList" resultType="com.acmed.his.model.dto.ScheduleDto">
         select * from(
             select if(@r=userid,@n:=@n+1,@n:=1)as rownum,@r:=userid ,t3.* from(
-                select t1.id as userid,t2.monday,t2.tuesday,t2.wednesday,t2.thursday,t2.friday,t2.saturday,t2.sunday,t2.circle,t2.startTime,t2.endTime
+                select t1.id as userid,t1.username as userName,t1.avatar,
+                t2.monday,t2.tuesday,t2.wednesday,t2.thursday,t2.friday,t2.saturday,t2.sunday,t2.circle,t2.startTime,t2.endTime
                 from t_p_s_user t1 left JOIN t_b_schedule t2
                 on t1.id = t2.userid
-                where ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or t2.endtime is null)
+                where
+               <![CDATA[
+                ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or
+                    (t2.starttime <=  #{startTime}  and t2.endtime is null))
+                ]]>
                 <if test="@Ognl@isNotEmpty(orgCode) ">
                   AND t1.orgcode = #{orgCode}
                 </if>
                 <if test="@Ognl@isNotEmpty(deptId) ">
                   AND t1.dept = #{deptId}
                 </if>
-                <if test="@Ognl@isNotEmpty(userId) ">
-                  AND  t1.id = #{userId}
+                <if test="@Ognl@isNotEmpty(userIds)">
+                    AND t2.userid in
+                    <foreach collection="userIds" separator="," open="(" close=")" item="item">
+                        #{item}
+                    </foreach>
                 </if>
             )t3, (select @n:=0)b ,(select @r='')c
         )t4 where rownum=1
     </select>
 
-    <select id="getPreScheduleList" resultType="com.acmed.his.model.dto.ScheduleDto">
+
+    <select id="getScheduleApplyList" resultType="com.acmed.his.model.dto.ScheduleApplyDto">
         select * from(
-            select if(@r=userid,@n:=@n+1,@n:=1)as rownum,@r:=userid ,t3.* from(
-                select t2.*
-                from  t_b_schedule t2
-                where ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or t2.endtime is null)
-                AND t2.userid in
-                <foreach collection="userIds" separator="," open="(" close=")" item="item">
-                  #{item}
-                </foreach>
+        select if(@r=userid,@n:=@n+1,@n:=1)as rownum,@r:=userid ,t3.* from(
+            select t1.id as userid, t1.username , t1.applyfee , t1.diagnoslevel, t1.duty,
+            t1.expertin , t1.introduction, t1.avatar,
+            t2.monday,t2.tuesday,t2.wednesday,t2.thursday,t2.friday,t2.saturday,t2.sunday,t2.circle,t2.startTime,t2.endTime
+            from t_p_s_user t1 left JOIN t_b_schedule t2
+            on t1.id = t2.userid
+            where
+            <![CDATA[
+              ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or
+                  (t2.starttime <=  #{startTime}  and t2.endtime is null))
+            ]]>
+            <if test="@Ognl@isNotEmpty(orgCode) ">
+                AND t1.orgcode = #{orgCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(deptId) ">
+                AND t1.dept = #{deptId}
+            </if>
             )t3, (select @n:=0)b ,(select @r='')c
         )t4 where rownum=1
     </select>
-
 
 </mapper>

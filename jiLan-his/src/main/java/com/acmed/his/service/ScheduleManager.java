@@ -2,10 +2,12 @@ package com.acmed.his.service;
 
 import com.acmed.his.dao.ScheduleMapper;
 import com.acmed.his.model.Schedule;
+import com.acmed.his.model.dto.ScheduleApplyDto;
 import com.acmed.his.model.dto.ScheduleDto;
 import com.acmed.his.pojo.mo.ScheduleMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.DateTimeUtil;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Darren on 2017-12-20
@@ -118,18 +120,18 @@ public class ScheduleManager {
      *
      * @param deptId
      * @param userId
-     * @param startTime
-     * @param endTime
+     * @param time
      */
-    public List<ScheduleDto> getScheduleList(Integer orgCode ,Integer deptId, Integer userId, String startTime, String endTime) {
+    public List<ScheduleDto> getScheduleList(Integer orgCode ,Integer deptId, Integer userId, String time) {
 
-        if(StringUtils.isEmpty(startTime)){//不传入开始时间，则为当前这一周
-            int week = LocalDateTime.now().getDayOfWeek().getValue();
-            startTime = LocalDateTime.now().minusDays(week-1).toString();
-            endTime = LocalDateTime.now().plusDays(7-week).toString();
 
-        }
-        return scheduleMapper.getScheduleList(orgCode , deptId, userId, startTime, endTime);
+        LocalDateTime date = Optional.ofNullable(time).map(obj->DateTimeUtil.parsetLocalDate(obj)).orElse(LocalDateTime.now());
+        int week = date.getDayOfWeek().getValue();
+        String  startTime= date.minusDays(week-1).toString();
+        String endTime = date.plusDays(7-week).toString();
+
+        return scheduleMapper.getScheduleList(orgCode , deptId,
+                Optional.ofNullable(userId).map(obj->Lists.newArrayList(userId.toString())).orElse(null), startTime, endTime);
 
     }
 
@@ -142,7 +144,7 @@ public class ScheduleManager {
         int week = LocalDateTime.now().getDayOfWeek().getValue();
         String startTime = LocalDateTime.now().minusDays(week+7-1).toString();
         String endTime =  LocalDateTime.now().minusDays(week).toString();
-        return scheduleMapper.getPreScheduleList(startTime, endTime,userIds.split(","));
+        return scheduleMapper.getScheduleList(null,null, new ArrayList<String>(Arrays.asList(userIds.split(","))),startTime, endTime);
     }
 
     /**
@@ -151,11 +153,11 @@ public class ScheduleManager {
      * @param deptId
      * @return
      */
-    public List<ScheduleDto> getScheduleApplyList(Integer orgCode, Integer deptId) {
+    public List<ScheduleApplyDto> getScheduleApplyList(Integer orgCode, Integer deptId) {
         int week = LocalDateTime.now().getDayOfWeek().getValue();
         String startTime = LocalDateTime.now().minusDays(week-1).toString();
         String endTime =  LocalDateTime.now().plusDays(7-week).toString();
-        return scheduleMapper.getScheduleList(orgCode,deptId,null,startTime, endTime);
+        return scheduleMapper.getScheduleApplyList(orgCode,deptId,startTime, endTime);
     }
 
     public static void main(String[] args) {

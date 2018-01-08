@@ -69,13 +69,13 @@ public class User implements Serializable{
     private String duty;
 
     @ApiModelProperty("擅长")
-    private Double expertin;
+    private String expertin;
 
     @ApiModelProperty("简介")
-    private Double introduction;
+    private String introduction;
 
     @ApiModelProperty("头像")
-    private String 头像;
+    private String avatar;
 
     @ApiModelProperty("最后登录时间")
     private String lastLogin;
