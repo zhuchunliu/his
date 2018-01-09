@@ -89,4 +89,7 @@ public class Apply {
 
     @ApiModelProperty("预约时间")
     private String appointmentTime;
+
+    @ApiModelProperty("是否是初诊   0不是初诊   1  是初诊")
+    private Integer isFirst;
 }

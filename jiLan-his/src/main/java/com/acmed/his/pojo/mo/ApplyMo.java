@@ -8,10 +8,6 @@ import lombok.Data;
  **/
 @Data
 public class ApplyMo {
-
-    @ApiModelProperty("医疗机构编码")
-    private Integer orgCode;
-
     @ApiModelProperty("科室Id")
     private Integer dept;
 
