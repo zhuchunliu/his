@@ -9,9 +9,11 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -26,6 +28,13 @@ public class WaterDayManager {
     @Autowired
     private WaterDayMapper waterDayMapper;
 
+    /**
+     * 定时任务每天1点运行
+     */
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void task(){
+        paopi(LocalDate.now().minusDays(1).toString());
+    }
 
     /**
      * 跑批

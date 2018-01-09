@@ -3,6 +3,7 @@ package com.acmed.his.service;
 import com.acmed.his.dao.ApplyMapper;
 import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
@@ -24,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * ApplyManager
@@ -51,10 +51,7 @@ public class ApplyManager {
     private PayManager payManager;
 
     @Autowired
-    private OrgManager orgManager;
-
-    @Autowired
-    private DeptManager deptManager;
+    private UserManager userManager;
 
     /**
      * 添加挂号
@@ -64,16 +61,21 @@ public class ApplyManager {
      */
     @Transactional
     public int addApply(ApplyMo mo, String patientId){
-        Dept deptDetail = deptManager.getDeptDetail(mo.getDept());
-        if (deptDetail == null){
+        Integer doctorId = mo.getDoctorId();
+
+        User userDetail = userManager.getUserDetail(doctorId);
+        if (userDetail == null){
             return 0;
         }
-        Org orgDetail = orgManager.getOrgDetail(deptDetail.getOrgCode());
+        Integer dept = userDetail.getDept();
+        if (dept == null){
+            return 0;
+        }
         Apply apply = new Apply();
         BeanUtils.copyProperties(mo,apply);
         Apply p1 = new Apply();
         apply.setPatientId(patientId);
-        apply.setOrgCode(orgDetail.getOrgCode());
+        apply.setOrgCode(userDetail.getOrgCode());
         List<Apply> select = applyMapper.select(p1);
         if (select.size() == 0){
             // 初诊
@@ -88,8 +90,8 @@ public class ApplyManager {
         apply.setStatus("0");
         apply.setIsPaid("0");
         apply.setFee(1d);
-        apply.setOrgName(orgDetail.getOrgName());
-        apply.setDeptName(deptDetail.getDept());
+        apply.setOrgName(userDetail.getOrgName());
+        apply.setDeptName(userDetail.getDeptName());
         apply.setId(UUIDUtil.generate());
         // 医疗机构编码
         Integer orgCode = apply.getOrgCode();
@@ -307,5 +309,14 @@ public class ApplyManager {
      */
     public Integer getApplyNum(Integer orgCode) {
         return applyMapper.getApplyNum(orgCode);
+    }
+
+    /**
+     * 获取某机构的初诊数和复诊数
+     * @param orgCode 机构编码
+     * @return ChuZhenFuZhenCountDto
+     */
+    public ChuZhenFuZhenCountDto chuZhenAndFuZhenTongJi(Integer orgCode){
+        return applyMapper.chuZhenAndFuZhenTongJi(orgCode);
     }
 }

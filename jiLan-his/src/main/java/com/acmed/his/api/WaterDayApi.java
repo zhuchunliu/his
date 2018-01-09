@@ -58,8 +58,8 @@ public class WaterDayApi {
 
     @ApiOperation(value = "收支明细")
     @GetMapping("detailList")
-    public ResponseResult<PageResult<WaterDetailVo>> waterDetailList(@ApiParam("页数")@RequestParam("pageNum")Integer pageNum,
-                                     @ApiParam("每页记录数")@RequestParam("pageSize")Integer pageSize,
+    public ResponseResult<PageResult<WaterDetailVo>> waterDetailList(@ApiParam("页数 必填")@RequestParam("pageNum")Integer pageNum,
+                                     @ApiParam("每页记录数 必填")@RequestParam("pageSize")Integer pageSize,
                                      @ApiParam("区间开始时间  2017-01-02这种字符串格式   必填") @RequestParam("startTime") String startTime,
                                      @ApiParam("区间结束时间 2017-01-02这种字符串格式 必填") @RequestParam("endTime") String endTime,
                                      @AccessToken AccessInfo info){

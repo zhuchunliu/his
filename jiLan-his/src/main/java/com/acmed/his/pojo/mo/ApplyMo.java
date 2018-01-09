@@ -8,9 +8,6 @@ import lombok.Data;
  **/
 @Data
 public class ApplyMo {
-    @ApiModelProperty("科室Id")
-    private Integer dept;
-
     @ApiModelProperty("患者姓名")
     private String patientName;
 

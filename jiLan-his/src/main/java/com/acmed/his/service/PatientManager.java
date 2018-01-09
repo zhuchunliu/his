@@ -3,6 +3,8 @@ package com.acmed.his.service;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.Patient;
+import com.acmed.his.model.dto.OrgPatientNumDto;
+import com.acmed.his.model.dto.PatientCountDto;
 import com.acmed.his.pojo.mo.WxRegistPatientMo;
 import com.acmed.his.pojo.vo.PatientInfoVo;
 import com.acmed.his.util.PinYinUtil;
@@ -175,5 +177,24 @@ public class PatientManager {
         Example example = new Example(Patient.class);
         example.createCriteria().andLike("inputCode","%"+pinYin+"%");
         return patientMapper.selectByExample(example);
+    }
+
+    /**
+     * 查询机构患者统计
+     * @param orgCode 机构编号
+     * @return List<PatientCountDto>
+     */
+    public List<PatientCountDto> getPatientCount(Integer orgCode){
+        return patientMapper.getPatientCount(orgCode);
+    }
+
+    /**
+     * 机构当日和总的患者数
+     * @param orgCode 机构码
+     * @param date 日期
+     * @return OrgPatientNumDto
+     */
+    public OrgPatientNumDto getDayNumAnTotalNum(Integer orgCode,  String date){
+        return patientMapper.getDayNumAnTotalNum(orgCode,date);
     }
 }

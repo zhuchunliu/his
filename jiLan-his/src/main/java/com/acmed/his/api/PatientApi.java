@@ -1,9 +1,13 @@
 package com.acmed.his.api;
 
 import com.acmed.his.model.Patient;
+import com.acmed.his.model.dto.OrgPatientNumDto;
+import com.acmed.his.model.dto.PatientCountDto;
 import com.acmed.his.pojo.mo.WxRegistPatientMo;
 import com.acmed.his.pojo.vo.PatientInfoVo;
 import com.acmed.his.service.PatientManager;
+import com.acmed.his.support.AccessInfo;
+import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -12,6 +16,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -67,5 +72,17 @@ public class PatientApi {
     @GetMapping("pinyin")
     public ResponseResult<List<Patient>> getPatientLikePinYin(@ApiParam("患者姓名拼音") @RequestParam(value = "pinYin" )String pinYin){
         return ResponseUtil.setSuccessResult(patientManager.getPatientLikePinYin(pinYin));
+    }
+
+    @ApiOperation(value = "机构患者年龄分布统计")
+    @GetMapping("getPatientCount")
+    public ResponseResult<List<PatientCountDto>> getPatientCount(@AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(patientManager.getPatientCount(info.getUser().getOrgCode()));
+    }
+
+    @ApiOperation(value = "机构患者人数统计")
+    @GetMapping("getDayNumAnTotalNum")
+    public ResponseResult<OrgPatientNumDto> getDayNumAnTotalNum(@AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(patientManager.getDayNumAnTotalNum(info.getUser().getOrgCode(), LocalDate.now().toString()));
     }
 }

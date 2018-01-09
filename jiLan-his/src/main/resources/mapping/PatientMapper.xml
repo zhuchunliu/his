@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.PatientMapper">
+    <select id="getPatientCount" resultType="com.acmed.his.model.dto.PatientCountDto">
+        SELECT COUNT(tb2.id) num,tb2.`quarter`,
+        case
+        when tb2.`quarter` = 1 then '儿童'
+        when tb2.`quarter` = 2 then '少年'
+        when tb2.`quarter` = 3 then '青年'
+        when tb2.`quarter` = 4 then '中年'
+        else '老年'
+        end as quarterStr
+        FROM(
+        SELECT *,
+        case
+        when TIMESTAMPDIFF(YEAR, tb1.dateofbirth, CURDATE()) &lt; 7 then 1
+        when TIMESTAMPDIFF(YEAR, tb1.dateofbirth, CURDATE()) &lt; 18 then 2
+        when TIMESTAMPDIFF(YEAR, tb1.dateofbirth, CURDATE()) &lt; 41 then 3
+        when TIMESTAMPDIFF(YEAR, tb1.dateofbirth, CURDATE()) &lt; 66 then 4
+        else 5
+        end as quarter
+        FROM t_b_patient tb1
+        WHERE tb1.id IN(
+        SELECT patientid FROM t_b_apply WHERE orgcode = #{orgCode} AND ispaid = 1
+        )
+        )AS tb2
+        GROUP BY tb2.`quarter`
+        ORDER BY tb2.`quarter`
+    </select>
+
+    <select id="getDayNumAnTotalNum" resultType="com.acmed.his.model.dto.OrgPatientNumDto">
+        SELECT t2.dayNum,t3.totalNum  FROM t_p_s_org t1
+        LEFT JOIN (
+            SELECT COUNT(id) dayNum ,#{orgCode} as orgCode  FROM t_b_patient t0 WHERE t0.id IN (
+                    SELECT patientid FROM t_b_apply  WHERE DATE(appointmenttime) = DATE(#{date}) AND ispaid = 1 AND orgcode = #{orgCode}
+                )
+        )	as t2 ON t1.orgcode = t2.orgCode
+        LEFT JOIN (
+            SELECT COUNT(id) totalNum ,#{orgCode} as orgCode  FROM t_b_patient t0 WHERE t0.id IN (
+                    SELECT patientid FROM t_b_apply  WHERE  ispaid = 1 AND orgcode = #{orgCode}
+                )
+        )	as t3 ON t1.orgcode = t3.orgCode
+        WHERE t1.orgcode = #{orgCode}
+    </select>
+</mapper>

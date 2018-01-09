@@ -2,6 +2,7 @@ package com.acmed.his.service;
 
 import com.acmed.his.HisApplication;
 import com.acmed.his.model.Apply;
+import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,4 +81,12 @@ public class ApplyManagerTest {
         List<ApplyDoctorVo> w = applyManager.getByPinyinOrName("七", null,1,new Date());
         System.err.println(w.size());
     }
+
+
+    @Test
+    public void chuZhenAndFuZhenTongJi() throws Exception {
+        ChuZhenFuZhenCountDto chuZhenFuZhenCountDto = applyManager.chuZhenAndFuZhenTongJi(1);
+        System.err.println(chuZhenFuZhenCountDto);
+    }
+
 }

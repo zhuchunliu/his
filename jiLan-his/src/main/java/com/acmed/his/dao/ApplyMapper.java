@@ -1,6 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.Apply;
+import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
@@ -46,4 +47,11 @@ public interface ApplyMapper extends TkMapper<Apply>{
      * @param orgCode
      */
     Integer getApplyNum(@Param("orgCode") Integer orgCode);
+
+    /**
+     * 查询机构总的初诊和复诊数
+     * @param orgCode 机构码
+     * @return ChuZhenFuZhenCountDto
+     */
+    ChuZhenFuZhenCountDto chuZhenAndFuZhenTongJi(@Param("orgCode") Integer orgCode);
 }

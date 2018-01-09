@@ -1,6 +1,7 @@
 package com.acmed.his.api;
 
 import com.acmed.his.model.Apply;
+import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyIdAndStatus;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.mo.DeptIdAndStatus;
@@ -119,5 +120,11 @@ public class ApplyApi {
             @AccessToken AccessInfo info){
         Integer dept = info.getUser().getDept();
         return ResponseUtil.setSuccessResult(applyManager.getByPinyinOrName(param,status,dept,date));
+    }
+
+    @ApiOperation(value = "查询某机构的初诊数和就诊数")
+    @GetMapping("chuZhenAndFuZhenTongJi")
+    public ResponseResult<ChuZhenFuZhenCountDto> chuZhenAndFuZhenTongJi(@AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(applyManager.chuZhenAndFuZhenTongJi(info.getUser().getOrgCode()));
     }
 }
