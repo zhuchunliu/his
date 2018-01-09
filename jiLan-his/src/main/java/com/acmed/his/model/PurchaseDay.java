@@ -1,7 +1,6 @@
 package com.acmed.his.model;
 
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.models.auth.In;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
@@ -11,12 +10,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * Created by Darren on 2018-01-05
+ * Created by Darren on 2018-01-09
  **/
 @Data
-@Table(name = "t_r_drug_day")
+@Table(name = "t_r_purchase_day")
 @NameStyle
-public class DrugDay {
+public class PurchaseDay {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty("主键")
@@ -28,11 +28,8 @@ public class DrugDay {
     @ApiModelProperty("药品编码")
     private String drugCode;
 
-    @ApiModelProperty("销售数量")
-    private Double saleNum;
-
-    @ApiModelProperty("库存数量")
-    private Double storeNum;
+    @ApiModelProperty("采购数量")
+    private Double num;
 
     @ApiModelProperty("进价")
     private Double bid;
@@ -40,10 +37,10 @@ public class DrugDay {
     @ApiModelProperty("零售价")
     private Double retailPrice;
 
-    @ApiModelProperty("进价")
+    @ApiModelProperty("采购批发总额")
     private Double bidFee;
 
-    @ApiModelProperty("零售价")
+    @ApiModelProperty("采购处方总额")
     private Double retailFee;
 
     @ApiModelProperty("报表日期")

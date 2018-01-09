@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -19,6 +20,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @SpringBootApplication
 @EnableCaching
+@EnableScheduling
 @MapperScan(basePackages = "com.acmed.his.dao")
 public class HisApplication {
 

@@ -5,12 +5,25 @@
 
     <insert id="staticInspect">
         insert INTO t_r_inspect_day(orgcode,category,num,fee,date)
-        select #{orgCode} as orgcode,category,
-        count(*) as num, sum(fee) as fee,
-        DATE_FORMAT(NOW(),'%Y-%m-%d') as date
-        from t_b_inspect where prescriptionid in (select id from t_b_prescription where orgcode = 1)
-        GROUP BY category ASC
+        select t1.orgcode,t1.category,
+        count(*) as num, sum(t1.fee) as fee,
+        DATE_FORMAT(t1.createat,'%Y-%m-%d') as date
+        from t_b_inspect t1
+        where t1.orgcode = #{orgCode} AND t1.createat BETWEEN #{startTime} AND #{endTime}
+        GROUP BY category
     </insert>
 
+    <select id="getInspectList" resultType="com.acmed.his.model.dto.InspectDayDto">
+        select sum(t1.num) as num , t2.dicitemname as inspectname,sum(t1.fee) as fee from t_r_inspect_day t1
+        LEFT JOIN t_p_s_dicitem t2 on t1.category = t2.dicitemcode
+        where t2.dictypecode = #{categoryType} and t1.orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(startTime)">
+            <![CDATA[ AND t1.date >= #{startTime} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)">
+            <![CDATA[  AND t1.date <= #{endTime} ]]>
+        </if>
+        GROUP BY t1.category
+    </select>
 
 </mapper>

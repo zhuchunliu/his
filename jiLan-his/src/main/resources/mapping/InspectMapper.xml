@@ -6,4 +6,33 @@
     <delete id="delByPreId" parameterType="java.lang.String">
         DELETE from t_b_inspect where prescriptionid = #{prescriptionId}
     </delete>
+
+    <select id="getItemList" resultType="com.acmed.his.model.dto.InspectDayDto">
+        select t3.dicitemname as inspectname,DATE_FORMAT(t2.createat,'%Y-%m-%d %H:%i') as date
+        from t_b_inspect t1
+        LEFT JOIN t_b_prescription t2 on t1.prescriptionid = t2.id
+        LEFT JOIN t_p_s_dicitem t3 on t1.category = t3.dicitemcode
+        where t2.orgcode = #{orgCode} and t3.dictypecode = #{categoryType}
+        <if test="@Ognl@isNotEmpty(startTime)">
+            <![CDATA[ AND t1.createat >= #{startTime} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)">
+            <![CDATA[  AND t1.createat <= #{endTime} ]]>
+        </if>
+        order by t2.createat desc
+    </select>
+
+
+    <select id="getItemTotal" resultType="java.lang.Integer">
+        select count(1)
+        from t_b_inspect t1
+        LEFT JOIN t_b_prescription t2 on t1.prescriptionid = t2.id
+        where t2.orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(startTime)">
+            <![CDATA[ AND t1.createat >= #{startTime} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)">
+            <![CDATA[  AND t1.createat <= #{endTime} ]]>
+        </if>
+    </select>
 </mapper>

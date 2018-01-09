@@ -1,6 +1,5 @@
 package com.acmed.his.api;
 
-import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
 import com.acmed.his.pojo.mo.DrugMo;
@@ -14,14 +13,11 @@ import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

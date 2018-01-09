@@ -10,4 +10,30 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="getItemList" resultType="com.acmed.his.model.dto.PurchaseDayDetailDto">
+        select t1.num as num,t3.specname as drugname , t2.createat as date
+        from t_b_purchase_item t1 LEFT JOIN t_b_purchase t2 on t1.purchaseid = t2.id
+        LEFT JOIN t_b_drugdict t3 on t1.drugcode = t3.code
+        where t2.orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(startTime)">
+            <![CDATA[ AND t2.createat >= #{startTime} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)">
+            <![CDATA[  AND t2.createat <= #{endTime} ]]>
+        </if>
+    </select>
+
+
+    <select id="getItemTotal" resultType="java.lang.Integer">
+        select count(1)
+        from t_b_purchase_item t1 LEFT JOIN t_b_purchase t2 on t1.purchaseid = t2.id
+        where t2.orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(startTime)">
+            <![CDATA[ AND t2.createat >= #{startTime} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)">
+            <![CDATA[  AND t2.createat <= #{endTime} ]]>
+        </if>
+    </select>
 </mapper>

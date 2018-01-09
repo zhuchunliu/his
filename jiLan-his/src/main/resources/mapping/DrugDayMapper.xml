@@ -3,15 +3,56 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.DrugDayMapper">
 
-    <insert id="staticDrug">
+    <insert id="staticSale">
       <![CDATA[
-        insert INTO t_r_drug_day(orgcode,drugcode,num,bid,retailprice,bidfee,retailfee,date)
-        select #{orgCode} as orgcode,drugcode,
-        sum(num) as num, FORMAT(sum(num*bid)/sum(num),2) as bid,format(sum(num*retailprice)/sum(num),2) retailprice,
-        SUM(num*bid) as bidfee,SUM(fee) as retailfee,
-        DATE_FORMAT(NOW(),'%Y-%m-%d') as date
-        from t_b_prescription_item where prescriptionid in (select id from t_b_prescription where orgcode = 1)
-        GROUP BY drugcode ASC
+        insert INTO t_r_drug_day(orgcode,drugcode,salenum,storenum,bid,retailprice,bidfee,retailfee,date)
+        select t2.orgcode,t1.drugcode,
+        sum(t1.num) as salenum,t3.num as storenum,
+        FORMAT(sum(t1.num * t1.bid)/sum(t1.num),2) as bid,format(sum(t1.num * t1.retailprice)/sum(t1.num),2) retailprice,
+        SUM(t1.num* t1.bid) as bidfee,SUM(t1.fee) as retailfee,
+        DATE_FORMAT(t2.createat,'%Y-%m-%d') as date
+        from t_b_prescription_item t1
+        LEFT JOIN t_b_prescription t2 on t1.prescriptionid = t2.id
+        LEFT JOIN t_b_drug t3 on t1.drugcode = t3.drugcode
+        where t2.orgcode = #{orgCode}  and t3.removed = '0' AND t2.createat BETWEEN #{startTime} AND #{endTime}
+        GROUP BY t1.drugcode
       ]]>
     </insert>
+
+
+    <select id="getDrugDayList" resultType="com.acmed.his.model.dto.DrugDayDto">
+
+        select * from (
+            select t1.drugcode , t2.name as drugname , t2.unit, t2.category ,
+            t2.bid, t2.retailprice,t2.num as storenum,
+            sum(t1.salenum) as salenum,sum(t1.retailfee - t1.bidfee) as profitfee
+            from t_r_drug_day t1
+            LEFT JOIN t_b_drug t2 on t1.drugcode = t2.drugcode
+            WHERE t2.removed = '0' AND t1.orgcode = #{orgCode}
+            <if test="@Ognl@isNotEmpty(startTime)">
+                <![CDATA[ AND t1.date >= #{startTime} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(endTime)">
+                <![CDATA[  AND t1.date <= #{endTime} ]]>
+            </if>
+            GROUP BY t1.drugcode
+        )t order by salenum DESC
+
+    </select>
+
+    <select id="getDrugDayTotal" resultType="java.lang.Integer">
+        select count(1) from (
+            select 1
+            from t_r_drug_day t1
+            LEFT JOIN t_b_drug t2 on t1.drugcode = t2.drugcode
+            WHERE t2.removed = '0' AND t1.orgcode = #{orgCode}
+            <if test="@Ognl@isNotEmpty(startTime)">
+                <![CDATA[ AND t1.date >= #{startTime} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(endTime)">
+                <![CDATA[  AND t1.date <= #{endTime} ]]>
+            </if>
+            GROUP BY t1.drugcode
+        )t
+    </select>
 </mapper>
