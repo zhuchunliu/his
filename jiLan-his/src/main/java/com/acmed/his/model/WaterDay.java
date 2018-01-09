@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 /**
  * WaterDay
- *
+ * 报表
  * @author jimson
  * @date 2018/1/5
  */
@@ -56,4 +56,12 @@ public class WaterDay {
     private BigDecimal refundMoney;
     @ApiModelProperty("退款次数")
     private Integer refundNum;
+    @ApiModelProperty("挂号退款金额")
+    private BigDecimal registeredRefundMoney;
+    @ApiModelProperty("挂号退款次数")
+    private Integer registeredRefundNum;
+    @ApiModelProperty("处方退款金额")
+    private BigDecimal prescriptionRefundMoney;
+    @ApiModelProperty("处方退款次数")
+    private Integer prescriptionRefundNum;
 }

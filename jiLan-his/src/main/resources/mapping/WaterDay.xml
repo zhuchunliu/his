@@ -6,7 +6,7 @@
     <select id="getDailyDataByDate" resultType="com.acmed.his.model.WaterDay">
         SELECT
         tb1.orgcode, -- 机构id
-        DATE(${date}) as date,
+        DATE(#{date}) as date,
         IFNULL(tb2.wxpaymoney,0) as wxpaymoney, -- 微信支付总金额
         IFNULL(tb2.wxpaynum,0) as wxpaynum, -- 微信支付次数
         IFNULL(tb3.alipaymoney,0) as alipaymoney,  -- 支付宝支付总金额
@@ -20,33 +20,102 @@
         IFNULL(tb6.paynum,0) as  paynum,  -- 支付数
         IFNULL(tb6.paymoney,0) as  paymoney,  -- 支付金额
         IFNULL(tb7.refundnum,0) as  refundnum,-- 退款次数
-        IFNULL(tb7.refundmoney,0) as  refundmoney  -- 退款总金额
+        IFNULL(tb7.refundmoney,0) as  refundmoney,  -- 退款总金额
+        IFNULL(tb9.registeredrefundnum,0) as  registeredrefundnum, -- 挂号退款数
+        IFNULL(tb9.registeredrefundmoney,0) as  registeredrefundmoney, -- 挂号退款金额
+        IFNULL(tb10.prescriptionrefundnum,0) as  prescriptionrefundnum, -- 处方退款数
+        IFNULL(tb10.prescriptionrefundmoney,0) as  prescriptionrefundmoney -- 处方退款金额
         FROM t_p_s_org tb1
-        LEFT JOIN (-- 微信支付   收入
-                SELECT tb0.orgcode,SUM(tb0.fee) wxpaymoney,COUNT(tb0.id) wxpaynum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 1 AND DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        LEFT JOIN (-- 微信支付   收入   和笔数
+                    SELECT tb0.orgcode,SUM(tb0.fee) wxpaymoney,COUNT(tb0.id) wxpaynum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 1 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb2 ON tb2.orgcode = tb1.orgcode
-        LEFT JOIN (-- 支付宝支付 收入
-                SELECT tb0.orgcode,SUM(tb0.fee) alipaymoney,COUNT(tb0.id) alipaynum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 2 AND DATE(tb0.createat) = DATE(${date}) GROUP BY  tb0.orgcode
+        LEFT JOIN (-- 支付宝支付 收入 和笔数
+                    SELECT tb0.orgcode,SUM(tb0.fee) alipaymoney,COUNT(tb0.id) alipaynum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY  tb0.orgcode
         ) as tb3 ON tb3.orgcode = tb1.orgcode
-        LEFT JOIN (-- 现金 收入
-                SELECT tb0.orgcode,SUM(tb0.fee) xianjin,COUNT(tb0.id) xianjinnum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 0 AND DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        LEFT JOIN (-- 现金 收入 和笔数
+                    SELECT tb0.orgcode,SUM(tb0.fee) xianjin,COUNT(tb0.id) xianjinnum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 0 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb4 ON tb4.orgcode = tb1.orgcode
-        LEFT JOIN (-- 挂号 收入
-                SELECT tb0.orgcode,COUNT(tb0.id) jiuzhennum ,SUM(tb0.fee) jiuzhenmoney  FROM t_b_pay_statements tb0 WHERE  tb0.source =1 AND DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        LEFT JOIN (-- 挂号 收入 和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) jiuzhennum ,SUM(tb0.fee) jiuzhenmoney  FROM t_b_pay_statements tb0 WHERE  tb0.source =1 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb5 ON tb5.orgcode = tb1.orgcode
-        LEFT JOIN (-- 总 收入
-                SELECT tb0.orgcode,COUNT(tb0.id) paynum,SUM(tb0.fee) paymoney FROM t_b_pay_statements tb0 WHERE DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        LEFT JOIN (-- 总 收入 和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) paynum,SUM(tb0.fee) paymoney FROM t_b_pay_statements tb0 WHERE DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb6 ON tb6.orgcode = tb1.orgcode
-        LEFT JOIN ( -- 总 退款
-                SELECT tb0.orgcode,COUNT(tb0.id) refundnum,SUM(tb0.fee) refundmoney FROM t_b_pay_refuse tb0 WHERE  DATE(tb0.createat) = DATE(${date}) GROUP BY tb0.orgcode
+        LEFT JOIN ( -- 总 退款 和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) refundnum,SUM(tb0.fee) refundmoney FROM t_b_pay_refuse tb0 WHERE  DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         )	as tb7 ON tb7.orgcode = tb1.orgcode
-        LEFT JOIN (-- 处方 收入
-                SELECT tb0.orgcode,COUNT(tb0.id) chufangnum ,SUM(tb0.fee) chufangmoney FROM t_b_pay_statements tb0 WHERE  tb0.source =2  AND DATE(tb0.createat) = DATE(${date})	 GROUP BY tb0.orgcode
+        LEFT JOIN (-- 处方 收入和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) chufangnum ,SUM(tb0.fee) chufangmoney FROM t_b_pay_statements tb0 WHERE  tb0.source =2  AND DATE(tb0.createat) = DATE(#{date})	 GROUP BY tb0.orgcode
         ) as tb8 ON tb8.orgcode = tb1.orgcode
+        LEFT JOIN ( -- 挂号退款 和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) registeredrefundnum,SUM(tb0.fee) registeredrefundmoney FROM t_b_pay_refuse tb0 WHERE tb0.source =1 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+        )	as tb9 ON tb9.orgcode = tb1.orgcode
+        LEFT JOIN ( -- 处方退款 和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) prescriptionrefundnum,SUM(tb0.fee) prescriptionrefundmoney FROM t_b_pay_refuse tb0 WHERE tb0.source =2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+        )	as tb10 ON tb10.orgcode = tb1.orgcode
     </select>
     
     
     <select id="getByDate" resultType="com.acmed.his.model.WaterDay">
-        SELECT tb1.* FROM t_r_water_day tb1 WHERE DATE(tb1.date) = DATE(${date})
+        SELECT tb1.* FROM t_r_water_day tb1 WHERE DATE(tb1.date) = DATE(#{date})
+    </select>
+
+    <select id="getListBetweenTimes" resultType="com.acmed.his.model.WaterDay">
+        SELECT * FROM t_r_water_day WHERE orgcode = #{orgCode} AND DATE(date) BETWEEN DATE(#{startTime})AND DATE(#{endTime})
+    </select>
+
+    <select id="getListByYearMonth" resultType="com.acmed.his.model.WaterDay">
+        SELECT * FROM t_r_water_day WHERE orgcode = #{orgCode} AND YEAR (date) = YEAR(#{date})
+    </select>
+
+    <select id="getListByYearGroupByMonth" resultType="com.acmed.his.model.WaterDay">
+        select
+        t1.orgcode,
+        DATE_FORMAT(t1.date,'%Y-%m') date,
+        SUM(wxpaymoney) wxpaymoney,
+        SUM(wxpaynum) wxpaynum,
+        SUM(alipaymoney) alipaymoney,
+        SUM(alipaynum) alipaynum,
+        SUM(cash) cash,
+        SUM(cashnum) cashnum,
+        SUM(registerednum) registerednum,
+        SUM(registeredmoney) registeredmoney,
+        SUM(prescriptionnum) prescriptionnum,
+        SUM(prescriptionmoney) prescriptionmoney,
+        SUM(paynum) paynum,
+        SUM(paymoney) paymoney,
+        SUM(refundnum) refundnum,
+        SUM(refundmoney) refundmoney,
+        SUM(registeredrefundnum) registeredrefundnum,
+        SUM(registeredrefundmoney) registeredrefundmoney,
+        SUM(prescriptionrefundnum) prescriptionrefundnum,
+        SUM(prescriptionrefundmoney) prescriptionrefundmoney
+        FROM t_r_water_day t1
+        WHERE orgcode = #{orgCode} AND YEAR(date) = YEAR(#{date})
+        GROUP BY MONTH(date)
+    </select>
+
+    <select id="waterDetailList" resultType="com.acmed.his.model.dto.WaterDetailDto">
+        SELECT id,isin as isIn,fee,feetype feeType,source,createat time
+        FROM (
+        SELECT id , 1 as isin , fee ,feetype ,source,createat
+        FROM t_b_pay_statements WHERE orgcode  =#{orgCode} AND DATE(createat) BETWEEN DATE(#{startTime}) AND DATE(#{endTime})
+        UNION ALL SELECT id , 0 as isin , fee ,feetype ,source,createat
+        FROM t_b_pay_refuse WHERE orgcode = #{orgCode} AND DATE(createat) BETWEEN DATE(#{startTime}) AND DATE(#{endTime})
+        )tmp
+        ORDER BY createat DESC
+    </select>
+
+
+    <select id="getWaterDayAndMonthCount" resultType="com.acmed.his.model.dto.WaterDayAndMonthCountDto">
+        SELECT IFNULL(t2.dayTotal,0) dayTotal,IFNULL(t3.monthTotal,0) monthTotal,t1.orgCode FROM t_p_s_org t1
+        LEFT JOIN (
+                SELECT (t0.paymoney - t0.refundmoney) dayTotal , t0.orgcode FROM t_r_water_day t0 WHERE DATE(t0.date) = DATE(#{date}) AND t0.orgcode = #{orgCode}
+        ) AS t2 ON t2.orgcode = t1.orgcode
+
+        LEFT JOIN (
+            SELECT (SUM(t0.paymoney) - SUM(t0.refundmoney))monthTotal , t0.orgcode  FROM t_r_water_day t0 WHERE MONTH(t0.date) = MONTH(#{date}) AND t0.orgcode = #{orgCode}
+        ) AS t3 ON t3.orgcode = t1.orgcode
+        WHERE t1.orgcode = #{orgCode}
     </select>
 </mapper>

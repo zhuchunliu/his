@@ -32,4 +32,10 @@ public class ApplyMo {
 
     @ApiModelProperty("社保卡")
     private String socialCard;
+
+    @ApiModelProperty("医生id")
+    private Integer doctorId;
+
+    @ApiModelProperty("预约时间")
+    private String appointmentTime;
 }

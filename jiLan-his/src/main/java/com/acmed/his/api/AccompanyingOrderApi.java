@@ -370,7 +370,7 @@ public class AccompanyingOrderApi {
         return ResponseUtil.setSuccessResult(result);
     }
 
-    @ApiOperation(value = "结束邀请")
+    @ApiOperation(value = "接受邀请")
     @RequestMapping("accessInvitation")
     public ResponseResult accessInvitation(@AccessToken AccessInfo info,@RequestParam("invitationCode")String invitationCode){
         String patientId = info.getPatientId();

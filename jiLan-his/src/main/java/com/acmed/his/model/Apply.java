@@ -83,4 +83,10 @@ public class Apply {
 
     @ApiModelProperty("总费用")
     private Double totalFee;
+
+    @ApiModelProperty("医生id")
+    private Integer doctorId;
+
+    @ApiModelProperty("预约时间")
+    private String appointmentTime;
 }

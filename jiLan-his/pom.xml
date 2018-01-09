@@ -135,6 +135,11 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.yuntongxun</groupId>
+            <artifactId>ccp_rest-sms-sdk-java</artifactId>
+            <version>2.6.3r</version>
+        </dependency>
 
     </dependencies>
 
