@@ -2,9 +2,7 @@ package com.acmed.his.service;
 
 import com.acmed.his.dao.ApplyMapper;
 import com.acmed.his.dao.PatientMapper;
-import com.acmed.his.model.Apply;
-import com.acmed.his.model.Patient;
-import com.acmed.his.model.PayStatements;
+import com.acmed.his.model.*;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
@@ -66,16 +64,32 @@ public class ApplyManager {
      */
     @Transactional
     public int addApply(ApplyMo mo, String patientId){
+        Dept deptDetail = deptManager.getDeptDetail(mo.getDept());
+        if (deptDetail == null){
+            return 0;
+        }
+        Org orgDetail = orgManager.getOrgDetail(deptDetail.getOrgCode());
         Apply apply = new Apply();
         BeanUtils.copyProperties(mo,apply);
+        Apply p1 = new Apply();
+        apply.setPatientId(patientId);
+        apply.setOrgCode(orgDetail.getOrgCode());
+        List<Apply> select = applyMapper.select(p1);
+        if (select.size() == 0){
+            // 初诊
+            apply.setIsFirst(1);
+        }else {
+            // 复诊
+            apply.setIsFirst(0);
+        }
         apply.setPatientId(patientId);
         apply.setCreateBy(patientId);
         apply.setCreateAt(LocalDateTime.now().toString());
         apply.setStatus("0");
         apply.setIsPaid("0");
         apply.setFee(1d);
-        apply.setOrgName(Optional.ofNullable(mo.getOrgCode()).map(orgManager::getOrgDetail).map(obj->obj.getOrgName()).orElse(null));
-        apply.setDeptName(Optional.ofNullable(mo.getDept()).map(deptManager::getDeptDetail).map(obj->obj.getDept()).orElse(null));
+        apply.setOrgName(orgDetail.getOrgName());
+        apply.setDeptName(deptDetail.getDept());
         apply.setId(UUIDUtil.generate());
         // 医疗机构编码
         Integer orgCode = apply.getOrgCode();
