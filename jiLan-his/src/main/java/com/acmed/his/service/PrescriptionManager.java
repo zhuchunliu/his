@@ -327,6 +327,12 @@ public class PrescriptionManager {
 
     }
 
-
-
+    /**
+     * 获取实时处方销售额
+     * @param orgCode
+     * @return
+     */
+    public Double getCurrentDayItemFee(Integer orgCode) {
+        return preItemMapper.getCurrentDayItemFee(orgCode);
+    }
 }

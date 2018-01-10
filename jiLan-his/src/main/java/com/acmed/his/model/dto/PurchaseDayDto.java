@@ -17,8 +17,14 @@ public class PurchaseDayDto {
     @ApiModelProperty("药品编码")
     private String drugCode;
 
+    @ApiModelProperty("药品名称")
+    private String drugName;
+
     @ApiModelProperty("采购数量")
     private Double num;
+
+    @ApiModelProperty("库存数量")
+    private Double storeNum;
 
     @ApiModelProperty("进价")
     private Double bid;

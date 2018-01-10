@@ -20,4 +20,6 @@ public interface PrescriptionItemMapper extends TkMapper<PrescriptionItem> {
     Integer getItemTotal(@Param("orgCode") Integer orgCode,
                             @Param("startTime") String startTime,
                             @Param("endTime") String endTime);
+
+    Double getCurrentDayItemFee(@Param("orgCode") Integer orgCode);
 }

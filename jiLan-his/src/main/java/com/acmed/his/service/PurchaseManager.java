@@ -220,4 +220,8 @@ public class PurchaseManager {
         drug.setModifyBy(user.getId().toString());
         drugMapper.updateByPrimaryKey(drug);
     }
+
+    public Double getCurrentDayFee(Integer orgCode) {
+        return purchaseMapper.getCurrentDayFee(orgCode);
+    }
 }

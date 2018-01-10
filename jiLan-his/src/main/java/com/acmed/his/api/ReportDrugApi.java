@@ -4,6 +4,8 @@ import com.acmed.his.model.dto.DrugDayDetailDto;
 import com.acmed.his.model.dto.DrugDayDto;
 import com.acmed.his.model.dto.PurchaseDayDetailDto;
 import com.acmed.his.model.dto.PurchaseDayDto;
+import com.acmed.his.service.PrescriptionManager;
+import com.acmed.his.service.PurchaseManager;
 import com.acmed.his.service.ReportDrugManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -11,14 +13,14 @@ import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.google.common.collect.Maps;
+import io.swagger.annotations.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Darren on 2018-01-08
@@ -31,7 +33,27 @@ public class ReportDrugApi {
     @Autowired
     private ReportDrugManager reportDrugManager;
 
-    @ApiOperation(value = "药品销售统计")
+    @Autowired
+    private PrescriptionManager prescriptionManager;
+
+    @Autowired
+    private PurchaseManager purchaseManager;
+
+
+    @ApiModelProperty("当前")
+    @GetMapping("/recent")
+    @ApiResponse(code = 100,message = "saleFee:出库金额,purchaseFee:入库金额")
+    public ResponseResult getRecentStatis(@AccessToken AccessInfo info){
+        Double saleFee = prescriptionManager.getCurrentDayItemFee(info.getUser().getOrgCode());
+        Double purchaseFee =purchaseManager.getCurrentDayFee(info.getUser().getOrgCode());
+        Map<String,Double> map = Maps.newHashMap();
+        map.put("saleFee",saleFee);
+        map.put("purchaseFee",purchaseFee);
+        return ResponseUtil.setSuccessResult(map);
+
+    }
+
+    @ApiOperation(value = "药品出库统计")
     @PostMapping("/sale/page")
     public ResponseResult<PageResult<DrugDayDto>> getSalePageList(@RequestBody(required = false) PageBase pageBase,
                                                           @ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
@@ -47,7 +69,7 @@ public class ReportDrugApi {
         return ResponseUtil.setSuccessResult(pageResult);
     }
 
-    @ApiOperation(value = "药品销售统计")
+    @ApiOperation(value = "药品出库统计")
     @GetMapping("/sale/list")
     public ResponseResult<DrugDayDto> getSaleList(@ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
                                                 @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
@@ -57,7 +79,7 @@ public class ReportDrugApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
-    @ApiOperation(value = "药品销售明细")
+    @ApiOperation(value = "药品出库明细")
     @PostMapping("/sale/detail")
     public ResponseResult<PageResult<DrugDayDetailDto>> getSaleDetail(@RequestBody(required = false) PageBase pageBase,
                                                                       @ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,

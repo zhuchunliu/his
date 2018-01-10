@@ -14,4 +14,6 @@ public interface PurchaseMapper extends TkMapper<Purchase> {
     List<PurchaseDto> getAuditList(@Param("orgCode") Integer orgCode, @Param("purchaseNo") String purchaseNo,
                                    @Param("status") Integer status, @Param("supplierId") Integer supplierId,
                                    @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    Double getCurrentDayFee(@Param("orgCode") Integer orgCode);
 }

@@ -18,12 +18,14 @@
 
     <select id="getPurchaseDayList" resultType="com.acmed.his.model.dto.PurchaseDayDto">
         select * from (
-            select t1.drugcode,t2.specname as drugname, sum(num) as num,
-            FORMAT(sum(bidfee)/sum(num),2) as bid,
-            FORMAT(sum(retailfee)/sum(num),2) as retailprice,
-            sum(bidfee) as bidfee ,sum(retailfee) as retailfee
-            from t_r_purchase_day t1 LEFT JOIN t_b_drugdict t2 on t1.drugcode = t2.code
-            where t1.orgcode = #{orgCode}
+            select t1.drugcode,t2.specname as drugname, sum(t1.num) as num,t3.num as storeNum,
+            FORMAT(sum(t1.bidfee)/sum(t1.num),2) as bid,
+            FORMAT(sum(t1.retailfee)/sum(t1.num),2) as retailprice,
+            sum(t1.bidfee) as bidfee ,sum(t1.retailfee) as retailfee
+            from t_r_purchase_day t1
+            LEFT JOIN t_b_drugdict t2 on t1.drugcode = t2.code
+            LEFT JOIN t_b_drug t3 on t1.drugcode = t3.drugcode
+            where t1.orgcode = #{orgCode} and t3.removed = '0'
             <if test="@Ognl@isNotEmpty(startTime)">
                 <![CDATA[ AND t1.date >= #{startTime} ]]>
             </if>
