@@ -1,31 +1,16 @@
-package com.acmed.his.model;
+package com.acmed.his.model.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import tk.mybatis.mapper.annotation.NameStyle;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
- * Created by Darren on 2018-01-09
+ * Created by Darren on 2018-01-10
  **/
 @Data
-@Table(name = "t_r_workload_day")
-@NameStyle
-public class WorkloadDay {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty("主键")
-    private Integer id;
+public class WorkloadDayDto {
 
-    @ApiModelProperty("医疗机构编码")
-    private Integer orgCode;
-
-    @ApiModelProperty("用户主键")
-    private Integer userId;
+    @ApiModelProperty("用户名")
+    private String userName;
 
     @ApiModelProperty("就诊量")
     private Integer diagnoseNum;
@@ -74,7 +59,4 @@ public class WorkloadDay {
 
     @ApiModelProperty("附加退款金额")
     private Double chargeRefundFFee;
-
-    @ApiModelProperty("报表日期")
-    private String date;
 }

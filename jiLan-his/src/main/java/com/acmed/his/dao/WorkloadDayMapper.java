@@ -15,6 +15,8 @@ public interface WorkloadDayMapper extends TkMapper<WorkloadDay> {
                         @Param("endTime") String endTime);
 
     List<WorkloadDay> getWorkloadList(@Param("orgCode") Integer orgCode,
+                                      @Param("userName") String userName,
                                       @Param("startTime") String startTime,
-                                      @Param("endTime") String endTime);
+                                      @Param("endTime") String endTime,
+                                      @Param("type") Integer type);
 }

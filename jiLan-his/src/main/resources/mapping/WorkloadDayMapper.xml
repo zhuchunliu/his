@@ -6,7 +6,7 @@
     <insert id="statisWorkload">
 
         insert into t_r_workload_day(orgcode,userid,
-        diagnosenum,cancelnum,breachnum,applynum,
+        diagnosenum,cancelnum,breachnum,applynum,prescriptionnum,
         incomefee,
         applyfee,prescriptionfee,drugfee,inspectfee,chargefee,
         applyrefundfee,prescriptionrefundfee,drugrefundfee,inspectrefundfee,chargerefundfee,
@@ -17,6 +17,7 @@
         sum(t.cancelnum) as  cancelnum,
         sum(t.breachnum) as breachnum,
         sum(t.diagnosenum) + sum(t.cancelnum) + sum(t.breachnum) as applynum,
+        sum(t.prescriptionnum) as prescriptionnum,
         sum(t.drugfee) + sum(t.inspectfee) + sum(t.chargefee) + sum(t.applyfee) -
 	          sum(t.applyrefundfee) - sum(t.drugrefundfee) - sum(t.inspectrefundfee) - sum(t.chargerefundfee) as incomefee,
         sum(t.applyfee) as applyfee,
@@ -35,6 +36,7 @@
             sum(case t1.status when 1 THEN 1 else 0 END) as  diagnosenum,
             sum(case t1.status when 2 THEN 1 else 0 END) as  cancelnum,
             sum(case t1.status when 0 THEN 1 else 0 END) as  breachnum,
+            0 as prescriptionnum,
             0 as applyfee,0 as drugfee ,0 as inspectfee ,0 as chargefee,
             0 as applyrefundfee,0 as drugrefundfee ,0 as inspectrefundfee ,0 as chargerefundfee
             from t_b_apply t1
@@ -43,6 +45,7 @@
 
             UNION ALL
             select t1.orgcode,t1.doctorid,0 as diagnosenum ,0 as cancelnum,0 as breachnum,
+            count(DISTINCT t2.prescriptionid) as prescriptionnum,
             sum(case t2.source when 1 THEN t2.fee else 0 END) as applyfee,
             sum(case t2.source when 2 THEN t2.fee else 0 END) as drugfee,
             sum(case t2.source when 3 THEN t2.fee else 0 END) as inspectfee,
@@ -54,8 +57,8 @@
             GROUP BY t1.doctorid
 
             UNION ALL
-            select t1.orgcode,t1.doctorid,0 as diagnosenum,0 as cancelnum,0 as breachnum,0 as applyfee,
-            0 as drugfee ,0 as inspectfee ,0 as chargefee,
+            select t1.orgcode,t1.doctorid,0 as diagnosenum,0 as cancelnum,0 as breachnum,0 as prescriptionnum ,
+	        0 as applyfee, 0 as drugfee ,0 as inspectfee ,0 as chargefee,
             sum(case t3.source when 1 THEN t3.fee else 0 END) as applyrefundfee,
             sum(case t3.source when 2 THEN t3.fee else 0 END) as drugrefundfee,
             sum(case t3.source when 3 THEN t3.fee else 0 END) as inspectrefundfee,
@@ -68,13 +71,46 @@
 
     </insert>
 
-    <select id="getWorkloadList" resultType="com.acmed.his.model.WorkloadDay">
-      select t1.*,t2. from t_r_workload_day t1 where t1.orgcode = #{orgCode}
-        <if test="@Ognl@isNotEmpty(startTime)">
-            <![CDATA[ AND t1.date >= #{startTime} ]]>
+    <select id="getWorkloadList" resultType="com.acmed.his.model.dto.WorkloadDayDto">
+        select * from(
+            select t2.nickname as username ,
+            sum(t1.diagnosenum) as diagnosenum ,
+            sum(t1.cancelnum) as cancelnum,
+            sum(t1.breachnum) as breachnum,
+            sum(t1.applynum) as applynum,
+            sum(t1.prescriptionnum) as prescriptionnum,
+            sum(t1.incomefee) as incomefee,
+            sum(t1.applyfee) as applyfee,
+            sum(t1.prescriptionfee) as prescriptionfee,
+            sum(t1.drugfee) as drugfee,
+            sum(t1.inspectfee) as inspectfee,
+            sum(t1.chargefee) as chargefee,
+            sum(t1.applyrefundfee) as applyrefundfee,
+            sum(t1.prescriptionrefundfee) as prescriptionrefundfee,
+            sum(t1.drugrefundfee) as drugrefundfee,
+            sum(t1.inspectrefundfee) as inspectrefundfee,
+            sum(t1.chargerefundfee) as chargerefundfee
+            from t_r_workload_day t1
+            left join t_p_s_user t2 on t1.userid = t2.id
+            <trim prefix="where" prefixOverrides="AND">
+                <if test="@Ognl@isNotEmpty(userName)">
+                  AND t2.nickname like concat('%',#{userName},'%')
+                </if>
+                <if test="@Ognl@isNotEmpty(startTime)">
+                    <![CDATA[ AND t1.date >= #{startTime} ]]>
+                </if>
+                <if test="@Ognl@isNotEmpty(endTime)">
+                    <![CDATA[  AND t1.date <= #{endTime} ]]>
+                </if>
+            </trim>
+            group by t1.userid
+        )tt
+        order by
+        <if test="type == 1">
+            tt.applynum desc
         </if>
-        <if test="@Ognl@isNotEmpty(endTime)">
-            <![CDATA[  AND t1.date <= #{endTime} ]]>
+        <if test="type == 2">
+            tt.incomefee desc
         </if>
 
     </select>
