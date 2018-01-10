@@ -69,7 +69,7 @@ public class Apply {
     @ApiModelProperty("过期时间")
     private String expire;
 
-    @ApiModelProperty("状态 0:未就诊;1:已就诊")
+    @ApiModelProperty("状态 0:未就诊;1:已就诊,2:已取消")
     private String status;
 
     @ApiModelProperty("科室名字")

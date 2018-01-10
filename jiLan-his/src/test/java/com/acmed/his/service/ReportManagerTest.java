@@ -20,6 +20,9 @@ public class ReportManagerTest {
     @Autowired
     private ReportDrugManager drugManager;
 
+    @Autowired
+    private ReportWorkloadManager workloadManager;
+
     @Test
     public void statisInspect(){
         inspectManager.statisInspect();
@@ -34,4 +37,11 @@ public class ReportManagerTest {
     public void statisPurchase(){
         drugManager.statisPurchase();
     }
+
+    @Test
+    public void statisWorkload(){
+        workloadManager.statisWorkload();
+    }
+
+
 }

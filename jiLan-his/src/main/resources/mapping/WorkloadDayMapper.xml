@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.WorkloadDayMapper">
+
+    <insert id="statisWorkload">
+
+    insert into t_r_workload_day(orgcode,userid,diagnosenum,cancelnum,breachnum,
+    applyfee,prescriptionfee,applyrefundfee,prescriptionrefundfee,date)
+    select t.orgcode,t.doctorid,
+    sum(t.diagnosenum) as diagnosenum,
+    sum(t.cancelnum) as  cancelnum,
+    sum(t.breachnum) as breachnum,
+    sum(t.applyfee) as applyfee,
+    sum(t.prescriptionfee) as prescriptionfee ,
+    sum(t.applyrefundfee) as applyrefundfee,
+    sum(t.prescriptionrefundfee) as prescriptionrefundfee ,#{startTime} from
+    (
+        select t1.orgcode,t1.doctorid,
+        sum(case t1.status when 1 THEN 1 else 0 END) as  diagnosenum,
+        sum(case t1.status when 2 THEN 1 else 0 END) as  cancelnum,
+        sum(case t1.status when 0 THEN 1 else 0 END) as  breachnum,
+        0 as applyfee,0 as prescriptionfee ,0 as applyrefundfee ,0 as prescriptionrefundfee
+        from t_b_apply t1
+        where t1.orgcode = #{orgCode} and t1.createat BETWEEN #{startTime} and #{endTime}
+        GROUP BY t1.doctorid
+
+        UNION ALL
+        select t1.orgcode,t1.doctorid,0 as diagnosenum ,0 as cancelnum,0 as breachnum,
+        sum(case t2.source when 1 THEN t2.fee else 0 END) as applyfee,
+        sum(case t2.source when 2 THEN t2.fee else 0 END) as prescriptionfee,
+        0 as applyrefundfee ,0 as prescriptionrefundfee
+        from t_b_apply t1
+        RIGHT JOIN t_b_pay_statements t2 on t1.id = t2.applyid
+        where t1.orgcode = #{orgCode} and t1.createat BETWEEN #{startTime} and #{endTime}
+        GROUP BY t1.doctorid
+
+        UNION ALL
+        select t1.orgcode,t1.doctorid,0 as diagnosenum,0 as cancelnum,0 as breachnum,0 as applyfee,0 as prescriptionfee,
+        sum(case t3.source when 1 THEN t3.fee else 0 END) as applyrefundfee,
+        sum(case t3.source when 2 THEN t3.fee else 0 END) as prescriptionrefundfee
+        from t_b_apply t1
+        RIGHT JOIN t_b_pay_refuse t3 on t1.id = t3.applyid
+        where t1.orgcode = #{orgCode} and t1.createat BETWEEN #{startTime} and #{endTime}
+        GROUP BY t1.doctorid
+    )t GROUP BY t.doctorid
+
+
+    </insert>
+
+</mapper>
