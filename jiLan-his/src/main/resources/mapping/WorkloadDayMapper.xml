@@ -5,47 +5,78 @@
 
     <insert id="statisWorkload">
 
-    insert into t_r_workload_day(orgcode,userid,diagnosenum,cancelnum,breachnum,
-    applyfee,prescriptionfee,applyrefundfee,prescriptionrefundfee,date)
-    select t.orgcode,t.doctorid,
-    sum(t.diagnosenum) as diagnosenum,
-    sum(t.cancelnum) as  cancelnum,
-    sum(t.breachnum) as breachnum,
-    sum(t.applyfee) as applyfee,
-    sum(t.prescriptionfee) as prescriptionfee ,
-    sum(t.applyrefundfee) as applyrefundfee,
-    sum(t.prescriptionrefundfee) as prescriptionrefundfee ,#{startTime} from
-    (
-        select t1.orgcode,t1.doctorid,
-        sum(case t1.status when 1 THEN 1 else 0 END) as  diagnosenum,
-        sum(case t1.status when 2 THEN 1 else 0 END) as  cancelnum,
-        sum(case t1.status when 0 THEN 1 else 0 END) as  breachnum,
-        0 as applyfee,0 as prescriptionfee ,0 as applyrefundfee ,0 as prescriptionrefundfee
-        from t_b_apply t1
-        where t1.orgcode = #{orgCode} and t1.createat BETWEEN #{startTime} and #{endTime}
-        GROUP BY t1.doctorid
+        insert into t_r_workload_day(orgcode,userid,
+        diagnosenum,cancelnum,breachnum,applynum,
+        incomefee,
+        applyfee,prescriptionfee,drugfee,inspectfee,chargefee,
+        applyrefundfee,prescriptionrefundfee,drugrefundfee,inspectrefundfee,chargerefundfee,
+        date)
 
-        UNION ALL
-        select t1.orgcode,t1.doctorid,0 as diagnosenum ,0 as cancelnum,0 as breachnum,
-        sum(case t2.source when 1 THEN t2.fee else 0 END) as applyfee,
-        sum(case t2.source when 2 THEN t2.fee else 0 END) as prescriptionfee,
-        0 as applyrefundfee ,0 as prescriptionrefundfee
-        from t_b_apply t1
-        RIGHT JOIN t_b_pay_statements t2 on t1.id = t2.applyid
-        where t1.orgcode = #{orgCode} and t1.createat BETWEEN #{startTime} and #{endTime}
-        GROUP BY t1.doctorid
+        select t.orgcode,t.doctorid as userid,
+        sum(t.diagnosenum) as diagnosenum,
+        sum(t.cancelnum) as  cancelnum,
+        sum(t.breachnum) as breachnum,
+        sum(t.diagnosenum) + sum(t.cancelnum) + sum(t.breachnum) as applynum,
+        sum(t.drugfee) + sum(t.inspectfee) + sum(t.chargefee) + sum(t.applyfee) -
+	          sum(t.applyrefundfee) - sum(t.drugrefundfee) - sum(t.inspectrefundfee) - sum(t.chargerefundfee) as incomefee,
+        sum(t.applyfee) as applyfee,
+        sum(t.drugfee) + sum(t.inspectfee) + sum(t.chargefee) as prescriptionfee,
+        sum(t.drugfee) as drugfee,
+        sum(t.inspectfee) as inspectfee,
+        sum(t.chargefee) as chargefee,
+        sum(t.applyrefundfee) as applyrefundfee,
+        sum(t.drugrefundfee) + sum(t.inspectrefundfee) + sum(t.chargerefundfee) as prescriptionrefundfee ,
+        sum(t.drugrefundfee) as drugrefundfee,
+        sum(t.inspectrefundfee) as inspectrefundfee,
+        sum(t.chargerefundfee) as chargerefundfee,
+        #{startTime} from
+        (
+            select t1.orgcode,t1.doctorid,
+            sum(case t1.status when 1 THEN 1 else 0 END) as  diagnosenum,
+            sum(case t1.status when 2 THEN 1 else 0 END) as  cancelnum,
+            sum(case t1.status when 0 THEN 1 else 0 END) as  breachnum,
+            0 as applyfee,0 as drugfee ,0 as inspectfee ,0 as chargefee,
+            0 as applyrefundfee,0 as drugrefundfee ,0 as inspectrefundfee ,0 as chargerefundfee
+            from t_b_apply t1
+            where t1.orgcode = #{orgCode} and t1.createat  BETWEEN #{startTime} and #{endTime}
+            GROUP BY t1.doctorid
 
-        UNION ALL
-        select t1.orgcode,t1.doctorid,0 as diagnosenum,0 as cancelnum,0 as breachnum,0 as applyfee,0 as prescriptionfee,
-        sum(case t3.source when 1 THEN t3.fee else 0 END) as applyrefundfee,
-        sum(case t3.source when 2 THEN t3.fee else 0 END) as prescriptionrefundfee
-        from t_b_apply t1
-        RIGHT JOIN t_b_pay_refuse t3 on t1.id = t3.applyid
-        where t1.orgcode = #{orgCode} and t1.createat BETWEEN #{startTime} and #{endTime}
-        GROUP BY t1.doctorid
-    )t GROUP BY t.doctorid
+            UNION ALL
+            select t1.orgcode,t1.doctorid,0 as diagnosenum ,0 as cancelnum,0 as breachnum,
+            sum(case t2.source when 1 THEN t2.fee else 0 END) as applyfee,
+            sum(case t2.source when 2 THEN t2.fee else 0 END) as drugfee,
+            sum(case t2.source when 3 THEN t2.fee else 0 END) as inspectfee,
+            sum(case t2.source when 4 THEN t2.fee else 0 END) as chargefee,
+            0 as applyrefundfee ,0 as drugrefundfee ,0 as inspectrefundfee ,0 as chargerefundfee
+            from t_b_apply t1
+            RIGHT JOIN t_b_pay_statements t2 on t1.id = t2.applyid
+            where t1.orgcode = #{orgCode}  and t1.createat BETWEEN #{startTime} and #{endTime}
+            GROUP BY t1.doctorid
 
+            UNION ALL
+            select t1.orgcode,t1.doctorid,0 as diagnosenum,0 as cancelnum,0 as breachnum,0 as applyfee,
+            0 as drugfee ,0 as inspectfee ,0 as chargefee,
+            sum(case t3.source when 1 THEN t3.fee else 0 END) as applyrefundfee,
+            sum(case t3.source when 2 THEN t3.fee else 0 END) as drugrefundfee,
+            sum(case t3.source when 3 THEN t3.fee else 0 END) as inspectrefundfee,
+            sum(case t3.source when 4 THEN t3.fee else 0 END) as chargerefundfee
+            from t_b_apply t1
+            RIGHT JOIN t_b_pay_refuse t3 on t1.id = t3.applyid
+            where t1.orgcode = #{orgCode} and t1.createat  BETWEEN #{startTime} and #{endTime}
+            GROUP BY t1.doctorid
+        )t GROUP BY t.doctorid
 
     </insert>
+
+    <select id="getWorkloadList" resultType="com.acmed.his.model.WorkloadDay">
+      select t1.*,t2. from t_r_workload_day t1 where t1.orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(startTime)">
+            <![CDATA[ AND t1.date >= #{startTime} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)">
+            <![CDATA[  AND t1.date <= #{endTime} ]]>
+        </if>
+
+    </select>
 
 </mapper>

@@ -3,6 +3,7 @@ package com.acmed.his.service;
 import com.acmed.his.dao.OrgMapper;
 import com.acmed.his.dao.WorkloadDayMapper;
 import com.acmed.his.model.Org;
+import com.acmed.his.model.WorkloadDay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -37,4 +38,7 @@ public class ReportWorkloadManager {
     }
 
 
+    public List<WorkloadDay> getWorkloadList(Integer orgCode, String startTime, String endTime) {
+        return workloadDayMapper.getWorkloadList(orgCode,startTime,endTime);
+    }
 }

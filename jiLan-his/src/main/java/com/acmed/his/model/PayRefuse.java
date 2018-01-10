@@ -29,7 +29,7 @@ public class PayRefuse {
     @ApiModelProperty("付费类型 现金 支付宝 微信 ")
     private String feeType;
 
-    @ApiModelProperty("来源  挂号  附加  检查  处方")
+    @ApiModelProperty("来源  1:挂号  2:药  3：检查  4：附加")
     private String source;
 
     @ApiModelProperty("处方id")
