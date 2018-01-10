@@ -52,11 +52,11 @@ public class WorkloadDayDto {
     private Double prescriptionRefundFee;
 
     @ApiModelProperty("药品退款金额")
-    private Double drugRefundFFee;
+    private Double drugRefundFee;
 
     @ApiModelProperty("检查退款金额")
-    private Double inspectRefundFFee;
+    private Double inspectRefundFee;
 
     @ApiModelProperty("附加退款金额")
-    private Double chargeRefundFFee;
+    private Double chargeRefundFee;
 }

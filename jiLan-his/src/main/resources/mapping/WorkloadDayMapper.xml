@@ -115,4 +115,52 @@
 
     </select>
 
+    <select id="getWorkloadDayAndTotal" resultType="com.acmed.his.model.dto.WorkloadDayAndTotalDto">
+        SELECT * FROM
+        (SELECT SUM(t1.applynum) applynumday FROM t_r_workload_day t1 WHERE t1.orgcode = #{orgCode} AND DATE(t1.date) = DATE(#{date})) as t3, -- 某天的
+        (SELECT SUM(t1.incomefee) incomefeetotal,SUM(t1.applyfee) applyfeetotal,SUM(t1.applyrefundfee) applyrefundfeetotal FROM t_r_workload_day t1 WHERE t1.orgcode = #{orgCode} ) as t4 -- 总的
+    </select>
+
+    <select id="getWorkloadListGroupByDate" resultType="com.acmed.his.model.WorkloadDay">
+        SELECT
+        SUM(diagnosenum) diagnosenum,
+        SUM(cancelnum) cancelnum,
+        SUM(breachnum) breachnum,
+        SUM(applynum) applynum,
+        SUM(incomefee) incomefee,
+        SUM(applynum) applynum,
+        SUM(applyfee) applyfee,
+        SUM(prescriptionfee) prescriptionfee,
+        SUM(drugfee) drugfee,
+        SUM(inspectfee) inspectfee,
+        SUM(chargefee) chargefee,
+        SUM(applyrefundfee) applyrefundfee,
+        SUM(prescriptionrefundfee) prescriptionrefundfee,
+        SUM(drugrefundfee) drugrefundfee,
+        SUM(inspectrefundfee) inspectrefundfee,
+        SUM(chargerefundfee) chargerefundfee,
+        DATE_FORMAT(date,'%Y-%m-%d') date,
+        orgcode
+        FROM t_r_workload_day
+        WHERE orgcode = #{orgCode}
+        <![CDATA[ AND DATE(date) >= DATE(#{startTime}) ]]>
+
+        <![CDATA[  AND DATE(date) <= DATE(#{endTime}) ]]>
+        GROUP BY DATE(date)
+        ORDER BY date
+    </select>
+
+    <select id="doctorApplyNum" resultType="com.acmed.his.model.dto.DoctorApplyNumDto">
+        SELECT SUM(t1.applynum) applynum,
+        t2.nickname,
+        t2.avatar, -- 头像
+        t2.duty, -- 医生职称
+        t2.deptname, -- 科室名称
+        t2.diagnoslevel -- 门诊级别
+        FROM t_r_workload_day t1
+        LEFT JOIN t_p_s_user as t2 ON t2.id = t1.userid
+        WHERE t1.orgcode = #{orgCode}
+        GROUP BY t1.userid
+    </select>
+
 </mapper>

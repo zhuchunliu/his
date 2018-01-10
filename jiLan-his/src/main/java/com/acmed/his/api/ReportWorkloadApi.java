@@ -1,6 +1,8 @@
 package com.acmed.his.api;
 
 import com.acmed.his.model.WorkloadDay;
+import com.acmed.his.model.dto.DoctorApplyNumDto;
+import com.acmed.his.model.dto.WorkloadDayAndTotalDto;
 import com.acmed.his.service.ReportWorkloadManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -41,5 +44,26 @@ public class ReportWorkloadApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
+    @ApiOperation(value = "预约量医生排名列表")
+    @GetMapping("/doctorOrder")
+    public ResponseResult<List<DoctorApplyNumDto>> doctorApplyNumDtos(@AccessToken AccessInfo info){
+        List<DoctorApplyNumDto> doctorApplyNumDtos = workloadManager.doctorApplyNum(info.getUser().getOrgCode());
+        return ResponseUtil.setSuccessResult(doctorApplyNumDtos);
+    }
 
+    @ApiOperation(value = "按天分组的预约统计信息列表")
+    @GetMapping("/yuyuelist")
+    public ResponseResult<List<WorkloadDay>> getWorkloadListGroupByDate(@AccessToken AccessInfo info,
+                                                               @ApiParam("开始时间 格式2018-01-02 必填") @RequestParam(value = "startTime",required = false) String startTime,
+                                                               @ApiParam("结束时间 格式2018-01-02 必填") @RequestParam(value = "endTime",required = false) String endTime){
+        List<WorkloadDay> workloadListGroupByDate = workloadManager.getWorkloadListGroupByDate(info.getUser().getOrgCode(), startTime, endTime);
+        return ResponseUtil.setSuccessResult(workloadListGroupByDate);
+    }
+
+    @ApiOperation(value = "诊所预约统计")
+    @GetMapping("/orgCount")
+    public ResponseResult<WorkloadDayAndTotalDto> getWorkloadDayAndTotal(@AccessToken AccessInfo info){
+        WorkloadDayAndTotalDto workloadDayAndTotal = workloadManager.getWorkloadDayAndTotal(info.getUser().getOrgCode(), LocalDate.now().minusDays(1).toString());
+        return ResponseUtil.setSuccessResult(workloadDayAndTotal);
+    }
 }

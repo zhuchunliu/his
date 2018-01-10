@@ -4,12 +4,13 @@ import com.acmed.his.dao.OrgMapper;
 import com.acmed.his.dao.WorkloadDayMapper;
 import com.acmed.his.model.Org;
 import com.acmed.his.model.WorkloadDay;
+import com.acmed.his.model.dto.DoctorApplyNumDto;
+import com.acmed.his.model.dto.WorkloadDayAndTotalDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -59,5 +60,18 @@ public class ReportWorkloadManager {
      */
     public List<WorkloadDay> getWorkloadList(Integer orgCode, String userName,String startTime, String endTime,Integer type) {
         return workloadDayMapper.getWorkloadList(orgCode,userName,startTime,endTime,type);
+    }
+
+
+    public List<WorkloadDay> getWorkloadListGroupByDate(Integer orgCode, String startTime, String endTime) {
+        return workloadDayMapper.getWorkloadListGroupByDate(orgCode,startTime,endTime);
+    }
+
+    public WorkloadDayAndTotalDto getWorkloadDayAndTotal(Integer orgCode, String date) {
+        return workloadDayMapper.getWorkloadDayAndTotal(orgCode,date);
+    }
+
+    public List<DoctorApplyNumDto> doctorApplyNum(Integer orgCode) {
+        return workloadDayMapper.doctorApplyNum(orgCode);
     }
 }
