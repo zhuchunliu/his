@@ -91,9 +91,12 @@ public class ApplyManager {
         apply.setCreateAt(LocalDateTime.now().toString());
         apply.setStatus("0");
         apply.setIsPaid("0");
+        apply.setPatientName(mo.getPatientName());
+        apply.setPinYin(PinYinUtil.getPinYinHeadChar(mo.getPatientName()));
         apply.setFee(userDetail.getApplyfee());
         apply.setOrgName(userDetail.getOrgName());
         apply.setDeptName(userDetail.getDeptName());
+        apply.setDept(userDetail.getDept());
         apply.setId(UUIDUtil.generate());
         // 医疗机构编码
         Integer orgCode = apply.getOrgCode();
