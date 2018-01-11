@@ -40,7 +40,7 @@ public interface ApplyMapper extends TkMapper<Apply>{
      * @param isPaid 姓名
      * @return
      */
-    List<Apply> mohu(@Param("dept") Integer dept,@Param("date") Date date,@Param("status") String status,@Param("name") String name,@Param("isPaid")String isPaid);
+    List<Apply> mohu(@Param("dept") Integer dept,@Param("date") String date,@Param("status") String status,@Param("name") String name,@Param("isPaid")String isPaid);
 
     /**
      * 获取机构的就诊量

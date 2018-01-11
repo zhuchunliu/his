@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -188,7 +189,7 @@ public class ApplyManager {
      */
     public List<Apply> getApplyByDeptIdAndStatus(Integer deptId,String status){
         // TODO 暂时不管是否支付
-        return applyMapper.mohu(deptId,new Date(),status,null,null);
+        return applyMapper.mohu(deptId, LocalDate.now().toString(),status,null,null);
     }
 
     /**
@@ -210,7 +211,7 @@ public class ApplyManager {
      */
     public List<ApplyDoctorVo> getApplyDoctorVoList(Integer deptId,String date,String status){
         List<ApplyDoctorVo> resultList = new ArrayList<>();
-        List<Apply> applies = applyMapper.mohu(deptId,DateUtil.StringToDate(date, DateStyle.YYYY_MM_DD),status,null,null);
+        List<Apply> applies = applyMapper.mohu(deptId,date,status,null,null);
         if (applies.size()==0){
             return resultList;
         }
@@ -255,6 +256,7 @@ public class ApplyManager {
                 PayStatements payStatements = new PayStatements();
                 payStatements.setFee(BigDecimal.valueOf(fee));
                 payStatements.setFeeType(feeType);
+                payStatements.setSource("1");
                 payStatements.setCreateAt(LocalDateTime.now().toString());
                 payStatements.setCreateBy(userInfo.getId().toString());
                 payStatements.setOrgCode(userInfo.getOrgCode());
@@ -287,10 +289,10 @@ public class ApplyManager {
      * @param dept 科室
      * @return List<ApplyDoctorVo>
      */
-    public List<ApplyDoctorVo> getByPinyinOrName(String param,String status,Integer dept,Date date){
+    public List<ApplyDoctorVo> getByPinyinOrName(String param,String status,Integer dept,String date){
         List<ApplyDoctorVo> resultList = new ArrayList<>();
         if (date==null){
-            date = new Date();
+            date = LocalDate.now().toString();
         }
         List<Apply> applies = applyMapper.mohu(dept,date,status,param,null);
         if (applies.size()==0){

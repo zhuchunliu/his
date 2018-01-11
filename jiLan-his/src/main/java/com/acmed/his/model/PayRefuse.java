@@ -44,7 +44,7 @@ public class PayRefuse {
     @ApiModelProperty("付款账号")
     private String payerAccount;
 
-    @ApiModelProperty("第三方退费订单号")
+    @ApiModelProperty("第三方支付订单号")
     private String payId;
 
     @ApiModelProperty("第三方退费订单号")

@@ -4,8 +4,6 @@ import com.acmed.his.model.Apply;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyIdAndStatus;
 import com.acmed.his.pojo.mo.ApplyMo;
-import com.acmed.his.pojo.mo.DeptIdAndStatus;
-import com.acmed.his.pojo.mo.DeptIdAndStatusAndDate;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.ApplyVo;
 import com.acmed.his.service.ApplyManager;
@@ -81,16 +79,16 @@ public class ApplyApi {
 
     @ApiOperation(value = "根据科室id和状态查询当天的就诊列表")
     @GetMapping("idandstatus")
-    public ResponseResult<List<Apply>> idandstatus(@ApiParam("条件查询")DeptIdAndStatus model){
-        Integer id = model.getDeptId();
-        String status = model.getStatus();
-        List<Apply> applyByDeptIdAndStatus = applyManager.getApplyByDeptIdAndStatus(id, status);
+    public ResponseResult<List<Apply>> idandstatus(
+            @ApiParam("科室id") @RequestParam(value = "deptId",required = false) Integer deptId,
+            @ApiParam("状态码 状态 0:未就诊;1:已就诊,2:已取消  不填表示全部付费列表") @RequestParam(value = "status",required = false) String status){
+        List<Apply> applyByDeptIdAndStatus = applyManager.getApplyByDeptIdAndStatus(deptId, status);
         return ResponseUtil.setSuccessResult(applyByDeptIdAndStatus);
     }
 
     @ApiOperation(value = "修改状态")
-    @PutMapping("status")
-    public ResponseResult updateStatus(ApplyIdAndStatus model,@AccessToken AccessInfo info){
+    @PostMapping("status")
+    public ResponseResult updateStatus(@RequestBody ApplyIdAndStatus model,@AccessToken AccessInfo info){
         Integer id = model.getId();
         String status = model.getStatus();
         Apply apply = new Apply();
@@ -104,19 +102,19 @@ public class ApplyApi {
 
     @ApiOperation(value = "根据科室id和状态查询当天的就诊列表")
     @GetMapping("idandstatusanddate")
-    public ResponseResult<List<ApplyDoctorVo>> idandstatus(DeptIdAndStatusAndDate model){
-        Integer id = model.getDeptId();
-        String status = model.getStatus();
-        String date = model.getDate();
-        return ResponseUtil.setSuccessResult(applyManager.getApplyDoctorVoList(id,status,date));
+    public ResponseResult<List<ApplyDoctorVo>> idandstatus(
+                                                            @ApiParam("科室id") @RequestParam(value = "deptId",required = false) Integer deptId,
+                                                           @ApiParam("状态码 状态 0:未就诊;1:已就诊,2:已取消  不填表示全部付费列表") @RequestParam(value = "status",required = false) String status,
+                                                           @ApiParam("日期   yyyy-MM-dd") @RequestParam(value = "date",required = false) String date){
+        return ResponseUtil.setSuccessResult(applyManager.getApplyDoctorVoList(deptId,date,status));
     }
 
     @ApiOperation(value = "模糊查询当前科室挂号列表（姓名或者拼音）")
     @GetMapping("mohu")
     public ResponseResult<List<ApplyDoctorVo>> mohu(
             @ApiParam("姓名或者拼音首字母") @RequestParam(value = "param" )String param,
-            @ApiParam("挂号日期，不传就是默认今天") @RequestParam(value = "id" )Date date,
-            @ApiParam("状态  不传就是全部") @RequestParam(value = "id" )String status,
+            @ApiParam("挂号日期，不传就是默认今天  2018-01-10") @RequestParam(value = "date" )String date,
+            @ApiParam("状态码 状态 0:未就诊;1:已就诊,2:已取消  不填表示全部付费列表") @RequestParam(value = "id" )String status,
             @AccessToken AccessInfo info){
         Integer dept = info.getUser().getDept();
         return ResponseUtil.setSuccessResult(applyManager.getByPinyinOrName(param,status,dept,date));

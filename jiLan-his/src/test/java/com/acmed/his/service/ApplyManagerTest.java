@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class ApplyManagerTest {
 
     @Test
     public void getByPinyinOrName() throws Exception {
-        List<ApplyDoctorVo> w = applyManager.getByPinyinOrName("七", null,1,new Date());
+        List<ApplyDoctorVo> w = applyManager.getByPinyinOrName("七", null,1, LocalDate.now().toString());
         System.err.println(w.size());
     }
 

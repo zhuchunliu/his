@@ -74,7 +74,7 @@
                 and t1.status = #{status}
             </if>
             <if test="@Ognl@isNotEmpty(date)">
-                and DATE_FORMAT(t1.createat,'%Y-%m-%d') =  DATE_FORMAT(#{date},'%Y-%m-%d')
+                and DATE(t1.appointmenttime) =  DATE(#{date})
             </if>
             <if test="@Ognl@isNotEmpty(isPaid)">
                 and t1.ispaid = #{isPaid}
