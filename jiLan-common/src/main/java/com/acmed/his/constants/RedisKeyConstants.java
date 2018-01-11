@@ -9,5 +9,6 @@ public class RedisKeyConstants {
     public static final String  PATIENT_WEIXIN ="PATIENT_WX%s";
     public static final String  USER_WEIXIN ="USER_WX%s";
     public static final String  USER_PAD ="USER_PAD%s";
+    public static final String  USER_CODE = "USER_CODE%S";// 修改手机号码时候，短息code存储key
 
 }

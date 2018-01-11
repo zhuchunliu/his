@@ -1,6 +1,7 @@
 package com.acmed.his.api;
 
-import com.acmed.his.constants.CommonConstants;
+import com.acmed.his.constants.RedisKeyConstants;
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
@@ -9,19 +10,25 @@ import com.acmed.his.pojo.vo.UserVo;
 import com.acmed.his.service.UserManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.util.RandomUtil;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.util.SmsUtil;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Darren on 2017/11/21.
@@ -32,6 +39,11 @@ import java.util.List;
 public class UserApi {
     @Autowired
     private UserManager userManager;
+
+    @Autowired
+    @Qualifier(value="stringRedisTemplate")
+    private RedisTemplate redisTemplate;
+
 
     @ApiOperation(value = "新增/编辑 用户信息")
     @PostMapping("/save")
@@ -124,6 +136,44 @@ public class UserApi {
         }
         userManager.changePasswd(JSONObject.parseObject(param).get("oldPasswd").toString(),
                 JSONObject.parseObject(param).get("newPasswd").toString(),info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation("修改手机号")
+    @PostMapping(value = "/mobile")
+    public ResponseResult changeMobile(@ApiParam("{\"mobile\":\"\",\"code\":\"\"},mobile：手机号码、code：验证码")  @RequestBody String param,
+                                       @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("mobile")){
+            return ResponseUtil.setParamEmptyError("mobile");
+        }
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("code")){
+            return ResponseUtil.setParamEmptyError("code");
+        }
+        String code = Optional.ofNullable(redisTemplate.opsForValue().get(String.format(RedisKeyConstants.USER_CODE,info.getUserId()))).
+                map(obj->obj.toString()).orElse(null);
+        if(StringUtils.isEmpty(code)){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"验证码已过期，请重新获取");
+        }
+        if(!code.equals(JSONObject.parseObject(param).get("code"))){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"验证码错误，请重新填写");
+        }
+        userManager.changeMobile(JSONObject.parseObject(param).get("mobile").toString(),info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation("获取验证码")
+    @GetMapping(value = "/getCode")
+    public ResponseResult changeMobile(@AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(info.getUser().getMobile())){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"尚未预留手机号，无法推送验证码");
+        }
+        String key = String.format(RedisKeyConstants.USER_CODE,info.getUserId());
+        String code = Optional.ofNullable(redisTemplate.opsForValue().get(key)).map(obj->obj.toString()).
+                orElse(RandomUtil.generateNumber(6));
+
+        SmsUtil.sendSms(info.getUser().getMobile(),1,new String[]{code,"5"});
+        redisTemplate.opsForValue().set(String.format(RedisKeyConstants.USER_CODE,info.getUserId()),code);
+        redisTemplate.expire(String.format(RedisKeyConstants.USER_CODE,info.getUserId()),5, TimeUnit.MINUTES);
         return ResponseUtil.setSuccessResult();
     }
 

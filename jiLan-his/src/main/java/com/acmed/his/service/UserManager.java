@@ -166,14 +166,15 @@ public class UserManager {
         return userMapper.getUserByOpenid(openid);
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "user",key = "#result.id"),
-            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
-    })
+
 
     /**
      * 修改密码
      */
+    @Caching(evict = {
+            @CacheEvict(value = "user",key = "#result.id"),
+            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+    })
     public User changePasswd(String oldPasswd, String newPasswd, UserInfo userInfo) {
         User user = userMapper.selectByPrimaryKey(userInfo.getId());
         if(!user.getPassWd().equalsIgnoreCase(MD5Util.encode(oldPasswd))){
@@ -185,6 +186,20 @@ public class UserManager {
         userMapper.updateByPrimaryKey(user);
 
         //TODO 删除之前密码对应的token
+        return user;
+    }
+
+
+    @Caching(evict = {
+            @CacheEvict(value = "user",key = "#result.id"),
+            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+    })
+    public User changeMobile(String mobile, UserInfo userInfo) {
+        User user = userMapper.selectByPrimaryKey(userInfo.getId());
+        user.setMobile(mobile);
+        user.setModifyBy(userInfo.getId().toString());
+        user.setModifyAt(LocalDateTime.now().toString());
+        userMapper.updateByPrimaryKey(user);
         return user;
     }
 }
