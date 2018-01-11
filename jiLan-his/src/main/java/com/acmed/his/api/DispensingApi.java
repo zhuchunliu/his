@@ -1,10 +1,12 @@
 package com.acmed.his.api;
 
-import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.dao.ChargeMapper;
 import com.acmed.his.dao.PrescriptionItemMapper;
 import com.acmed.his.dao.PrescriptionMapper;
-import com.acmed.his.model.*;
+import com.acmed.his.model.Charge;
+import com.acmed.his.model.Inspect;
+import com.acmed.his.model.Prescription;
+import com.acmed.his.model.PrescriptionItem;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.vo.DispensingPreVo;
 import com.acmed.his.pojo.vo.DispensingVo;
@@ -15,7 +17,6 @@ import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
@@ -39,12 +40,6 @@ public class DispensingApi {
 
     @Autowired
     private ApplyManager applyManager;
-
-    @Autowired
-    private MedicalRecordManager medicalRecordManager;
-
-    @Autowired
-    private UserManager userManager;
 
     @Autowired
     private PrescriptionManager preManager;
@@ -120,7 +115,7 @@ public class DispensingApi {
             return ResponseUtil.setParamEmptyError("id");
         }
         preManager.dispensing(JSONObject.parseObject(param).getString("id"),info.getUser());
-
+        return ResponseUtil.setSuccessResult();
     }
 
 
