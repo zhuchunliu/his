@@ -127,4 +127,12 @@ public class ApplyApi {
     public ResponseResult<ChuZhenFuZhenCountDto> chuZhenAndFuZhenTongJi(@AccessToken AccessInfo info){
         return ResponseUtil.setSuccessResult(applyManager.chuZhenAndFuZhenTongJi(info.getUser().getOrgCode()));
     }
+
+    @ApiOperation(value = "现金收挂号费")
+    @GetMapping("cashcollection")
+    public ResponseResult collection(@AccessToken AccessInfo info,
+                                     @ApiParam("挂号单id") @RequestParam(value = "applyId" )String applyId,
+                                     @ApiParam("金额") @RequestParam(value = "fee" )Double fee){
+        return applyManager.pay(applyId,fee,"0",info.getUser());
+    }
 }

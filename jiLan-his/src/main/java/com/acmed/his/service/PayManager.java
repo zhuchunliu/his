@@ -7,9 +7,11 @@ import com.acmed.his.model.PayStatements;
 import com.acmed.his.util.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * PayManager
@@ -18,6 +20,7 @@ import java.util.Date;
  * @date 2017/11/24
  */
 @Service
+@Transactional
 public class PayManager {
     @Autowired
     private PayStatementsMapper payStatementsMapper;
@@ -47,6 +50,15 @@ public class PayManager {
     }
 
     /**
+     * 查询
+     * @param payStatements
+     * @return
+     */
+    public List<PayStatements> getByPayStatements(PayStatements payStatements){
+        return payStatementsMapper.select(payStatements);
+    }
+
+    /**
      * 添加退款流水
      * @param payRefuse 参数
      * @return 0失败  1成功
@@ -65,5 +77,14 @@ public class PayManager {
     public int updatePayRefuse(PayRefuse payRefuse){
         payRefuse.setModifyAt(LocalDateTime.now().toString());
         return payRefuseMapper.updateByPrimaryKeySelective(payRefuse);
+    }
+
+    /**
+     * 查询
+     * @param payRefuse
+     * @return
+     */
+    public List<PayRefuse> getByPayRefuse(PayRefuse payRefuse){
+        return payRefuseMapper.select(payRefuse);
     }
 }

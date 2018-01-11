@@ -36,10 +36,10 @@ public class PayRefuse {
     private Integer prescriptionId;
 
     @ApiModelProperty("挂号单号id")
-    private Integer applyId;
+    private String applyId;
 
     @ApiModelProperty("患者id")
-    private Integer patientId;
+    private String patientId;
 
     @ApiModelProperty("付款账号")
     private String payerAccount;

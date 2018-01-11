@@ -128,9 +128,8 @@ public class DispensingApi {
         if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
             return ResponseUtil.setParamEmptyError("id");
         }
-        applyManager.pay(JSONObject.parseObject(param).getInteger("id"),
+        return applyManager.pay(JSONObject.parseObject(param).getInteger("id")+"",
                 JSONObject.parseObject(param).getDouble("fee"),
                 JSONObject.parseObject(param).getString("feeType"),info.getUser());
-        return ResponseUtil.setSuccessResult();
     }
 }

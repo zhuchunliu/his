@@ -1,5 +1,6 @@
 package com.acmed.his.service;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.ApplyMapper;
 import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.*;
@@ -8,12 +9,11 @@ import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.UserInfo;
-import com.acmed.his.util.IdCardUtil;
-import com.acmed.his.util.PinYinUtil;
-import com.acmed.his.util.UUIDUtil;
+import com.acmed.his.util.*;
 import com.acmed.his.util.date.DateStyle;
 import com.acmed.his.util.date.DateUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +53,8 @@ public class ApplyManager {
     @Autowired
     private UserManager userManager;
 
+    private static Logger logger = Logger.getLogger(ApplyManager.class);
+
     /**
      * 添加挂号
      * @param mo 属性
@@ -89,7 +91,7 @@ public class ApplyManager {
         apply.setCreateAt(LocalDateTime.now().toString());
         apply.setStatus("0");
         apply.setIsPaid("0");
-        apply.setFee(1d);
+        apply.setFee(userDetail.getApplyfee());
         apply.setOrgName(userDetail.getOrgName());
         apply.setDeptName(userDetail.getDeptName());
         apply.setId(UUIDUtil.generate());
@@ -125,7 +127,7 @@ public class ApplyManager {
      * @param patient 患者信息
      * @return 0失败  1 成功
      */
-    public int addApplyBySelf(Apply apply,Patient patient){
+/*    public int addApplyBySelf(Apply apply,Patient patient){
         String now = LocalDateTime.now().toString();
         String idCard = patient.getIdCard();
         apply.setId(null);
@@ -136,14 +138,13 @@ public class ApplyManager {
         apply.setPatientName(patient.getUserName());
         apply.setGender(patient.getGender());
         apply.setPinYin(patient.getInputCode());
-        apply.setFee(1.00);
+        apply.setFee(new BigDecimal(1));
         apply.setStatus("0");
         apply.setAge(IdCardUtil.idCardToAge(idCard));
         apply.setCreateAt(now);
         apply.setId(UUIDUtil.generate());
         return applyMapper.insert(apply);
-
-    }
+    }*/
 
     /**
      * 根据患者id查找他的挂号列表
@@ -234,29 +235,42 @@ public class ApplyManager {
     }
 
     /**
-     * 支付
+     * 收款
      * @param applyId
      * @param fee
      * @param feeType
      * @param userInfo
+     * @return
      */
-    @Transactional
-    public void pay(int applyId,  Double fee, String feeType,UserInfo userInfo){
+    public ResponseResult pay(String applyId, Double fee, String feeType, UserInfo userInfo){
         Apply apply = applyMapper.selectByPrimaryKey(applyId);
-        apply.setIsPaid("1");
-        apply.setFeeType(feeType);
-        applyMapper.updateByPrimaryKey(apply);
-
-        // TODO 付款后期完善
-        PayStatements payStatements = new PayStatements();
-        payStatements.setFee(BigDecimal.valueOf(fee));
-        payStatements.setFeeType(feeType);
-        payStatements.setCreateAt(LocalDateTime.now().toString());
-        payStatements.setCreateBy(userInfo.getId().toString());
-        payStatements.setApplyId(apply.getId());
-        payStatements.setPatientId(apply.getPatientId());
-        payManager.addPayStatements(payStatements);
-
+        if (apply!=null){
+            if ("0".equals(apply.getIsPaid())){
+                apply.setIsPaid("1");
+                apply.setFeeType(feeType);
+                applyMapper.updateByPrimaryKey(apply);
+                PayStatements payStatements = new PayStatements();
+                payStatements.setFee(BigDecimal.valueOf(fee));
+                payStatements.setFeeType(feeType);
+                payStatements.setCreateAt(LocalDateTime.now().toString());
+                payStatements.setCreateBy(userInfo.getId().toString());
+                payStatements.setOrgCode(userInfo.getOrgCode());
+                payStatements.setApplyId(apply.getId());
+                payStatements.setPatientId(apply.getPatientId());
+                payStatements.setPatientId(apply.getPatientId());
+                int i = payManager.addPayStatements(payStatements);
+                if (i==1){
+                    return ResponseUtil.setSuccessResult();
+                }
+                logger.error("收款失败--applyId:"+applyId);
+                return ResponseUtil.setErrorMeg(StatusCode.ERROR_COLLECTION,"收款失败请联系管理员");
+            }else {
+                return ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_PAY,"挂号费已收取，请不要重复收费");
+            }
+        }else {
+            logger.error("收款端传入非正常数据 操作用户为"+userInfo.toString());
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"挂号单号不存在");
+        }
     }
 
     public List<DispensingDto> getDispensingList(Integer orgCode, String name,  String status) {
