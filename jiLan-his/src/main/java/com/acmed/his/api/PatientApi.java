@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.dto.OrgPatientNumDto;
 import com.acmed.his.model.dto.PatientCountDto;
+import com.acmed.his.pojo.mo.PatientMo;
 import com.acmed.his.pojo.mo.WxRegistPatientMo;
 import com.acmed.his.pojo.vo.PatientInfoVo;
 import com.acmed.his.service.PatientManager;
@@ -13,6 +14,7 @@ import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +41,10 @@ public class PatientApi {
      */
     @ApiOperation(value = "第三方添加患者信息")
     @PostMapping("add")
-    public ResponseResult addPatient(@RequestBody Patient patient){
-        int add = patientManager.add(patient);
+    public ResponseResult addPatient(@RequestBody PatientMo patient){
+        Patient patient1 = new Patient();
+        BeanUtils.copyProperties(patient,patient1);
+        int add = patientManager.add(patient1);
         return ResponseUtil.setSuccessResult();
     }
 

@@ -45,7 +45,7 @@ public class ApplyApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "根据患者id 查询列表")
+    @ApiOperation(value = "根据患者id 查询列表,传患者id就是查询患者的挂号列表  如果不传就是差自己的挂号列表")
     @GetMapping("patientId")
     public ResponseResult<ApplyVo> patientId(@ApiParam("患者id") @RequestParam(value = "patientId",required = false) String patientId,
                                     @AccessToken AccessInfo info){
@@ -89,10 +89,10 @@ public class ApplyApi {
     @ApiOperation(value = "修改状态")
     @PostMapping("status")
     public ResponseResult updateStatus(@RequestBody ApplyIdAndStatus model,@AccessToken AccessInfo info){
-        Integer id = model.getId();
+        String id = model.getId();
         String status = model.getStatus();
         Apply apply = new Apply();
-        apply.setId(id.toString());
+        apply.setId(id);
         apply.setStatus(status);
         // 添加修改人的id
         apply.setModifyBy(info.getUserId().toString());
@@ -113,8 +113,8 @@ public class ApplyApi {
     @GetMapping("mohu")
     public ResponseResult<List<ApplyDoctorVo>> mohu(
             @ApiParam("姓名或者拼音首字母") @RequestParam(value = "param" )String param,
-            @ApiParam("挂号日期，不传就是默认今天  2018-01-10") @RequestParam(value = "date" )String date,
-            @ApiParam("状态码 状态 0:未就诊;1:已就诊,2:已取消  不填表示全部付费列表") @RequestParam(value = "id" )String status,
+            @ApiParam("挂号日期，不传就是默认今天  2018-01-10") @RequestParam(value = "date",required = false )String date,
+            @ApiParam("状态码 状态 0:未就诊;1:已就诊,2:已取消  不填表示全部付费列表") @RequestParam(value = "status" ,required = false)String status,
             @AccessToken AccessInfo info){
         Integer dept = info.getUser().getDept();
         return ResponseUtil.setSuccessResult(applyManager.getByPinyinOrName(param,status,dept,date));
