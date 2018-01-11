@@ -14,16 +14,43 @@
     </insert>
 
     <select id="getInspectList" resultType="com.acmed.his.model.dto.InspectDayDto">
-        select sum(t1.num) as num , t2.dicitemname as inspectname,sum(t1.fee) as fee from t_r_inspect_day t1
-        LEFT JOIN t_p_s_dicitem t2 on t1.category = t2.dicitemcode
-        where t2.dictypecode = #{categoryType} and t1.orgcode = #{orgCode}
+        select * from(
+            select sum(t1.num) as num , t2.dicitemname as inspectname,sum(t1.fee) as fee from t_r_inspect_day t1
+            LEFT JOIN t_p_s_dicitem t2 on t1.category = t2.dicitemcode
+            where t2.dictypecode = #{categoryType} and t1.orgcode = #{orgCode}
+            <if test="@Ognl@isNotEmpty(startTime)">
+                <![CDATA[ AND t1.date >= #{startTime} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(endTime)">
+                <![CDATA[  AND t1.date <= #{endTime} ]]>
+            </if>
+            GROUP BY t1.category
+        )t0 order by t0.num desc limit #{num}
+    </select>
+
+    <select id="getInspectFee" resultType="java.lang.Double">
+        select sum(t1.fee) as fee from t_r_inspect_day t1
+        where t1.orgcode = #{orgCode}
         <if test="@Ognl@isNotEmpty(startTime)">
             <![CDATA[ AND t1.date >= #{startTime} ]]>
         </if>
         <if test="@Ognl@isNotEmpty(endTime)">
             <![CDATA[  AND t1.date <= #{endTime} ]]>
         </if>
-        GROUP BY t1.category
+    </select>
+
+    <select id="getInspectDayList" resultType="java.util.Map">
+        select * from(
+            select sum(t1.fee) as fee, DATE_FORMAT(t1.date,'%Y-%m-%d') as date   from t_r_inspect_day t1
+            where t1.orgcode = #{orgCode}
+            <if test="@Ognl@isNotEmpty(startTime)">
+                <![CDATA[ AND t1.date >= #{startTime} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(endTime)">
+                <![CDATA[  AND t1.date <= #{endTime} ]]>
+            </if>
+            GROUP BY date
+        )t0 order by date DESC;
     </select>
 
 </mapper>

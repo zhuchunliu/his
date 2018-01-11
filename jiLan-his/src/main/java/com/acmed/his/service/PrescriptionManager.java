@@ -209,7 +209,7 @@ public class PrescriptionManager {
                     item.setDrugName(drug.getName());
                     item.setCategory(drug.getCategory());
                     item.setPrescriptionId(prescription.getId());
-                    item.setApplyId(mo.getApplyId());
+                    item.setApplyId(apply.getId());
                     item.setDrugId(info.getDrugId());
                     item.setDrugCode(drug.getDrugCode());
                     item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d));//存当前进价
@@ -228,7 +228,7 @@ public class PrescriptionManager {
                     BeanUtils.copyProperties(info, inspect);
                     inspect.setId(UUIDUtil.generate());
                     inspect.setPrescriptionId(prescription.getId());
-                    inspect.setApplyId(mo.getApplyId());
+                    inspect.setApplyId(apply.getId());
                     inspect.setGroupNum(String.valueOf(i+1));
                     inspect.setDept(Optional.ofNullable(prescription.getDept()).map(obj->obj.toString()).orElse(null));
                     inspect.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory())).
@@ -243,6 +243,7 @@ public class PrescriptionManager {
                     Charge charge = new Charge();
                     BeanUtils.copyProperties(prescription,charge,"id");
                     charge.setId(UUIDUtil.generate());
+                    charge.setApplyId(apply.getId());
                     charge.setPrescriptionId(prescription.getId());
                     charge.setCategory(info.getCategory());
                     charge.setGroupNum(String.valueOf(i+1));
@@ -300,6 +301,7 @@ public class PrescriptionManager {
             apply.setAge(Optional.ofNullable(patient.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
             apply.setStatus("1");
             apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+            apply.setFee(userInfo.getApplyfee());//设置成用户配置的挂号费
             apply.setCreateAt(LocalDateTime.now().toString());
             apply.setCreateBy(userInfo.getId().toString());
             applyMapper.insert(apply);

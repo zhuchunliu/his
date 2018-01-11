@@ -21,4 +21,8 @@ public interface InspectMapper extends TkMapper<Inspect> {
     Integer getItemTotal(@Param("orgCode") Integer orgCode,
                                      @Param("startTime") String startTime,
                                      @Param("endTime") String endTime);
+
+    Integer getCurrentDayNum(@Param("orgCode")Integer orgCode);
+
+    Double getCurrentDayFee(@Param("orgCode")Integer orgCode);
 }

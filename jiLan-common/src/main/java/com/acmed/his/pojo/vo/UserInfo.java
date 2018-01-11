@@ -35,5 +35,8 @@ public class UserInfo {
     @ApiModelProperty("科室")
     private Integer dept;
 
+    @ApiModelProperty("挂号费")
+    private Double applyfee;
+
 
 }

@@ -37,12 +37,18 @@ public class DateTimeUtil {
         if(10 == date.length()) {
             date+=" 00:00:00";
         }
+        if(date.length() > 19){
+            date = date.substring(0,19);
+        }
         return Date.from(LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public static LocalDateTime parsetLocalDate(String date){
         if(10 == date.length()) {
             date+=" 00:00:00";
+        }
+        if(date.length() > 19){
+            date = date.substring(0,19);
         }
         return LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }

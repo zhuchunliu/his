@@ -1,12 +1,10 @@
 package com.acmed.his.service;
 
 import com.acmed.his.consts.DicTypeEnum;
-import com.acmed.his.dao.DrugDayMapper;
 import com.acmed.his.dao.InspectDayMapper;
 import com.acmed.his.dao.InspectMapper;
 import com.acmed.his.dao.OrgMapper;
 import com.acmed.his.model.Org;
-import com.acmed.his.model.dto.DrugDayDto;
 import com.acmed.his.model.dto.InspectDayDto;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +51,13 @@ public class ReportInspectManager {
      * @param endTime
      * @return
      */
-    public List<InspectDayDto> getInspectList(Integer orgCode, String startTime, String endTime) {
+    public List<InspectDayDto> getInspectList(Integer orgCode, Integer num ,String startTime, String endTime) {
 
-        return inspectDayMapper.getInspectList(orgCode,DicTypeEnum.INSPECT_CATEGORY.getCode(),startTime,endTime);
+        return inspectDayMapper.getInspectList(orgCode,DicTypeEnum.INSPECT_CATEGORY.getCode(),num,startTime,endTime);
+    }
+
+    public Double getInspectFee(Integer orgCode, String startTime, String endTime) {
+        return inspectDayMapper.getInspectFee(orgCode,startTime,endTime);
     }
 
     /**
@@ -74,4 +76,6 @@ public class ReportInspectManager {
     public Integer getInspectDetailTotal(Integer orgCode, String startTime, String endTime) {
         return inspectMapper.getItemTotal(orgCode,startTime,endTime);
     }
+
+
 }

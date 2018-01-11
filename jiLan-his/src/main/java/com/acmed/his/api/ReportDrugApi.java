@@ -40,8 +40,8 @@ public class ReportDrugApi {
     private PurchaseManager purchaseManager;
 
 
-    @ApiModelProperty("当前")
-    @GetMapping("/recent")
+    @ApiOperation("当天出入库实时统计")
+    @GetMapping("/drug/recent")
     @ApiResponse(code = 100,message = "saleFee:出库金额,purchaseFee:入库金额")
     public ResponseResult getRecentStatis(@AccessToken AccessInfo info){
         Double saleFee = prescriptionManager.getCurrentDayItemFee(info.getUser().getOrgCode());

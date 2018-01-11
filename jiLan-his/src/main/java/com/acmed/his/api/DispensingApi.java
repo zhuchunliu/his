@@ -61,6 +61,9 @@ public class DispensingApi {
     @Autowired
     private BaseInfoManager baseInfoManager;
 
+    @Autowired
+    private DispensingManager dispensingManager;
+
     @ApiOperation(value = "获取发药收费列表")
     @GetMapping("/list")
     public ResponseResult<DispensingVo> getDispensingList(
@@ -117,19 +120,20 @@ public class DispensingApi {
             return ResponseUtil.setParamEmptyError("id");
         }
         preManager.dispensing(JSONObject.parseObject(param).getString("id"),info.getUser());
-        return ResponseUtil.setSuccessResult();
+
     }
 
 
     @ApiOperation(value = "付费")
     @PostMapping("/pay")
-    public ResponseResult pay(@ApiParam("{\"id\":\"\";\"fee\":\"\",\"feeType\":\"\"},id：处方主键、fee：实际付费金额、feeType：付费类型") @RequestBody String param,
+    public ResponseResult pay(@ApiParam("{\"id\":\"\",\"fee\":\"\",\"feeType\":\"\"},id：处方主键、fee：实际付费金额、feeType：付费类型") @RequestBody String param,
                                      @AccessToken AccessInfo info){
         if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
             return ResponseUtil.setParamEmptyError("id");
         }
-        return applyManager.pay(JSONObject.parseObject(param).getInteger("id")+"",
+        dispensingManager.pay(JSONObject.parseObject(param).getString("id"),
                 JSONObject.parseObject(param).getDouble("fee"),
                 JSONObject.parseObject(param).getString("feeType"),info.getUser());
+        return ResponseUtil.setSuccessResult();
     }
 }

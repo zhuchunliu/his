@@ -44,6 +44,9 @@ public class Charge {
     @ApiModelProperty("费用")
     private Double fee;
 
+    @ApiModelProperty("支付状态 0:未支付,1:已支付,2:已退款")
+    private Integer payStatus;
+
     @ApiModelProperty("组号")
     private String groupNum;
 
