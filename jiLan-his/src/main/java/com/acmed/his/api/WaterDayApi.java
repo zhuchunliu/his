@@ -70,7 +70,7 @@ public class WaterDayApi {
         re.setPageSize(pageSize);
         re.setPageNum(pageNum);
         re.setTotal(result.getTotal());
-        re.setData(waterDetailVos);
+
         if (data.size() != 0){
             for (WaterDetailDto source : data){
                 WaterDetailVo waterDetailVo = new WaterDetailVo();
@@ -90,8 +90,10 @@ public class WaterDayApi {
                 }else {
                     waterDetailVo.setFeeTypeStr("现金");
                 }
+                waterDetailVos.add(waterDetailVo);
             }
         }
+        re.setData(waterDetailVos);
         return ResponseUtil.setSuccessResult(re);
     }
 

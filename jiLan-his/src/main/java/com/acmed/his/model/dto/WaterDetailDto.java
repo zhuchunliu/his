@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @Data
 public class WaterDetailDto {
     @ApiModelProperty("id")
-    private Integer id;
+    private String id;
     @ApiModelProperty("支付类型")
     private String feeType;
     @ApiModelProperty("来源")
