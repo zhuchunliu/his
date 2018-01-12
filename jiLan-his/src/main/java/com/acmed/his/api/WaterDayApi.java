@@ -43,7 +43,7 @@ public class WaterDayApi {
     @ApiOperation(value = "获取区间内报表列表")
     @GetMapping("getListBetweenTimes")
     public ResponseResult<List<WaterDay>> getBetweenTimes(@ApiParam("区间开始时间  2017-01-02这种字符串格式   开始时间必填") @RequestParam("startTime") String startTime,
-                                                          @ApiParam("区间结束时间 2017-01-02这种字符串格式") @RequestParam("endTime") String endTime,@AccessToken AccessInfo info){
+                                                          @ApiParam("区间结束时间 2017-01-02这种字符串格式") @RequestParam(value = "endTime",required = false) String endTime,@AccessToken AccessInfo info){
         if (StringUtils.isEmpty(startTime) && StringUtils.isNotEmpty(endTime)){
             startTime = endTime;
         }
@@ -60,8 +60,8 @@ public class WaterDayApi {
     @GetMapping("detailList")
     public ResponseResult<PageResult<WaterDetailVo>> waterDetailList(@ApiParam("页数 必填")@RequestParam("pageNum")Integer pageNum,
                                      @ApiParam("每页记录数 必填")@RequestParam("pageSize")Integer pageSize,
-                                     @ApiParam("区间开始时间  2017-01-02这种字符串格式   必填") @RequestParam("startTime") String startTime,
-                                     @ApiParam("区间结束时间 2017-01-02这种字符串格式 必填") @RequestParam("endTime") String endTime,
+                                                                     @ApiParam("区间开始时间  2018-01-02这种字符串格式   必填") @RequestParam("startTime") String startTime,
+                                                                     @ApiParam("区间结束时间 2018-01-20这种字符串格式 必填") @RequestParam("endTime") String endTime,
                                      @AccessToken AccessInfo info){
         PageResult<WaterDetailDto> result = waterDayManager.waterDetailList(info.getUser().getOrgCode(), pageNum, pageSize,startTime,endTime);
         List<WaterDetailDto> data = result.getData();
@@ -97,11 +97,11 @@ public class WaterDayApi {
         return ResponseUtil.setSuccessResult(re);
     }
 
-    @ApiOperation(value = "年月报表")
+    @ApiOperation(value = "年月报表，年月选填一个")
     @GetMapping("yearMonthBaobiao")
     public ResponseResult<List<WaterDay>> getYearMonthBaobiao(@AccessToken AccessInfo info,
-                                                              @ApiParam("月份 2018-01   月份和年必须填一个") @RequestParam("month") String month,
-                                                              @ApiParam("年份 2018   月份和年必须填一个") @RequestParam("year") String year
+                                                              @ApiParam("月份 2018-01   ") @RequestParam(value = "month",required = false) String month,
+                                                              @ApiParam("年份 2018   ") @RequestParam(value = "year",required = false) String year
                                                               ){
         if ((StringUtils.isEmpty(year) && StringUtils.isEmpty(month)) ){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_PARAM,"参数错误");

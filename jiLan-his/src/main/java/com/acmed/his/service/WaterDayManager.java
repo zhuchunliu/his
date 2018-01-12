@@ -87,9 +87,9 @@ public class WaterDayManager {
      */
     public List<WaterDay> getMonthYearBaobiao(String year,String month,Integer orgCode){
         if (StringUtils.isEmpty(year) && StringUtils.isNotEmpty(month)){
-            return waterDayMapper.getListByYearMonth(orgCode,month);
+            return waterDayMapper.getListByYearMonth(orgCode,month+"-01");
         }else {
-            return waterDayMapper.getListByYearGroupByMonth(orgCode,year);
+            return waterDayMapper.getListByYearGroupByMonth(orgCode,year+"-01-01");
         }
     }
     /**
