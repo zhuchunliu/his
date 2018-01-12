@@ -25,4 +25,6 @@ public interface InspectMapper extends TkMapper<Inspect> {
     Integer getCurrentDayNum(@Param("orgCode")Integer orgCode);
 
     Double getCurrentDayFee(@Param("orgCode")Integer orgCode);
+
+    void refund(@Param("applyId") String applyId, @Param("groupNums") String[] groupNums);
 }

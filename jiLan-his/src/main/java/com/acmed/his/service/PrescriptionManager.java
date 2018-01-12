@@ -146,29 +146,7 @@ public class PrescriptionManager {
     }
 
 
-    /**
-     * 确认发药
-     * @param id
-     * @param userInfo
-     */
-    @Transactional
-    public void dispensing(String id, UserInfo userInfo) {
-        Prescription prescription = preMapper.selectByPrimaryKey(id);
-        prescription.setIsDispensing("1");
-        prescription.setModifyBy(userInfo.getId().toString());
-        prescription.setModifyAt(LocalDateTime.now().toString());
-        preMapper.updateByPrimaryKey(prescription);
 
-        //扣除库存
-        Example example = new Example(PrescriptionItem.class);
-        example.createCriteria().andEqualTo("prescriptionId",id);
-        List<PrescriptionItem> list = preItemMapper.selectByExample(example);
-        list.forEach(obj->{
-            Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
-            drug.setNum(drug.getNum()-obj.getNum());
-            drugMapper.updateByPrimaryKey(drug);
-        });
-    }
 
     /**
      * 处理处方信息

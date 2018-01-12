@@ -46,4 +46,12 @@
         select IFNULL(sum(t1.fee),0) from  t_b_inspect t1
         where t1.orgcode = #{orgCode} and DATE_FORMAT(t1.createat,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')
     </select>
+
+    <update id="refund">
+        update t_b_inspect set paystatus = 2 where applyid = #{applyId}
+        and groupnum IN
+        <foreach collection="groupNums" item="groupNum" open="(" close=")"  separator=",">
+            #{groupNum}
+        </foreach>
+    </update>
 </mapper>

@@ -12,7 +12,7 @@ import lombok.Data;
 public class DispensingVo {
 
     @ApiModelProperty("挂号单id")
-    private String id;
+    private String applyId;
 
     @ApiModelProperty("门诊编号")
     private String clinicNo;

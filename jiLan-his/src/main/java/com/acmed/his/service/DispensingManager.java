@@ -1,9 +1,6 @@
 package com.acmed.his.service;
 
-import com.acmed.his.dao.ApplyMapper;
-import com.acmed.his.dao.ChargeMapper;
-import com.acmed.his.dao.InspectMapper;
-import com.acmed.his.dao.PrescriptionItemMapper;
+import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
 import com.acmed.his.pojo.vo.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +11,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Darren on 2017-12-05
@@ -35,6 +33,13 @@ public class DispensingManager {
 
     @Autowired
     private ChargeMapper chargeMapper;
+
+    @Autowired
+    private PrescriptionMapper preMapper;
+
+    @Autowired
+    private DrugMapper drugMapper;
+
 
     /**
      * 支付
@@ -125,4 +130,46 @@ public class DispensingManager {
 
     }
 
+
+    /**
+     * 确认发药
+     * @param applyId
+     * @param userInfo
+     */
+    @Transactional
+    public void dispensing(String applyId, UserInfo userInfo) {
+        Example example = new Example(Prescription.class);
+        example.createCriteria().andEqualTo("applyId",applyId);
+        Prescription prescription = preMapper.selectByExample(example).get(0);
+        prescription.setIsDispensing("1");
+        prescription.setModifyBy(userInfo.getId().toString());
+        prescription.setModifyAt(LocalDateTime.now().toString());
+        preMapper.updateByPrimaryKey(prescription);
+
+        //扣除库存
+        example = new Example(PrescriptionItem.class);
+        example.createCriteria().andEqualTo("applyId",applyId);
+        List<PrescriptionItem> list = preItemMapper.selectByExample(example);
+        list.forEach(obj->{
+            Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+            drug.setNum(drug.getNum()-obj.getNum());
+            drugMapper.updateByPrimaryKey(drug);
+        });
+    }
+
+    /**
+     * 获取退款列表
+     *
+     * @param applyId
+     */
+    public List<Map<String,Object>> getRefundList(String applyId) {
+        return preItemMapper.getRefundList(applyId);
+    }
+
+    @Transactional
+    public void refund(String applyId, String groupNum) {
+        preItemMapper.refund(applyId,groupNum.split(","));
+        inspectMapper.refund(applyId,groupNum.split(","));
+        chargeMapper.refund(applyId,groupNum.split(","));
+    }
 }

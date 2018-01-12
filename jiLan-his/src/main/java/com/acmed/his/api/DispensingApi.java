@@ -10,7 +10,10 @@ import com.acmed.his.model.PrescriptionItem;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.vo.DispensingPreVo;
 import com.acmed.his.pojo.vo.DispensingVo;
-import com.acmed.his.service.*;
+import com.acmed.his.service.ApplyManager;
+import com.acmed.his.service.BaseInfoManager;
+import com.acmed.his.service.DispensingManager;
+import com.acmed.his.service.PrescriptionManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
@@ -27,6 +30,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 发药接口
@@ -42,9 +46,6 @@ public class DispensingApi {
     private ApplyManager applyManager;
 
     @Autowired
-    private PrescriptionManager preManager;
-
-    @Autowired
     private ChargeMapper chargeMapper;
 
     @Autowired
@@ -58,6 +59,9 @@ public class DispensingApi {
 
     @Autowired
     private DispensingManager dispensingManager;
+
+    @Autowired
+    private PrescriptionManager preManager;
 
     @ApiOperation(value = "获取发药收费列表")
     @GetMapping("/list")
@@ -109,26 +113,50 @@ public class DispensingApi {
 
     @ApiOperation(value = "确认发药")
     @PostMapping
-    public ResponseResult dispensing(@ApiParam("{\"id\":},id：处方主键") @RequestBody String param,
+    public ResponseResult dispensing(@ApiParam("{\"applyId\":},applyId：挂号单id") @RequestBody String param,
                                         @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
+        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
+            return ResponseUtil.setParamEmptyError("applyId");
         }
-        preManager.dispensing(JSONObject.parseObject(param).getString("id"),info.getUser());
+        dispensingManager.dispensing(JSONObject.parseObject(param).getString("applyId"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
 
     @ApiOperation(value = "付费")
     @PostMapping("/pay")
-    public ResponseResult pay(@ApiParam("{\"id\":\"\",\"fee\":\"\",\"feeType\":\"\"},id：处方主键、fee：实际付费金额、feeType：付费类型") @RequestBody String param,
+    public ResponseResult pay(@ApiParam("{\"applyId\":\"\",\"fee\":\"\",\"feeType\":\"\"},applyId：处方主键、fee：实际付费金额、feeType：付费类型") @RequestBody String param,
                                      @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
+        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
+            return ResponseUtil.setParamEmptyError("applyId");
         }
         dispensingManager.pay(JSONObject.parseObject(param).getString("id"),
                 JSONObject.parseObject(param).getDouble("fee"),
                 JSONObject.parseObject(param).getString("feeType"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
+
+    @ApiOperation(value = "退款列表")
+    @GetMapping("/refund/list")
+    public ResponseResult getRefundList(@ApiParam("挂号主键") @RequestParam("applyId") String id){
+        List<Map<String,Object>> list = dispensingManager.getRefundList(id);
+        return ResponseUtil.setSuccessResult(list);
+    }
+
+
+    @ApiOperation(value = "退款")
+    @PostMapping("/refund")
+    public ResponseResult refund(@ApiParam("{\"applyId\":\"\",\"groupNum\":\"\"},applyId:挂号单id groupNum：序号,多个值，逗号间隔") @RequestBody String param,
+                                 @AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
+            return ResponseUtil.setParamEmptyError("applyId");
+        }
+        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("groupNum")){
+            return ResponseUtil.setParamEmptyError("groupNum");
+        }
+        dispensingManager.refund(JSONObject.parseObject(param).getString("applyId"),
+                JSONObject.parseObject(param).getString("groupNum"));
+        return ResponseUtil.setSuccessResult();
+    }
+
 }

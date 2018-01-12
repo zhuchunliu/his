@@ -33,7 +33,7 @@
     </update>
 
     <select id = "getDispensingList" resultType="com.acmed.his.model.dto.DispensingDto">
-        SELECT apply.id,apply.clinicno,apply.patientname,apply.gender,apply.age,
+        SELECT apply.id as applyid,apply.clinicno,apply.patientname,apply.gender,apply.age,
         patient.mobile,user.nickname as doctorname,
         pre.fee,pre.isdispensing,pre.ispaid,pre.createat as diagnosedate
         from t_b_apply apply
