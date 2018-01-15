@@ -5,6 +5,6 @@
 
     <select id="getOrgAddress" resultType="com.acmed.his.model.Area">
         select * from t_p_s_area where
-        #{address} like CONCAT('%',name,'%') order by LENGTH(fullname) asc ;
+        #{address} like CONCAT('%',name,'%') order by LENGTH(fullname) asc
     </select>
 </mapper>

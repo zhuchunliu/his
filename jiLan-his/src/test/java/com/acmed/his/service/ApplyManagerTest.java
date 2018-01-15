@@ -3,18 +3,11 @@ package com.acmed.his.service;
 import com.acmed.his.HisApplication;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
-import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * ApplyManagerTest
@@ -59,10 +52,7 @@ public class ApplyManagerTest {
         applyManager.getApplyByOrgCode(1);
     }
 
-    @Test
-    public void getApplyByDeptIdAndStatus() throws Exception {
-        applyManager.getApplyByDeptIdAndStatus(1,null);
-    }
+
 
     @Test
     public void updateApply() throws Exception {
@@ -72,16 +62,7 @@ public class ApplyManagerTest {
         applyManager.updateApply(apply);
     }
 
-    @Test
-    public void getApplyDoctorVoList() throws Exception {
-        applyManager.getApplyDoctorVoList(1,"2017-12-05",null);
-    }
 
-    @Test
-    public void getByPinyinOrName() throws Exception {
-        List<ApplyDoctorVo> w = applyManager.getByPinyinOrName("七", null,1, LocalDate.now().toString());
-        System.err.println(w.size());
-    }
 
 
     @Test

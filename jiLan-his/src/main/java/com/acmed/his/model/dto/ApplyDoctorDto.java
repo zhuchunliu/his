@@ -1,9 +1,9 @@
-package com.acmed.his.pojo.vo;
+package com.acmed.his.model.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Date;
+
 
 /**
  * ApplyDoctorVo
@@ -12,7 +12,7 @@ import java.util.Date;
  * @date 2017/11/30
  */
 @Data
-public class ApplyDoctorVo {
+public class ApplyDoctorDto {
     @ApiModelProperty("挂号单id")
     private Integer id;
 

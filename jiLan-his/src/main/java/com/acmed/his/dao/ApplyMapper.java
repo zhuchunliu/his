@@ -1,12 +1,12 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.Apply;
+import com.acmed.his.model.dto.ApplyDoctorDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,15 +32,23 @@ public interface ApplyMapper extends TkMapper<Apply>{
     List<DispensingDto> getDispensingList(@Param("orgCode") Integer orgCode, @Param("name") String name,  @Param("status") String status);
 
     /**
-     * 姓名模糊查询
+     * 模糊条件查询
+     * @param orgCode 机构id
      * @param dept 科室id
-     * @param date 日期
+     * @param startTime 开始时间
+     * @param endTime 结束时间
      * @param status 状态
-     * @param name 姓名
-     * @param isPaid 姓名
+     * @param param 条件
+     * @param isPaid 是否支付
      * @return
      */
-    List<Apply> mohu(@Param("dept") Integer dept,@Param("date") String date,@Param("status") String status,@Param("name") String name,@Param("isPaid")String isPaid);
+    List<ApplyDoctorDto> getByPinyinOrNameOrClinicnoTiaojian(@Param("orgCode") Integer orgCode,
+                                                                   @Param("dept") Integer dept,
+                                                                   @Param("startTime") String startTime,
+                                                                   @Param("endTime") String endTime,
+                                                                   @Param("status") String status,
+                                                                   @Param("param") String param,
+                                                                   @Param("isPaid")String isPaid);
 
     /**
      * 获取机构的就诊量

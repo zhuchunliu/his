@@ -2,16 +2,15 @@ package com.acmed.his.service;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.ApplyMapper;
-import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.ApplyDoctorDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.mo.ApplyMo;
-import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.*;
-import com.acmed.his.util.date.DateStyle;
-import com.acmed.his.util.date.DateUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -21,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,9 +34,6 @@ import java.util.List;
 public class ApplyManager {
     @Autowired
     private ApplyMapper applyMapper;
-
-    @Autowired
-    private PatientMapper patientMapper;
 
     @Autowired
     private PatientManager patientManager;
@@ -124,31 +117,7 @@ public class ApplyManager {
 
         return 1;
     }
-
-    /**
-     * 自己挂号
-     * @param apply 挂号
-     * @param patient 患者信息
-     * @return 0失败  1 成功
-     */
-/*    public int addApplyBySelf(Apply apply,Patient patient){
-        String now = LocalDateTime.now().toString();
-        String idCard = patient.getIdCard();
-        apply.setId(null);
-        Integer orgCode = apply.getOrgCode();
-        String formatVal = commonManager.getFormatVal(orgCode + "applyCode", "000000000");
-        apply.setClinicNo(formatVal);
-        apply.setPatientId(patient.getId());
-        apply.setPatientName(patient.getUserName());
-        apply.setGender(patient.getGender());
-        apply.setPinYin(patient.getInputCode());
-        apply.setFee(new BigDecimal(1));
-        apply.setStatus("0");
-        apply.setAge(IdCardUtil.idCardToAge(idCard));
-        apply.setCreateAt(now);
-        apply.setId(UUIDUtil.generate());
-        return applyMapper.insert(apply);
-    }*/
+    
 
     /**
      * 根据患者id查找他的挂号列表
@@ -182,15 +151,6 @@ public class ApplyManager {
         return applyMapper.selectByExample(example);
     }
 
-    /**
-     * 根据科室id 获取挂号列表
-     * @param deptId 科室id
-     * @return 当前科室的挂号列表
-     */
-    public List<Apply> getApplyByDeptIdAndStatus(Integer deptId,String status){
-        // TODO 暂时不管是否支付
-        return applyMapper.mohu(deptId, LocalDate.now().toString(),status,null,null);
-    }
 
     /**
      * 根据主键修改
@@ -200,42 +160,6 @@ public class ApplyManager {
     public int updateApply(Apply apply){
         apply.setModifyAt(LocalDateTime.now().toString());
         return applyMapper.updateByPrimaryKeySelective(apply);
-    }
-
-    /**
-     * 根据科室id 时间 状态查询
-     * @param deptId 科室
-     * @param date 时间
-     * @param status 状态
-     * @return List<ApplyDoctorVo>
-     */
-    public List<ApplyDoctorVo> getApplyDoctorVoList(Integer deptId,String date,String status){
-        List<ApplyDoctorVo> resultList = new ArrayList<>();
-        List<Apply> applies = applyMapper.mohu(deptId,date,status,null,null);
-        if (applies.size()==0){
-            return resultList;
-        }
-        List<String> patientIds = new ArrayList<>();
-        for (Apply a : applies){
-            patientIds.add(a.getPatientId());
-        }
-        Example patientExample = new Example(Patient.class);
-        patientExample.createCriteria().andIn("id",patientIds);
-        List<Patient> patients = patientMapper.selectByExample(patientExample);
-        for (Apply a : applies){
-            String patientId = a.getPatientId();
-            ApplyDoctorVo applyDoctorVo = new ApplyDoctorVo();
-            BeanUtils.copyProperties(a,applyDoctorVo);
-            for (Patient p : patients){
-                String id = p.getId();
-                if (patientId.equals(id)){
-                    applyDoctorVo.setIdCard(p.getIdCard());
-                    applyDoctorVo.setMobile(p.getMobile());
-                    resultList.add(applyDoctorVo);
-                }
-            }
-        }
-        return resultList;
     }
 
     /**
@@ -282,44 +206,6 @@ public class ApplyManager {
         return applyMapper.getDispensingList(orgCode,name,status);
     }
 
-    /**
-     * 根据姓名或者拼音模糊查询
-     * @param param 姓名或者拼音
-     * @param status 状态  不传就是全部
-     * @param dept 科室
-     * @return List<ApplyDoctorVo>
-     */
-    public List<ApplyDoctorVo> getByPinyinOrName(String param,String status,Integer dept,String date){
-        List<ApplyDoctorVo> resultList = new ArrayList<>();
-        if (date==null){
-            date = LocalDate.now().toString();
-        }
-        List<Apply> applies = applyMapper.mohu(dept,date,status,param,null);
-        if (applies.size()==0){
-            return resultList;
-        }
-        List<String> patientIds = new ArrayList<>();
-        for (Apply a : applies){
-            patientIds.add(a.getPatientId());
-        }
-        Example patientExample = new Example(Patient.class);
-        patientExample.createCriteria().andIn("id",patientIds);
-        List<Patient> patients = patientMapper.selectByExample(patientExample);
-        for (Apply a : applies){
-            String patientId = a.getPatientId();
-            ApplyDoctorVo applyDoctorVo = new ApplyDoctorVo();
-            BeanUtils.copyProperties(a,applyDoctorVo);
-            for (Patient p : patients){
-                String id = p.getId();
-                if (patientId.equals(id)){
-                    applyDoctorVo.setIdCard(p.getIdCard());
-                    applyDoctorVo.setMobile(p.getMobile());
-                    resultList.add(applyDoctorVo);
-                }
-            }
-        }
-        return resultList;
-    }
 
     /**
      * 获取指定机构的就诊量
@@ -337,5 +223,36 @@ public class ApplyManager {
      */
     public ChuZhenFuZhenCountDto chuZhenAndFuZhenTongJi(Integer orgCode){
         return applyMapper.chuZhenAndFuZhenTongJi(orgCode);
+    }
+
+    /**
+     * 条件模糊查询
+     * @param orgCode
+     * @param dept
+     * @param startTime 2018-01-01
+     * @param endTime 2018-01-01
+     * @param status
+     * @param param
+     * @param isPaid
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public PageResult<ApplyDoctorDto> getByPinyinOrNameOrClinicnoTiaojianByPage(Integer orgCode, Integer dept, String startTime, String endTime, String status, String param, String isPaid, Integer pageNum, Integer pageSize){
+        if (StringUtils.isNotEmpty(startTime)){
+            startTime = DateTimeUtil.parsetLocalDateStart(startTime).toString();
+        }
+        if (StringUtils.isNotEmpty(endTime)){
+            endTime = DateTimeUtil.parsetLocalDateEnd(endTime).toString();
+        }
+        PageHelper.startPage(pageNum,pageSize);
+        List<ApplyDoctorDto> byPinyinOrNameOrClinicnoTiaojian = applyMapper.getByPinyinOrNameOrClinicnoTiaojian( orgCode,  dept,  startTime,  endTime,  status,  param,  isPaid);
+        PageInfo<ApplyDoctorDto> applyDoctorDtoPageInfo = new PageInfo<>(byPinyinOrNameOrClinicnoTiaojian);
+        PageResult<ApplyDoctorDto> applyDoctorDtoPageResult = new PageResult<>();
+        applyDoctorDtoPageResult.setPageSize(pageSize);
+        applyDoctorDtoPageResult.setPageNum(pageNum);
+        applyDoctorDtoPageResult.setTotal(applyDoctorDtoPageInfo.getTotal());
+        applyDoctorDtoPageResult.setData(byPinyinOrNameOrClinicnoTiaojian);
+        return applyDoctorDtoPageResult;
     }
 }

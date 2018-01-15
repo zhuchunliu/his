@@ -53,6 +53,25 @@ public class DateTimeUtil {
         return LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
+    public static LocalDateTime parsetLocalDateStart(String date){
+        if(10 == date.length()) {
+            date+=" 00:00:00";
+        }
+        if(date.length() > 19){
+            date = date.substring(0,9);
+        }
+        return LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    public static LocalDateTime parsetLocalDateEnd(String date){
+        if(10 == date.length()) {
+            date+=" 23:59:59";
+        }
+        if(date.length() > 19){
+            date = date.substring(0,9);
+        }
+        return LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 
     public static void main(String[] args) {
         System.err.println(DateTimeUtil.getAge("1987-12-19"));

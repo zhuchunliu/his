@@ -26,4 +26,18 @@ public interface PatientMapper extends TkMapper<Patient>{
      * @return OrgPatientNumDto
      */
     OrgPatientNumDto getDayNumAnTotalNum(@Param("orgCode") Integer orgCode,@Param("date") String date);
+
+    /**
+     * 机构患者库
+     * @param orgCode 机构id
+     * @return List<Patient>
+     */
+    List<Patient> getPatientPool(@Param("orgCode") Integer orgCode);
+
+    /**
+     * 机构黑名单
+     * @param orgCode 机构id
+     * @return List<Patient>
+     */
+    List<Patient> getPatientBlacklist(@Param("orgCode") Integer orgCode);
 }

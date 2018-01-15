@@ -1,14 +1,15 @@
 package com.acmed.his.api;
 
 import com.acmed.his.model.Apply;
+import com.acmed.his.model.dto.ApplyDoctorDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyIdAndStatus;
 import com.acmed.his.pojo.mo.ApplyMo;
-import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.ApplyVo;
 import com.acmed.his.service.ApplyManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -19,8 +20,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -77,14 +78,14 @@ public class ApplyApi {
     }
 
 
-    @ApiOperation(value = "根据科室id和状态查询当天的就诊列表")
+/*    @ApiOperation(value = "根据科室id和状态查询当天的就诊列表")
     @GetMapping("idandstatus")
     public ResponseResult<List<Apply>> idandstatus(
             @ApiParam("科室id") @RequestParam(value = "deptId",required = false) Integer deptId,
             @ApiParam("状态码 状态 0:未就诊;1:已就诊,2:已取消  不填表示全部付费列表") @RequestParam(value = "status",required = false) String status){
         List<Apply> applyByDeptIdAndStatus = applyManager.getApplyByDeptIdAndStatus(deptId, status);
         return ResponseUtil.setSuccessResult(applyByDeptIdAndStatus);
-    }
+    }*/
 
     @ApiOperation(value = "修改状态")
     @PostMapping("status")
@@ -100,16 +101,16 @@ public class ApplyApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "根据科室id和状态查询当天的就诊列表")
-    @GetMapping("idandstatusanddate")
+/*    @ApiOperation(value = "根据科室id和状态查询当天的就诊列表")
+    @GetMapping("idandstatusandbetweenDateAndDate")
     public ResponseResult<List<ApplyDoctorVo>> idandstatus(
                                                             @ApiParam("科室id") @RequestParam(value = "deptId",required = false) Integer deptId,
                                                            @ApiParam("状态码 状态 0:未就诊;1:已就诊,2:已取消  不填表示全部付费列表") @RequestParam(value = "status",required = false) String status,
                                                            @ApiParam("日期   yyyy-MM-dd") @RequestParam(value = "date",required = false) String date){
         return ResponseUtil.setSuccessResult(applyManager.getApplyDoctorVoList(deptId,date,status));
-    }
-
-    @ApiOperation(value = "模糊查询当前科室挂号列表（姓名或者拼音）")
+    }*/
+    // TODO 修改
+/*    @ApiOperation(value = "模糊查询当前科室挂号列表（姓名或者拼音）")
     @GetMapping("mohu")
     public ResponseResult<List<ApplyDoctorVo>> mohu(
             @ApiParam("姓名或者拼音首字母") @RequestParam(value = "param" )String param,
@@ -118,7 +119,10 @@ public class ApplyApi {
             @AccessToken AccessInfo info){
         Integer dept = info.getUser().getDept();
         return ResponseUtil.setSuccessResult(applyManager.getByPinyinOrName(param,status,dept,date));
-    }
+    }*/
+
+
+
 
     @ApiOperation(value = "查询某机构的初诊数和就诊数")
     @GetMapping("chuZhenAndFuZhenTongJi")
@@ -132,5 +136,38 @@ public class ApplyApi {
                                      @ApiParam("挂号单id") @RequestParam(value = "applyId" )String applyId,
                                      @ApiParam("金额") @RequestParam(value = "fee" )Double fee){
         return applyManager.pay(applyId,fee,"0",info.getUser());
+    }
+
+    @ApiOperation(value = "根据orgCode查询列表")
+    @GetMapping("tiaojianchaxun")
+    public ResponseResult<PageResult<ApplyDoctorDto>> getByPinyinOrNameOrClinicnoTiaojianByPage(@AccessToken AccessInfo info,
+                                                                                                @ApiParam("机构id 0表示全部  传表示指定 不传表示自己所在机构") @RequestParam(value = "orgCode" ,required = false)Integer orgCode,
+                                                                                                @ApiParam("科室id 0表示全部  传表示指定 不传表示自己所在科室") @RequestParam(value = "dept" ,required = false)Integer dept,
+                                                                                                @ApiParam("开始时间 如2018-01-02 不传表示今天") @RequestParam(value = "startTime" ,required = false)String startTime,
+                                                                                                @ApiParam("结束时间 如2018-01-02 不传表示今天") @RequestParam(value = "endTime" ,required = false)String endTime,
+                                                                                                @ApiParam("状态 0:未就诊;1:已就诊,2:已取消") @RequestParam(value = "status" ,required = false)String status,
+                                                                                                @ApiParam("姓名。拼音。挂号单号全模糊查询") @RequestParam(value = "param" ,required = false)String param,
+                                                                                                @ApiParam("是否已付费 0:否; 1:是") @RequestParam(value = "isPaid" ,required = false)String isPaid,
+                                                                                                @ApiParam("页码") @RequestParam(value = "pageNum" )Integer pageNum,
+                                                                                                @ApiParam("每页记录数") @RequestParam(value = "pageSize" )Integer pageSize){
+        if (orgCode == null){
+            orgCode = info.getUser().getOrgCode();
+        }
+        if (orgCode == 0){
+            orgCode = null;
+        }
+        if (dept == null){
+            dept = info.getUser().getDept();
+        }
+        if (dept == 0){
+            dept = null;
+        }
+        if (StringUtils.isEmpty(startTime)){
+            startTime = LocalDate.now().toString();
+        }
+        if (StringUtils.isEmpty(endTime)){
+            endTime = LocalDate.now().toString();
+        }
+        return ResponseUtil.setSuccessResult(applyManager.getByPinyinOrNameOrClinicnoTiaojianByPage( orgCode,  dept,  startTime,  endTime,  status,  param,  isPaid,  pageNum,  pageSize));
     }
 }

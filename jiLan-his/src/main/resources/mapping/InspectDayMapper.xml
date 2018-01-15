@@ -50,7 +50,7 @@
                 <![CDATA[  AND t1.date <= #{endTime} ]]>
             </if>
             GROUP BY date
-        )t0 order by date DESC;
+        )t0 order by date DESC
     </select>
 
 </mapper>
