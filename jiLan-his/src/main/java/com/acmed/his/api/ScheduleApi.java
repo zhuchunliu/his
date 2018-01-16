@@ -71,8 +71,9 @@ public class ScheduleApi {
 
     @ApiOperation(value = "获取上周排班信息[复制上周用]")
     @GetMapping("/previous")
-    public ResponseResult<ScheduleVo> list(@ApiParam("人员主键集合，逗号间隔") @RequestParam(value = "userIds") String userIds){
-        List<ScheduleDto> sourceList = scheduleManager.getScheduleList(userIds);
+    public ResponseResult<ScheduleVo> list(@ApiParam("人员主键集合，逗号间隔") @RequestParam(value = "userIds") String userIds,
+                                           @ApiParam("日期") @RequestParam(value = "time",required = false) String time){
+        List<ScheduleDto> sourceList = scheduleManager.getScheduleList(userIds,time);
         List<ScheduleVo> list = new ArrayList<>();
         sourceList.forEach(obj->{
             ScheduleVo vo = new ScheduleVo();

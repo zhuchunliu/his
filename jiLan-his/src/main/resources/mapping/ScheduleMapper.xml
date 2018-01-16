@@ -10,55 +10,58 @@
     </select>
 
     <select id="getScheduleList" resultType="com.acmed.his.model.dto.ScheduleDto">
-        select * from(
-            select if(@r=userid,@n:=@n+1,@n:=1)as rownum,@r:=userid ,t3.* from(
-                select t1.id as userid,t1.username as userName,t1.avatar,
-                t2.monday,t2.tuesday,t2.wednesday,t2.thursday,t2.friday,t2.saturday,t2.sunday,t2.circle,t2.startTime,t2.endTime
-                from t_p_s_user t1 left JOIN t_b_schedule t2
-                on t1.id = t2.userid
-                where
-               <![CDATA[
-                ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or
-                    (t2.starttime <=  #{startTime}  and t2.endtime is null))
-                ]]>
-                <if test="@Ognl@isNotEmpty(orgCode) ">
-                  AND t1.orgcode = #{orgCode}
-                </if>
-                <if test="@Ognl@isNotEmpty(deptId) ">
-                  AND t1.dept = #{deptId}
-                </if>
-                <if test="@Ognl@isNotEmpty(userIds)">
-                    AND t2.userid in
-                    <foreach collection="userIds" separator="," open="(" close=")" item="item">
-                        #{item}
-                    </foreach>
-                </if>
-            )t3, (select @n:=0)b ,(select @r='')c
-        )t4 where rownum=1
-    </select>
-
-
-    <select id="getScheduleApplyList" resultType="com.acmed.his.model.dto.ScheduleApplyDto">
-        select * from(
-        select if(@r=userid,@n:=@n+1,@n:=1)as rownum,@r:=userid ,t3.* from(
-            select t1.id as userid, t1.username , t1.applyfee , t1.diagnoslevel, t1.duty,
-            t1.expertin , t1.introduction, t1.avatar,
-            t2.monday,t2.tuesday,t2.wednesday,t2.thursday,t2.friday,t2.saturday,t2.sunday,t2.circle,t2.startTime,t2.endTime
-            from t_p_s_user t1 left JOIN t_b_schedule t2
-            on t1.id = t2.userid
+      select tt.id as userid,tt.username as userName,tt.avatar,
+          tr.monday,tr.tuesday,tr.wednesday,tr.thursday,tr.friday,tr.saturday,tr.sunday,tr.circle,tr.startTime,tr.endTime
+      from t_p_s_user tt LEFT JOIN(
+            select t2.* from t_p_s_user t1 JOIN t_b_schedule t2 on t1.id = t2.userid
             where
             <![CDATA[
-              ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or
-                  (t2.starttime <=  #{startTime}  and t2.endtime is null))
-            ]]>
+                    ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or
+                        (t2.starttime <=  #{startTime}  and t2.endtime is null))
+                    ]]>
             <if test="@Ognl@isNotEmpty(orgCode) ">
                 AND t1.orgcode = #{orgCode}
             </if>
             <if test="@Ognl@isNotEmpty(deptId) ">
                 AND t1.dept = #{deptId}
             </if>
-            )t3, (select @n:=0)b ,(select @r='')c
-        )t4 where rownum=1
+        )tr on tt.id = tr.userid
+        where
+        <trim prefixOverrides="AND">
+            <if test="@Ognl@isNotEmpty(userIds)">
+                AND tt.id in
+                <foreach collection="userIds" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="@Ognl@isNotEmpty(orgCode) ">
+                AND tt.orgcode = #{orgCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(deptId) ">
+                AND tt.dept = #{deptId}
+            </if>
+        </trim>
+    </select>
+
+
+    <select id="getScheduleApplyList" resultType="com.acmed.his.model.dto.ScheduleApplyDto">
+        select t1.id as userid, t1.username , t1.applyfee , t1.diagnoslevel, t1.duty,
+        t1.expertin , t1.introduction, t1.avatar,
+        t2.monday,t2.tuesday,t2.wednesday,t2.thursday,t2.friday,t2.saturday,t2.sunday,t2.circle,t2.startTime,t2.endTime
+        from t_p_s_user t1 JOIN t_b_schedule t2 on t1.id = t2.userid
+        where
+        <![CDATA[
+          ((t2.starttime = #{startTime} and t2.endtime = #{endTime}) or
+              (t2.starttime <=  #{startTime}  and t2.endtime is null))
+        ]]>
+        <if test="@Ognl@isNotEmpty(orgCode) ">
+            AND tt.orgcode = #{orgCode}
+        </if>
+        <if test="@Ognl@isNotEmpty(deptId) ">
+            AND tt.dept = #{deptId}
+        </if>
+
     </select>
 
 </mapper>

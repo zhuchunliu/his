@@ -48,13 +48,17 @@ public class UserManager {
      * 获取用户列表信息
      * @return
      */
-    public List<User> getUserList(UserInfo userInfo){
+    public List<User> getUserList(UserInfo userInfo,Integer deptId){
         // TODO :管理员查询所有用户，规则需要待定
         if(null == userInfo.getOrgCode()){
             return userMapper.selectAll();
         }else{
             Example example = new Example(User.class);
-            example.createCriteria().andEqualTo("orgCode",userInfo.getOrgCode());
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("orgCode",userInfo.getOrgCode());
+            if(null != deptId){
+                criteria.andEqualTo("dept",deptId);
+            }
             return userMapper.selectByExample(example);
         }
     }

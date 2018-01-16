@@ -19,6 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,9 +56,10 @@ public class UserApi {
 
     @ApiOperation(value = "获取用户列表")
     @GetMapping("/list")
-    public ResponseResult<List<UserVo>> getUserList(@AccessToken AccessInfo info){
+    public ResponseResult<List<UserVo>> getUserList(@AccessToken AccessInfo info,
+                                                    @Param("科室id") @RequestParam(value = "deptId",required = false) Integer deptId){
         List<UserVo> list = new ArrayList<>();
-        userManager.getUserList(info.getUser()).forEach(obj->{
+        userManager.getUserList(info.getUser(),deptId).forEach(obj->{
             UserVo userVo = new UserVo();
             BeanUtils.copyProperties(obj,userVo);
             list.add(userVo);

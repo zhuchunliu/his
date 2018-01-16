@@ -1,7 +1,9 @@
 package com.acmed.his.service;
 
 import com.acmed.his.dao.ScheduleMapper;
+import com.acmed.his.dao.UserMapper;
 import com.acmed.his.model.Schedule;
+import com.acmed.his.model.User;
 import com.acmed.his.model.dto.ScheduleApplyDto;
 import com.acmed.his.model.dto.ScheduleDto;
 import com.acmed.his.pojo.mo.ScheduleMo;
@@ -28,6 +30,9 @@ public class ScheduleManager {
 
     @Autowired
     private ScheduleMapper scheduleMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 设置用户的排班信息
@@ -133,7 +138,6 @@ public class ScheduleManager {
         int week = date.getDayOfWeek().getValue();
         String  startTime= date.minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
         String endTime = date.plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
-
         return scheduleMapper.getScheduleList(orgCode , deptId,
                 Optional.ofNullable(userId).map(obj->Lists.newArrayList(userId.toString())).orElse(null), startTime, endTime);
 
@@ -144,10 +148,11 @@ public class ScheduleManager {
      * @param userIds
      * @return
      */
-    public List<ScheduleDto> getScheduleList(String userIds) {
-        int week = LocalDateTime.now().getDayOfWeek().getValue();
-        String startTime = LocalDateTime.now().minusDays(week+7-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
-        String endTime =  LocalDateTime.now().minusDays(week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+    public List<ScheduleDto> getScheduleList(String userIds,String time) {
+        LocalDateTime date = Optional.ofNullable(time).map(obj->DateTimeUtil.parsetLocalDate(obj)).orElse(LocalDateTime.now());
+        int week = date.getDayOfWeek().getValue();
+        String startTime = date.minusDays(week+7-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+        String endTime =  date.minusDays(week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
         return scheduleMapper.getScheduleList(null,null, new ArrayList<String>(Arrays.asList(userIds.split(","))),startTime, endTime);
     }
 
