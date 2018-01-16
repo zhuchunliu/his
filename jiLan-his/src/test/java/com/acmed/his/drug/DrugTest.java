@@ -41,7 +41,7 @@ public class DrugTest {
                 JSONObject child = array.getJSONObject(index);
                 String insert = String.format(drugsql, child.getString("YPBH"),
                         child.getString("YPMC"), PinYinUtil.getPinYinHeadChar(child.getString("YPMC")),
-                        child.getString("HSL"), child.getString("YPXDWMC"),
+                        child.getString("YPDDWMC"), child.getString("YPGG"),
                         child.getString("YPDDWMC")) + ";\r\n";
                 Okio.buffer(Okio.appendingSink(file)).writeUtf8(insert).close();
             }

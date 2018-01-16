@@ -190,6 +190,7 @@ public class PrescriptionManager {
                     item.setApplyId(apply.getId());
                     item.setDrugId(info.getDrugId());
                     item.setDrugCode(drug.getDrugCode());
+                    item.setPayStatus(0);
                     item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d));//存当前进价
                     item.setRetailPrice(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//存当前零售价
                     item.setFee(item.getNum() * item.getRetailPrice());//总价：单价*数量
@@ -207,6 +208,7 @@ public class PrescriptionManager {
                     inspect.setId(UUIDUtil.generate());
                     inspect.setPrescriptionId(prescription.getId());
                     inspect.setApplyId(apply.getId());
+                    inspect.setPayStatus(0);
                     inspect.setGroupNum(String.valueOf(i+1));
                     inspect.setDept(Optional.ofNullable(prescription.getDept()).map(obj->obj.toString()).orElse(null));
                     inspect.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory())).
@@ -224,6 +226,7 @@ public class PrescriptionManager {
                     charge.setApplyId(apply.getId());
                     charge.setPrescriptionId(prescription.getId());
                     charge.setCategory(info.getCategory());
+                    charge.setPayStatus(0);
                     charge.setGroupNum(String.valueOf(i+1));
                     charge.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory())).
                             map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));

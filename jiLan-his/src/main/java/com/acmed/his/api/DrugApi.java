@@ -1,7 +1,10 @@
 package com.acmed.his.api;
 
+import com.acmed.his.dao.ManufacturerMapper;
+import com.acmed.his.dao.SupplyMapper;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
+import com.acmed.his.model.dto.DrugDto;
 import com.acmed.his.pojo.mo.DrugMo;
 import com.acmed.his.pojo.vo.DrugDictVo;
 import com.acmed.his.pojo.vo.DrugVo;
@@ -38,11 +41,17 @@ public class DrugApi {
     @Autowired
     private DrugManager drugManager;
 
+    @Autowired
+    private ManufacturerMapper manufacturerMapper;
+
+    @Autowired
+    private SupplyMapper supplyMapper;
+
     @ApiOperation(value = "药品信息列表")
     @PostMapping("/list")
     public ResponseResult<PageResult<DrugVo>> getDrugList(@RequestBody(required = false) PageBase<DrugMo> pageBase,
                                                           @AccessToken AccessInfo info){
-        List<Drug> list = drugManager.getDrugList(info.getUser().getOrgCode(),
+        List<DrugDto> list = drugManager.getDrugList(info.getUser().getOrgCode(),
                 Optional.ofNullable(pageBase.getParam()).map(DrugMo::getName).orElse(null),
                 Optional.ofNullable(pageBase.getParam()).map(DrugMo::getCategory).orElse(null),
                 pageBase.getPageNum(), pageBase.getPageSize());
@@ -133,7 +142,14 @@ public class DrugApi {
 
     @ApiOperation(value = "根据id查询药品详情")
     @GetMapping("/id")
-    public ResponseResult<Drug> selectDrugsById(@ApiParam("药品id") @RequestParam("id") Integer id){
-        return ResponseUtil.setSuccessResult(drugManager.getDrugById(id));
+    public ResponseResult<DrugVo> selectDrugsById(@ApiParam("药品id") @RequestParam("id") Integer id){
+        Drug drug = drugManager.getDrugById(id);
+        DrugVo vo = new DrugVo();
+        BeanUtils.copyProperties(drug,vo);
+        vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
+                map(obj->obj.getName()).orElse(""));
+        vo.setSupplyName(Optional.ofNullable(drug.getSupply()).map(obj->supplyMapper.selectByPrimaryKey(obj)).
+                map(obj->obj.getSupplyerName()).orElse(""));
+        return ResponseUtil.setSuccessResult(vo);
     }
 }

@@ -1,18 +1,13 @@
-package com.acmed.his.pojo.vo;
+package com.acmed.his.model.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 /**
- * Created by Darren on 2017-12-28
+ * Created by Darren on 2018-01-16
  **/
 @Data
-public class DrugVo {
-
+public class DrugDto {
     @ApiModelProperty("药品id")
     private Integer id;
 
@@ -55,7 +50,6 @@ public class DrugVo {
     @ApiModelProperty("剂型")
     private String drugForm;
 
-
     @ApiModelProperty("生产厂家")
     private Integer manufacturer;
 
@@ -85,5 +79,20 @@ public class DrugVo {
 
     @ApiModelProperty("药品备注")
     private String memo;
+
+    @ApiModelProperty("删除标识:0 未删除,1:删除")
+    private String removed;
+
+    @ApiModelProperty("创建时间")
+    private String createAt;
+
+    @ApiModelProperty("修改时间")
+    private String modifyAt;
+
+    @ApiModelProperty("创建用户")
+    private String createBy;
+
+    @ApiModelProperty("修改用户")
+    private String modifyBy;
 
 }

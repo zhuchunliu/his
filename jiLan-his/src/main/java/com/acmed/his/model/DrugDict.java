@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @NameStyle
 public class DrugDict {
     @Id
-    @ApiModelProperty("药品编码")
+    @ApiModelProperty("药品字典主键")
     private String code;
 
     @ApiModelProperty("英文名")

@@ -8,15 +8,16 @@ import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
 import com.acmed.his.model.Manufacturer;
 import com.acmed.his.model.Supply;
+import com.acmed.his.model.dto.DrugDto;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.PinYinUtil;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +39,9 @@ public class DrugManager {
 
     @Autowired
     private SupplyMapper supplyMapper;
+
+    @Autowired
+    private CommonManager commonManager;
 
     /**
      * 添加药品
@@ -174,7 +178,7 @@ public class DrugManager {
      * @param category
      * @return
      */
-    public List<Drug> getDrugList(Integer orgCode,String name, String category,Integer pageNum, Integer pageSize ) {
+    public List<DrugDto> getDrugList(Integer orgCode, String name, String category, Integer pageNum, Integer pageSize ) {
 
         PageHelper.startPage(pageNum,pageSize);
         return drugMapper.getDrugList(orgCode,name,category);
@@ -229,7 +233,45 @@ public class DrugManager {
      * 批量添加药品信息
      * @param codes
      */
+    @Transactional
     public void saveDrugByDict(String[] codes,UserInfo info) {
-        drugMapper.saveDrugByDict(codes,info);
+        for(String code :codes){
+            DrugDict dict = drugDictMapper.selectByPrimaryKey(code);
+            Drug drug = new Drug();
+
+            drug.setOrgCode(info.getOrgCode());
+            String key = this.getCategory(dict.getCategory())+new java.text.DecimalFormat("000000").format(info.getOrgCode());
+            drug.setDrugCode(commonManager.getFormatVal(key,key+"000000"));
+            drug.setName(dict.getSpecName());
+            drug.setPinYin(dict.getPinYin());
+            drug.setSpec(dict.getSpec());
+            drug.setCategory(dict.getCategory());
+            drug.setUnit(dict.getUnit());
+            drug.setPackUnit(dict.getPackUnit());
+            drug.setRemoved("0");
+            drug.setCreateAt(LocalDateTime.now().toString());
+            drug.setCreateBy(info.getId().toString());
+            drugMapper.insert(drug);
+        }
+
+//        drugMapper.saveDrugByDict(codes,info);
     }
+
+
+    private String getCategory(String category){
+        switch (category){
+            case "0": // 西药
+                return "X";
+            case "1": // 中成药
+                return "ZC";
+            case "2": // 中药
+                return "Z";
+            case "3": // 血液制品
+                return "B";
+            case "4": // 诊断试剂
+                return "D";
+         }
+         return "O";
+    }
+
 }

@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -83,9 +85,11 @@ public class ScheduleManager {
     private void init(ScheduleMo mo,Schedule schedule,int week){
         schedule.setUserid(mo.getUserid());
         schedule.setCircle(mo.getCircle());
-        schedule.setStartTime(LocalDateTime.ofInstant(mo.getDate().toInstant(),ZoneId.systemDefault()).minusDays(week-1).toString());
+        schedule.setStartTime(LocalDateTime.ofInstant(mo.getDate().toInstant(),ZoneId.systemDefault()).minusDays(week-1).
+                format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
         if(mo.getCircle().equals("0")){//没有开启循环，则设置截止时间
-            schedule.setEndTime(LocalDateTime.ofInstant(mo.getDate().toInstant(),ZoneId.systemDefault()).plusDays(7-week).toString());
+            schedule.setEndTime(LocalDateTime.ofInstant(mo.getDate().toInstant(),ZoneId.systemDefault()).plusDays(7-week).
+                    format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59")));
         }else{
             schedule.setEndTime(null);
         }
@@ -127,8 +131,8 @@ public class ScheduleManager {
 
         LocalDateTime date = Optional.ofNullable(time).map(obj->DateTimeUtil.parsetLocalDate(obj)).orElse(LocalDateTime.now());
         int week = date.getDayOfWeek().getValue();
-        String  startTime= date.minusDays(week-1).toString();
-        String endTime = date.plusDays(7-week).toString();
+        String  startTime= date.minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+        String endTime = date.plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
 
         return scheduleMapper.getScheduleList(orgCode , deptId,
                 Optional.ofNullable(userId).map(obj->Lists.newArrayList(userId.toString())).orElse(null), startTime, endTime);
@@ -142,8 +146,8 @@ public class ScheduleManager {
      */
     public List<ScheduleDto> getScheduleList(String userIds) {
         int week = LocalDateTime.now().getDayOfWeek().getValue();
-        String startTime = LocalDateTime.now().minusDays(week+7-1).toString();
-        String endTime =  LocalDateTime.now().minusDays(week).toString();
+        String startTime = LocalDateTime.now().minusDays(week+7-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+        String endTime =  LocalDateTime.now().minusDays(week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
         return scheduleMapper.getScheduleList(null,null, new ArrayList<String>(Arrays.asList(userIds.split(","))),startTime, endTime);
     }
 
@@ -155,15 +159,15 @@ public class ScheduleManager {
      */
     public List<ScheduleApplyDto> getScheduleApplyList(Integer orgCode, Integer deptId) {
         int week = LocalDateTime.now().getDayOfWeek().getValue();
-        String startTime = LocalDateTime.now().minusDays(week-1).toString();
-        String endTime =  LocalDateTime.now().plusDays(7-week).toString();
+        String startTime = LocalDateTime.now().minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+        String endTime =  LocalDateTime.now().plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
         return scheduleMapper.getScheduleApplyList(orgCode,deptId,startTime, endTime);
     }
 
     public static void main(String[] args) {
         int week = LocalDateTime.now().getDayOfWeek().getValue();
-        String startTime = LocalDateTime.now().minusDays(week-1).toString();
-        String endTime =  LocalDateTime.now().plusDays(7-week).toString();
+        String startTime = LocalDateTime.now().minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+        String endTime =  LocalDateTime.now().plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
         System.err.println(week+" "+startTime+" "+endTime);
     }
 }

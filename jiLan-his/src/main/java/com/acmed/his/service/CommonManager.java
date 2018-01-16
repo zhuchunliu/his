@@ -53,4 +53,10 @@ public class CommonManager {
 
         return code;
     }
+
+    public static void main(String[] args) {
+        java.text.DecimalFormat df = new java.text.DecimalFormat("00000");
+
+        System.err.println(df.format(10));
+    }
 }

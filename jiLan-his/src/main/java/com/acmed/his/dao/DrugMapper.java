@@ -1,6 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.Drug;
+import com.acmed.his.model.dto.DrugDto;
 import com.acmed.his.model.dto.DrugStockDto;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.TkMapper;
@@ -12,7 +13,7 @@ import java.util.List;
  * Created by Darren on 2017-11-20
  **/
 public interface DrugMapper extends TkMapper<Drug>{
-    List<Drug> getDrugList(@Param("orgCode") Integer orgCode, @Param("name") String name, @Param("category") String category);
+    List<DrugDto> getDrugList(@Param("orgCode") Integer orgCode, @Param("name") String name, @Param("category") String category);
 
     Integer getDrugTotal(@Param("orgCode") Integer orgCode, @Param("name") String name, @Param("category") String category);
 

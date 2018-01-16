@@ -30,11 +30,17 @@ public class Drug {
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
 
-    @ApiModelProperty("名称")
+    @ApiModelProperty("药品名称")
     private String name;
 
-    @ApiModelProperty("拼音")
+    @ApiModelProperty("商品名称")
+    private String goodsName;
+
+    @ApiModelProperty("药品名称拼音")
     private String pinYin;
+
+    @ApiModelProperty("商品名称拼音")
+    private String goodsPinYin;
 
     @ApiModelProperty("药品规格")
     private String spec;
