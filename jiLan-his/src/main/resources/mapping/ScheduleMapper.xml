@@ -3,8 +3,15 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.ScheduleMapper">
 
-    <select id="getRecentSchedule" parameterType="java.lang.Integer" resultType="com.acmed.his.model.Schedule">
-        select * from t_b_schedule where userid = #{userid}
+    <select id="getRecentSchedule" resultType="com.acmed.his.model.Schedule">
+        select * from t_b_schedule t2 where userid = #{userid}
+        AND
+        <![CDATA[
+            (
+                (t2.starttime = #{startTime} and t2.endtime = #{endTime}) or
+                (t2.starttime <=  #{startTime}  and t2.endtime is null)
+            )
+        ]]>
         order BY startTime DESC
         limit 1
     </select>

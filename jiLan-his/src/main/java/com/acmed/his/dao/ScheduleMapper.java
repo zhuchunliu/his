@@ -17,7 +17,7 @@ public interface ScheduleMapper extends TkMapper<Schedule> {
      * @param userid
      * @return
      */
-    Schedule getRecentSchedule(@Param("userid") Integer userid);
+    Schedule getRecentSchedule(@Param("userid") Integer userid,@Param("startTime")String startTime,@Param("endTime")String endTime);
 
     /**
      * 根据查询条件获取排班列表

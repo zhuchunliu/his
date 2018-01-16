@@ -14,12 +14,14 @@ import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +52,17 @@ public class ScheduleApi {
     public ResponseResult update(@RequestBody ScheduleMo mo,
                                    @AccessToken AccessInfo info){
         scheduleManager.update(mo,info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "设置循环")
+    @PostMapping("/circle")
+    public ResponseResult circle(@ApiParam("{\"userId\":\"\"},userId：") @RequestBody String param,
+                                 @AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("userId")){
+            return ResponseUtil.setParamEmptyError("userId");
+        }
+        scheduleManager.circle(JSONObject.parseObject(param).get("userId").toString(),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 

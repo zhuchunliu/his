@@ -41,8 +41,13 @@ public class ScheduleManager {
      */
     @Transactional
     public void update(ScheduleMo mo, UserInfo user) {
-        Schedule schedule = scheduleMapper.getRecentSchedule(mo.getUserid());
+
         int week = LocalDateTime.ofInstant(mo.getDate().toInstant(),ZoneId.systemDefault()).getDayOfWeek().getValue();
+        String startTime = LocalDateTime.ofInstant(mo.getDate().toInstant(),ZoneId.systemDefault()).minusDays(week-1).
+                format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+        String endTime = LocalDateTime.ofInstant(mo.getDate().toInstant(),ZoneId.systemDefault()).plusDays(7-week).
+                format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+        Schedule schedule = scheduleMapper.getRecentSchedule(mo.getUserid(),startTime,endTime);
 
         if(null == schedule){ //第一次 直接添加
             schedule = new Schedule();
@@ -51,18 +56,13 @@ public class ScheduleManager {
             this.init(mo,schedule,week);
             scheduleMapper.insert(schedule);
             return;
-        }
-
-        if(DateTimeUtil.parsetLocalDate(schedule.getStartTime()).equals(//更新排班信息
-                LocalDateTime.ofInstant(mo.getDate().toInstant(),ZoneId.systemDefault()).minusDays(week-1))){
+        }else if(schedule.getStartTime().equals(startTime)){//直接修改
             schedule.setModifyAt(LocalDateTime.now().toString());
             schedule.setModifyBy(user.getId().toString());
             this.init(mo,schedule,week);
             scheduleMapper.updateByPrimaryKey(schedule);
-            return;
-        }
 
-        if(schedule.getCircle().equals("1")){// 作废之前轮询的排班信息，重新排班
+        } else if(schedule.getCircle().equals("1")){// 作废之前轮询的排班信息，重新排班
 
             //设置新的排班周期信息【除了当前天的排班，其他都参考之前周的排班】
             Schedule newSchedule = new Schedule();
@@ -78,7 +78,6 @@ public class ScheduleManager {
             scheduleMapper.updateByPrimaryKey(schedule);
         }else{
             //其余情况：默认新增新的排班信息
-            schedule = new Schedule();
             schedule.setCreateAt(LocalDateTime.now().toString());
             schedule.setCreateBy(user.getId().toString());
             this.init(mo,schedule,week);
@@ -169,10 +168,22 @@ public class ScheduleManager {
         return scheduleMapper.getScheduleApplyList(orgCode,deptId,startTime, endTime);
     }
 
+    /**
+     * 开启循环
+     *
+     * @param userId
+     * @param user
+     */
+    public void circle(String userId, UserInfo user) {
+
+    }
+
     public static void main(String[] args) {
         int week = LocalDateTime.now().getDayOfWeek().getValue();
         String startTime = LocalDateTime.now().minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
         String endTime =  LocalDateTime.now().plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
         System.err.println(week+" "+startTime+" "+endTime);
     }
+
+
 }
