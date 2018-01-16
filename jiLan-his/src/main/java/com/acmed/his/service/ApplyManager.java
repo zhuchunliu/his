@@ -117,7 +117,7 @@ public class ApplyManager {
 
         return 1;
     }
-    
+
 
     /**
      * 根据患者id查找他的挂号列表

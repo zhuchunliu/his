@@ -89,6 +89,7 @@
                 and t1.ispaid = #{isPaid}
             </if>
         </trim>
+        ORDER BY t1.clinicno ASC
     </select>
 
     <select id="getApplyNum" resultType="java.lang.Integer">

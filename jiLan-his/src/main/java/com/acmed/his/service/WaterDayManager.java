@@ -60,6 +60,25 @@ public class WaterDayManager {
     }
 
     /**
+     * 获取一段时间内的报表
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param orgCode 机构编码
+     * @return PageResult<WaterDay>
+     */
+    public PageResult<WaterDay> getListBetweenTimesByPage(String startTime,String endTime,Integer orgCode,Integer pageNum,Integer pageSize){
+        PageResult<WaterDay> pageResult = new PageResult<>();
+        pageResult.setPageNum(pageNum);
+        pageResult.setPageSize(pageSize);
+        PageHelper.startPage(pageNum,pageSize);
+        List<WaterDay> listBetweenTimes = waterDayMapper.getListBetweenTimes(startTime, endTime, orgCode);
+        pageResult.setData(listBetweenTimes);
+        PageInfo<WaterDay> waterDayPageInfo = new PageInfo<>(listBetweenTimes);
+        pageResult.setTotal(waterDayPageInfo.getTotal());
+        return pageResult;
+    }
+
+    /**
      * 分页获取收支明细
      * @param orgCode 机构编码
      * @param pageNum 页码

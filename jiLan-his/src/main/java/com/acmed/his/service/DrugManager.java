@@ -10,8 +10,11 @@ import com.acmed.his.model.Manufacturer;
 import com.acmed.his.model.Supply;
 import com.acmed.his.model.dto.DrugDto;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.PageBase;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.PinYinUtil;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,11 +134,51 @@ public class DrugManager {
     }
 
     /**
+     * 根据药品生产商名字模糊查询 分页
+     * @param pageBase 生产商名字
+     * @return List<Manufacturer>
+     */
+    public PageResult<Manufacturer> getManufacturerLikeNameByPage(PageBase<String> pageBase){
+        Example example = new Example(Manufacturer.class);
+        example.createCriteria().andLike("name","%"+pageBase.getParam()+"%");
+        PageResult<Manufacturer> pageResult = new PageResult<>();
+        Integer pageNum = pageBase.getPageNum();
+        Integer pageSize = pageBase.getPageSize();
+        PageHelper.startPage(pageSize,pageNum);
+        List<Manufacturer> manufacturers = manufacturerMapper.selectByExample(example);
+        PageInfo<Manufacturer> manufacturerPageInfo = new PageInfo<>(manufacturers);
+        pageResult.setPageNum(pageNum);
+        pageResult.setPageSize(pageSize);
+        pageResult.setData(manufacturers);
+        pageResult.setTotal(manufacturerPageInfo.getTotal());
+        return pageResult;
+    }
+
+    /**
      * 查询所有药厂
      * @return List<Manufacturer>
      */
     public List<Manufacturer> getAllManufacturers(){
         return manufacturerMapper.selectAll();
+    }
+
+    /**
+     * 分页查询药厂列表
+     * @param pageBase
+     * @return
+     */
+    public PageResult<Manufacturer> getAllManufacturersByPage(PageBase pageBase){
+        PageResult<Manufacturer> pageResult = new PageResult<>();
+        Integer pageNum = pageBase.getPageNum();
+        Integer pageSize = pageBase.getPageSize();
+        PageHelper.startPage(pageSize,pageNum);
+        List<Manufacturer> manufacturers = manufacturerMapper.selectAll();
+        PageInfo<Manufacturer> manufacturerPageInfo = new PageInfo<>(manufacturers);
+        pageResult.setPageNum(pageNum);
+        pageResult.setPageSize(pageSize);
+        pageResult.setData(manufacturers);
+        pageResult.setTotal(manufacturerPageInfo.getTotal());
+        return pageResult;
     }
 
     /**
@@ -169,7 +212,23 @@ public class DrugManager {
     public List<Supply> getAllSupply(){
         return supplyMapper.selectAll();
     }
-
+    /**
+     * 查询所有供应商list
+     * @return List<Supply>
+     */
+    public PageResult<Supply> getAllSupplyByPage(PageBase pageBase){
+        PageResult<Supply> pageResult = new PageResult<>();
+        Integer pageNum = pageBase.getPageNum();
+        Integer pageSize = pageBase.getPageSize();
+        PageHelper.startPage(pageSize,pageNum);
+        List<Supply> supplies = supplyMapper.selectAll();
+        PageInfo<Supply> supplyPageInfo = new PageInfo<>(supplies);
+        pageResult.setPageNum(pageNum);
+        pageResult.setPageSize(pageSize);
+        pageResult.setData(supplies);
+        pageResult.setTotal(supplyPageInfo.getTotal());
+        return pageResult;
+    }
     /**
      * 模糊搜索药品库信息
      * @param pageNum

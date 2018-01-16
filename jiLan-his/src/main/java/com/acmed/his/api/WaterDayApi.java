@@ -40,9 +40,10 @@ public class WaterDayApi {
     @Autowired
     private WaterDayManager waterDayManager;
 
-    @ApiOperation(value = "获取区间内报表列表")
+    @ApiOperation(value = "获取区间内报表列表  分页")
     @GetMapping("getListBetweenTimes")
-    public ResponseResult<List<WaterDay>> getBetweenTimes(@ApiParam("区间开始时间  2017-01-02这种字符串格式   开始时间必填") @RequestParam("startTime") String startTime,
+    public ResponseResult<PageResult<WaterDay>> getBetweenTimes(@ApiParam("页数 必填")@RequestParam("pageNum")Integer pageNum,
+                                                          @ApiParam("每页记录数 必填")@RequestParam("pageSize")Integer pageSize,@ApiParam("区间开始时间  2017-01-02这种字符串格式   开始时间必填") @RequestParam("startTime") String startTime,
                                                           @ApiParam("区间结束时间 2017-01-02这种字符串格式") @RequestParam(value = "endTime",required = false) String endTime,@AccessToken AccessInfo info){
         if (StringUtils.isEmpty(startTime) && StringUtils.isNotEmpty(endTime)){
             startTime = endTime;
@@ -51,8 +52,7 @@ public class WaterDayApi {
             endTime = startTime;
         }
         Integer orgCode = info.getUser().getOrgCode();
-        List<WaterDay> listBetweenTimes = waterDayManager.getListBetweenTimes(startTime, endTime,orgCode);
-        return ResponseUtil.setSuccessResult(listBetweenTimes);
+        return ResponseUtil.setSuccessResult(waterDayManager.getListBetweenTimesByPage(startTime, endTime,orgCode,pageNum,pageSize));
     }
 
 

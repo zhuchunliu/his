@@ -2,6 +2,8 @@ package com.acmed.his.api;
 
 import com.acmed.his.model.Supply;
 import com.acmed.his.service.DrugManager;
+import com.acmed.his.util.PageBase;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -38,9 +40,9 @@ public class SupplyApi {
         return ResponseUtil.setSuccessResult(drugManager.getSupplyById(id));
     }
 
-    @ApiOperation(value = "列表")
+    @ApiOperation(value = "列表分页")
     @GetMapping("list")
-    public ResponseResult<List<Supply>> getAllSupply(){
-        return ResponseUtil.setSuccessResult(drugManager.getAllSupply());
+    public ResponseResult<PageResult<Supply>> getAllSupplyByPage(@RequestBody PageBase pageBase){
+        return ResponseUtil.setSuccessResult(drugManager.getAllSupplyByPage(pageBase));
     }
 }

@@ -2,6 +2,8 @@ package com.acmed.his.api;
 
 import com.acmed.his.model.Manufacturer;
 import com.acmed.his.service.DrugManager;
+import com.acmed.his.util.PageBase;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -39,17 +41,15 @@ public class ManufacturerApi {
         return ResponseUtil.setSuccessResult(manufacturerById);
     }
 
-    @ApiOperation(value = "根据名字模糊查询")
+    @ApiOperation(value = "根据名字模糊查询 分页")
     @GetMapping("name")
-    public ResponseResult<List<Manufacturer>> getManufacturerById(@ApiParam("药厂名字") @RequestParam(value = "name") String name){
-        List<Manufacturer> manufacturerLikeName = drugManager.getManufacturerLikeName(name);
-        return ResponseUtil.setSuccessResult(manufacturerLikeName);
+    public ResponseResult<ResponseResult<PageResult<Manufacturer>>> getManufacturerByName(@RequestBody PageBase<String> pageBase){
+        return ResponseUtil.setSuccessResult(drugManager.getManufacturerLikeNameByPage(pageBase));
     }
 
-    @ApiOperation(value = "全部")
-    @GetMapping("all")
-    public ResponseResult<List<Manufacturer>> getAllManufacturers(){
-        List<Manufacturer> allManufacturers = drugManager.getAllManufacturers();
-        return ResponseUtil.setSuccessResult(allManufacturers);
+    @ApiOperation(value = "全部 分页查询")
+    @PostMapping("all")
+    public ResponseResult<PageResult<Manufacturer>> getAllManufacturers(@RequestBody PageBase pageBase){
+        return ResponseUtil.setSuccessResult(drugManager.getAllManufacturersByPage(pageBase));
     }
 }
