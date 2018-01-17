@@ -3,6 +3,7 @@ package com.acmed.his.service;
 import com.acmed.his.HisApplication;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
+import com.acmed.his.pojo.vo.UserInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,17 @@ public class ApplyManagerTest {
     public void chuZhenAndFuZhenTongJi() throws Exception {
         ChuZhenFuZhenCountDto chuZhenFuZhenCountDto = applyManager.chuZhenAndFuZhenTongJi(1);
         System.err.println(chuZhenFuZhenCountDto);
+    }
+    @Test
+    public void refund(){
+        String applyId = "21";
+        Double fee = 2.00;
+        String feeType = "0";
+        UserInfo userInfo = new UserInfo();
+        userInfo.setOrgCode(3);
+        userInfo.setId(4);
+        userInfo.setDept(6);
+        System.err.println(applyManager.refund(applyId,fee,feeType,userInfo));
     }
 
 }

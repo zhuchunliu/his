@@ -40,7 +40,8 @@ public enum StatusCode {
 	ERROR_QINIU_ERR (10021,"七牛异常"),
 	ERROR_ORDER_ERR (10022,"订单创建失败"),
 	ERROR_PAY_INIT_ERR (10023,"支付初始化失败"),
-	ERROR_COLLECTION(10024,"收款失败");
+	ERROR_COLLECTION(10024,"收款失败"),
+	ERROR_IS_REFUND (10025,"请不要重复退款");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatusCode.class);
 

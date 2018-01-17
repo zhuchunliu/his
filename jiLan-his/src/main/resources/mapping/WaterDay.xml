@@ -12,19 +12,34 @@
         IFNULL(tb3.alipaymoney,0) as alipaymoney,  -- 支付宝支付总金额
         IFNULL(tb3.alipaynum,0) as alipaynum,  -- 支付宝支付总金额
         IFNULL(tb4.xianjin,0) as cash,  -- 收款现金
-        IFNULL(tb4.xianjinnum,0) as cashnum,  -- 收款现金
+        IFNULL(tb4.xianjinnum,0) as cashnum,  -- 收款现金次数
         IFNULL(tb5.jiuzhennum,0) as  registerednum, -- 就诊数
         IFNULL(tb5.jiuzhenmoney,0) as  registeredmoney, -- 就诊收入
-        IFNULL(tb8.chufangnum,0) as  prescriptionnum, -- 处方数
-        IFNULL(tb8.chufangmoney,0) as  prescriptionmoney, -- 处方收入
+        IFNULL(tb8.prescriptionnum,0) as  examinenum, -- 处方数
+        IFNULL(tb8.prescriptionmoney,0) as  examinemoney, -- 处方收入
         IFNULL(tb6.paynum,0) as  paynum,  -- 支付数
         IFNULL(tb6.paymoney,0) as  paymoney,  -- 支付金额
         IFNULL(tb7.refundnum,0) as  refundnum,-- 退款次数
         IFNULL(tb7.refundmoney,0) as  refundmoney,  -- 退款总金额
         IFNULL(tb9.registeredrefundnum,0) as  registeredrefundnum, -- 挂号退款数
         IFNULL(tb9.registeredrefundmoney,0) as  registeredrefundmoney, -- 挂号退款金额
-        IFNULL(tb10.prescriptionrefundnum,0) as  prescriptionrefundnum, -- 处方退款数
-        IFNULL(tb10.prescriptionrefundmoney,0) as  prescriptionrefundmoney -- 处方退款金额
+        IFNULL(tb10.prescriptionrefundnum,0) as  examinerefundnum, -- 检查退款数
+        IFNULL(tb10.prescriptionrefundmoney,0) as  examinerefundmoney, -- 检查退款金额
+
+        IFNULL(tb11.drugnum,0) as  drugnum, -- 药支付次数
+        IFNULL(tb11.drugmoney,0) as  drugmoney, -- 药支付金额
+        IFNULL(tb12.drugrefundnum,0) as  drugrefundnum, -- 药退款次数
+        IFNULL(tb12.drugrefundmoney,0) as  drugrefundmoney, -- 药退款金额
+        IFNULL(tb13.appendnum,0) as  appendnum, -- 附加费用支付次数
+        IFNULL(tb13.appendmoney,0) as  appendmoney, -- 附加费用支付金额
+        IFNULL(tb14.appendrefundnum,0) as  appendrefundnum, -- 附加费用退款次数
+        IFNULL(tb14.appendrefundmoney,0) as  appendrefundmoney, -- 附加费用退款金额
+        IFNULL(tb15.wxpayrefundnum,0) as  wxpayrefundnum, -- 微信退款次数
+        IFNULL(tb15.wxpayrefundmoney,0) as  wxpayrefundmoney, -- 微信退款金额
+        IFNULL(tb16.alipayrefundnum,0) as  alipayrefundnum, -- 支付宝退款次数
+        IFNULL(tb16.alipayrefundmoney,0) as  alipayrefundmoney, -- 支付宝退款金额
+        IFNULL(tb17.cashrefundnum,0) as  cashrefundnum, -- 现金退款次数
+        IFNULL(tb17.cashrefundmoney,0) as  cashrefundmoney -- 现金退款金额
         FROM t_p_s_org tb1
         LEFT JOIN (-- 微信支付   收入   和笔数
                     SELECT tb0.orgcode,SUM(tb0.fee) wxpaymoney,COUNT(tb0.id) wxpaynum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 1 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
@@ -45,14 +60,35 @@
                     SELECT tb0.orgcode,COUNT(tb0.id) refundnum,SUM(tb0.fee) refundmoney FROM t_b_pay_refuse tb0 WHERE  DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         )	as tb7 ON tb7.orgcode = tb1.orgcode
         LEFT JOIN (-- 处方 收入和笔数
-                    SELECT tb0.orgcode,COUNT(tb0.id) chufangnum ,SUM(tb0.fee) chufangmoney FROM t_b_pay_statements tb0 WHERE  tb0.source =2  AND DATE(tb0.createat) = DATE(#{date})	 GROUP BY tb0.orgcode
+                    SELECT tb0.orgcode,COUNT(tb0.id) prescriptionnum ,SUM(tb0.fee) prescriptionmoney FROM t_b_pay_statements tb0 WHERE  tb0.source =3  AND DATE(tb0.createat) = DATE(#{date})	 GROUP BY tb0.orgcode
         ) as tb8 ON tb8.orgcode = tb1.orgcode
         LEFT JOIN ( -- 挂号退款 和笔数
                     SELECT tb0.orgcode,COUNT(tb0.id) registeredrefundnum,SUM(tb0.fee) registeredrefundmoney FROM t_b_pay_refuse tb0 WHERE tb0.source =1 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         )	as tb9 ON tb9.orgcode = tb1.orgcode
         LEFT JOIN ( -- 处方退款 和笔数
-                    SELECT tb0.orgcode,COUNT(tb0.id) prescriptionrefundnum,SUM(tb0.fee) prescriptionrefundmoney FROM t_b_pay_refuse tb0 WHERE tb0.source =2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+                    SELECT tb0.orgcode,COUNT(tb0.id) prescriptionrefundnum,SUM(tb0.fee) prescriptionrefundmoney FROM t_b_pay_refuse tb0 WHERE tb0.source =3 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         )	as tb10 ON tb10.orgcode = tb1.orgcode
+				LEFT JOIN (-- 药 收入和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) drugnum ,SUM(tb0.fee) drugmoney FROM t_b_pay_statements tb0 WHERE  tb0.source =2  AND DATE(tb0.createat) = DATE(#{date})	 GROUP BY tb0.orgcode
+        ) as tb11 ON tb11.orgcode = tb1.orgcode
+				LEFT JOIN ( -- 药退款 和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) drugrefundnum,SUM(tb0.fee) drugrefundmoney FROM t_b_pay_refuse tb0 WHERE tb0.source =2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+        )	as tb12 ON tb12.orgcode = tb1.orgcode
+				LEFT JOIN (-- 附加 收入和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) appendnum ,SUM(tb0.fee) appendmoney FROM t_b_pay_statements tb0 WHERE  tb0.source =4  AND DATE(tb0.createat) = DATE(#{date})	 GROUP BY tb0.orgcode
+        ) as tb13 ON tb13.orgcode = tb1.orgcode
+				LEFT JOIN ( -- 附加 退款 和笔数
+                    SELECT tb0.orgcode,COUNT(tb0.id) appendrefundnum,SUM(tb0.fee) appendrefundmoney FROM t_b_pay_refuse tb0 WHERE tb0.source =4 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+        )	as tb14 ON tb14.orgcode = tb1.orgcode
+				LEFT JOIN (-- 微信支付   退款   和笔数
+                    SELECT tb0.orgcode,SUM(tb0.fee) wxpayrefundmoney,COUNT(tb0.id) wxpayrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 1 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+        ) as tb15 ON tb15.orgcode = tb1.orgcode
+				LEFT JOIN (-- 支付宝   退款   和笔数
+                    SELECT tb0.orgcode,SUM(tb0.fee) alipayrefundmoney,COUNT(tb0.id) alipayrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+        ) as tb16 ON tb16.orgcode = tb1.orgcode
+				LEFT JOIN (-- 支付宝   退款   和笔数
+                    SELECT tb0.orgcode,SUM(tb0.fee) cashrefundmoney,COUNT(tb0.id) cashrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+        ) as tb17 ON tb17.orgcode = tb1.orgcode
     </select>
     
     

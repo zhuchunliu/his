@@ -1,6 +1,7 @@
 package com.acmed.his.api;
 
 import com.acmed.his.model.Patient;
+import com.acmed.his.model.PatientItem;
 import com.acmed.his.model.dto.OrgPatientNumDto;
 import com.acmed.his.model.dto.PatientCountDto;
 import com.acmed.his.pojo.mo.PatientMo;
@@ -95,35 +96,35 @@ public class PatientApi {
 
     @ApiOperation(value = "分页查询机构患者库")
     @GetMapping("getPatientPoolByPage")
-    public ResponseResult<PageResult<Patient>> getPatientPoolByPage(@AccessToken AccessInfo info,
+    public ResponseResult<PageResult<PatientItem>> getPatientPoolByPage(@AccessToken AccessInfo info,
 
                                                                     @ApiParam("页数") @RequestParam(value = "pageNum" )Integer pageNum,
                                                                     @ApiParam("每页记录数") @RequestParam(value = "pageSize" )Integer pageSize
                                                                     ){
-        return ResponseUtil.setSuccessResult(patientManager.getPatientPoolByPage(info.getUser().getOrgCode(),pageNum,pageSize ));
+        return ResponseUtil.setSuccessResult(patientManager.getPatientBlacklistByPage(info.getUser().getOrgCode(),pageNum,pageSize,0));
     }
 
 
     @ApiOperation(value = "分页查询机构患者黑名单库")
     @GetMapping("getPatientBlacklistByPage")
-    public ResponseResult<PageResult<Patient>> getPatientBlacklistByPage(@AccessToken AccessInfo info,
-                                                                         @ApiParam("页数") @RequestParam(value = "pageNum" )Integer pageNum,
-                                                                    @ApiParam("每页记录数") @RequestParam(value = "pageSize" )Integer pageSize){
-        return ResponseUtil.setSuccessResult(patientManager.getPatientBlacklistByPage(info.getUser().getOrgCode(),pageNum,pageSize ));
+    public ResponseResult<PageResult<PatientItem>> getPatientBlacklistByPage(@AccessToken AccessInfo info,
+                                                                             @ApiParam("页数") @RequestParam(value = "pageNum" )Integer pageNum,
+                                                                             @ApiParam("每页记录数") @RequestParam(value = "pageSize" )Integer pageSize){
+        return ResponseUtil.setSuccessResult(patientManager.getPatientBlacklistByPage(info.getUser().getOrgCode(),pageNum,pageSize,1 ));
     }
 
 
     @ApiOperation(value = "添加黑名单")
     @GetMapping("addPatientBlacklist")
     public ResponseResult addPatientBlacklist(@AccessToken AccessInfo info,
-                                                                         @ApiParam("患者id") @RequestParam(value = "patientId" )String patientId){
-        return ResponseUtil.setSuccessResult(patientManager.addPatientBlacklist(info.getUser().getOrgCode(),patientId,info.getUserId()));
+                                                                         @ApiParam("患者库id") @RequestParam(value = "id" )String id){
+        return ResponseUtil.setSuccessResult(patientManager.updatePatientItemBlackFlag(info.getUser().getOrgCode(),info.getUser().getId(),id,1));
     }
 
     @ApiOperation(value = "移除黑名单")
     @GetMapping("removedPatientBlacklist")
     public ResponseResult removedPatientBlacklist(@AccessToken AccessInfo info,
-                                                    @ApiParam("黑名单id") @RequestParam(value = "id" )Integer id){
-        return ResponseUtil.setSuccessResult(patientManager.removedPatientBlacklist(id,info.getUserId()));
+                                                    @ApiParam("患者库id") @RequestParam(value = "id" )String id){
+        return ResponseUtil.setSuccessResult(patientManager.updatePatientItemBlackFlag(info.getUser().getOrgCode(),info.getUser().getId(),id,0));
     }
 }

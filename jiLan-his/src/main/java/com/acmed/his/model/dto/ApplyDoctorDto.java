@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class ApplyDoctorDto {
     @ApiModelProperty("挂号单id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("挂号单号 医疗机构id+排序")
     private String clinicNo;
@@ -26,7 +26,7 @@ public class ApplyDoctorDto {
     private String orgName;
 
     @ApiModelProperty("患者id")
-    private Integer patientId;
+    private String patientId;
 
     @ApiModelProperty("患者姓名")
     private String patientName;
@@ -46,22 +46,10 @@ public class ApplyDoctorDto {
     @ApiModelProperty("付费类型")
     private String feeType;
 
-    @ApiModelProperty("创建时间")
-    private String createAt;
-
-    @ApiModelProperty("修改时间")
-    private String modifyAt;
-
-    @ApiModelProperty("创建用户")
-    private String createBy;
-
-    @ApiModelProperty("修改用户")
-    private String modifyBy;
-
     @ApiModelProperty("过期时间")
     private String expire;
 
-    @ApiModelProperty("状态 0:未就诊;1:已就诊")
+    @ApiModelProperty("状态 0:未就诊;1:已就诊,2:已取消")
     private String status;
 
     @ApiModelProperty("科室名字")
@@ -81,4 +69,13 @@ public class ApplyDoctorDto {
 
     @ApiModelProperty("身份证")
     private String idCard;
+
+    @ApiModelProperty("预约时间")
+    private String appointmentTime;
+
+    @ApiModelProperty("是否是初诊   0不是初诊   1  是初诊")
+    private Integer isFirst;
+
+    @ApiModelProperty("头像")
+    private String avatar;
 }

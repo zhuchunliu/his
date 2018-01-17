@@ -1,10 +1,10 @@
 package com.acmed.his.service;
 
 import com.acmed.his.constants.StatusCode;
-import com.acmed.his.dao.PatientBlacklistMapper;
+import com.acmed.his.dao.PatientItemMapper;
 import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.Patient;
-import com.acmed.his.model.PatientBlacklist;
+import com.acmed.his.model.PatientItem;
 import com.acmed.his.model.dto.OrgPatientNumDto;
 import com.acmed.his.model.dto.PatientCountDto;
 import com.acmed.his.pojo.mo.WxRegistPatientMo;
@@ -14,7 +14,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.soecode.wxtools.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,20 @@ public class PatientManager {
     private WxManager wxManager;
 
     @Autowired
-    private PatientBlacklistMapper patientBlacklistMapper;
+    private PatientItemMapper patientItemMapper;
+
+
+    /**
+     * 添加子表
+     * @param patientItem
+     * @return
+     */
+    public int addPatinetItem(PatientItem patientItem){
+        patientItem.setId(UUIDUtil.generate());
+        patientItem.setBlackFlag(0);
+        patientItem.setCreateAt(LocalDate.now().toString());
+        return patientItemMapper.insert(patientItem);
+    }
 
     /**
      * 第三方添加患者信息
@@ -205,16 +217,22 @@ public class PatientManager {
     }
 
     /**
-     * 分页机构患者库
-     * @param orgCode 机构id
-     * @return List<Patient>
+     * 查询患者库
+     * @param orgCode 机构编码
+     * @param pageNum 页码
+     * @param pageSize 每页条数
+     * @param blackFlag 拉黑标记  0 未拉黑 1 已拉黑
+     * @return PageResult<PatientItem>
      */
-    public PageResult<Patient> getPatientPoolByPage(Integer orgCode, Integer pageNum, Integer pageSize){
+    public PageResult<PatientItem> getPatientBlacklistByPage(Integer orgCode, Integer pageNum, Integer pageSize,Integer blackFlag){
+        PatientItem patientItem = new PatientItem();
+        patientItem.setOrgCode(orgCode);
+        patientItem.setBlackFlag(1);
         PageHelper.startPage(pageNum,pageSize);
-        List<Patient> patientPool = patientMapper.getPatientPool(orgCode);
-        PageInfo<Patient> patientPageInfo = new PageInfo<>(patientPool);
-        PageResult<Patient> pageResult = new PageResult<>();
-        pageResult.setData(patientPool);
+        List<PatientItem> select = patientItemMapper.select(patientItem);
+        PageInfo<PatientItem> patientPageInfo = new PageInfo<>(select);
+        PageResult<PatientItem> pageResult = new PageResult<>();
+        pageResult.setData(select);
         pageResult.setTotal(patientPageInfo.getTotal());
         pageResult.setPageNum(pageNum);
         pageResult.setPageSize(pageSize);
@@ -222,67 +240,27 @@ public class PatientManager {
     }
 
     /**
-     * 机构黑名单库
-     * @param orgCode 机构id
-     * @return List<Patient>
+     * 患者库黑名单操作
+     * @param orgCode 机构code
+     * @param userId 用户id
+     * @param id 患者库id
+     * @param blackFlag 删除标记
+     * @return 0失败 1成功
      */
-    public List<Patient> getPatientBlacklist(Integer orgCode){
-        return patientMapper.getPatientBlacklist(orgCode);
-    }
-
-    /**
-     * 分页查询机构黑名单库
-     * @param orgCode 机构id
-     * @return List<Patient>
-     */
-    public PageResult<Patient> getPatientBlacklistByPage(Integer orgCode, Integer pageNum, Integer pageSize){
-        PageHelper.startPage(pageNum,pageSize);
-        List<Patient> patientPool = patientMapper.getPatientBlacklist(orgCode);
-        PageInfo<Patient> patientPageInfo = new PageInfo<>(patientPool);
-        PageResult<Patient> pageResult = new PageResult<>();
-        pageResult.setData(patientPool);
-        pageResult.setTotal(patientPageInfo.getTotal());
-        pageResult.setPageNum(pageNum);
-        pageResult.setPageSize(pageSize);
-        return pageResult;
-    }
-
-    /**
-     * 拉入名名单
-     * @param orgCode
-     * @param patientId
-     * @param userId
-     * @return
-     */
-    public int addPatientBlacklist(Integer orgCode,String patientId,Integer userId){
-        PatientBlacklist param = new PatientBlacklist();
-        param.setOrgCode(orgCode);
-        param.setPatientId(patientId);
-        param.setRemoved("0");
-        List<PatientBlacklist> select = patientBlacklistMapper.select(param);
-        if (select.size()==0){
-            param.setCreateBy(userId.toString());
-            param.setCreateAt(LocalDate.now().toString());
-            patientBlacklistMapper.insert(param);
-            return 1;
+    public int updatePatientItemBlackFlag(Integer orgCode,Integer userId,String id,Integer blackFlag){
+        PatientItem patientItem = new PatientItem();
+        patientItem.setId(id);
+        patientItem.setOrgCode(orgCode);
+        PatientItem patientItem1 = patientItemMapper.selectOne(patientItem);
+        if (patientItem1!=null){
+            patientItem.setBlackFlag(blackFlag);
+            patientItem.setModifyAt(LocalDate.now().toString());
+            patientItem.setModifyBy(userId.toString());
+            return patientItemMapper.updateByPrimaryKeySelective(patientItem);
         }else {
             return 0;
         }
-    }
 
-    /**
-     * 移除黑名单
-     * @param id 黑名单id
-     * @param userId 操作人id
-     * @return
-     */
-    public int removedPatientBlacklist(Integer id,Integer userId){
-        PatientBlacklist param = new PatientBlacklist();
-        param.setRemoved("1");
-        param.setId(id);
-        param.setModifyAt(LocalDate.now().toString());
-        param.setModifyBy(userId.toString());
-        return patientBlacklistMapper.updateByPrimaryKeySelective(param);
     }
 
 }

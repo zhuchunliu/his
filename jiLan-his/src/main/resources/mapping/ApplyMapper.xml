@@ -63,9 +63,9 @@
         </trim>
     </select>
 
-    <select id="getByPinyinOrNameOrClinicnoTiaojian" resultType="com.acmed.his.model.Apply">
-        SELECT t1.*,t2.idcard,t2.mobile FROM t_b_apply t1
-        LEFT JOIN t_b_patient AS  t2  ON t2.id = t1.patientid
+    <select id="getByPinyinOrNameOrClinicnoTiaojian" resultType="com.acmed.his.model.dto.ApplyDoctorDto">
+        SELECT t1.*,t2.idcard,t2.mobile,t2.avatar FROM t_b_apply t1
+        LEFT JOIN t_b_patient_item AS  t2  ON t2.patientid = t1.patientid
         <trim prefixOverrides="and" prefix="where">
             <if test="@Ognl@isNotEmpty(startTime)">
                 <![CDATA[ AND t1.appointmenttime >= #{startTime} ]]>
@@ -80,7 +80,7 @@
                 and t1.orgcode = #{orgCode}
             </if>
             <if test="@Ognl@isNotEmpty(param)">
-                and (patientname like CONCAT('%',#{param},'%') or pinyin like CONCAT('%',#{param},'%')) OR clinicno like CONCAT('%',#{param},'%'))
+                and (patientname like CONCAT('%',#{param},'%') or pinyin like CONCAT('%',#{param},'%') OR clinicno like CONCAT('%',#{param},'%'))
             </if>
             <if test="@Ognl@isNotEmpty(status)">
                 and t1.status = #{status}
@@ -100,9 +100,5 @@
         SELECT COUNT(t1.id) chuZhen,COUNT(t2.id) fuZhen ,(COUNT(t1.id) +   COUNT(t2.id) ) as total  FROM t_b_apply t1
         LEFT JOIN t_b_apply AS t2 ON t2.orgcode = t1.orgcode
         WHERE t1.orgcode = #{orgCode} AND t1.isfirst = 1 AND t2.isfirst = 0 AND t1.ispaid = 1 AND t2.ispaid = 1
-    </select>
-
-    <select id="">
-
     </select>
 </mapper>

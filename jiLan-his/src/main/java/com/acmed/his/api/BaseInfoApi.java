@@ -29,7 +29,7 @@ public class BaseInfoApi {
 
     @ApiOperation(value = "根据等级查询行政区划列表")
     @GetMapping("area/level")
-    public ResponseResult<List<Area>> getAreasByLevel(@ApiParam("等级") @RequestParam("level") Integer level){
+    public ResponseResult<List<Area>> getAreasByLevel(@ApiParam("等级 1省  2 市  3区") @RequestParam("level") Integer level){
         List<Area> areasByLevel = baseInfoManager.getAreasByLevel(level);
         return ResponseUtil.setSuccessResult(areasByLevel);
     }

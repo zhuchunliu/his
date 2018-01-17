@@ -255,4 +255,38 @@ public class ApplyManager {
         applyDoctorDtoPageResult.setData(byPinyinOrNameOrClinicnoTiaojian);
         return applyDoctorDtoPageResult;
     }
+
+    public ResponseResult refund(String applyId, Double fee, String feeType, UserInfo userInfo){
+        Apply apply = applyMapper.selectByPrimaryKey(applyId);
+        if (apply!=null){
+            if(StringUtils.equals("1",apply.getIsPaid())){
+                Integer orgCode = userInfo.getOrgCode();
+                Integer userId = userInfo.getId();
+                PayRefuse payRefuse = new PayRefuse();
+                payRefuse.setOrgCode(orgCode);
+                payRefuse.setApplyId(applyId);
+                payRefuse.setSource("1");
+                List<PayRefuse> byPayRefuse = payManager.getByPayRefuse(payRefuse);
+                if (byPayRefuse.size() ==0){
+                    // 还没退款
+                    payRefuse.setFeeType(feeType);
+                    payRefuse.setFee(new BigDecimal(fee));
+                    payRefuse.setCreateBy(userId.toString());
+                    payRefuse.setPatientId(apply.getPatientId());
+                    payManager.addPayRefuse(payRefuse);
+                    return ResponseUtil.setSuccessResult();
+                }else {
+                    // 已经退款
+                    return ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_REFUND,"请不要重复退款");
+                }
+            }else if(StringUtils.equals("0",apply.getIsPaid())){
+                return ResponseUtil.setErrorMeg(StatusCode.FAIL,"还未支付");
+            }else {
+                return ResponseUtil.setErrorMeg(StatusCode.FAIL,"程序出错，请联系管理员！");
+            }
+        }else {
+            logger.error("收款端传入非正常数据 操作用户为"+userInfo.toString());
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"挂号单号不存在");
+        }
+    }
 }

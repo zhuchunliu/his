@@ -2,6 +2,7 @@ package com.acmed.his.service;
 
 import com.acmed.his.HisApplication;
 import com.acmed.his.model.Patient;
+import com.acmed.his.model.PatientItem;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,4 +62,13 @@ public class PatientManagerTest {
     public void wxRegistPatient() throws Exception {
     }
 
+    @Test
+    public void addPatinetItem(){
+        PatientItem patientItem = new PatientItem();
+        patientItem.setOrgCode(3);
+        patientItem.setIdCard("335252525");
+        patientItem.setAvatar("dfdsfdsfdsfsdfsd");
+        patientItem.setMobile("1234");
+        patientManager.addPatinetItem(patientItem);
+    }
 }

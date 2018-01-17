@@ -43,19 +43,4 @@
         )	as t3 ON t1.orgcode = t3.orgCode
         WHERE t1.orgcode = #{orgCode}
     </select>
-
-
-    <select id="getPatientPool" resultType="com.acmed.his.model.Patient">
-        SELECT t1.* FROM t_b_patient t1
-        WHERE t1.id NOT IN (
-            SELECT t2.patientid FROM tb_patient_blacklist t2 WHERE t2.orgcode = #{orgCode} AND t2.removed = 0
-        ) AND t1.id  IN(SELECT t1.patientid FROM t_b_apply t1 WHERE orgcode = #{orgCode} GROUP BY t1.patientid) ORDER BY t1.modifyat DESC
-    </select>
-
-    <select id="getPatientBlacklist" resultType="com.acmed.his.model.Patient">
-        SELECT t1.* FROM t_b_patient t1
-        WHERE t1.id IN (
-            SELECT t2.patientid FROM tb_patient_blacklist t2 WHERE t2.orgcode = #{orgCode} AND t2.removed = 0
-        ) ORDER BY modifyat DESC
-    </select>
 </mapper>

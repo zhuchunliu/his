@@ -117,7 +117,7 @@
 
     <select id="getWorkloadDayAndTotal" resultType="com.acmed.his.model.dto.WorkloadDayAndTotalDto">
         SELECT * FROM
-        (SELECT SUM(t1.applynum) applynumday FROM t_r_workload_day t1 WHERE t1.orgcode = #{orgCode} AND DATE(t1.date) = DATE(#{date})) as t3, -- 某天的
+        (SELECT COUNT(t1.applynum) applynumday FROM t_r_workload_day t1 WHERE t1.orgcode = #{orgCode} AND DATE(t1.date) = DATE(#{date})) as t3, -- 某天的
         (SELECT SUM(t1.incomefee) incomefeetotal,SUM(t1.applyfee) applyfeetotal,SUM(t1.applyrefundfee) applyrefundfeetotal FROM t_r_workload_day t1 WHERE t1.orgcode = #{orgCode} ) as t4 -- 总的
     </select>
 
