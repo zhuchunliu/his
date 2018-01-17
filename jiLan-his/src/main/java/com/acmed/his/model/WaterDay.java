@@ -56,10 +56,10 @@ public class WaterDay {
     private Integer registeredNum;
 
     @ApiModelProperty("检查金额")
-    private BigDecimal examineMoney;
+    private BigDecimal prescriptionMoney;
 
     @ApiModelProperty("检查次数")
-    private Integer examineNum;
+    private Integer prescriptionNum;
 
     @ApiModelProperty("总支付金额")
     private BigDecimal payMoney;
@@ -80,10 +80,10 @@ public class WaterDay {
     private Integer registeredRefundNum;
 
     @ApiModelProperty("检查退款金额")
-    private BigDecimal examineRefundMoney;
+    private BigDecimal prescriptionRefundMoney;
 
     @ApiModelProperty("检查退款次数")
-    private Integer examineRefundNum;
+    private Integer prescriptionRefundNum;
 
     @ApiModelProperty("药支付金额")
     private BigDecimal drugMoney;

@@ -15,16 +15,16 @@
         IFNULL(tb4.xianjinnum,0) as cashnum,  -- 收款现金次数
         IFNULL(tb5.jiuzhennum,0) as  registerednum, -- 就诊数
         IFNULL(tb5.jiuzhenmoney,0) as  registeredmoney, -- 就诊收入
-        IFNULL(tb8.prescriptionnum,0) as  examinenum, -- 处方数
-        IFNULL(tb8.prescriptionmoney,0) as  examinemoney, -- 处方收入
+        IFNULL(tb8.prescriptionnum,0) as  prescriptionnum, -- 处方数
+        IFNULL(tb8.prescriptionmoney,0) as  prescriptionmoney, -- 处方收入
         IFNULL(tb6.paynum,0) as  paynum,  -- 支付数
         IFNULL(tb6.paymoney,0) as  paymoney,  -- 支付金额
         IFNULL(tb7.refundnum,0) as  refundnum,-- 退款次数
         IFNULL(tb7.refundmoney,0) as  refundmoney,  -- 退款总金额
         IFNULL(tb9.registeredrefundnum,0) as  registeredrefundnum, -- 挂号退款数
         IFNULL(tb9.registeredrefundmoney,0) as  registeredrefundmoney, -- 挂号退款金额
-        IFNULL(tb10.prescriptionrefundnum,0) as  examinerefundnum, -- 检查退款数
-        IFNULL(tb10.prescriptionrefundmoney,0) as  examinerefundmoney, -- 检查退款金额
+        IFNULL(tb10.prescriptionrefundnum,0) as  prescriptionrefundnum, -- 检查退款数
+        IFNULL(tb10.prescriptionrefundmoney,0) as  prescriptionrefundmoney, -- 检查退款金额
 
         IFNULL(tb11.drugnum,0) as  drugnum, -- 药支付次数
         IFNULL(tb11.drugmoney,0) as  drugmoney, -- 药支付金额
@@ -86,8 +86,8 @@
 				LEFT JOIN (-- 支付宝   退款   和笔数
                     SELECT tb0.orgcode,SUM(tb0.fee) alipayrefundmoney,COUNT(tb0.id) alipayrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb16 ON tb16.orgcode = tb1.orgcode
-				LEFT JOIN (-- 支付宝   退款   和笔数
-                    SELECT tb0.orgcode,SUM(tb0.fee) cashrefundmoney,COUNT(tb0.id) cashrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+				LEFT JOIN (-- 現金   退款   和笔数
+                    SELECT tb0.orgcode,SUM(tb0.fee) cashrefundmoney,COUNT(tb0.id) cashrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 0 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb17 ON tb17.orgcode = tb1.orgcode
     </select>
     
@@ -125,21 +125,41 @@
         SUM(registeredrefundnum) registeredrefundnum,
         SUM(registeredrefundmoney) registeredrefundmoney,
         SUM(prescriptionrefundnum) prescriptionrefundnum,
-        SUM(prescriptionrefundmoney) prescriptionrefundmoney
+        SUM(prescriptionrefundmoney) prescriptionrefundmoney,
+
+
+        SUM(drugnum) as  drugnum, -- 药支付次数
+        SUM(drugmoney) as  drugmoney, -- 药支付金额
+        SUM(drugrefundnum) as  drugrefundnum, -- 药退款次数
+        SUM(drugrefundmoney) as  drugrefundmoney, -- 药退款金额
+        SUM(appendnum) as  appendnum, -- 附加费用支付次数
+        SUM(appendmoney) as  appendmoney, -- 附加费用支付金额
+        SUM(appendrefundnum) as  appendrefundnum, -- 附加费用退款次数
+        SUM(appendrefundmoney) as  appendrefundmoney, -- 附加费用退款金额
+        SUM(wxpayrefundnum) as  wxpayrefundnum, -- 微信退款次数
+        SUM(wxpayrefundmoney) as  wxpayrefundmoney, -- 微信退款金额
+        SUM(alipayrefundnum) as  alipayrefundnum, -- 支付宝退款次数
+        SUM(alipayrefundmoney) as  alipayrefundmoney, -- 支付宝退款金额
+        SUM(cashrefundnum) as  cashrefundnum, -- 现金退款次数
+        SUM(cashrefundmoney) as  cashrefundmoney -- 现金退款金额
         FROM t_r_water_day t1
         WHERE orgcode = #{orgCode} AND YEAR(date) = YEAR(#{date})
         GROUP BY MONTH(date)
     </select>
 
     <select id="waterDetailList" resultType="com.acmed.his.model.dto.WaterDetailDto">
-        SELECT id,isin as isIn,fee,feetype feeType,source,createat time
+        SELECT t1.id,t1.isin as isIn,t1.fee,t1.feetype feeType,t1.source,t1.createat time,t2.patientname,t2.age
         FROM (
-        SELECT id , 1 as isin , fee ,feetype ,source,createat
+        SELECT id , 1 as isin , fee ,feetype ,source,createat,patientid
         FROM t_b_pay_statements WHERE orgcode  =#{orgCode} AND DATE(createat) BETWEEN DATE(#{startTime}) AND DATE(#{endTime})
-        UNION ALL SELECT id , 0 as isin , fee ,feetype ,source,createat
+        UNION ALL SELECT id , 0 as isin , fee ,feetype ,source,createat,patientid
         FROM t_b_pay_refuse WHERE orgcode = #{orgCode} AND DATE(createat) BETWEEN DATE(#{startTime}) AND DATE(#{endTime})
-        )tmp
-        ORDER BY createat DESC
+        ) t1
+        LEFT JOIN
+        (
+            SELECT * FROM t_b_patient_item t0 WHERE t0.orgcode =#{orgCode}
+        ) as t2 ON t2.patientid = t1.patientid
+        ORDER BY t1.createat DESC
     </select>
 
 
@@ -152,6 +172,68 @@
         LEFT JOIN (
             SELECT (SUM(t0.paymoney-t0.refundmoney))monthTotal , t0.orgcode  FROM t_r_water_day t0 WHERE MONTH(t0.date) = MONTH(#{date}) AND t0.orgcode = #{orgCode}
         ) AS t3 ON t3.orgcode = t1.orgcode
+        WHERE t1.orgcode = #{orgCode}
+    </select>
+
+    <select id="getShouzhiCountBetweenDateAndDate" resultType="com.acmed.his.model.dto.ShouzhiCountDto">
+        SELECT
+        IFNULL(t2.fee,0) as applymoney,
+        IFNULL(t3.fee,0) as drugmoney,
+        IFNULL(t4.fee,0) as prescriptionmoney,
+        IFNULL(t5.fee,0) as appendmoney,
+        IFNULL(t6.fee,0) as cashmoney,
+        IFNULL(t7.fee,0) as wxpaymoney,
+        IFNULL(t8.fee,0) as alipaymoney,
+        IFNULL(t9.fee,0) as applyrefundmoney,
+        IFNULL(t10.fee,0) as drugrefundmoney,
+        IFNULL(t11.fee,0) as prescriptionrefundmoney,
+        IFNULL(t12.fee,0) as appendrefundmoney,
+        IFNULL(t13.fee,0) as cashrefundmoney,
+        IFNULL(t14.fee,0) as wxpayrefundmoney,
+        IFNULL(t15.fee,0) as alipayrefundmoney
+        FROM t_p_s_org t1
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.source = 1 AND t0.orgcode = #{orgCode}  AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t2 ON t2.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.source = 2 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t3 ON t3.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.source = 3 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t4 ON t4.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee,t0.orgcode  FROM t_b_pay_statements t0 WHERE t0.source = 4 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t5 ON t5.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 0 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t6 ON t6.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 1 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t7 ON t7.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 2 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t8 ON t8.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.source = 1 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t9 ON t9.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.source = 2 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t10 ON t10.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.source = 3 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t11 ON t11.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee,t0.orgcode  FROM t_b_pay_statements t0 WHERE t0.source = 4 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+        ) AS t12 ON t12.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 0 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
+        ) AS t13 ON t13.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 1 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
+        ) AS t14 ON t14.orgcode = t1.orgcode
+        LEFT JOIN (
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 2 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
+        ) AS t15 ON t15.orgcode = t1.orgcode
         WHERE t1.orgcode = #{orgCode}
     </select>
 </mapper>

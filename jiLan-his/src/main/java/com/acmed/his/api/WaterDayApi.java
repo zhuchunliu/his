@@ -2,16 +2,14 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.WaterDay;
+import com.acmed.his.model.dto.ShouzhiCountDto;
 import com.acmed.his.model.dto.WaterDayAndMonthCountDto;
 import com.acmed.his.model.dto.WaterDetailDto;
 import com.acmed.his.pojo.vo.WaterDetailVo;
 import com.acmed.his.service.WaterDayManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.util.NumberFormtUtil;
-import com.acmed.his.util.PageResult;
-import com.acmed.his.util.ResponseResult;
-import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.util.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -119,5 +117,17 @@ public class WaterDayApi {
         LocalDate today = LocalDate.now();
         LocalDate localDate = today.plusDays(1);
         return ResponseUtil.setSuccessResult(waterDayManager.getWaterDayAndMonthCount(localDate.toString(),info.getUser().getOrgCode()));
+    }
+
+
+    @ApiOperation(value = "诊所收支统计汇总")
+    @GetMapping("zhensuoShouzhiCount")
+    public ResponseResult<ShouzhiCountDto> getShouzhiCountDto(
+            @ApiParam("开始时间 2017-01-01   ") @RequestParam(value = "startTime")String startTime,
+            @ApiParam("结束时间 2018-01-20   ") @RequestParam(value = "endTime")String endTime,
+            @AccessToken AccessInfo info){
+        startTime = DateTimeUtil.parsetLocalDateStart(startTime).toString();
+        endTime = DateTimeUtil.parsetLocalDateEnd(endTime).toString();
+        return ResponseUtil.setSuccessResult(waterDayManager.getShouzhiCountDto(startTime,endTime,info.getUser().getOrgCode()));
     }
 }

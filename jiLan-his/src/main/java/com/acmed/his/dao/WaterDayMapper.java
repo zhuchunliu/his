@@ -1,6 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.WaterDay;
+import com.acmed.his.model.dto.ShouzhiCountDto;
 import com.acmed.his.model.dto.WaterDayAndMonthCountDto;
 import com.acmed.his.model.dto.WaterDetailDto;
 import com.acmed.his.util.TkMapper;
@@ -70,4 +71,6 @@ public interface WaterDayMapper extends TkMapper<WaterDay>{
      * @return WaterDayAndMonthCountDto
      */
     WaterDayAndMonthCountDto getWaterDayAndMonthCount(@Param("orgCode")Integer orgCode,@Param("date")String date);
+
+    ShouzhiCountDto getShouzhiCountBetweenDateAndDate(@Param("orgCode")Integer orgCode, @Param("startTime")String startTime, @Param("endTime")String endTime);
 }

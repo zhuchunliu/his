@@ -2,6 +2,7 @@ package com.acmed.his.service;
 
 import com.acmed.his.dao.WaterDayMapper;
 import com.acmed.his.model.WaterDay;
+import com.acmed.his.model.dto.ShouzhiCountDto;
 import com.acmed.his.model.dto.WaterDayAndMonthCountDto;
 import com.acmed.his.model.dto.WaterDetailDto;
 import com.acmed.his.util.PageResult;
@@ -121,4 +122,7 @@ public class WaterDayManager {
         return waterDayMapper.getWaterDayAndMonthCount(orgCode,date);
     }
 
+    public ShouzhiCountDto getShouzhiCountDto(String startTime, String endTime, Integer orgCode){
+        return waterDayMapper.getShouzhiCountBetweenDateAndDate(orgCode,startTime,endTime);
+    }
 }

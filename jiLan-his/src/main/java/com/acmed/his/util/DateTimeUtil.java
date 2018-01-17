@@ -58,7 +58,7 @@ public class DateTimeUtil {
             date+=" 00:00:00";
         }
         if(date.length() > 19){
-            date = date.substring(0,9);
+            date = date.substring(0,10);
         }
         return LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
@@ -68,7 +68,7 @@ public class DateTimeUtil {
             date+=" 23:59:59";
         }
         if(date.length() > 19){
-            date = date.substring(0,9);
+            date = date.substring(0,10);
         }
         return LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
