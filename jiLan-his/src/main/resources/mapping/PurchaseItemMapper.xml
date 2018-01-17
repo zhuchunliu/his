@@ -36,4 +36,37 @@
             <![CDATA[  AND t2.createat <= #{endTime} ]]>
         </if>
     </select>
+
+    <select id = "getBatchList" resultType="com.acmed.his.model.dto.PurchaseStockDto">
+        select t1.batchnumber,t3.`name`,t3.goodsname,t3.category,t4.`name` as manufacturerName,
+        t3.spec,t1.num,t1.bid,t1.retailprice,t1.retailprice from t_b_purchase_item t1
+        join t_b_purchase t2 on t1.purchaseid = t2.id
+        join t_b_drug t3 on t1.drugcode = t3.drugcode
+        left JOIN t_b_manufacturer t4 on t3.manufacturer = t4.id
+        where t2.orgcode = #{orgCode} and t2.status = '1' and t2.removed = '0'
+        <if test="@Ognl@isNotEmpty(name) ">
+            and (
+            t3.name like concat('%', #{name} , '%') OR
+            t3.pinYin like concat('%', #{name} , '%') OR
+            t3.goodsName like concat('%', #{name} , '%') OR
+            t3.goodsPinYin like concat('%', #{name} , '%')
+            )
+        </if>
+    </select>
+    
+    
+    <select id="getBatchTotal" resultType="java.lang.Integer">
+        select count(1) from t_b_purchase_item t1
+        join t_b_purchase t2 on t1.purchaseid = t2.id
+        join t_b_drug t3 on t1.drugcode = t3.drugcode
+        where t2.orgcode = #{orgCode} and t2.status = '1'  and t2.removed = '0'
+        <if test="@Ognl@isNotEmpty(name) ">
+            and (
+            t3.name like concat('%', #{name} , '%') OR
+            t3.pinYin like concat('%', #{name} , '%') OR
+            t3.goodsName like concat('%', #{name} , '%') OR
+            t3.goodsPinYin like concat('%', #{name} , '%')
+            )
+        </if>
+    </select>
 </mapper>

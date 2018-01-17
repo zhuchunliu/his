@@ -55,8 +55,8 @@ public class CommonManager {
     }
 
     public static void main(String[] args) {
-        java.text.DecimalFormat df = new java.text.DecimalFormat("00000");
+        java.text.MessageFormat df = new java.text.MessageFormat("X000001000000");
 
-        System.err.println(df.format(10));
+        System.err.println("X000001"+String.format("%06d",10));
     }
 }

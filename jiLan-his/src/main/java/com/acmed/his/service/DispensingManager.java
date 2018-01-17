@@ -162,8 +162,8 @@ public class DispensingManager {
      *
      * @param applyId
      */
-    public List<Map<String,Object>> getRefundList(String applyId) {
-        return preItemMapper.getRefundList(applyId);
+    public List<Map<String,Object>> getRefundList(String applyId,Integer type) {
+        return preItemMapper.getRefundList(applyId,type);
     }
 
     @Transactional

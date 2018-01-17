@@ -5,7 +5,9 @@ import com.acmed.his.dao.SupplyMapper;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
 import com.acmed.his.model.dto.DrugDto;
+import com.acmed.his.model.dto.DrugStockDto;
 import com.acmed.his.pojo.mo.DrugMo;
+import com.acmed.his.pojo.mo.DrugQueryMo;
 import com.acmed.his.pojo.vo.DrugDictVo;
 import com.acmed.his.pojo.vo.DrugVo;
 import com.acmed.his.service.DrugManager;
@@ -49,15 +51,15 @@ public class DrugApi {
 
     @ApiOperation(value = "药品信息列表")
     @PostMapping("/list")
-    public ResponseResult<PageResult<DrugVo>> getDrugList(@RequestBody(required = false) PageBase<DrugMo> pageBase,
+    public ResponseResult<PageResult<DrugVo>> getDrugList(@RequestBody(required = false) PageBase<DrugQueryMo> pageBase,
                                                           @AccessToken AccessInfo info){
         List<DrugDto> list = drugManager.getDrugList(info.getUser().getOrgCode(),
-                Optional.ofNullable(pageBase.getParam()).map(DrugMo::getName).orElse(null),
-                Optional.ofNullable(pageBase.getParam()).map(DrugMo::getCategory).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null),
                 pageBase.getPageNum(), pageBase.getPageSize());
         int total = drugManager.getDrugTotal(info.getUser().getOrgCode(),
-                Optional.ofNullable(pageBase.getParam()).map(DrugMo::getName).orElse(null),
-                Optional.ofNullable(pageBase.getParam()).map(DrugMo::getCategory).orElse(null));
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null));
 
         List<DrugVo> voList = Lists.newArrayList();
         list.forEach(obj->{
@@ -76,15 +78,15 @@ public class DrugApi {
 
     @ApiOperation(value = "获取药品字典表")
     @PostMapping("/dict")
-    public ResponseResult<PageResult<DrugDictVo>> getDrugDictList(@RequestBody(required = false) PageBase<DrugMo> pageBase,
+    public ResponseResult<PageResult<DrugDictVo>> getDrugDictList(@RequestBody(required = false) PageBase<DrugQueryMo> pageBase,
                                                                   @AccessToken AccessInfo info){
         List<DrugDict> list = drugManager.getDrugDictList(info.getUser().getOrgCode(),
-                Optional.ofNullable(pageBase.getParam()).map(DrugMo::getName).orElse(null),
-                Optional.ofNullable(pageBase.getParam()).map(DrugMo::getCategory).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null),
                 pageBase.getPageNum(), pageBase.getPageSize());
         int total = drugManager.getDrugDictTotal(info.getUser().getOrgCode(),
-                Optional.ofNullable(pageBase.getParam()).map(DrugMo::getName).orElse(null),
-                Optional.ofNullable(pageBase.getParam()).map(DrugMo::getCategory).orElse(null));
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null));
 
         List<DrugDictVo> voList = Lists.newArrayList();
         list.forEach(obj->{
@@ -111,8 +113,8 @@ public class DrugApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "添加药品信息")
-    @PostMapping("/save")
+    @ApiOperation(value = "批量添加药品信息")
+    @PostMapping("/batch")
     public ResponseResult saveDrug(@ApiParam("{\"codes\":\"XXX,XXX\"}  code为药品编码集合，逗号间隔") @RequestBody String param,
                                    @AccessToken AccessInfo info){
 
@@ -126,30 +128,52 @@ public class DrugApi {
 
     @ApiOperation(value = "更新药品信息")
     @PostMapping("/update")
-    public ResponseResult saveDrug(@RequestBody Drug drug,@AccessToken AccessInfo info){
-        drug.setCreateBy(info.getUserId().toString());
-        drugManager.saveDrug(drug);
+    public ResponseResult saveDrug(@RequestBody DrugMo mo,@AccessToken AccessInfo info){
+        drugManager.saveDrug(mo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
 
-    @ApiOperation(value = "拼音模糊查询")
-    @GetMapping("/pinyin")
-    public ResponseResult<List<Drug>> selectDrugsByDrug(@ApiParam("拼音模糊查询") @RequestParam(value = "pinYin") String pinYin){
-        List<Drug> drugsByDrug = drugManager.getDrugsByPinYinLike(pinYin);
-        return ResponseUtil.setSuccessResult(drugsByDrug);
-    }
-
     @ApiOperation(value = "根据id查询药品详情")
-    @GetMapping("/id")
+    @GetMapping("/detail")
     public ResponseResult<DrugVo> selectDrugsById(@ApiParam("药品id") @RequestParam("id") Integer id){
         Drug drug = drugManager.getDrugById(id);
         DrugVo vo = new DrugVo();
         BeanUtils.copyProperties(drug,vo);
         vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
                 map(obj->obj.getName()).orElse(""));
-        vo.setSupplyName(Optional.ofNullable(drug.getSupply()).map(obj->supplyMapper.selectByPrimaryKey(obj)).
-                map(obj->obj.getSupplyerName()).orElse(""));
         return ResponseUtil.setSuccessResult(vo);
+    }
+
+    @ApiOperation(value = "库存查询")
+    @PostMapping("/stock")
+    public ResponseResult<PageResult<DrugStockDto>> stock(@RequestBody(required = false) PageBase<String> page,
+                                              @AccessToken AccessInfo info){
+        List<DrugStockDto> list = drugManager.getStockList(page.getPageNum(),page.getPageSize(),page.getParam(),info.getUser());
+        Integer total = drugManager.getStockTotal(page.getParam(),info.getUser());
+        PageResult result = new PageResult();
+        result.setData(list);
+        result.setTotal((long)total);
+        return ResponseUtil.setSuccessResult(result);
+    }
+
+    @ApiOperation(value = "调价/调整库存")
+    @PostMapping("/stock/modify")
+    public ResponseResult modifyPrice(@ApiParam("{\"id\":\"\",\"price\":\"\",\"num\":\"\"}") @RequestBody String param,
+                                      @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+            return ResponseUtil.setParamEmptyError("id");
+        }
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("price")){
+            return ResponseUtil.setParamEmptyError("price");
+        }
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("num")){
+            return ResponseUtil.setParamEmptyError("num");
+        }
+        drugManager.modifyPrice(JSONObject.parseObject(param).getInteger("id"),
+                JSONObject.parseObject(param).getDouble("price"),
+                JSONObject.parseObject(param).getDouble("num"),
+                info.getUser());
+        return ResponseUtil.setSuccessResult();
     }
 }

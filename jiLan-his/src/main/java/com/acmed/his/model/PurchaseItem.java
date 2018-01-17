@@ -27,7 +27,7 @@ public class PurchaseItem {
     private String purchaseId;
 
     @ApiModelProperty("采购数量")
-    private Integer num;
+    private Double num;
 
     @ApiModelProperty("采购单位")
     private String unit;
@@ -43,6 +43,12 @@ public class PurchaseItem {
 
     @ApiModelProperty("采购处方总额")
     private Double retailFee;
+
+    @ApiModelProperty("有效期")
+    private String expiryDate;
+
+    @ApiModelProperty("入库批号")
+    private String batchNumber;
 
     @ApiModelProperty("创建时间")
     private String createAt;

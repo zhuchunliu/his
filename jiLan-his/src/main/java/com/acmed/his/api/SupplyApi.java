@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.model.Supply;
 import com.acmed.his.service.DrugManager;
+import com.acmed.his.service.SupplyManager;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
@@ -25,24 +26,24 @@ import java.util.List;
 @RequestMapping("supply")
 public class SupplyApi {
     @Autowired
-    private DrugManager drugManager;
+    private SupplyManager supplyManager;
 
     @ApiOperation(value = "添加")
     @PostMapping("save")
     public ResponseResult saveSupply(@RequestBody Supply supply){
-        drugManager.saveSupply(supply);
+        supplyManager.saveSupply(supply);
         return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "根据id查询")
     @GetMapping("id")
     public ResponseResult<Supply> getSupplyById(@ApiParam("供应商id") @RequestParam(value = "id" )Integer id){
-        return ResponseUtil.setSuccessResult(drugManager.getSupplyById(id));
+        return ResponseUtil.setSuccessResult(supplyManager.getSupplyById(id));
     }
 
     @ApiOperation(value = "列表分页")
     @GetMapping("list")
     public ResponseResult<PageResult<Supply>> getAllSupplyByPage(@RequestBody PageBase pageBase){
-        return ResponseUtil.setSuccessResult(drugManager.getAllSupplyByPage(pageBase));
+        return ResponseUtil.setSuccessResult(supplyManager.getAllSupplyByPage(pageBase));
     }
 }

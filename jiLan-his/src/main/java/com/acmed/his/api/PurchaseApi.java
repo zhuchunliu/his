@@ -1,11 +1,13 @@
 package com.acmed.his.api;
 
 import com.acmed.his.model.PurchaseMo;
-import com.acmed.his.model.dto.DrugStockDto;
 import com.acmed.his.model.dto.PurchaseDto;
+import com.acmed.his.model.dto.PurchaseStockDto;
 import com.acmed.his.service.PurchaseManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.util.PageBase;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -17,14 +19,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static java.awt.SystemColor.info;
-
 /**
  * 采购API
  * Created by Darren on 2018-01-03
  **/
 @RestController
-@Api(tags = "采购入库/入库查询/库存查询")
+@Api(tags = "药品进销存",description = "采购入库/入库审核/入库批次查询")
 public class PurchaseApi {
 
     @Autowired
@@ -38,7 +38,7 @@ public class PurchaseApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "审核入库")
+    @ApiOperation(value = "入库审核列表")
     @GetMapping("/purchase/audit/list")
     public ResponseResult<PurchaseDto> auditList(@ApiParam("采购单号") @RequestParam(value = "purchaseNo",required = false) String purchaseNo,
                                     @ApiParam("审核状态 0:未审核,1:已审核") @RequestParam(value = "userId",required = false) Integer status,
@@ -70,30 +70,17 @@ public class PurchaseApi {
     }
 
 
-    @ApiOperation(value = "库存查询")
-    @GetMapping("/stock")
-    public ResponseResult<DrugStockDto> stock(@ApiParam("药品名称") @RequestParam(value = "name",required = false) String name,
-                                              @AccessToken AccessInfo info){
-        return ResponseUtil.setSuccessResult(purchaseManager.getStockList(name,info.getUser()));
+    @ApiOperation(value = "批次库存查询")
+    @PostMapping("/batch")
+    public ResponseResult<PageResult<PurchaseStockDto>> batch(@RequestBody(required = false) PageBase<String> page,
+                                                  @AccessToken AccessInfo info){
+        List<PurchaseStockDto> list = purchaseManager.getBatchList(page.getPageNum(),page.getPageSize(),page.getParam(),info.getUser());
+        Integer total = purchaseManager.getBatchTotal(page.getParam(),info.getUser());
+        PageResult result = new PageResult();
+        result.setData(list);
+        result.setTotal((long)total);
+        return ResponseUtil.setSuccessResult(result);
     }
 
-    @ApiOperation(value = "调价/调整库存")
-    @PostMapping("/stock/modify")
-    public ResponseResult modifyPrice(@ApiParam("{\"id\":\"\",\"price\":\"\",\"num\":\"\"}") @RequestBody String param,
-                                              @AccessToken AccessInfo info){
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
-        }
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("price")){
-            return ResponseUtil.setParamEmptyError("price");
-        }
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("num")){
-            return ResponseUtil.setParamEmptyError("num");
-        }
-        purchaseManager.modifyPrice(JSONObject.parseObject(param).getInteger("id"),
-                JSONObject.parseObject(param).getDouble("price"),
-                JSONObject.parseObject(param).getDouble("num"),
-                info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
+
 }

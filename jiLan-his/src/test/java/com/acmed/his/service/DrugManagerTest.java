@@ -4,6 +4,7 @@ import com.acmed.his.HisApplication;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.Manufacturer;
 import com.acmed.his.model.Supply;
+import com.acmed.his.pojo.mo.DrugMo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,17 @@ public class DrugManagerTest {
     @Autowired
     private DrugManager drugManager;
 
+    @Autowired
+    private ManufacturerManager manufacturerManager;
+
+    @Autowired
+    private SupplyManager supplyManager;
+
     @Test
     public void addDrug() throws Exception {
-        Drug drug = new Drug();
-        drug.setDrugCode("123");
-        drug.setOrgCode(1);
+        DrugMo drug = new DrugMo();
+//        drug.setDrugCode("123");
+//        drug.setOrgCode(1);
         drug.setName("药药药");
         drug.setSpec("瓶");
         drug.setCategory("0");
@@ -40,28 +47,27 @@ public class DrugManagerTest {
         drug.setPackNum(1);
         drug.setDrugForm("计量");
         drug.setManufacturer(1);
-        drug.setSupply(1);
         drug.setUseage("sdfdsf");
-        drug.setBid(21.1);
-        drug.setRetailPrice(23.0);
+//        drug.setBid(21.1);
+//        drug.setRetailPrice(23.0);
         drug.setMarkonpercent(1.0);
         drug.setMemo("备注");
-        drug.setCreateAt(LocalDateTime.now().toString());
-        drug.setModifyAt(LocalDateTime.now().toString());
-        drug.setCreateBy(1+"");
-        drug.setModifyBy("1");
-        System.out.println(drugManager.saveDrug(drug));
+//        drug.setCreateAt(LocalDateTime.now().toString());
+//        drug.setModifyAt(LocalDateTime.now().toString());
+//        drug.setCreateBy(1+"");
+//        drug.setModifyBy("1");
+        System.out.println(drugManager.saveDrug(drug,null));
     }
 
     @Test
     public void getDrugsByDrug() throws Exception {
         Drug drug = new Drug();
         drug.setId(2);
-        drugManager.getDrugsByDrug(drug);
+//        drugManager.getDrugsByDrug(drug);
     }
     @Test
     public void getDrugsByPinYinLike() throws Exception {
-        drugManager.getDrugsByPinYinLike("Y");
+//        drugManager.getDrugsByPinYinLike("Y");
     }
 
     @Test
@@ -72,24 +78,24 @@ public class DrugManagerTest {
         m.setAddress("江苏苏州");
         m.setLicenceNo("ISO11112");
         m.setScope("范围");
-        drugManager.saveManufacturer(m);
+        manufacturerManager.saveManufacturer(m);
     }
 
     @Test
     public void getManufacturerById() throws Exception {
         Manufacturer m = new  Manufacturer();
         m.setId(1);
-        drugManager.getManufacturerById(1);
+        manufacturerManager.getManufacturerById(1);
     }
 
     @Test
     public void getManufacturerLikeName() throws Exception {
-        drugManager.getManufacturerLikeName("y");
+        manufacturerManager.getManufacturerLikeName("y");
     }
 
     @Test
     public void getAllManufacturers() throws Exception {
-        drugManager.getAllManufacturers();
+        manufacturerManager.getAllManufacturers();
     }
 
     @Test
@@ -105,17 +111,17 @@ public class DrugManagerTest {
         supply.setMobile(123+i+"");
         supply.setBusiscope("业务范围"+i);
         supply.setComment("备注"+i);
-        drugManager.saveSupply(supply);
+        supplyManager.saveSupply(supply);
     }
 
     @Test
     public void getSupplyById() throws Exception {
-        drugManager.getSupplyById(1);
+        supplyManager.getSupplyById(1);
     }
 
     @Test
     public void getAllSupply() throws Exception {
-        drugManager.getAllSupply();
+        supplyManager.getAllSupply();
     }
 
 }

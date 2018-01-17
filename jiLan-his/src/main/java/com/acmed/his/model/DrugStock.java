@@ -39,6 +39,9 @@ public class DrugStock {
     @ApiModelProperty("锁定的库存数量")
     private Double lockNum;
 
+    @ApiModelProperty("供应商")
+    private Integer supply;
+
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;
 

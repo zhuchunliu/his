@@ -43,7 +43,7 @@ public class PurchaseMo {
         private String drugCode;
 
         @ApiModelProperty("采购数量")
-        private Integer num;
+        private Double num;
 
         @ApiModelProperty("采购单位")
         private String unit;
@@ -59,5 +59,11 @@ public class PurchaseMo {
 
         @ApiModelProperty("采购处方总额")
         private Double retailFee;
+
+        @ApiModelProperty("有效期")
+        private String expiryDate;
+
+        @ApiModelProperty("入库批号")
+        private String batchNumber;
     }
 }

@@ -44,13 +44,24 @@
     <select id="getRefundList" resultType="java.util.Map">
       select * from (
             select sum(fee) as fee,groupnum as groupNum from (
-                select sum(fee) as fee,groupnum from t_b_prescription_item where applyid = #{applyId} and paystatus = '1'
+                select sum(fee) as fee,groupnum from t_b_prescription_item where applyid = #{applyId}
+                <if test="@Ognl@isNotEmpty(paystatus)">
+                  and paystatus = #{paystatus}
+                </if>
+                group by groupnum
+
+                UNION ALL
+                select sum(fee),groupnum from t_b_inspect where applyid = #{applyId}
+                <if test="@Ognl@isNotEmpty(paystatus)">
+                    and paystatus = #{paystatus}
+                </if>
                 group by groupnum
                 UNION ALL
-                select sum(fee),groupnum from t_b_inspect where applyid = #{applyId} and paystatus = '1'
-                group by groupnum
-                UNION ALL
-                select sum(fee),groupnum from t_b_charge where applyid = #{applyId} and paystatus = '1'
+
+                select sum(fee),groupnum from t_b_charge where applyid = #{applyId}
+                <if test="@Ognl@isNotEmpty(paystatus)">
+                    and paystatus = #{paystatus}
+                </if>
                 group by groupnum
             )t1 GROUP BY groupnum
         )t0 order by t0.groupnum asc

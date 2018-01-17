@@ -2,6 +2,8 @@ package com.acmed.his.dao;
 
 import com.acmed.his.model.PurchaseItem;
 import com.acmed.his.model.dto.PurchaseDayDetailDto;
+import com.acmed.his.model.dto.PurchaseDto;
+import com.acmed.his.model.dto.PurchaseStockDto;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,4 +22,8 @@ public interface PurchaseItemMapper extends TkMapper<PurchaseItem> {
     Integer getItemTotal(@Param("orgCode") Integer orgCode,
                       @Param("startTime") String startTime,
                       @Param("endTime") String endTime);
+
+    List<PurchaseStockDto> getBatchList(@Param("name") String name, @Param("orgCode") Integer orgCode);
+
+    Integer getBatchTotal(@Param("name") String name, @Param("orgCode") Integer orgCode);
 }

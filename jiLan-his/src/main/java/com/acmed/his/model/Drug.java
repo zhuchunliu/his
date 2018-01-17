@@ -66,9 +66,6 @@ public class Drug {
     @ApiModelProperty("生产厂家")
     private Integer manufacturer;
 
-    @ApiModelProperty("供应商")
-    private Integer supply;
-
     @ApiModelProperty("使用方法")
     private String useage;
 

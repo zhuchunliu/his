@@ -136,10 +136,11 @@ public class DispensingApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "退款列表")
-    @GetMapping("/refund/list")
-    public ResponseResult getRefundList(@ApiParam("挂号主键") @RequestParam("applyId") String id){
-        List<Map<String,Object>> list = dispensingManager.getRefundList(id);
+    @ApiOperation(value = "费用列表")
+    @GetMapping("/fee/list")
+    public ResponseResult getRefundList(@ApiParam("挂号主键") @RequestParam("applyId") String id,
+                                        @ApiParam("费用类型 null:所有类型合并, 0:未支付,1:已支付,2:已退款") @RequestParam(value = "type",required = false) Integer type){
+        List<Map<String,Object>> list = dispensingManager.getRefundList(id,type);
         return ResponseUtil.setSuccessResult(list);
     }
 

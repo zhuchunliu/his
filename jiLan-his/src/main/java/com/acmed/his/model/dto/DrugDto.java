@@ -56,12 +56,6 @@ public class DrugDto {
     @ApiModelProperty("生产厂家名称")
     private String manufacturerName;
 
-    @ApiModelProperty("供应商")
-    private Integer supply;
-
-    @ApiModelProperty("供应商名称")
-    private String supplyName;
-
     @ApiModelProperty("使用方法")
     private String useage;
 

@@ -4,10 +4,10 @@
 <mapper namespace="com.acmed.his.dao.DrugMapper">
 
     <select id="getDrugList"  resultType="com.acmed.his.model.dto.DrugDto">
-        select t1.* ,t2.name as manufacturerName , t3.supplyername as supplyName
-        from t_b_drug t1 where t1.orgCode = #{orgCode}
+        select t1.* ,t2.name as manufacturerName
+        from t_b_drug t1
         LEFT JOIN t_b_manufacturer t2 on t1.manufacturer = t2.id
-        LEFT JOIN t_b_supply t3 on t1.supply = t3.id
+        where t1.orgCode = #{orgCode} AND t1.removed = '0'
         <if test="@Ognl@isNotEmpty(name)">
             and (t1.name like concat('%',#{name},'%') or t1.pinyin like concat('%',#{name},'%') or
             t1.goodsname like concat('%',#{name},'%') or t1.goodspinyin like concat('%',#{name},'%') )
@@ -15,43 +15,53 @@
         <if test="@Ognl@isNotEmpty(category)">
             and t1.category = #{category}
         </if>
-        and t1.removed = '0'
     </select>
 
     <select id="getDrugTotal"  resultType="java.lang.Integer">
-        select count(1) from t_b_drug where orgCode = #{orgCode}
+        select count(1) from t_b_drug t1 where orgCode = #{orgCode} and removed = '0'
         <if test="@Ognl@isNotEmpty(name)">
-            and (name like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%'))
+            and (t1.name like concat('%',#{name},'%') or t1.pinyin like concat('%',#{name},'%') or
+            t1.goodsname like concat('%',#{name},'%') or t1.goodspinyin like concat('%',#{name},'%') )
         </if>
         <if test="@Ognl@isNotEmpty(category)">
             and category = #{category}
         </if>
-        and removed = '0'
+
     </select>
-    
-    <insert id="saveDrugByDict">
-        INSERT INTO  t_b_drug(drugcode,orgcode,name,pinyin,spec,
-        category,packunit,unit,removed,createby,createat)
-        select code,#{info.orgCode},specname,pinyin,spec,
-        category,packunit,unit,'0',#{info.id},now()
-        from t_b_drugdict
-        where code in
-        <foreach collection="codes" open="(" close=")" separator="," item="dictcode">
-            #{dictcode}
-        </foreach>
-    </insert>
+
 
     <select id="getStockList" resultType="com.acmed.his.model.dto.DrugStockDto">
-        select t1.id, t1.drugcode, t1.name, t1.spec, t1.unit,
-        t2.supplyername as supplierName, t1.num, t1.bid, t1.retailprice as retailPrice,
+        select t1.id, t1.drugcode, t1.name, t1.goodsname, t1.spec, t1.unit,
+        t2.name as manufacturerName, t1.num, t1.bid, t1.retailprice as retailPrice,
         t1.num * t1.bid as bidFee ,
         t1.num * t1.retailprice as retailFee
         FROM t_b_drug t1
-        LEFT JOIN t_b_supply t2 on t1.supply = t2.id
+        LEFT JOIN t_b_manufacturer t2 on t1.manufacturer = t2.id
         where t1.orgcode = #{orgCode}
         and t1.removed = '0'
         <if test="@Ognl@isNotEmpty(name) ">
-            and t1.name like concat('%', #{name} , '%')
+            and (
+                t1.name like concat('%', #{name} , '%') OR
+                t1.pinYin like concat('%', #{name} , '%') OR
+                t1.goodsName like concat('%', #{name} , '%') OR
+                t1.goodsPinYin like concat('%', #{name} , '%')
+            )
+        </if>
+    </select>
+
+
+    <select id = "getStockTotal" resultType="java.lang.Integer">
+        select count(1)
+        FROM t_b_drug t1
+        where t1.orgcode = #{orgCode}
+        and t1.removed = '0'
+        <if test="@Ognl@isNotEmpty(name) ">
+            and (
+                t1.name like concat('%', #{name} , '%') OR
+                t1.pinYin like concat('%', #{name} , '%') OR
+                t1.goodsName like concat('%', #{name} , '%') OR
+                t1.goodsPinYin like concat('%', #{name} , '%')
+            )
         </if>
     </select>
 

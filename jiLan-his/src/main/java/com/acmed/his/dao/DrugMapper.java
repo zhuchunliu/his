@@ -17,7 +17,7 @@ public interface DrugMapper extends TkMapper<Drug>{
 
     Integer getDrugTotal(@Param("orgCode") Integer orgCode, @Param("name") String name, @Param("category") String category);
 
-    void saveDrugByDict(@Param("codes") String[] codes, @Param("info") UserInfo info);
-
     List<DrugStockDto> getStockList(@Param("name") String name, @Param("orgCode") Integer orgCode);
+
+    Integer getStockTotal(@Param("name") String name, @Param("orgCode") Integer orgCode);
 }

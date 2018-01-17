@@ -37,7 +37,8 @@ public class SwaggerConfig {
     public Docket createRestApi() {
         List<Parameter> list = Lists.newArrayList();
         list.add(new ParameterBuilder().name("Authorization").description("token令牌").
-                modelRef(new ModelRef("string")).parameterType("header").required(false).build());
+                modelRef(new ModelRef("string")).parameterType("header").required(false).
+                defaultValue("I382Q3QlR5EWMYtGUVpFMpRDS2c0N3YDM4gDN5AjNxUTMyQUQQ9lUFNVV").build());
         return new Docket(DocumentationType.SWAGGER_2).ignoredParameterTypes(AccessToken.class)
                 .globalOperationParameters(list)
                 .apiInfo(apiInfo())

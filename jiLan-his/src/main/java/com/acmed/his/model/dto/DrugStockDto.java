@@ -18,14 +18,17 @@ public class DrugStockDto {
     @ApiModelProperty("名称")
     private String name;
 
+    @ApiModelProperty("商品名称")
+    private String goodsName;
+
     @ApiModelProperty("药品规格")
     private String spec;
 
     @ApiModelProperty("计价单位")
     private String unit;
 
-    @ApiModelProperty("供应商")
-    private String supplierName;
+    @ApiModelProperty("生产厂家")
+    private String manufacturerName;
 
     @ApiModelProperty("库存数量")
     private Double num;

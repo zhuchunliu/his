@@ -24,7 +24,7 @@ public interface PrescriptionItemMapper extends TkMapper<PrescriptionItem> {
 
     Double getCurrentDayItemFee(@Param("orgCode") Integer orgCode);
 
-    List<Map<String,Object>> getRefundList(@Param("applyId") String applyId);
+    List<Map<String,Object>> getRefundList(@Param("applyId") String applyId,@Param("paystatus") Integer paystatus);
 
     void refund(@Param("applyId") String applyId, @Param("groupNums") String[] groupNums);
 }

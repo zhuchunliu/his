@@ -28,12 +28,6 @@ public class DrugVo {
     @ApiModelProperty("商品名称")
     private String goodsName;
 
-    @ApiModelProperty("药品名称拼音")
-    private String pinYin;
-
-    @ApiModelProperty("商品名称拼音")
-    private String goodsPinYin;
-
     @ApiModelProperty("药品规格")
     private String spec;
 
@@ -55,18 +49,11 @@ public class DrugVo {
     @ApiModelProperty("剂型")
     private String drugForm;
 
-
     @ApiModelProperty("生产厂家")
     private Integer manufacturer;
 
     @ApiModelProperty("生产厂家名称")
     private String manufacturerName;
-
-    @ApiModelProperty("供应商")
-    private Integer supply;
-
-    @ApiModelProperty("供应商名称")
-    private String supplyName;
 
     @ApiModelProperty("使用方法")
     private String useage;
