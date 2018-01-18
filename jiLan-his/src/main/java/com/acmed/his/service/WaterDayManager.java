@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -58,6 +59,17 @@ public class WaterDayManager {
      */
     public List<WaterDay> getListBetweenTimes(String startTime,String endTime,Integer orgCode){
         return waterDayMapper.getListBetweenTimes(startTime,endTime,orgCode);
+    }
+
+    /**
+     * 获取一段时间内的报表数据的累加
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param orgCode 机构编码
+     * @return List<WaterDay>
+     */
+    public WaterDay getListBetweenTimesSum(String startTime,String endTime,Integer orgCode){
+        return waterDayMapper.getListBetweenTimesSum(startTime,endTime,orgCode);
     }
 
     /**
@@ -124,5 +136,17 @@ public class WaterDayManager {
 
     public ShouzhiCountDto getShouzhiCountDto(String startTime, String endTime, Integer orgCode){
         return waterDayMapper.getShouzhiCountBetweenDateAndDate(orgCode,startTime,endTime);
+    }
+
+    public WaterDay firstWaterDay(Integer orgCode){
+        Example example = new Example(WaterDay.class);
+        example.createCriteria().andEqualTo("orgCode",orgCode);
+        example.orderBy(" date").asc();
+        List<WaterDay> waterDays = waterDayMapper.selectByExample(example);
+        if (waterDays.size()!=0){
+            return waterDays.get(0);
+        }else {
+            return null;
+        }
     }
 }

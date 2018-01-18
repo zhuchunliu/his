@@ -1,12 +1,15 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.Apply;
+import com.acmed.his.model.PayStatements;
 import com.acmed.his.model.dto.ApplyDoctorDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyIdAndStatus;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyVo;
 import com.acmed.his.service.ApplyManager;
+import com.acmed.his.service.PayManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.PageResult;
@@ -37,6 +40,9 @@ import java.util.List;
 public class ApplyApi {
     @Autowired
     private ApplyManager applyManager;
+
+    @Autowired
+    private PayManager payManager;
 
     @ApiOperation(value = "添加挂号信息")
     @PostMapping("add")
@@ -123,5 +129,19 @@ public class ApplyApi {
                                  @ApiParam("挂号单id") @RequestParam(value = "applyId" )String applyId,
                                  @ApiParam("金额") @RequestParam(value = "fee" )Double fee){
         return applyManager.refund(applyId,fee,"0",info.getUser());
+    }
+
+    @ApiOperation(value = "用户退线上支付挂号费号费")
+    @GetMapping("refundonline")
+    public ResponseResult refundonline(@AccessToken AccessInfo info,
+                                 @ApiParam("挂号单id") @RequestParam(value = "applyId" )String applyId){
+        PayStatements payStatements = new PayStatements();
+        payStatements.setSource("1");
+        payStatements.setApplyId(applyId);
+        List<PayStatements> byPayStatements = payManager.getByPayStatements(payStatements);
+        if (byPayStatements.size()!=1){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"还未支付");
+        }
+        return applyManager.refund(applyId,payStatements.getFee().doubleValue(),payStatements.getFeeType(),info.getUser());
     }
 }

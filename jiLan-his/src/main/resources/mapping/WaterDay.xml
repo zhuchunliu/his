@@ -90,14 +90,52 @@
                     SELECT tb0.orgcode,SUM(tb0.fee) cashrefundmoney,COUNT(tb0.id) cashrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 0 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb17 ON tb17.orgcode = tb1.orgcode
     </select>
-    
-    
+
+
     <select id="getByDate" resultType="com.acmed.his.model.WaterDay">
         SELECT tb1.* FROM t_r_water_day tb1 WHERE DATE(tb1.date) = DATE(#{date})
     </select>
 
     <select id="getListBetweenTimes" resultType="com.acmed.his.model.WaterDay">
         SELECT * FROM t_r_water_day WHERE orgcode = #{orgCode} AND DATE(date) BETWEEN DATE(#{startTime})AND DATE(#{endTime})
+    </select>
+
+    <select id="getListBetweenTimesSum" resultType="com.acmed.his.model.WaterDay">
+        SELECT
+        orgcode, -- 机构id
+        IFNULL(sum(wxpaymoney),0) as wxpaymoney, -- 微信支付总金额
+        IFNULL(sum(wxpaynum),0) as wxpaynum, -- 微信支付次数
+        IFNULL(sum(alipaymoney),0) as alipaymoney,  -- 支付宝支付总金额
+        IFNULL(sum(alipaynum),0) as alipaynum,  -- 支付宝支付总金额
+        IFNULL(sum(cash),0) as cash,  -- 收款现金
+        IFNULL(sum(cashnum),0) as cashnum,  -- 收款现金次数
+        IFNULL(sum(registerednum),0) as  registerednum, -- 就诊数
+        IFNULL(sum(registeredmoney),0) as  registeredmoney, -- 就诊收入
+        IFNULL(sum(prescriptionnum),0) as  prescriptionnum, -- 处方数
+        IFNULL(sum(prescriptionmoney),0) as  prescriptionmoney, -- 处方收入
+        IFNULL(sum(paynum),0) as  paynum,  -- 支付数
+        IFNULL(sum(paymoney),0) as  paymoney,  -- 支付金额
+        IFNULL(sum(refundnum),0) as  refundnum,-- 退款次数
+        IFNULL(sum(refundmoney),0) as  refundmoney,  -- 退款总金额
+        IFNULL(sum(registeredrefundnum),0) as  registeredrefundnum, -- 挂号退款数
+        IFNULL(sum(registeredrefundmoney),0) as  registeredrefundmoney, -- 挂号退款金额
+        IFNULL(sum(prescriptionrefundnum),0) as  prescriptionrefundnum, -- 检查退款数
+        IFNULL(sum(prescriptionrefundmoney),0) as  prescriptionrefundmoney, -- 检查退款金额
+        IFNULL(sum(drugnum),0) as  drugnum, -- 药支付次数
+        IFNULL(sum(drugmoney),0) as  drugmoney, -- 药支付金额
+        IFNULL(sum(drugrefundnum),0) as  drugrefundnum, -- 药退款次数
+        IFNULL(sum(drugrefundmoney),0) as  drugrefundmoney, -- 药退款金额
+        IFNULL(sum(appendnum),0) as  appendnum, -- 附加费用支付次数
+        IFNULL(sum(appendmoney),0) as  appendmoney, -- 附加费用支付金额
+        IFNULL(sum(appendrefundnum),0) as  appendrefundnum, -- 附加费用退款次数
+        IFNULL(sum(appendrefundmoney),0) as  appendrefundmoney, -- 附加费用退款金额
+        IFNULL(sum(wxpayrefundnum),0) as  wxpayrefundnum, -- 微信退款次数
+        IFNULL(sum(wxpayrefundmoney),0) as  wxpayrefundmoney, -- 微信退款金额
+        IFNULL(sum(alipayrefundnum),0) as  alipayrefundnum, -- 支付宝退款次数
+        IFNULL(sum(alipayrefundmoney),0) as  alipayrefundmoney, -- 支付宝退款金额
+        IFNULL(sum(cashrefundnum),0) as  cashrefundnum, -- 现金退款次数
+        IFNULL(sum(cashrefundmoney),0) as  cashrefundmoney -- 现金退款金额
+        FROM t_r_water_day WHERE orgcode = #{orgCode} AND DATE(date) BETWEEN DATE(#{startTime})AND DATE(#{endTime})
     </select>
 
     <select id="getListByYearMonth" resultType="com.acmed.his.model.WaterDay">

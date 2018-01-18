@@ -5,6 +5,7 @@ import com.acmed.his.dao.PayStatementsMapper;
 import com.acmed.his.model.PayRefuse;
 import com.acmed.his.model.PayStatements;
 import com.acmed.his.util.UUIDUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,12 +60,14 @@ public class PayManager {
     }
 
     /**
-     * 添加退款流水
+     * 添加退款流水 传入id的时候不随机生成
      * @param payRefuse 参数
      * @return 0失败  1成功
      */
     public int addPayRefuse(PayRefuse payRefuse){
-        payRefuse.setId(UUIDUtil.generate());
+        if (StringUtils.isEmpty(payRefuse.getId())){
+            payRefuse.setId(UUIDUtil.generate());
+        }
         payRefuse.setCreateAt(LocalDateTime.now().toString());
         return payRefuseMapper.insert(payRefuse);
     }

@@ -73,4 +73,14 @@ public interface WaterDayMapper extends TkMapper<WaterDay>{
     WaterDayAndMonthCountDto getWaterDayAndMonthCount(@Param("orgCode")Integer orgCode,@Param("date")String date);
 
     ShouzhiCountDto getShouzhiCountBetweenDateAndDate(@Param("orgCode")Integer orgCode, @Param("startTime")String startTime, @Param("endTime")String endTime);
+
+
+    /**
+     * 获取一段时间内的报表数据的累加
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @param orgCode 机构编码
+     * @return List<WaterDay>
+     */
+    WaterDay getListBetweenTimesSum(@Param("startTime")String startTime , @Param("endTime")String endTime, @Param("orgCode") Integer orgCode);
 }

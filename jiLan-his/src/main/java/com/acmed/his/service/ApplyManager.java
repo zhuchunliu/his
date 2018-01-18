@@ -22,6 +22,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ApplyManager
@@ -46,6 +47,9 @@ public class ApplyManager {
 
     @Autowired
     private UserManager userManager;
+
+    @Autowired
+    private WxManager wxManager;
 
     private static Logger logger = Logger.getLogger(ApplyManager.class);
 
@@ -258,6 +262,7 @@ public class ApplyManager {
 
     public ResponseResult refund(String applyId, Double fee, String feeType, UserInfo userInfo){
         Apply apply = applyMapper.selectByPrimaryKey(applyId);
+        String patientId = apply.getPatientId();
         if (apply!=null){
             if(StringUtils.equals("1",apply.getIsPaid())){
                 Integer orgCode = userInfo.getOrgCode();
@@ -269,10 +274,59 @@ public class ApplyManager {
                 List<PayRefuse> byPayRefuse = payManager.getByPayRefuse(payRefuse);
                 if (byPayRefuse.size() ==0){
                     // 还没退款
+                    if (StringUtils.equals("1",feeType)){
+                        // 微信退款
+                        PayStatements payStatements = new PayStatements();
+                        payStatements.setSource("1");
+                        payStatements.setApplyId(applyId);
+                        List<PayStatements> byPayStatements = payManager.getByPayStatements(payStatements);
+                        if (byPayStatements.size()!=0){
+                            PayStatements payStatements1 = byPayStatements.get(0);
+                            if (payStatements1.getFeeType().equals("1")){
+                                String refunffee = new BigDecimal(apply.getFee()).multiply(new BigDecimal(100)).toString();
+                                Map<String, String> refund = null;
+                                try {
+                                    refund = wxManager.refund(payStatements1.getId(), refunffee, "退款", refunffee);
+                                } catch (Exception e) {
+                                    logger.error("微信退款异常"+e.toString());
+                                    e.printStackTrace();
+                                    return ResponseUtil.setErrorMeg(StatusCode.ERROR_REFUND_ERR,"退款失败");
+                                }
+                                String returnCode = refund.get("return_code");
+                                if (StringUtils.equals("SUCCESS",returnCode)){
+                                    // 退款成功
+                                    //商户退款单号
+                                    String outRefundNo = refund.get("out_refund_no");
+                                    // 微信退款单号
+                                    String refundId = refund.get("refund_id");
+                                    // 之前付款时候的单号 也就是支付表id
+                                    String out_trade_no = refund.get("out_trade_no");
+
+                                    // 之前付款时候的微信单号
+                                    String transaction_id = refund.get("transaction_id");
+
+                                    payRefuse.setPayId(transaction_id);
+                                    payRefuse.setRefuseId(refundId);
+                                    payRefuse.setId(outRefundNo);
+
+
+                                    payRefuse.setFeeType(feeType);
+                                    payRefuse.setFee(new BigDecimal(fee));
+                                    payRefuse.setCreateBy(userId.toString());
+                                    payRefuse.setPatientId(patientId);
+                                    payManager.addPayRefuse(payRefuse);
+                                    return ResponseUtil.setSuccessResult();
+                                }else {
+                                    return ResponseUtil.setErrorMeg(StatusCode.ERROR_REFUND_ERR,"退款失败");
+                                }
+                            }
+                        }
+
+                    }
                     payRefuse.setFeeType(feeType);
                     payRefuse.setFee(new BigDecimal(fee));
                     payRefuse.setCreateBy(userId.toString());
-                    payRefuse.setPatientId(apply.getPatientId());
+                    payRefuse.setPatientId(patientId);
                     payManager.addPayRefuse(payRefuse);
                     return ResponseUtil.setSuccessResult();
                 }else {

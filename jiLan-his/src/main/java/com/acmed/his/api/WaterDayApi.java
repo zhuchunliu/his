@@ -53,6 +53,22 @@ public class WaterDayApi {
         return ResponseUtil.setSuccessResult(waterDayManager.getListBetweenTimesByPage(startTime, endTime,orgCode,pageNum,pageSize));
     }
 
+    @ApiOperation(value = "获取区间内报表数据累加")
+    @GetMapping("getListBetweenTimesSum")
+    public ResponseResult<WaterDay> getListBetweenTimesIncludeSum(@ApiParam("区间开始时间  2017-01-02这种字符串格式   开始时间必填") @RequestParam("startTime") String startTime,
+                                                                @ApiParam("区间结束时间 2017-01-02这种字符串格式") @RequestParam(value = "endTime",required = false) String endTime,@AccessToken AccessInfo info){
+        if (StringUtils.isEmpty(startTime) && StringUtils.isNotEmpty(endTime)){
+            startTime = endTime;
+        }
+        if (StringUtils.isNotEmpty(startTime) && StringUtils.isEmpty(endTime)){
+            endTime = startTime;
+        }
+        Integer orgCode = info.getUser().getOrgCode();
+        WaterDay listBetweenTimes = waterDayManager.getListBetweenTimesSum(startTime, endTime, orgCode);
+        return ResponseUtil.setSuccessResult(listBetweenTimes);
+    }
+
+
 
     @ApiOperation(value = "收支明细")
     @GetMapping("detailList")
@@ -120,7 +136,7 @@ public class WaterDayApi {
     }
 
 
-    @ApiOperation(value = "诊所收支统计汇总")
+    @ApiOperation(value = "诊所收支统计汇总  pc端诊所收支统计")
     @GetMapping("zhensuoShouzhiCount")
     public ResponseResult<ShouzhiCountDto> getShouzhiCountDto(
             @ApiParam("开始时间 2017-01-01   ") @RequestParam(value = "startTime")String startTime,
@@ -129,5 +145,11 @@ public class WaterDayApi {
         startTime = DateTimeUtil.parsetLocalDateStart(startTime).toString();
         endTime = DateTimeUtil.parsetLocalDateEnd(endTime).toString();
         return ResponseUtil.setSuccessResult(waterDayManager.getShouzhiCountDto(startTime,endTime,info.getUser().getOrgCode()));
+    }
+
+    @ApiOperation(value = "机构第一条报表数据")
+    @GetMapping("firstWaterDay")
+    public ResponseResult<WaterDay> firstWaterDay(@AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(waterDayManager.firstWaterDay(info.getUser().getOrgCode()));
     }
 }
