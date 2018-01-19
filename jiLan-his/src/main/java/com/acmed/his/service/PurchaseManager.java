@@ -209,6 +209,10 @@ public class PurchaseManager {
         return purchaseMapper.getCurrentDayFee(orgCode);
     }
 
+    public Double getSurveyFee(Integer orgCode,String startTime, String endTime ) {
+        return purchaseMapper.getSurveyFee(orgCode,startTime,endTime);
+    }
+
     public List<PurchaseStockDto> getBatchList(Integer pageNum, Integer pageSize, String name, UserInfo user) {
         PageHelper.startPage(pageNum,pageSize);
         return purchaseItemMapper.getBatchList(name,user.getOrgCode());
@@ -217,4 +221,6 @@ public class PurchaseManager {
     public Integer getBatchTotal(String name, UserInfo user) {
         return purchaseItemMapper.getBatchTotal(name,user.getOrgCode());
     }
+
+
 }

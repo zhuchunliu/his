@@ -167,12 +167,13 @@ public class DrugApi {
         if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("price")){
             return ResponseUtil.setParamEmptyError("price");
         }
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("num")){
-            return ResponseUtil.setParamEmptyError("num");
+        Double num = null;
+        if(!org.apache.commons.lang3.StringUtils.isEmpty(param) && null != JSONObject.parseObject(param).get("num")){
+            num = JSONObject.parseObject(param).getDouble("num");
         }
         drugManager.modifyPrice(JSONObject.parseObject(param).getInteger("id"),
                 JSONObject.parseObject(param).getDouble("price"),
-                JSONObject.parseObject(param).getDouble("num"),
+                num,
                 info.getUser());
         return ResponseUtil.setSuccessResult();
     }

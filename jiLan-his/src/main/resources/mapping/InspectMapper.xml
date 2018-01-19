@@ -47,6 +47,30 @@
         where t1.orgcode = #{orgCode} and DATE_FORMAT(t1.createat,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')
     </select>
 
+    <select id="getSurveyNum" resultType="java.lang.Integer">
+      select count(1) from  t_b_inspect t1
+        where t1.orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(startTime)">
+            <![CDATA[ AND t1.createat >= #{startTime} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)">
+            <![CDATA[  AND t1.createat <= #{endTime} ]]>
+        </if>
+    </select>
+
+    <select id = "getSurveyFee" resultType="java.lang.Double">
+        select IFNULL(sum(t1.fee),0) from  t_b_inspect t1
+        where t1.orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(startTime)">
+            <![CDATA[ AND t1.createat >= #{startTime} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)">
+            <![CDATA[  AND t1.createat <= #{endTime} ]]>
+        </if>
+    </select>
+
+
+
     <update id="refund">
         update t_b_inspect set paystatus = 2 where applyid = #{applyId}
         and groupnum IN

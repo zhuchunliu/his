@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.dao.InspectDayMapper;
 import com.acmed.his.dao.InspectMapper;
 import com.acmed.his.model.dto.InspectDayDto;
+import com.acmed.his.pojo.mo.ReportQueryMo;
 import com.acmed.his.pojo.vo.InspectDayVo;
 import com.acmed.his.service.ReportInspectManager;
 import com.acmed.his.support.AccessInfo;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.acmed.his.util.DateTimeUtil.parsetLocalDate;
 
@@ -54,12 +56,34 @@ public class ReportInspectApi {
 
     }
 
+    @ApiOperation("当天检查项实时统计")
+    @GetMapping("/inspect/survey")
+    @ApiResponse(code = 100,message = "num:检查项目,fee:检查收入")
+    public ResponseResult getSurveyStatis(@ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
+                                          @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
+                                          @AccessToken AccessInfo info){
+
+        startTime = Optional.ofNullable(startTime).map(DateTimeUtil::getBeginDate).orElse(null);
+        endTime = Optional.ofNullable(endTime).map(DateTimeUtil::getEndDate).orElse(null);
+
+        Integer num = inspectMapper.getSurveyNum(info.getUser().getOrgCode(),startTime,endTime);
+        Double fee =inspectMapper.getSurveyFee(info.getUser().getOrgCode(),startTime,endTime);
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("num",num);
+        map.put("fee",fee);
+        return ResponseUtil.setSuccessResult(map);
+
+    }
+
     @ApiOperation(value = "检查统计")
     @GetMapping("/inspect/list")
     public ResponseResult<InspectDayVo> getInspectList(@ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
                                                        @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
                                                        @ApiParam("显示数量,默认：6个") @RequestParam(value = "num",defaultValue = "6",required = false) Integer num,
                                                        @AccessToken AccessInfo info){
+
+        startTime = Optional.ofNullable(startTime).map(DateTimeUtil::getBeginDate).orElse(null);
+        endTime = Optional.ofNullable(endTime).map(DateTimeUtil::getEndDate).orElse(null);
 
         List<InspectDayDto> list =  inspectManager.getInspectList(info.getUser().getOrgCode(),num,startTime,endTime);
 
@@ -103,18 +127,24 @@ public class ReportInspectApi {
 
     @ApiOperation(value = "检查统计")
     @PostMapping("/inspect/detail")
-    public ResponseResult<InspectDayDto> getInspectList(@RequestBody(required = false) PageBase pageBase,
-                                                        @ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
-                                                        @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
+    public ResponseResult<InspectDayDto> getInspectList(@RequestBody(required = false) PageBase<ReportQueryMo> pageBase,
                                                         @AccessToken AccessInfo info){
 
-        List<InspectDayDto> list =  inspectManager.getInspectDetailList(info.getUser().getOrgCode(),startTime,endTime,pageBase.getPageNum(), pageBase.getPageSize());
-        int total = inspectManager.getInspectDetailTotal(info.getUser().getOrgCode(),startTime,endTime);
+        List<InspectDayDto> list =  inspectManager.getInspectDetailList(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null),pageBase.getPageNum(), pageBase.getPageSize());
+        int total = inspectManager.getInspectDetailTotal(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null));
         PageResult pageResult = new PageResult();
         BeanUtils.copyProperties(pageBase,pageResult);
         pageResult.setTotal((long)total);
         pageResult.setData(list);
         return ResponseUtil.setSuccessResult(pageResult);
+
     }
+
+
+
 
 }

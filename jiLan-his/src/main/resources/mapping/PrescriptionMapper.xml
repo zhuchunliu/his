@@ -28,4 +28,62 @@
     <select id="getPreByApply" resultType="com.acmed.his.model.Prescription">
         select * from t_b_prescription where applyid = #{applyId}
     </select>
+
+
+    <select id = "getDispensingList" resultType="com.acmed.his.model.dto.DispensingDto">
+        SELECT apply.id as applyid,apply.clinicno,apply.patientname,apply.gender,apply.age,
+        patient.mobile,user.nickname as doctorname,
+        pre.fee,pre.isdispensing,pre.ispaid,pre.createat as diagnosedate
+        from t_b_apply apply
+        JOIN t_b_prescription pre on apply.id = pre.applyid
+        JOIN t_b_patient patient on apply.patientid = patient.id
+        JOIN t_p_s_user user on pre.createby = user.id
+
+        <trim prefixOverrides="and" prefix="where">
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                and apply.orgcode = #{orgCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(name)">
+                and (apply.patientname like CONCAT('%',#{name},'%') or patient.mobile like CONCAT('%',#{name},'%'))
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 1">
+                and pre.ispaid = '0'
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 2">
+                and pre.ispaid = '1' and pre.isdispensing = '0'
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 3">
+                and (pre.ispaid = '2' or pre.ispaid = '3')
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 4">
+                and pre.isdispensing = '1'
+            </if>
+        </trim>
+    </select>
+
+    <select id = "getDispensingTotal" resultType="java.lang.Integer">
+        SELECT count(1)
+        from t_b_apply apply
+        JOIN t_b_prescription pre on apply.id = pre.applyid
+        <trim prefixOverrides="and" prefix="where">
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                and apply.orgcode = #{orgCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(name)">
+                and (apply.patientname like CONCAT('%',#{name},'%') or patient.mobile like CONCAT('%',#{name},'%'))
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 1">
+                and pre.ispaid = '0'
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 2">
+                and pre.ispaid = '1' and pre.isdispensing = '0'
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 3">
+                and (pre.ispaid = '2' or pre.ispaid = '3')
+            </if>
+            <if test="@Ognl@isNotEmpty(status) and status == 4">
+                and pre.isdispensing = '1'
+            </if>
+        </trim>
+    </select>
 </mapper>

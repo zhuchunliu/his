@@ -16,4 +16,8 @@ public interface PurchaseMapper extends TkMapper<Purchase> {
                                    @Param("startTime") String startTime, @Param("endTime") String endTime);
 
     Double getCurrentDayFee(@Param("orgCode") Integer orgCode);
+
+    Double getSurveyFee(@Param("orgCode") Integer orgCode,
+                        @Param("startTime") String startTime,
+                        @Param("endTime") String endTime);
 }

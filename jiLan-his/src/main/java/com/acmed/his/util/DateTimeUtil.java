@@ -73,6 +73,31 @@ public class DateTimeUtil {
         return LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
+
+    /**
+     * 获取开始日期 查询用
+     * @param date
+     * @return
+     */
+    public static String getBeginDate(String date){
+        if(10 == date.length()) {
+            date+=" 00:00:00";
+        }
+        return date;
+    }
+
+    /**
+     * 获取截止日期 查询用
+     * @param date
+     * @return
+     */
+    public static String getEndDate(String date){
+        if(10 == date.length()) {
+            date+=" 23:59:59";
+        }
+        return date;
+    }
+
     public static void main(String[] args) {
         System.err.println(DateTimeUtil.getAge("1987-12-19"));
         System.err.println(DateTimeUtil.getAge("1987-12-18 10:10:10"));

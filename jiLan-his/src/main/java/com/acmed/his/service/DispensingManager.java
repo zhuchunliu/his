@@ -2,7 +2,9 @@ package com.acmed.his.service;
 
 import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,15 @@ public class DispensingManager {
     @Autowired
     private DrugMapper drugMapper;
 
+
+    public List<DispensingDto> getDispensingList(Integer pageNum , Integer pageSize, Integer orgCode, String name, String status) {
+        PageHelper.startPage(pageNum,pageSize);
+        return preMapper.getDispensingList(orgCode,name,status);
+    }
+
+    public Integer getDispensingTotal(Integer orgCode, String name, String status) {
+        return preMapper.getDispensingTotal(orgCode,name,status);
+    }
 
     /**
      * 支付

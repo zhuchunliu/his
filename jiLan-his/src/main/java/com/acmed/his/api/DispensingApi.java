@@ -8,6 +8,7 @@ import com.acmed.his.model.Inspect;
 import com.acmed.his.model.Prescription;
 import com.acmed.his.model.PrescriptionItem;
 import com.acmed.his.model.dto.DispensingDto;
+import com.acmed.his.pojo.mo.DispensQueryMo;
 import com.acmed.his.pojo.vo.DispensingPreVo;
 import com.acmed.his.pojo.vo.DispensingVo;
 import com.acmed.his.service.ApplyManager;
@@ -16,6 +17,8 @@ import com.acmed.his.service.DispensingManager;
 import com.acmed.his.service.PrescriptionManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.util.PageBase;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -31,6 +34,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 发药接口
@@ -41,9 +45,6 @@ import java.util.Map;
 @Api(tags = "发药管理")
 @RequestMapping("/dispens")
 public class DispensingApi {
-
-    @Autowired
-    private ApplyManager applyManager;
 
     @Autowired
     private ChargeMapper chargeMapper;
@@ -64,27 +65,32 @@ public class DispensingApi {
     private PrescriptionManager preManager;
 
     @ApiOperation(value = "获取发药收费列表")
-    @GetMapping("/list")
-    public ResponseResult<DispensingVo> getDispensingList(
-            @ApiParam("患者姓名或者编号") @RequestParam(value = "name",required = false)String name,
-            @ApiParam("1:未收费、2:未发药、3：已退款、4：已完成") @RequestParam(value = "status",required = false)String status,
+    @PostMapping("/list")
+    public ResponseResult<PageResult<DispensingVo>> getDispensingList(
+            @RequestBody(required = false) PageBase<DispensQueryMo> mo,
             @AccessToken AccessInfo info){
         List<DispensingVo> list = new ArrayList<>();
-        List<DispensingDto> applyList = applyManager.getDispensingList(info.getUser().getOrgCode(),name,status);
+        List<DispensingDto> applyList = dispensingManager.getDispensingList(mo.getPageNum(),mo.getPageSize(),
+                info.getUser().getOrgCode(), Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
+                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null));
         applyList.forEach(obj->{
-            DispensingVo mo = new DispensingVo();
-            BeanUtils.copyProperties(obj,mo);
-            if("0".equals(obj.getIsPaid())) mo.setStatus("1");
-            if("1".equals(obj.getIsPaid()) && "0".equals(obj.getIsDispensing())) mo.setStatus("2");
-            if("2".equals(obj.getIsPaid())) mo.setStatus("3");
-            if("1".equals(obj.getIsDispensing())) mo.setStatus("4");
+            DispensingVo vo = new DispensingVo();
+            BeanUtils.copyProperties(obj,vo);
+            if("0".equals(obj.getIsPaid())) vo.setStatus("0");
+            if("1".equals(obj.getIsPaid()) && "0".equals(obj.getIsDispensing())) vo.setStatus("2");
+            if("2".equals(obj.getIsPaid())) vo.setStatus("3");
+            if("3".equals(obj.getIsPaid())) vo.setStatus("4");
+            if("1".equals(obj.getIsDispensing())) vo.setStatus("5");
 
-            list.add(mo);
+            list.add(vo);
         });
-        return ResponseUtil.setSuccessResult(list);
+        int total = dispensingManager.getDispensingTotal(info.getUser().getOrgCode(),
+                Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
+                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null));
+        return ResponseUtil.setSuccessResult(new PageResult(list,(long)total));
     }
 
-    @ApiOperation(value = "根据挂号id获取处方列表",hidden = true)
+    @ApiOperation(value = "根据挂号id获取处方列表")
     @GetMapping("/pre")
     public ResponseResult<DispensingPreVo> getDispensingDetail(@ApiParam("挂号主键") @RequestParam("applyId") String applyId){
         List<DispensingPreVo> list = new ArrayList<>();
@@ -121,6 +127,7 @@ public class DispensingApi {
         dispensingManager.dispensing(JSONObject.parseObject(param).getString("applyId"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
+
 
 
     @ApiOperation(value = "付费")

@@ -6,6 +6,7 @@ import com.acmed.his.model.dto.WorkloadDayAndTotalDto;
 import com.acmed.his.service.ReportWorkloadManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.util.DateTimeUtil;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2018-01-09
@@ -39,6 +41,9 @@ public class ReportWorkloadApi {
                                                        @ApiParam("医生姓名") @RequestParam(value = "name",required = false) String userName,
                                                         @ApiParam("排序方式 1:接诊人数(默认排序); 2:门诊收入") @RequestParam(value = "type",defaultValue = "1" ,required = false) Integer type,
                                                         @AccessToken AccessInfo info){
+
+        startTime = Optional.ofNullable(startTime).map(DateTimeUtil::getBeginDate).orElse(null);
+        endTime = Optional.ofNullable(endTime).map(DateTimeUtil::getEndDate).orElse(null);
 
         List<WorkloadDay> list =  workloadManager.getWorkloadList(info.getUser().getOrgCode(),userName,startTime,endTime,type);
         return ResponseUtil.setSuccessResult(list);

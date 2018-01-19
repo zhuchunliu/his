@@ -15,6 +15,7 @@ public enum DicTypeEnum {
     PERMISSION("Permission","权限类型"),
     ADVICE_TPL("AdviceTpl","医嘱模板类型"),
     DIAGNOSIS_TPL("DiagnosisTpl","诊断模板类型"),
+    MEDICAL_RECORD_TPL("MedicalRecordTpl","病例模板类型"),
     PRESCRIPTION("Prescription","处方类型"),
     PRE_DRUG_TPL("PreDrugTpl","药品处方模板类型"),
     PRE_INSPECT_TPL("PreInspectTpl","检查处方模板类型"),

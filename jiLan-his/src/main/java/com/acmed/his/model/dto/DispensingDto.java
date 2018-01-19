@@ -40,6 +40,6 @@ public class DispensingDto {
     @ApiModelProperty("是否发药 0:否；1:是")
     private String isDispensing;
 
-    @ApiModelProperty("是否已付费 0:未付费；1：已经付费；2：已经退款")
+    @ApiModelProperty("是否已付费 0:未付款；1：已经付款；2：部分退款；3：全额退款")
     private String isPaid;
 }

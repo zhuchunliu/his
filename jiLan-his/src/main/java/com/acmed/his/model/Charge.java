@@ -50,6 +50,12 @@ public class Charge {
     @ApiModelProperty("组号")
     private String groupNum;
 
+    @ApiModelProperty("要求")
+    private String requirement;
+
+    @ApiModelProperty("备注")
+    private String remark;
+
     @ApiModelProperty("创建时间")
     private String createAt;
 

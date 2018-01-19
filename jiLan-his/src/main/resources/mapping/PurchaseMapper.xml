@@ -40,4 +40,22 @@
         where t1.orgcode = #{orgCode} and DATE_FORMAT(t1.date,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d') and t1.status = '1'
     </select>
 
+    <select id="getSurveyFee" resultType="java.lang.Double">
+        select IFNULL(sum(t2.bidfee),0) from t_b_purchase t1
+        JOIN t_b_purchase_item t2 on t1.id = t2.purchaseid
+        where t1.orgcode = #{orgCode}  and t1.status = '1'
+        <if test="@Ognl@isNotEmpty(startTime) ">
+            <![CDATA[
+              and t1.date >= #{startTime}
+            ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime) ">
+            <![CDATA[
+              and t1.date <= #{endTime}
+            ]]>
+        </if>
+    </select>
+
+
+
 </mapper>

@@ -62,6 +62,9 @@ public class PrescriptionManager {
     @Autowired
     private MedicalRecordMapper recordMapper;
 
+    @Autowired
+    private PrescriptionFeeMapper feeMapper;
+
 
     /**
      * 根据挂号单查找处方列表
@@ -146,8 +149,6 @@ public class PrescriptionManager {
     }
 
 
-
-
     /**
      * 处理处方信息
      */
@@ -172,12 +173,13 @@ public class PrescriptionManager {
             preItemMapper.delByPreId(prescription.getId());
             chargeMapper.delByPreId(prescription.getId());
             inspectMapper.delByPreId(prescription.getId());
+            feeMapper.delByPreId(prescription.getId());
         }
 
         Double price = 0d;
         for(int i=0; i< mo.getPreList().size(); i++){
             PreMo.PrescriptMo pre = mo.getPreList().get(i);
-
+            Double childPrice = 0.0d;
             if(null != pre.getItemList()) {
                 for (PreMo.ItemMo info : pre.getItemList()) {
                     Drug drug = drugMapper.selectByPrimaryKey(info.getDrugId());
@@ -195,8 +197,10 @@ public class PrescriptionManager {
                     item.setRetailPrice(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//存当前零售价
                     item.setFee(item.getNum() * item.getRetailPrice());//总价：单价*数量
                     item.setGroupNum(String.valueOf(i+1));
+                    item.setRequirement(pre.getRequirement());
+                    item.setRemark(pre.getRemark());
                     preItemMapper.insert(item);
-                    price += info.getNum() * item.getFee();
+                    childPrice += info.getNum() * item.getFee();
                 }
             }
 
@@ -213,8 +217,10 @@ public class PrescriptionManager {
                     inspect.setDept(Optional.ofNullable(prescription.getDept()).map(obj->obj.toString()).orElse(null));
                     inspect.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory())).
                             map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
+                    inspect.setRequirement(pre.getRequirement());
+                    inspect.setRemark(pre.getRemark());
                     inspectMapper.insert(inspect);
-                    price += inspect.getFee();
+                    childPrice += inspect.getFee();
                 }
             }
 
@@ -230,10 +236,25 @@ public class PrescriptionManager {
                     charge.setGroupNum(String.valueOf(i+1));
                     charge.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(userInfo.getOrgCode(),DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory())).
                             map(obj->Double.parseDouble(obj.getItemPrice().toString())).orElse(0d));
-                    price += charge.getFee();
+                    charge.setRequirement(pre.getRequirement());
+                    charge.setRemark(pre.getRemark());
                     chargeMapper.insert(charge);
+                    childPrice += charge.getFee();
                 }
             }
+
+            PrescriptionFee prescriptionFee = new PrescriptionFee();
+            prescriptionFee.setApplyId(apply.getId());
+            prescriptionFee.setPrescriptionId(prescription.getId());
+            prescriptionFee.setReceivables(childPrice);
+            prescriptionFee.setGroupNum(String.valueOf(i+1));
+            prescriptionFee.setCreateAt(LocalDateTime.now().toString());
+            prescriptionFee.setCreateBy(userInfo.getId().toString());
+            feeMapper.insert(prescriptionFee);
+
+            price += childPrice;
+
+
         }
 
 
@@ -317,5 +338,17 @@ public class PrescriptionManager {
      */
     public Double getCurrentDayItemFee(Integer orgCode) {
         return preItemMapper.getCurrentDayItemFee(orgCode);
+    }
+
+    /**
+     * 获取收支概况
+     *
+     * @param startTime
+     * @param endTime
+     * @param orgCode
+     * @return
+     */
+    public Double getSurveyFee(Integer orgCode,String startTime, String endTime) {
+        return preItemMapper.getSurveyFee(orgCode,startTime,endTime);
     }
 }

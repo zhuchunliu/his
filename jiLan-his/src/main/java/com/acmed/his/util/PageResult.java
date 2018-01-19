@@ -1,5 +1,6 @@
 package com.acmed.his.util;
 
+import com.acmed.his.pojo.vo.DispensingVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -33,4 +34,13 @@ public class PageResult<T> {
      */
     @ApiModelProperty("数据")
     private List<T> data;
+
+    public PageResult(){
+
+    }
+
+    public PageResult(List<T> data, Long total) {
+        this.data = data;
+        this.total = total;
+    }
 }

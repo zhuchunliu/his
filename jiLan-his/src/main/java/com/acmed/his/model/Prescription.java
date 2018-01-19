@@ -47,7 +47,7 @@ public class Prescription {
     @ApiModelProperty("总费用")
     private Double fee;
 
-    @ApiModelProperty("是否已付费 0:否；1：是")
+    @ApiModelProperty("付费状态 0:未付款；1：已经付款；2：部分退款；3：全额退款")
     private String isPaid;
 
     @ApiModelProperty("付费类型 字典表")

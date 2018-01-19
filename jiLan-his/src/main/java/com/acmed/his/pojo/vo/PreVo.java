@@ -55,7 +55,8 @@ public class PreVo {
                 item.setTotalFee(Optional.ofNullable(item.getNum()).orElse(0)*Optional.ofNullable(item.getFee()).orElse(0d));
 
                 if(!map.containsKey(obj.getGroupNum())){
-                    map.put(obj.getGroupNum(),new PrescriptVo("1",item,null,null));
+                    map.put(obj.getGroupNum(),new PrescriptVo("1",item,null,null
+                            ,obj.getRequirement(),obj.getRemark()));
                 }else{
                     map.get(obj.getGroupNum()).getItemList().add(item);
                     map.get(obj.getGroupNum()).setType("1");
@@ -70,7 +71,8 @@ public class PreVo {
                 BeanUtils.copyProperties(obj,inspect);
 
                 if(!map.containsKey(obj.getGroupNum())){
-                    map.put(obj.getGroupNum(),new PrescriptVo("2",null,inspect,null));
+                    map.put(obj.getGroupNum(),new PrescriptVo("2",null,inspect,null
+                            ,obj.getRequirement(),obj.getRemark()));
                 }else{
                     map.get(obj.getGroupNum()).getInspectList().add(inspect);
                     map.get(obj.getGroupNum()).setType("2");
@@ -85,7 +87,8 @@ public class PreVo {
                 BeanUtils.copyProperties(obj,charge);
 
                 if(!map.containsKey(obj.getGroupNum())){
-                    map.put(obj.getGroupNum(),new PrescriptVo(null,null,null,charge));
+                    map.put(obj.getGroupNum(),new PrescriptVo(null,null,null,charge,
+                            obj.getRequirement(),obj.getRemark()));
                 }else{
                     map.get(obj.getGroupNum()).getChargeList().add(charge);
                 }
@@ -104,11 +107,13 @@ public class PreVo {
     @Data
     public class PrescriptVo {
 
-        public PrescriptVo(String type,PreVo.ItemVo item,PreVo.InspectVo inspect,PreVo.ChargeVo charge){
+        public PrescriptVo(String type,PreVo.ItemVo item,PreVo.InspectVo inspect,PreVo.ChargeVo charge,String requirement,String remark){
             this.type = type;
             if(null != item)this.itemList.add(item);
             if(null != inspect)this.inspectList.add(inspect);
             if(null != charge)this.chargeList.add(charge);
+            this.requirement = requirement;
+            this.remark = remark;
         }
 
         @ApiModelProperty("1:药品处方；2：检查处方")
@@ -123,6 +128,11 @@ public class PreVo {
         @ApiModelProperty("附加费")
         private List<PreVo.ChargeVo> chargeList = new ArrayList<>();
 
+        @ApiModelProperty("要求")
+        private String requirement;
+
+        @ApiModelProperty("备注")
+        private String remark;
 
     }
 

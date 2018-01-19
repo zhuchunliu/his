@@ -206,10 +206,6 @@ public class ApplyManager {
         }
     }
 
-    public List<DispensingDto> getDispensingList(Integer orgCode, String name,  String status) {
-        return applyMapper.getDispensingList(orgCode,name,status);
-    }
-
 
     /**
      * 获取指定机构的就诊量
@@ -343,4 +339,6 @@ public class ApplyManager {
             return ResponseUtil.setErrorMeg(StatusCode.FAIL,"挂号单号不存在");
         }
     }
+
+
 }

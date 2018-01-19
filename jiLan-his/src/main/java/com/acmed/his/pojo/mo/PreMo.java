@@ -34,8 +34,14 @@ public class PreMo {
         @ApiModelProperty("附加费")
         private List<PreMo.ChargeMo> chargeList;
 
-        @ApiModelProperty("药品集合")
+        @ApiModelProperty("检查集合")
         private List<PreMo.InspectMo> inspectList;
+
+        @ApiModelProperty("要求")
+        private String requirement;
+
+        @ApiModelProperty("备注")
+        private String remark;
 
     }
 

@@ -201,7 +201,9 @@ public class DrugManager {
      */
     public void modifyPrice(Integer id, Double price, Double num, UserInfo user) {
         Drug drug = drugMapper.selectByPrimaryKey(id);
-        drug.setNum(num);
+        if(null != num) {
+            drug.setNum(num);
+        }
         drug.setRetailPrice(price);
         drug.setModifyAt(LocalDateTime.now().toString());
         drug.setModifyBy(user.getId().toString());

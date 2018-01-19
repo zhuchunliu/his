@@ -4,23 +4,26 @@ import com.acmed.his.model.dto.DrugDayDetailDto;
 import com.acmed.his.model.dto.DrugDayDto;
 import com.acmed.his.model.dto.PurchaseDayDetailDto;
 import com.acmed.his.model.dto.PurchaseDayDto;
+import com.acmed.his.pojo.mo.ReportQueryMo;
 import com.acmed.his.service.PrescriptionManager;
 import com.acmed.his.service.PurchaseManager;
 import com.acmed.his.service.ReportDrugManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.util.PageBase;
-import com.acmed.his.util.PageResult;
-import com.acmed.his.util.ResponseResult;
-import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.util.*;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.*;
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
+import net.jcip.annotations.Immutable;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2018-01-08
@@ -53,15 +56,38 @@ public class ReportDrugApi {
 
     }
 
+    @ApiOperation("收支概况")
+    @GetMapping("/drug/survey")
+    @ApiResponse(code = 100,message = "saleFee:出库金额,purchaseFee:入库金额")
+    public ResponseResult getSurveyStatis(@ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
+                                          @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
+                                          @AccessToken AccessInfo info){
+        startTime = Optional.ofNullable(startTime).map(DateTimeUtil::getBeginDate).orElse(null);
+        endTime = Optional.ofNullable(endTime).map(DateTimeUtil::getEndDate).orElse(null);
+
+        Double saleFee = prescriptionManager.getSurveyFee(info.getUser().getOrgCode(),startTime,endTime);
+        Double purchaseFee =purchaseManager.getSurveyFee(info.getUser().getOrgCode(),startTime,endTime);
+        Map<String,Double> map = Maps.newHashMap();
+        map.put("saleFee",saleFee);
+        map.put("purchaseFee",purchaseFee);
+        map.put("profit",saleFee - purchaseFee);
+
+        return ResponseUtil.setSuccessResult(map);
+
+    }
+
     @ApiOperation(value = "药品出库统计")
     @PostMapping("/sale/page")
-    public ResponseResult<PageResult<DrugDayDto>> getSalePageList(@RequestBody(required = false) PageBase pageBase,
-                                                          @ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
-                                                          @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
+    public ResponseResult<PageResult<DrugDayDto>> getSalePageList(@RequestBody(required = false) PageBase<ReportQueryMo> pageBase,
                                                           @AccessToken AccessInfo info){
 
-        List<DrugDayDto> list = reportDrugManager.getDrugDayList(info.getUser().getOrgCode(),startTime,endTime,pageBase.getPageNum(), pageBase.getPageSize());
-        int total = reportDrugManager.getDrugDayTotal(info.getUser().getOrgCode(),startTime,endTime);
+        List<DrugDayDto> list = reportDrugManager.getDrugDayList(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null)
+                ,pageBase.getPageNum(), pageBase.getPageSize());
+        int total = reportDrugManager.getDrugDayTotal(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null));
         PageResult pageResult = new PageResult();
         BeanUtils.copyProperties(pageBase,pageResult);
         pageResult.setTotal((long)total);
@@ -75,19 +101,24 @@ public class ReportDrugApi {
                                                 @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
                                                 @AccessToken AccessInfo info){
 
+        startTime = Optional.ofNullable(startTime).map(DateTimeUtil::getBeginDate).orElse(null);
+        endTime = Optional.ofNullable(endTime).map(DateTimeUtil::getEndDate).orElse(null);
+
         List<DrugDayDto> list =  reportDrugManager.getDrugDayList(info.getUser().getOrgCode(),startTime,endTime,1, 10);
         return ResponseUtil.setSuccessResult(list);
     }
 
     @ApiOperation(value = "药品出库明细")
     @PostMapping("/sale/detail")
-    public ResponseResult<PageResult<DrugDayDetailDto>> getSaleDetail(@RequestBody(required = false) PageBase pageBase,
-                                                                      @ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
-                                                                      @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
+    public ResponseResult<PageResult<DrugDayDetailDto>> getSaleDetail(@RequestBody(required = false) PageBase<ReportQueryMo> pageBase,
                                                                       @AccessToken AccessInfo info){
 
-        List<DrugDayDetailDto> list =  reportDrugManager.getDrugDayDetailList(info.getUser().getOrgCode(),startTime,endTime,1, 10);
-        int total = reportDrugManager.getDrugDayDetailTotal(info.getUser().getOrgCode(),startTime,endTime);
+        List<DrugDayDetailDto> list =  reportDrugManager.getDrugDayDetailList(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null),pageBase.getPageNum(), pageBase.getPageSize());
+        int total = reportDrugManager.getDrugDayDetailTotal(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null));
         PageResult pageResult = new PageResult();
         BeanUtils.copyProperties(pageBase,pageResult);
         pageResult.setTotal((long)total);
@@ -97,13 +128,15 @@ public class ReportDrugApi {
 
     @ApiOperation(value = "药品入库列表")
     @PostMapping("/purchase/page")
-    public ResponseResult<PageResult<PurchaseDayDto>> getPurchasePageList(@RequestBody(required = false) PageBase pageBase,
-                                                                         @ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
-                                                                         @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
+    public ResponseResult<PageResult<PurchaseDayDto>> getPurchasePageList(@RequestBody(required = false) PageBase<ReportQueryMo> pageBase,
                                                                          @AccessToken AccessInfo info){
 
-        List<PurchaseDayDto> list =  reportDrugManager.getPurchaseDayList(info.getUser().getOrgCode(),startTime,endTime,1, 10);
-        int total = reportDrugManager.getPurchaseDayTotal(info.getUser().getOrgCode(),startTime,endTime);
+        List<PurchaseDayDto> list =  reportDrugManager.getPurchaseDayList(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null),pageBase.getPageNum(), pageBase.getPageSize());
+        int total = reportDrugManager.getPurchaseDayTotal(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null));
         PageResult pageResult = new PageResult();
         BeanUtils.copyProperties(pageBase,pageResult);
         pageResult.setTotal((long)total);
@@ -123,13 +156,15 @@ public class ReportDrugApi {
 
     @ApiOperation(value = "药品入库明细")
     @PostMapping("/purchase/detail")
-    public ResponseResult<PageResult<PurchaseDayDetailDto>> getPurchaseDayDetail(@RequestBody(required = false) PageBase pageBase,
-                                                                                 @ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,
-                                                                                 @ApiParam("结束时间") @RequestParam(value = "endTime",required = false) String endTime,
+    public ResponseResult<PageResult<PurchaseDayDetailDto>> getPurchaseDayDetail(@RequestBody(required = false) PageBase<ReportQueryMo> pageBase,
                                                                                  @AccessToken AccessInfo info){
 
-        List<PurchaseDayDetailDto> list =  reportDrugManager.getPurchaseDayDetailList(info.getUser().getOrgCode(),startTime,endTime,1, 10);
-        int total = reportDrugManager.getPurchaseDayDetailTotal(info.getUser().getOrgCode(),startTime,endTime);
+        List<PurchaseDayDetailDto> list =  reportDrugManager.getPurchaseDayDetailList(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null),pageBase.getPageNum(), pageBase.getPageSize());
+        int total = reportDrugManager.getPurchaseDayDetailTotal(info.getUser().getOrgCode(),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getStartTime()).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(obj->obj.getEndTime()).orElse(null));
         PageResult pageResult = new PageResult();
         BeanUtils.copyProperties(pageBase,pageResult);
         pageResult.setTotal((long)total);
