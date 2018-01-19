@@ -1,21 +1,19 @@
 package com.acmed.his.api;
 
-import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.DicTypeEnum;
-import com.acmed.his.dao.DicItemMapper;
 import com.acmed.his.model.*;
-import com.acmed.his.pojo.mo.AdviceTplMo;
-import com.acmed.his.pojo.mo.DiagnosisTplMo;
-import com.acmed.his.pojo.mo.PrescriptionTplMo;
+import com.acmed.his.pojo.mo.*;
 import com.acmed.his.pojo.vo.AdviceTplVo;
 import com.acmed.his.pojo.vo.DiagnosisTplVo;
 import com.acmed.his.pojo.vo.PrescriptionTplVo;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.DrugManager;
+import com.acmed.his.service.MedicalRecordTplManager;
 import com.acmed.his.service.TemplateManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.util.PageBase;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.*;
@@ -29,7 +27,7 @@ import java.util.*;
 /**
  * Created by Darren on 2017-11-20
  **/
-@Api(tags = "模板信息",description = "诊断模板、医嘱模板、处方模板")
+@Api(tags = "模板信息",description = "诊断模板、医嘱模板、处方模板、病例模板")
 @RestController
 @RequestMapping("/tpl")
 public class TemplateApi {
@@ -42,6 +40,9 @@ public class TemplateApi {
 
     @Autowired
     private DrugManager drugManager;
+
+    @Autowired
+    private MedicalRecordTplManager medicalRecordTplManager;
 
     @ApiOperation(value = "新增/编辑 诊断模板")
     @PostMapping("/diagnosis/save")
@@ -236,4 +237,74 @@ public class TemplateApi {
         return ResponseUtil.setSuccessResult();
     }
 
+
+
+    @ApiOperation(value = "删除病例模板")
+    @GetMapping("/medicalRecordTpl/del")
+    public ResponseResult delMedicalRecordTpl(@ApiParam("模板主键") @RequestParam("id") Integer id,
+                                         @AccessToken AccessInfo info){
+        MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
+        medicalRecordTpl.setId(id);
+        medicalRecordTpl.setModifyBy(info.getUserId().toString());
+        medicalRecordTpl.setRemoved("1");
+        medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
+        return ResponseUtil.setSuccessResult();
+    }
+
+
+
+    @ApiOperation(value = "添加/编辑 病例模板")
+    @PostMapping("/medicalRecordTpl/save")
+    public ResponseResult saveMedicalRecordTpl(@ApiParam("传id  表示修改，不传表示新增") @RequestBody AddMedicalRecordTplMo param,@AccessToken AccessInfo info){
+        Integer id = param.getId();
+        if (id == null){
+            MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
+            BeanUtils.copyProperties(param,medicalRecordTpl);
+            medicalRecordTpl.setUserId(info.getUserId());
+            medicalRecordTpl.setDept(info.getUser().getDept());
+            medicalRecordTpl.setOrgCode(info.getUser().getOrgCode());
+            medicalRecordTpl.setCreateBy(info.getUserId().toString());
+            medicalRecordTplManager.add(medicalRecordTpl);
+        }else {
+            //修改
+            MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
+            medicalRecordTpl.setUserId(info.getUserId());
+            medicalRecordTpl.setId(id);
+            List<MedicalRecordTpl> byParam = medicalRecordTplManager.getByParam(medicalRecordTpl);
+            if (byParam.size() != 0){
+                BeanUtils.copyProperties(param,medicalRecordTpl);
+                medicalRecordTpl.setModifyBy(info.getUserId().toString());
+                medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
+            }
+        }
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "病例模板列表")
+    @PostMapping("/medicalRecordTpl/list")
+    public ResponseResult medicalRecordTplList(@ApiParam("条件") @RequestBody PageBase<GetMedicalRecordTplMo> pageBase, @AccessToken AccessInfo info){
+        GetMedicalRecordTplMo param = pageBase.getParam();
+        MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
+        Integer dept = param.getDept();
+        Integer orgCode = param.getOrgCode();
+        Integer isSelf = param.getIsSelf();
+        if (isSelf == 1){
+            medicalRecordTpl.setUserId(info.getUserId());
+        }
+        if (orgCode == null){
+            param.setOrgCode(info.getUser().getOrgCode());
+        }else if(orgCode == 0){
+            param.setOrgCode(null);
+        }else {
+            param.setOrgCode(orgCode);
+        }
+        if (dept == null){
+            param.setDept(info.getUser().getDept());
+        }else if(dept == 0){
+            param.setDept(null);
+        }else {
+            param.setDept(orgCode);
+        }
+        return ResponseUtil.setSuccessResult(medicalRecordTplManager.getByParamByPage(medicalRecordTpl,pageBase.getPageNum(),pageBase.getPageSize()));
+    }
 }

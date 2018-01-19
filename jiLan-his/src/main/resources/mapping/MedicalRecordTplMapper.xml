@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.MedicalRecordTplMapper">
+    <select id="selectByParam" resultType="com.acmed.his.model.MedicalRecordTpl">
+        SELECT * FROM t_b_medicalrecord_tpl
+        <trim prefixOverrides="and" prefix="where">
+            <if test="@Ognl@isNotEmpty(id)">
+                and id = #{id}
+            </if>
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                    and orgcode = #{orgCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(dept)">
+                and dept = #{dept}
+            </if>
+            <if test="@Ognl@isNotEmpty(userId)">
+                and userid = #{userId}
+            </if>
+            <if test="@Ognl@isNotEmpty(chiefComplaint)">
+                and chiefcomplaint = #{chiefComplaint}
+            </if>
+            <if test="@Ognl@isNotEmpty(physicalExam)">
+                and physicalexam = #{physicalExam}
+            </if>
+            <if test="@Ognl@isNotEmpty(diagnosis)">
+                and diagnosis = #{diagnosis}
+            </if>
+            <if test="@Ognl@isNotEmpty(advice)">
+                and advice = #{advice}
+            </if>
+            <if test="@Ognl@isNotEmpty(category)">
+                and category = #{category}
+            </if>
+            <if test="@Ognl@isNotEmpty(remark)">
+                and remark = #{remark}
+            </if>
+            <if test="@Ognl@isNotEmpty(removed)">
+                and removed = #{removed}
+            </if>
+            <if test="@Ognl@isNotEmpty(tplName)">
+                and (tplname like CONCAT('%',#{tplName},'%') or tplnamepinyin like CONCAT('%',#{tplName},'%'))
+            </if>
+        </trim>
+    </select>
+</mapper>
