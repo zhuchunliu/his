@@ -42,8 +42,8 @@ public class SupplyApi {
     }
 
     @ApiOperation(value = "列表分页")
-    @GetMapping("list")
-    public ResponseResult<PageResult<Supply>> getAllSupplyByPage(@RequestBody PageBase pageBase){
-        return ResponseUtil.setSuccessResult(supplyManager.getAllSupplyByPage(pageBase));
+    @PostMapping("list")
+    public ResponseResult<PageResult<Supply>> getAllSupplyByPage(@ApiParam("名字  短名 拼音都可以模糊搜索   不传就是全部查询")@RequestBody PageBase<String> pageBase){
+        return ResponseUtil.setSuccessResult(supplyManager.getSupplyByPage(pageBase));
     }
 }

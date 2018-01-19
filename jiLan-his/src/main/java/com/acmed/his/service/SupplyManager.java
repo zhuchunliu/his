@@ -53,15 +53,15 @@ public class SupplyManager {
         return supplyMapper.selectAll();
     }
     /**
-     * 查询所有供应商list
-     * @return List<Supply>
+     * 分页条件查询
+     * @return PageResult<Supply>
      */
-    public PageResult<Supply> getAllSupplyByPage(PageBase pageBase){
+    public PageResult<Supply> getSupplyByPage(PageBase<String> pageBase){
         PageResult<Supply> pageResult = new PageResult<>();
         Integer pageNum = pageBase.getPageNum();
         Integer pageSize = pageBase.getPageSize();
         PageHelper.startPage(pageSize,pageNum);
-        List<Supply> supplies = supplyMapper.selectAll();
+        List<Supply> supplies = supplyMapper.selectMohu(pageBase.getParam());
         PageInfo<Supply> supplyPageInfo = new PageInfo<>(supplies);
         pageResult.setPageNum(pageNum);
         pageResult.setPageSize(pageSize);
