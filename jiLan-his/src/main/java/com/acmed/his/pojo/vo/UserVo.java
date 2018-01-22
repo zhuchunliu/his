@@ -34,4 +34,7 @@ public class UserVo {
 
     @ApiModelProperty("状态：0启用,1禁用")
     private String status;
+
+    @ApiModelProperty("头像")
+    private String avatar;
 }

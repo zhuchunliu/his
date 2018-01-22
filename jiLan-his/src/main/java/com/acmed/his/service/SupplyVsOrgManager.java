@@ -84,4 +84,14 @@ public class SupplyVsOrgManager {
     public SupplyVsOrg getById(Integer id){
         return supplyVsOrgMapper.selectByPrimaryKey(id);
     }
+
+
+    /**
+     * 条件查询
+     * @param supplyVsOrg
+     * @return List<SupplyVsOrg>
+     */
+    public List<SupplyVsOrg> getBySupplyVsOrg(SupplyVsOrg supplyVsOrg){
+        return supplyVsOrgMapper.select(supplyVsOrg);
+    }
 }

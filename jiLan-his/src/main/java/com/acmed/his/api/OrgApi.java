@@ -1,5 +1,6 @@
 package com.acmed.his.api;
 
+import com.acmed.his.model.Dept;
 import com.acmed.his.model.Org;
 import com.acmed.his.pojo.mo.OrgMo;
 import com.acmed.his.pojo.vo.OrgVo;
@@ -114,6 +115,7 @@ public class OrgApi {
     @ApiOperation(value = "获取机构详情")
     @GetMapping("/detail")
     public ResponseResult<OrgVo> getOrgDetail(@ApiParam("机构主键 null:获取当前登录人的机构信息") @RequestParam(value = "orgCode",required = false) Integer orgCode,
+                                              @ApiParam(value = "是否优势科室  不填显示全部科室  0表示显示非优势科室  1显示优势科室")@RequestParam(value = "superiorityFlag",required = false) Integer superiorityFlag,
                                               @AccessToken AccessInfo info){
         OrgVo mo = new OrgVo();
         if(null == orgCode){
@@ -121,7 +123,11 @@ public class OrgApi {
         }
         BeanUtils.copyProperties(orgManager.getOrgDetail(orgCode),mo);
         mo.setApplyNum(applyManager.getApplyNum(mo.getOrgCode()));
-        mo.setDeptList(deptManager.getDeptList(orgCode));
+        Dept dept = new Dept();
+        dept.setStatus("0");
+        dept.setOrgCode(orgCode);
+        dept.setSuperiorityFlag(superiorityFlag);
+        mo.setDeptList(deptManager.getDeptList(dept));
         return ResponseUtil.setSuccessResult(mo);
     }
 

@@ -97,4 +97,7 @@ public class Org {
 
     @ApiModelProperty("修改人")
     private String modifyBy;
+
+    @ApiModelProperty("医院图片")
+    private String imgUrl;
 }

@@ -32,9 +32,9 @@ public class SupplyVsOrgApi {
 
     @ApiOperation(value = "机构批量添加 渠道")
     @GetMapping("addSupplys")
-    public ResponseResult add(@AccessToken AccessInfo info,@ApiParam("机构id   用英文逗号拼接") @RequestParam(value = "orgCodes") String orgCodes){
-        if (StringUtils.isNotEmpty(orgCodes)) {
-            String[] split = orgCodes.split(",");
+    public ResponseResult add(@AccessToken AccessInfo info,@ApiParam("机构id   用英文逗号拼接") @RequestParam(value = "supplyIds") String supplyIds){
+        if (StringUtils.isNotEmpty(supplyIds)) {
+            String[] split = supplyIds.split(",");
             List<Integer> supplys = new ArrayList<>();
             for (int i = 0; i < split.length; i++) {
                 supplys.add(Integer.valueOf(split[i]));
@@ -53,18 +53,20 @@ public class SupplyVsOrgApi {
 
     @ApiOperation(value = "机构移除以关联渠道")
     @GetMapping("removeSupply")
-    public ResponseResult removeSupply(@AccessToken AccessInfo info, @ApiParam("id 主键") @RequestParam(value = "id" ) Integer id){
+    public ResponseResult removeSupply(@AccessToken AccessInfo info, @ApiParam("渠道id") @RequestParam(value = "supplyId" ) Integer supplyId){
         Integer userId = info.getUserId();
         Integer orgCode = info.getUser().getOrgCode();
-        SupplyVsOrg byId = supplyVsOrgManager.getById(id);
-        if(byId!=null){
-            if (byId.getOrgCode().equals(orgCode)){
-                SupplyVsOrg param = new SupplyVsOrg();
-                param.setModifyBy(userId.toString());
-                param.setRemoved("1");
-                param.setId(id);
-                supplyVsOrgManager.update(param);
-            }
+        SupplyVsOrg param = new SupplyVsOrg();
+        param.setOrgCode(orgCode);
+        param.setSupplyId(supplyId);
+        List<SupplyVsOrg> bySupplyVsOrg = supplyVsOrgManager.getBySupplyVsOrg(param);
+        if(bySupplyVsOrg.size()!=0){
+            SupplyVsOrg supplyVsOrg = bySupplyVsOrg.get(0);
+            SupplyVsOrg param1 = new SupplyVsOrg();
+            param1.setModifyBy(userId.toString());
+            param1.setRemoved("1");
+            param1.setId(supplyVsOrg.getId());
+            supplyVsOrgManager.update(param1);
         }
         return ResponseUtil.setSuccessResult();
     }

@@ -67,7 +67,6 @@ public class PatientManagerTest {
         PatientItem patientItem = new PatientItem();
         patientItem.setOrgCode(3);
         patientItem.setIdCard("335252525");
-        patientItem.setAvatar("dfdsfdsfdsfsdfsd");
         patientItem.setMobile("1234");
         patientManager.addPatinetItem(patientItem);
     }

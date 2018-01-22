@@ -88,9 +88,6 @@ public class PatientItem {
     @ApiModelProperty("修改用户")
     private String modifyBy;
 
-    @ApiModelProperty("头像")
-    private String avatar;
-
     @ApiModelProperty("是否是黑名单  0不是黑名单   1 是黑名单")
     private Integer blackFlag;
 
@@ -102,6 +99,9 @@ public class PatientItem {
 
     @ApiModelProperty("身份证号码")
     private String idCard;
+
+    @ApiModelProperty("社保卡")
+    private String socialCard;
 
     @ApiModelProperty("年龄")
     private Integer age;

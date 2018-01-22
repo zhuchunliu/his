@@ -33,6 +33,16 @@ public class DeptManager {
     }
 
     /**
+     * 条件查询
+     * @param dept 条件
+     * @return
+     */
+    public List<Dept> getDeptList(Dept dept){
+        return deptMapper.select(dept);
+    }
+
+
+    /**
      * 新增、编辑科室
      * @param mo
      */

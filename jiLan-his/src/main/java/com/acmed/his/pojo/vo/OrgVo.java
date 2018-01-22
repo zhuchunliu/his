@@ -75,4 +75,7 @@ public class OrgVo {
 
     @ApiModelProperty("科室列表")
     private List<Dept> deptList;
+
+    @ApiModelProperty("医院图片")
+    private String imgUrl;
 }
