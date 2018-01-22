@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.SupplyVsOrgMapper">
+    <select id="getSupplysByOrgCode" resultType="com.acmed.his.model.Supply">
+        SELECT
+        t1.*
+        FROM
+        t_b_supply t1
+        WHERE
+        t1.id IN (
+        SELECT t2.supplyid FROM t_b_supply_vs_org t2 WHERE t2.orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(removed) ">
+            AND t2.removed = #{removed}
+        </if>
+        )
+    </select>
+    <select id="getOrgsBySupplyId" resultType="com.acmed.his.model.Org">
+        SELECT
+        t1.*
+        FROM
+        t_p_s_org t1
+        WHERE
+        t1.orgcode IN (
+        SELECT t2.orgcode FROM t_b_supply_vs_org t2 WHERE
+        t2.supplyid = #{supplyId}
+            <if test="@Ognl@isNotEmpty(removed) ">
+                AND t2.removed = #{removed}
+            </if>
+        )
+    </select>
+</mapper>

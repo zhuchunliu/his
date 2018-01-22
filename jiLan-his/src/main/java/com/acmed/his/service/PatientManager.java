@@ -53,7 +53,7 @@ public class PatientManager {
     public int addPatinetItem(PatientItem patientItem){
         patientItem.setId(UUIDUtil.generate());
         patientItem.setBlackFlag(0);
-        patientItem.setCreateAt(LocalDate.now().toString());
+        patientItem.setCreateAt(LocalDateTime.now().toString());
         return patientItemMapper.insert(patientItem);
     }
 
@@ -254,7 +254,7 @@ public class PatientManager {
         PatientItem patientItem1 = patientItemMapper.selectOne(patientItem);
         if (patientItem1!=null){
             patientItem.setBlackFlag(blackFlag);
-            patientItem.setModifyAt(LocalDate.now().toString());
+            patientItem.setModifyAt(LocalDateTime.now().toString());
             patientItem.setModifyBy(userId.toString());
             return patientItemMapper.updateByPrimaryKeySelective(patientItem);
         }else {

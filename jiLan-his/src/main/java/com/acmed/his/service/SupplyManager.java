@@ -60,7 +60,7 @@ public class SupplyManager {
         PageResult<Supply> pageResult = new PageResult<>();
         Integer pageNum = pageBase.getPageNum();
         Integer pageSize = pageBase.getPageSize();
-        PageHelper.startPage(pageSize,pageNum);
+        PageHelper.startPage(pageNum,pageSize);
         List<Supply> supplies = supplyMapper.selectMohu(pageBase.getParam());
         PageInfo<Supply> supplyPageInfo = new PageInfo<>(supplies);
         pageResult.setPageNum(pageNum);

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class MedicalRecordTplManager {
             medicalRecordTpl.setTplNamePinYin(PinYinUtil.getPinYinHeadChar(tplName));
         }
         medicalRecordTpl.setRemoved("0");
-        medicalRecordTpl.setCreateAt(LocalDate.now().toString());
+        medicalRecordTpl.setCreateAt(LocalDateTime.now().toString());
         return medicalRecordTplMapper.insert(medicalRecordTpl);
     }
 
@@ -49,7 +50,7 @@ public class MedicalRecordTplManager {
         if (StringUtils.isNotEmpty(tplName)){
             medicalRecordTpl.setTplNamePinYin(PinYinUtil.getPinYinHeadChar(tplName));
         }
-        medicalRecordTpl.setModifyAt(LocalDate.now().toString());
+        medicalRecordTpl.setModifyAt(LocalDateTime.now().toString());
         return medicalRecordTplMapper.updateByPrimaryKeySelective(medicalRecordTpl);
     }
 
