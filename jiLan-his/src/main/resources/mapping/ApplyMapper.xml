@@ -80,7 +80,7 @@
                 and t1.orgcode = #{orgCode}
             </if>
             <if test="@Ognl@isNotEmpty(param)">
-                and (patientname like CONCAT('%',#{param},'%') or pinyin like CONCAT('%',#{param},'%') OR clinicno like CONCAT('%',#{param},'%'))
+                and (t1.patientname like CONCAT('%',#{param},'%') or t1.pinyin like CONCAT('%',#{param},'%') OR t1.clinicno like CONCAT('%',#{param},'%'))
             </if>
             <if test="@Ognl@isNotEmpty(status)">
                 and t1.status = #{status}
