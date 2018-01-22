@@ -46,5 +46,6 @@ public class Dept {
     @ApiModelProperty("修改人")
     private String modifyBy;
 
-
+    @ApiModelProperty("是否是优势科室   0不是  1 是")
+    private Integer superiorityFlag;
 }

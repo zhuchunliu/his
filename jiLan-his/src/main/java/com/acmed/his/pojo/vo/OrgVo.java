@@ -1,8 +1,11 @@
 package com.acmed.his.pojo.vo;
 
+import com.acmed.his.model.Dept;
 import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * Created by Darren on 2017-12-06
@@ -63,4 +66,13 @@ public class OrgVo {
 
     @ApiModelProperty("距离 单位：km")
     private String distance;
+
+    @ApiModelProperty("职务")
+    private String position;
+
+    @ApiModelProperty("诊所联系电话")
+    private String telephone;
+
+    @ApiModelProperty("科室列表")
+    private List<Dept> deptList;
 }

@@ -63,4 +63,10 @@ public class OrgMo {
 
     @ApiModelProperty("是否就医北上广医院")
     private String isRecommend;
+
+    @ApiModelProperty("职务")
+    private String position;
+
+    @ApiModelProperty("诊所联系电话")
+    private String telephone;
 }

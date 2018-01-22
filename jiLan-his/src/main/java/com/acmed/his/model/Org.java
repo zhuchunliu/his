@@ -41,6 +41,12 @@ public class Org {
     @ApiModelProperty("联系人")
     private String linkMan;
 
+    @ApiModelProperty("职务")
+    private String position;
+
+    @ApiModelProperty("诊所联系电话")
+    private String telephone;
+
     @ApiModelProperty("联系人手机")
     private String mobile;
 
