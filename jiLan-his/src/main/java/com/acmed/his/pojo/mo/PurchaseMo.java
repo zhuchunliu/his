@@ -1,4 +1,4 @@
-package com.acmed.his.model;
+package com.acmed.his.pojo.mo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -12,7 +12,7 @@ import java.util.List;
  * Created by Darren on 2017-12-05
  **/
 @Data
-public class DispensingPreVo {
+public class DispensingRefundVo {
 
     @ApiModelProperty("要求")
     private String requirement;
@@ -25,7 +25,7 @@ public class DispensingPreVo {
     private List<DisInspectVo> inspectList =  new ArrayList<>();
     private List<DisChargeVo> chargeList = new ArrayList<>();
 
-    public DispensingPreVo(DisItemVo itemVo, DisInspectVo inspectVo, DisChargeVo chargeVo, String requirement, String remark) {
+    public DispensingRefundVo(DisItemVo itemVo, DisInspectVo inspectVo, DisChargeVo chargeVo, String requirement, String remark) {
 
         this.requirement = requirement;
         this.remark = remark;
