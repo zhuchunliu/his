@@ -56,7 +56,7 @@ public class ReportInspectApi {
 
     }
 
-    @ApiOperation("当天检查项实时统计")
+    @ApiOperation("收支概况")
     @GetMapping("/inspect/survey")
     @ApiResponse(code = 100,message = "num:检查项目,fee:检查收入")
     public ResponseResult getSurveyStatis(@ApiParam("开始时间") @RequestParam(value = "startTime",required = false) String startTime,

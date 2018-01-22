@@ -9,7 +9,7 @@ import java.util.List;
  * Created by Darren on 2017-11-30
  **/
 @Data
-public class PreMo {
+public class  PreMo {
 
     @ApiModelProperty("处方主键")
     private String id;

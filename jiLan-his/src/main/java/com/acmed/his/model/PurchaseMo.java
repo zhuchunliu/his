@@ -32,10 +32,10 @@ public class PurchaseMo {
     @ApiModelProperty("审核标记；0未审核：1，已审核")
     private Integer status;
 
-    private List<Detail> detailList;
+    private List<PurchaseDetail> detailList;
 
     @Data
-    public class Detail{
+    public class PurchaseDetail{
         @ApiModelProperty("主键 null：新增;not null：编辑")
         private String id;
 

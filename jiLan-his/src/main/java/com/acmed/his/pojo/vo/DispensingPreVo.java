@@ -1,14 +1,7 @@
 package com.acmed.his.pojo.vo;
 
-import com.acmed.his.consts.DicTypeEnum;
-import com.acmed.his.model.Charge;
-import com.acmed.his.model.Inspect;
-import com.acmed.his.model.Prescription;
-import com.acmed.his.model.PrescriptionItem;
-import com.acmed.his.service.BaseInfoManager;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,43 +14,56 @@ import java.util.List;
 @Data
 public class DispensingPreVo {
 
-    @ApiModelProperty("处方主键")
-    private String id;
+    @ApiModelProperty("要求")
+    private String requirement;
 
-    @ApiModelProperty("处方编号")
-    private String prescriptionNo;
-
-    @ApiModelProperty("总费用")
-    private Double fee;
+    @ApiModelProperty("备注")
+    private String remark;
 
 
-    private List<Charge> chargeList;
-    private List<Item> itemList;
+    private List<DisItemVo> itemList =  new ArrayList<>();
+    private List<DisInspectVo> inspectList =  new ArrayList<>();
+    private List<DisChargeVo> chargeList = new ArrayList<>();
 
-    public DispensingPreVo(Prescription prescription, List<com.acmed.his.model.Charge> chargeList, List<PrescriptionItem> preItemList, BaseInfoManager baseInfoManager) {
-        this.prescriptionNo = prescription.getPrescriptionNo();
-        this.fee = prescription.getFee();
-        this.id = prescription.getId();
+    public DispensingPreVo(DisItemVo itemVo, DisInspectVo inspectVo, DisChargeVo chargeVo, String requirement, String remark) {
 
-        this.itemList = new ArrayList<>();
-        preItemList.forEach(obj->{
-            Item item = new Item();
-            BeanUtils.copyProperties(obj,item);
-            this.itemList.add(item);
-        });
+        this.requirement = requirement;
+        this.remark = remark;
+        if(null != itemVo)this.itemList.add(itemVo);
+        if(null != inspectVo)this.inspectList.add(inspectVo);
+        if(null != chargeVo)this.chargeList.add(chargeVo);
 
-        this.chargeList = new ArrayList<>();
-        chargeList.forEach(obj->{
-            Charge charge = new Charge();
-            charge.setFee(obj.getFee());
-            charge.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.CHARGE_CATEGORY.getCode(),obj.getCategory()).getDicItemName());
-            this.chargeList.add(charge);
-        });
+    }
+
+    @Data
+    public static class DisInspectVo{
+
+        @ApiModelProperty("检查目的")
+        private String aim;
+
+        @ApiModelProperty("检查部位")
+        private String part;
+
+        @ApiModelProperty("检查类型")
+        private String category;
+
+        @ApiModelProperty("病情摘要")
+        private String summary;
+
+        @ApiModelProperty("检查诊断")
+        private String diagnosis;
+
+        @ApiModelProperty("费用")
+        private Double fee;
+
+        @ApiModelProperty("备注")
+        private String memo;
+
     }
 
 
     @Data
-    private class Charge{
+    public static class DisChargeVo{
         @ApiModelProperty("费用")
         private Double fee;
 
@@ -66,24 +72,25 @@ public class DispensingPreVo {
     }
 
     @Data
-    private class Item{
-        @ApiModelProperty("药品编码")
-        private String drugCode;
+    public static class DisItemVo{
 
         @ApiModelProperty("用药名称")
         private String drugName;
 
-        @ApiModelProperty("药品单价")
-        private Double fee;
+        @ApiModelProperty("药品规格")
+        private String spec;
 
-        @ApiModelProperty("药品数量")
+        @ApiModelProperty("数量")
         private Integer num;
 
-        @ApiModelProperty("途径")
-        private String way;
+        @ApiModelProperty("计价单位")
+        private String unit;
 
-        @ApiModelProperty("备注")
-        private String memo;
+        @ApiModelProperty("单价")
+        private Double fee;
+
+        @ApiModelProperty("总价")
+        private Double totalFee;
     }
 
 

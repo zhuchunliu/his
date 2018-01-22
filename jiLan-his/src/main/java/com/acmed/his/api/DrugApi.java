@@ -1,7 +1,6 @@
 package com.acmed.his.api;
 
 import com.acmed.his.dao.ManufacturerMapper;
-import com.acmed.his.dao.SupplyMapper;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
 import com.acmed.his.model.dto.DrugDto;
@@ -45,9 +44,6 @@ public class DrugApi {
 
     @Autowired
     private ManufacturerMapper manufacturerMapper;
-
-    @Autowired
-    private SupplyMapper supplyMapper;
 
     @ApiOperation(value = "药品信息列表")
     @PostMapping("/list")
