@@ -20,8 +20,8 @@ public class UserMo implements Serializable{
     @ApiModelProperty("用户名")
     private String userName;
 
-    @ApiModelProperty("密码")
-    private String passWd;
+//    @ApiModelProperty("密码")
+//    private String passWd;
 
     @ApiModelProperty("性别")
     private String gender;

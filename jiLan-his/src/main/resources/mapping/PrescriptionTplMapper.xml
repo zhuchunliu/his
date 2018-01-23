@@ -18,10 +18,47 @@
         <result property="modifyAt" column="modifyat"></result>
     </resultMap>
 
-    <select id="getPrescripTplList"  resultMap="prescriptionTpl">
-        select * from t_b_prescription_tpl where orgcode = #{orgCode} and isvalid = #{isValid}
+    <select id="getPrescripTplList"  resultType="com.acmed.his.model.dto.PrescriptionTplDto">
+        select t1.id ,t1.tplname,t1.category,t1.ispublic,t1.description,t1.isvalid,
+         t2.nickname as createUserName
+        from t_b_prescription_tpl t1
+        LEFT JOIN t_p_s_user t2 on t1.createby = t2.id
+        where t1.orgcode = #{userInfo.orgCode}
+
+        <if test="@Ognl@isNotEmpty(tplName)">
+            and (t1.tplname LIKE concat('%', #{tplName} , '%') or pinyin LIKE concat('%', #{tplName} , '%'))
+        </if>
         <if test="@Ognl@isNotEmpty(category)">
-            and category = #{category}
+            and t1.category = #{category}
+        </if>
+        <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 0">
+            and t1.createby = #{userInfo.id} and t1.isPublic = #{isPublic}
+        </if>
+        <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 1">
+            and t1.ispublic = #{isPublic}
+        </if>
+        <if test="@Ognl@isEmpty(isPublic)">
+           and (t1.ispublic = 1 or  t1.createby = #{userInfo.id})
+        </if>
+    </select>
+
+    <select id="getPrescripTplTotal"  resultType="java.lang.Integer">
+        select count(1) from t_b_prescription_tpl t1 where orgcode = #{userInfo.orgCode}
+
+        <if test="@Ognl@isNotEmpty(tplName)">
+            and (t1.tplname LIKE concat('%', #{tplName} , '%') or pinyin LIKE concat('%', #{tplName} , '%'))
+        </if>
+        <if test="@Ognl@isNotEmpty(category)">
+            and t1.category = #{category}
+        </if>
+        <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 0">
+            and t1.createby = #{userInfo.id} and t1.isPublic = #{isPublic}
+        </if>
+        <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 1">
+            and t1.ispublic = #{isPublic}
+        </if>
+        <if test="@Ognl@isEmpty(isPublic)">
+            and (t1.ispublic = 1 or  t1.createby = #{userInfo.id})
         </if>
     </select>
 

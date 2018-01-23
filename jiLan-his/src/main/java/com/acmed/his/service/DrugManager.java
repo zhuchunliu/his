@@ -72,6 +72,7 @@ public class DrugManager {
             drug.setGoodsPinYin(Optional.ofNullable(drug.getGoodsName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setCreateAt(date);
             drug.setCreateBy(date);
+            drug.setRemoved("0");
             drug.setPinYin(PinYinUtil.getPinYinHeadChar(drug.getName()));
             return drugMapper.insert(drug);
         }

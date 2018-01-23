@@ -2,25 +2,33 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.DicTypeEnum;
+import com.acmed.his.dao.InspectTplMapper;
+import com.acmed.his.dao.PrescriptionTplItemMapper;
+import com.acmed.his.dao.PrescriptionTplMapper;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.PrescriptionTplDto;
 import com.acmed.his.pojo.mo.*;
 import com.acmed.his.pojo.vo.AdviceTplVo;
 import com.acmed.his.pojo.vo.DiagnosisTplVo;
-import com.acmed.his.pojo.vo.PrescriptionTplVo;
-import com.acmed.his.service.BaseInfoManager;
-import com.acmed.his.service.DrugManager;
-import com.acmed.his.service.MedicalRecordTplManager;
-import com.acmed.his.service.TemplateManager;
+import com.acmed.his.pojo.vo.InspectTplVo;
+import com.acmed.his.pojo.vo.PrescriptionTplItemVo;
+import com.acmed.his.service.*;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.PageBase;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
-import io.swagger.annotations.*;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
 
@@ -43,6 +51,18 @@ public class TemplateApi {
 
     @Autowired
     private MedicalRecordTplManager medicalRecordTplManager;
+
+    @Autowired
+    private PrescriptionTplMapper preTplMapper;
+
+    @Autowired
+    private PrescriptionTplItemMapper preTplItemMapper;
+
+    @Autowired
+    private InspectTplMapper inspectTplMapper;
+
+    @Autowired
+    private FeeItemManager feeItemManager;
 
     @ApiOperation(value = "新增/编辑 诊断模板")
     @PostMapping("/diagnosis/save")
@@ -104,7 +124,7 @@ public class TemplateApi {
     }
 
     @ApiOperation(value = "删除诊断模板")
-    @DeleteMapping("/diagnosis/del")
+    @GetMapping("/diagnosis/del")
     public ResponseResult delDiagnosis(@ApiParam("模板主键") @RequestParam("id") Integer id,
                                        @AccessToken AccessInfo info){
         templateManager.delDiagnosisTpl(id,info.getUser());
@@ -187,54 +207,81 @@ public class TemplateApi {
     }
 
     @ApiOperation(value = "获取指定机构下的处方模板")
-    @GetMapping("/prescripTpl/list")
-    public ResponseResult<List<PrescriptionTplVo>> getPrescripTplList(@AccessToken AccessInfo info,
-                                                                      @ApiParam("模板类型") @RequestParam(value = "category",required = false) String category){
-        List<PrescriptionTplVo> list = new ArrayList<>();
-        templateManager.getPrescripTplList(info.getUser().getOrgCode(),category).forEach((obj)->{
-            PrescriptionTplVo mo = new PrescriptionTplVo();
-            BeanUtils.copyProperties(obj,mo);
-            mo.setCategoryName("1".equals(mo.getCategory())?"药品处方":"检查处方");
-            list.add(mo);
-        });
-        return ResponseUtil.setSuccessResult(list);
+    @PostMapping("/prescripTpl/list")
+    public ResponseResult<PageResult<PrescriptionTplDto>> getPrescripTplList(@RequestBody(required = false) PageBase<PrescriptionQueryTplMo> page,
+                                                                             @AccessToken AccessInfo info){
+        PageResult result = new PageResult();
+        result.setData(templateManager.getPrescripTplList(page.getParam(),page.getPageNum(),page.getPageSize(), info.getUser()));
+        result.setTotal((long)templateManager.getPrescripTplTotal(page.getParam(), info.getUser()));
+        return ResponseUtil.setSuccessResult(result);
     }
 
-    @ApiOperation(value = "获取处方模板")
-    @GetMapping("/prescripTpl/detail")
-    public ResponseResult<PrescriptionTplVo> getPrescripTplDetail(@ApiParam("模板主键") @RequestParam("id") Integer id){
-        PrescriptionTplVo mo = new PrescriptionTplVo();
-        BeanUtils.copyProperties(templateManager.getPrescripTpl(id),mo);
-
-        List<PrescriptionTplVo.Item> itemList = new ArrayList<>();
-        templateManager.getPrescripTplItemList(mo.getId()).forEach(obj->{
-            PrescriptionTplVo.Item item = new PrescriptionTplVo().new Item();
-            BeanUtils.copyProperties(obj,item);
-            Drug drug = Optional.ofNullable(item.getDrugId()).map(drugManager::getDrugById).orElse(null);
-            if(null != drug) {
-                item.setFee(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));
-                item.setSpec(drug.getSpec());
-            }
-            itemList.add(item);
-        });
-        mo.setItemList(itemList);
-
-        List<PrescriptionTplVo.InspectDetail> inspectList = new ArrayList<>();
-        templateManager.getInspectTplList(mo.getId()).forEach(obj->{
-            PrescriptionTplVo.InspectDetail item = new PrescriptionTplVo().new InspectDetail();
-            BeanUtils.copyProperties(obj,item);
-            inspectList.add(item);
-        });
-        mo.setInspectList(inspectList);
-        return ResponseUtil.setSuccessResult(mo);
-    }
-
-    @ApiOperation(value = "删除处方模板")
-    @DeleteMapping("/prescripTpl/del")
-    public ResponseResult delPrescripTpl(@ApiParam("模板主键") @RequestParam("id") Integer id,
+    @ApiOperation(value = "禁用/启用 处方模板")
+    @PostMapping("/prescripTpl/switch")
+    public ResponseResult switchPrescripTpl(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
                                          @AccessToken AccessInfo info){
-        templateManager.delPrescripTpl(id,info.getUser());
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+            return ResponseUtil.setParamEmptyError("id");
+        }
+        templateManager.switchPrescripTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
         return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "获取处方配置详情")
+    @GetMapping("/prescripTpl/detail")
+    public ResponseResult getPrescripTplDetail(@ApiParam("模板主键") @RequestParam("id") Integer id,
+                                               @AccessToken AccessInfo info){
+        PrescriptionTpl prescriptionTpl = preTplMapper.selectByPrimaryKey(id);
+        if(prescriptionTpl.getCategory().equals("1")){//药品处方
+            Example example = new Example(PrescriptionTplItem.class);
+            example.createCriteria().andEqualTo("tplId",id);
+            List<PrescriptionTplItemVo> list = Lists.newArrayList();
+            preTplItemMapper.selectByExample(example).forEach(obj->{
+                PrescriptionTplItemVo vo = new PrescriptionTplItemVo();
+                BeanUtils.copyProperties(obj,vo);
+                Drug drug = drugManager.getDrugById(obj.getDrugId());
+                if(null != drug){
+                    vo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
+                    vo.setFee(drug.getRetailPrice());
+                }
+                list.add(vo);
+
+            });
+            return ResponseUtil.setSuccessResult(list);
+        }else{//检查处方
+            Example example = new Example(InspectTpl.class);
+            example.createCriteria().andEqualTo("tplId",id);
+            List<InspectTplVo> list = Lists.newArrayList();
+            inspectTplMapper.selectByExample(example).forEach(obj->{
+                InspectTplVo vo = new InspectTplVo();
+                BeanUtils.copyProperties(obj,vo);
+                vo.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.INSPECT_CATEGORY.getCode(),obj.getCategory()).getDicItemName());
+                vo.setFee(Optional.ofNullable(feeItemManager.getFeeItemDetail(info.getUser().getOrgCode(),DicTypeEnum.INSPECT_CATEGORY.getCode(),vo.getCategory())).
+                        map(fee->Double.parseDouble(fee.getItemPrice().toString())).orElse(0d));
+                list.add(vo);
+            });
+            return ResponseUtil.setSuccessResult(list);
+        }
+
+    }
+
+
+    @ApiOperation(value = "编辑 处方模板-药品")
+    @PostMapping("/prescripTpl/item/save")
+    public ResponseResult savePrescripItemTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PrescriptionTplItemMo mo,
+                                          @AccessToken AccessInfo info){
+
+        boolean flag = templateManager.savePrescripItemTpl(mo);
+        return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方模板失败");
+    }
+
+    @ApiOperation(value = "编辑 处方模板-检查")
+    @PostMapping("/prescripTpl/inspect/save")
+    public ResponseResult savInspectTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody InspectTplMo mo,
+                                          @AccessToken AccessInfo info){
+
+        boolean flag = templateManager.savInspectTpl(mo);
+        return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方模板失败");
     }
 
 

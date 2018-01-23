@@ -10,6 +10,7 @@ import com.acmed.his.pojo.vo.UserInfo;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -328,12 +329,13 @@ public class DispensingManager {
      */
     @Transactional
     public void lockStock(String applyId,UserInfo info) {
-        Example example = new Example(PrescriptionItem.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus",1);
-        List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
+        synchronized ("org_" + info.getOrgCode()) {
+            Example example = new Example(PrescriptionItem.class);
+            example.createCriteria().andEqualTo("applyId", applyId).andEqualTo("payStatus", 1);
+            List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
 
-        List<PrescriptionItemStock> itemStockList = Lists.newArrayList();
-        synchronized ("org_"+info.getOrgCode()) {
+            List<PrescriptionItemStock> itemStockList = Lists.newArrayList();
+
             for (PrescriptionItem item : itemList) {
                 Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                 if (drug.getNum() < item.getNum()) {
@@ -341,12 +343,12 @@ public class DispensingManager {
                 } else {
                     List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
                     Double num = item.getNum();
-                    for(DrugStock drugStock : drugStockList){
+                    for (DrugStock drugStock : drugStockList) {
 
-                        if(num == 0){
+                        if (num == 0) {
                             break;
                         }
-                        Double occupyNum = drugStock.getNum() < num ? drugStock.getNum():num;
+                        Double occupyNum = drugStock.getNum() < num ? drugStock.getNum() : num;
                         drugStock.setNum(drugStock.getNum() - occupyNum);
                         drugStockMapper.updateByPrimaryKey(drugStock);
 
@@ -363,9 +365,8 @@ public class DispensingManager {
                     }
                 }
             }
+            itemStockMapper.insertList(itemStockList);
         }
-        itemStockMapper.insertList(itemStockList);
-
     }
 
 

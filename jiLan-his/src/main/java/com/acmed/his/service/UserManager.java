@@ -80,7 +80,7 @@ public class UserManager {
                 Optional.ofNullable(deptMapper.selectByPrimaryKey(mo.getDept())).map(dept->dept.getDept()).orElse(null));
         mo.setDept(Optional.ofNullable(mo.getDept()).orElse(userInfo.getDept()));
 
-        mo.setPassWd(Optional.ofNullable(mo.getPassWd()).map(MD5Util::encode).orElse(null));
+//        mo.setPassWd(Optional.ofNullable(mo.getPassWd()).map(MD5Util::encode).orElse(null));
 
         if(null == mo.getId()){
             User user = new User();

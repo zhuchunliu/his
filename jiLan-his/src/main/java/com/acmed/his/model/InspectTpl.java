@@ -32,7 +32,7 @@ public class InspectTpl {
     @ApiModelProperty("检查部位")
     private String part;
 
-    @ApiModelProperty("检查类型")
+    @ApiModelProperty("检查类型 对应字典表：InspectCategory")
     private String category;
 
     @ApiModelProperty("备注")

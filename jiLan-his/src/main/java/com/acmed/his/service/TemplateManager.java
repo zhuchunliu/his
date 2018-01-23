@@ -1,12 +1,13 @@
 package com.acmed.his.service;
 
+import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
-import com.acmed.his.pojo.mo.AdviceTplMo;
-import com.acmed.his.pojo.mo.DiagnosisTplMo;
-import com.acmed.his.pojo.mo.PrescriptionTplMo;
+import com.acmed.his.model.dto.PrescriptionTplDto;
+import com.acmed.his.pojo.mo.*;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.PinYinUtil;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -156,11 +157,22 @@ public class TemplateManager {
 
     /**
      * 获取处方模板列表
-     * @param orgCode 机构编码
+     * @param
      * @return
      */
-    public List<PrescriptionTpl> getPrescripTplList(Integer orgCode,String category){
-        return prescriptionTplMapper.getPrescripTplList(orgCode,"1",category);
+    public List<PrescriptionTplDto> getPrescripTplList(PrescriptionQueryTplMo query, Integer pageNum, Integer pageSize, UserInfo userInfo){
+        PageHelper.startPage(pageNum,pageSize);
+        return prescriptionTplMapper.getPrescripTplList(Optional.ofNullable(query).map(obj->obj.getTplName()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getCategory()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                userInfo, DicTypeEnum.PRESCRIPTION.getCode());
+    }
+
+    public Integer getPrescripTplTotal( PrescriptionQueryTplMo query, UserInfo userInfo) {
+        return prescriptionTplMapper.getPrescripTplTotal(Optional.ofNullable(query).map(obj->obj.getTplName()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getCategory()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                userInfo);
     }
 
     /**
@@ -178,73 +190,76 @@ public class TemplateManager {
      * @return
      */
     @Transactional
-    public void delPrescripTpl(Integer id,UserInfo userInfo){
+    public void switchPrescripTpl(Integer id,UserInfo userInfo){
         PrescriptionTpl prescriptionTpl = prescriptionTplMapper.selectByPrimaryKey(id);
         prescriptionTpl.setModifyAt(LocalDateTime.now().toString());
         prescriptionTpl.setModifyBy(userInfo.getId().toString());
-        prescriptionTpl.setIsValid("0");
+        prescriptionTpl.setIsValid(prescriptionTpl.getIsValid().equals("1")?"0":"1");
         prescriptionTplMapper.updateByPrimaryKey(prescriptionTpl);
     }
 
     /**
-     * 新增/编辑 医嘱模板
+     * 新增/编辑 处方模板
      * @param mo 处方模板
      * @return
      */
     @Transactional
     public boolean savePrescripTpl(PrescriptionTplMo mo, UserInfo userInfo){
-        PrescriptionTpl prescriptionTpl = null;
+
         if(null == mo.getId()){
-            prescriptionTpl = new PrescriptionTpl();
+            PrescriptionTpl prescriptionTpl = new PrescriptionTpl();
             BeanUtils.copyProperties(mo,prescriptionTpl);
-            prescriptionTpl.setCategory((null != mo.getItemList() && mo.getItemList().size()!=0)?"1":"2");
             prescriptionTpl.setOrgCode(userInfo.getOrgCode());
             prescriptionTpl.setPinYin(Optional.ofNullable(mo.getTplName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             prescriptionTpl.setCreateAt(LocalDateTime.now().toString());
             prescriptionTpl.setCreateBy(userInfo.getId().toString());
             prescriptionTpl.setIsValid("1");
-            prescriptionTpl.setPinYin(Optional.ofNullable(mo.getTplName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             prescriptionTplMapper.insert(prescriptionTpl);
 
         }else{
-            prescriptionTpl = prescriptionTplMapper.selectByPrimaryKey(mo.getId());
+            PrescriptionTpl prescriptionTpl = prescriptionTplMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,prescriptionTpl);
             prescriptionTpl.setPinYin(Optional.ofNullable(mo.getTplName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             prescriptionTpl.setModifyAt(LocalDateTime.now().toString());
             prescriptionTpl.setModifyBy(userInfo.getId().toString());
             prescriptionTplMapper.updateByPrimaryKey(prescriptionTpl);
 
-            prescriptionTplItemMapper.deleteByTplId(prescriptionTpl.getId());
-            inspectTplMapper.deleteByTplId(prescriptionTpl.getId());
-        }
 
-        PrescriptionTpl finalPrescriptionTpl = prescriptionTpl;
-        if(null != mo.getItemList() && 0 != mo.getItemList().size()) {
-            mo.getItemList().forEach((obj) -> {
+        }
+        return true;
+    }
+
+    @Transactional
+    public  boolean savePrescripItemTpl(PrescriptionTplItemMo mo) {
+
+        prescriptionTplItemMapper.deleteByTplId(mo.getTplId());
+        if(null != mo.getList() && 0 != mo.getList().size()) {
+            mo.getList().forEach((obj) -> {
                 PrescriptionTplItem item = new PrescriptionTplItem();
                 BeanUtils.copyProperties(obj, item);
-                item.setTplId(finalPrescriptionTpl.getId());
-                Drug drug = Optional.ofNullable(obj.getDrugId()).
-                        map(id -> drugMapper.selectByPrimaryKey(id)).orElse(null);
+                item.setTplId(mo.getTplId());
+                Drug drug = Optional.ofNullable(obj.getDrugCode()).
+                        map(code -> drugMapper.getByDrugCode(code)).orElse(null);
                 if(null != drug){
-                    item.setDrugName(drug.getName());
-                    item.setDrugCategory(drug.getCategory());
-                    item.setDrugCode(drug.getDrugCode());
+                    item.setDrugId(drug.getId());
                 }
-
-                prescriptionTplItemMapper.insertItem(item, finalPrescriptionTpl);
+                prescriptionTplItemMapper.insert(item);
             });
         }
+        return true;
+    }
 
-        if(null != mo.getInspectList() && 0 != mo.getInspectList().size()) {
-            mo.getInspectList().forEach(obj -> {
+    @Transactional
+    public boolean savInspectTpl(InspectTplMo mo) {
+        inspectTplMapper.deleteByTplId(mo.getTplId());
+        if(null != mo.getList() && 0 != mo.getList().size()) {
+            mo.getList().forEach(obj -> {
                 InspectTpl inspectTpl = new InspectTpl();
                 BeanUtils.copyProperties(obj, inspectTpl);
-                inspectTpl.setTplId(finalPrescriptionTpl.getId());
-                inspectTplMapper.insertItem(inspectTpl, finalPrescriptionTpl);
+                inspectTpl.setTplId(mo.getTplId());
+                inspectTplMapper.insert(inspectTpl);
             });
         }
-
         return true;
     }
 
@@ -268,6 +283,7 @@ public class TemplateManager {
         example.createCriteria().andEqualTo("tplId",tplId);
         return inspectTplMapper.selectByExample(example);
     }
+
 
 
 }
