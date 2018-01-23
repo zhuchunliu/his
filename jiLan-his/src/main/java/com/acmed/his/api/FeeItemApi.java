@@ -1,8 +1,6 @@
 package com.acmed.his.api;
 
-import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.consts.DicTypeEnum;
-import com.acmed.his.model.FeeItem;
 import com.acmed.his.pojo.mo.FeeItemMo;
 import com.acmed.his.pojo.vo.FeeItemVo;
 import com.acmed.his.service.BaseInfoManager;
@@ -11,7 +9,9 @@ import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

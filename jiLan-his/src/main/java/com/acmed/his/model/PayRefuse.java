@@ -33,13 +33,16 @@ public class PayRefuse {
     private String source;
 
     @ApiModelProperty("处方id")
-    private Integer prescriptionId;
+    private String prescriptionId;
 
     @ApiModelProperty("挂号单号id")
     private String applyId;
 
     @ApiModelProperty("患者id")
     private String patientId;
+
+    @ApiModelProperty("退款明细 药：item，检查：inspect，附加：charge")
+    private String itemId;
 
     @ApiModelProperty("付款账号")
     private String payerAccount;

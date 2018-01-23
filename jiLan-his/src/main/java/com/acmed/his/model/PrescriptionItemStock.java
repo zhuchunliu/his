@@ -1,7 +1,44 @@
 package com.acmed.his.model;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import tk.mybatis.mapper.annotation.NameStyle;
+
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Created by Darren on 2018-01-22
  **/
+@Data
+@Table(name = "t_b_prescription_item_stock")
+@NameStyle
 public class PrescriptionItemStock {
+
+    @Id
+    @ApiModelProperty("主键")
+    private String id;
+
+    @ApiModelProperty("处方id")
+    private String prescriptionId;
+
+    @ApiModelProperty("药品code")
+    private String drugcode;
+
+    @ApiModelProperty("挂号单号")
+    private String applyId;
+
+    @ApiModelProperty("处方明细id")
+    private String itemId;
+
+    @ApiModelProperty("有效期")
+    private String expiryDate;
+
+    @ApiModelProperty("入库批号")
+    private String batchNumber;
+
+    @ApiModelProperty("库存数量")
+    private Double num;
+
+
 }

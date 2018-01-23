@@ -186,7 +186,7 @@ public class PrescriptionManager {
                     PrescriptionItem item = new PrescriptionItem();
                     BeanUtils.copyProperties(info,item,"id");
                     item.setId(UUIDUtil.generate());
-                    item.setDrugName(drug.getName());
+                    item.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
                     item.setCategory(drug.getCategory());
                     item.setPrescriptionId(prescription.getId());
                     item.setApplyId(apply.getId());

@@ -15,4 +15,9 @@ public class BaseException extends RuntimeException {
         this.statusCode = statusCode;
         this.msg = statusCode.getErrorMsg();
     }
+
+    public BaseException(StatusCode statusCode,String msg){
+        this.statusCode = statusCode;
+        this.msg = msg;
+    }
 }

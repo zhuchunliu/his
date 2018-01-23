@@ -1,8 +1,8 @@
 package com.acmed.his.api;
 
-import com.acmed.his.model.PurchaseMo;
 import com.acmed.his.model.dto.PurchaseDto;
 import com.acmed.his.model.dto.PurchaseStockDto;
+import com.acmed.his.pojo.mo.PurchaseMo;
 import com.acmed.his.service.PurchaseManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;

@@ -6,4 +6,13 @@
     <delete id="delByPreId" parameterType="java.lang.String">
         DELETE from t_b_prescription_fee where prescriptionid = #{prescriptionId}
     </delete>
+
+    <update id="payApplyFee">
+        UPDATE t_b_prescription_fee SET receipts = receivables , modifyat = now() , modifyby = #{userInfo.id}
+        where applyid = #{applyId}
+    </update>
+
+    <select id="getByApplyId" resultType="com.acmed.his.model.PrescriptionFee">
+        select * from t_b_prescription_fee where applyid = #{applyId}
+    </select>
 </mapper>

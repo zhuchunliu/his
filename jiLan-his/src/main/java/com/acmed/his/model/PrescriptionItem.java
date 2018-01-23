@@ -43,7 +43,7 @@ public class PrescriptionItem {
     private String way;
 
     @ApiModelProperty("数量")
-    private Integer num;
+    private Double num;
 
     @ApiModelProperty("进价")
     private Double bid;
