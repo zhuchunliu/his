@@ -33,6 +33,9 @@ public class BaseInfoManager {
     @Autowired
     private DicTypeMapper dicTypeMapper;
 
+    @Autowired
+    private CommonManager commonManager;
+
     /**
      * 根据层级查询列表
      * @param level 1省  2 市  3区
@@ -122,22 +125,8 @@ public class BaseInfoManager {
      * @return 0 失败
      */
     public int addDicItem(DicItem dicItem){
-        dicItem.setDicItemCode(UUIDUtil.generate());
-        String dicTypeCode = dicItem.getDicTypeCode();
-        Example example = new Example(DicItem.class);
-        example.setOrderByClause("sn desc");
-        example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode);
-        List<DicItem> dicItems = dicItemMapper.selectByExample(example);
-        if (dicItems.size() == 0){
-            DicType dicType = dicTypeMapper.selectByPrimaryKey(dicTypeCode);
-            if (dicType==null){
-                // 字典类型不存在
-                return 0;
-            }
-            dicItem.setSn(1);
-        }else {
-            dicItem.setSn(dicItems.get(0).getSn()+1);
-        }
+        dicItem.setRemoved("0");
+        dicItem.setDicItemCode(commonManager.getNextVal(dicItem.getDicTypeCode()));
         return dicItemMapper.insert(dicItem);
     }
 
@@ -147,7 +136,9 @@ public class BaseInfoManager {
      */
     public List<DicDetailVo> getAllDicItems(){
         List<DicDetailVo> list = new ArrayList<>();
-        List<DicItem> dicItems = dicItemMapper.selectAll();
+        DicItem param = new DicItem();
+        param.setRemoved("0");
+        List<DicItem> dicItems = dicItemMapper.select(param);
         if (dicItems.size()==0){
             return list;
         }
@@ -181,7 +172,7 @@ public class BaseInfoManager {
      */
     public List<DicItem> getDicItemsByDicTypeCode(String dicTypeCode){
         Example example = new Example(DicItem.class);
-        example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode);
+        example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("removed","0");
         example.setOrderByClause("sn desc");
         return dicItemMapper.selectByExample(example);
     }
@@ -189,7 +180,7 @@ public class BaseInfoManager {
     @Cacheable
     public DicItem getDicItem(String dicTypeCode,String dicItemCode){
         Example example = new Example(DicItem.class);
-        example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("dicItemCode",dicItemCode);
+        example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("dicItemCode",dicItemCode).andEqualTo("removed","0");
         return Optional.ofNullable(dicItemMapper.selectByExample(example)).filter(obj->obj.size()!=0).map(obj->obj.get(0)).orElse(new DicItem());
     }
 }

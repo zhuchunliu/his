@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.model.Area;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.DicType;
+import com.acmed.his.pojo.mo.DicItemMo;
 import com.acmed.his.pojo.vo.DicDetailVo;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.util.ResponseResult;
@@ -10,6 +11,7 @@ import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,7 +64,7 @@ public class BaseInfoApi {
         return ResponseUtil.setSuccessResult(areasByPinYin);
     }
 
-    @ApiOperation(value = "添加字典类型")
+    @ApiOperation(value = "添加字典类型",hidden = true)
     @PostMapping("dicType/save")
     public ResponseResult addDicType(@ApiParam("dicTypeCode == null  新增  不然修改") @RequestBody DicType dicType){
         baseInfoManager.saveDicType(dicType);
@@ -78,8 +80,10 @@ public class BaseInfoApi {
 
     @ApiOperation(value = "添加字典")
     @PostMapping("/dicItem/add")
-    public ResponseResult addDicItem(@RequestBody DicItem dicItem){
-        baseInfoManager.addDicItem(dicItem);
+    public ResponseResult addDicItem(@RequestBody DicItemMo dicItem){
+        DicItem dicItem1 = new DicItem();
+        BeanUtils.copyProperties(dicItem,dicItem1);
+        baseInfoManager.addDicItem(dicItem1);
         return ResponseUtil.setSuccessResult();
     }
     @ApiOperation(value = "查询所有字典")
@@ -91,7 +95,7 @@ public class BaseInfoApi {
 
     @ApiOperation(value = "根据字典类型查找字典列表")
     @GetMapping("/dicItem/dicTypeCode")
-    public ResponseResult<List<DicItem>> getDicItemsByDicTypeCode(@ApiParam("dicTypeCode == null  新增  不然修改")@RequestParam("dicTypeCode") String dicTypeCode){
+    public ResponseResult<List<DicItem>> getDicItemsByDicTypeCode(@ApiParam("字典类型")@RequestParam("dicTypeCode") String dicTypeCode){
         List<DicItem> dicItemsByDicTypeCode = baseInfoManager.getDicItemsByDicTypeCode(dicTypeCode);
         return ResponseUtil.setSuccessResult(dicItemsByDicTypeCode);
     }

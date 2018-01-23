@@ -24,6 +24,7 @@ public class DicType {
     @ApiModelProperty("字典类型名称")
     private String dicTypeName;
 
+    @Id
     @ApiModelProperty("产品编码")
     private String productCode;
 }

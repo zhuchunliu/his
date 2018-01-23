@@ -29,6 +29,6 @@ public class DicItem {
     @ApiModelProperty("字典类型编码")
     private String dicTypeCode;
 
-    @ApiModelProperty("排序")
-    private Integer sn;
+    @ApiModelProperty("删除标识:0 未删除,1:删除")
+    private String removed;
 }
