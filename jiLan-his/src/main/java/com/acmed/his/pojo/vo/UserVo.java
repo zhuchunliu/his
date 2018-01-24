@@ -14,14 +14,14 @@ public class UserVo {
     @ApiModelProperty("手机")
     private String mobile;
 
+    @ApiModelProperty("登录名")
+    private String loginName;
+
     @ApiModelProperty("用户名")
     private String userName;
 
     @ApiModelProperty("性别")
     private String gender;
-
-    @ApiModelProperty("昵称")
-    private String nickName;
 
     @ApiModelProperty("所属机构")
     private Integer orgCode;

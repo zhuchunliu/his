@@ -17,8 +17,8 @@ public class DoctorApplyNumDto {
     private String diagnosLevel;
     @ApiModelProperty("医生职称")
     private String duty;
-    @ApiModelProperty("昵称")
-    private String nickName;
+    @ApiModelProperty("医生名")
+    private String userName;
     @ApiModelProperty("预约量")
     private Integer applyNum;
     @ApiModelProperty("科室名称")

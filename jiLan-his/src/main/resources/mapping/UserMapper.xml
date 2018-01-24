@@ -8,7 +8,7 @@
         <result property="userName" column="username"></result>
         <result property="passWd" column="passwd"></result>
         <result property="gender" column="gender"></result>
-        <result property="nickName" column="nickname"></result>
+        <result property="loginname" column="loginname"></result>
         <result property="orgCode" column="orgcode"></result>
         <result property="orgName" column="orgname"></result>
         <result property="deptName" column="deptname"></result>

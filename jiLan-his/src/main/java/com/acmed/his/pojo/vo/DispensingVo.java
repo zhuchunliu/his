@@ -20,7 +20,7 @@ public class DispensingVo {
     @ApiModelProperty("患者姓名")
     private String patientName;
 
-    @ApiModelProperty("性别")
+    @ApiModelProperty("性别 0:男;1:女")
     private String gender;
 
     @ApiModelProperty("年龄")

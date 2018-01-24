@@ -26,8 +26,8 @@ public class UserMo implements Serializable{
     @ApiModelProperty("性别")
     private String gender;
 
-    @ApiModelProperty("昵称")
-    private String nickName;
+    @ApiModelProperty("登录名")
+    private String loginName;
 
     @ApiModelProperty("所属机构")
     private Integer orgCode;

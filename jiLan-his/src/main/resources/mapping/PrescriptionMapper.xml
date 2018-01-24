@@ -32,7 +32,7 @@
 
     <select id = "getDispensingList" resultType="com.acmed.his.model.dto.DispensingDto">
         SELECT apply.id as applyid,apply.clinicno,apply.patientname,apply.gender,apply.age,
-        patient.mobile,user.nickname as doctorname,
+        patient.mobile,user.username as doctorname,
         pre.fee,pre.isdispensing,pre.ispaid,pre.createat as diagnosedate
         from t_b_apply apply
         JOIN t_b_prescription pre on apply.id = pre.applyid
@@ -65,6 +65,7 @@
         SELECT count(1)
         from t_b_apply apply
         JOIN t_b_prescription pre on apply.id = pre.applyid
+        JOIN t_b_patient patient on apply.patientid = patient.id
         <trim prefixOverrides="and" prefix="where">
             <if test="@Ognl@isNotEmpty(orgCode)">
                 and apply.orgcode = #{orgCode}

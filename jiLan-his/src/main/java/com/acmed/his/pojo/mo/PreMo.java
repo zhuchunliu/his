@@ -54,7 +54,7 @@ public class  PreMo {
         private String way;
 
         @ApiModelProperty("数量")
-        private Integer num;
+        private Double num;
 
         @ApiModelProperty("频率")
         private Integer frequency;

@@ -20,7 +20,7 @@
 
     <select id="getPrescripTplList"  resultType="com.acmed.his.model.dto.PrescriptionTplDto">
         select t1.id ,t1.tplname,t1.category,t1.ispublic,t1.description,t1.isvalid,
-         t2.nickname as createUserName,if(t1.createby=#{userInfo.id} ,1,0) as isSelf
+         t2.username as createUserName,if(t1.createby=#{userInfo.id} ,1,0) as isSelf
         from t_b_prescription_tpl t1
         LEFT JOIN t_p_s_user t2 on t1.createby = t2.id
         where t1.orgcode = #{userInfo.orgCode}

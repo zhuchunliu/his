@@ -181,7 +181,7 @@ public class LoginManager {
      */
     private ResponseResult<User> validateUser(String loginName, String passwd) {
         Example example = new Example(User.class);
-        example.createCriteria().orEqualTo("userName",loginName).orEqualTo("mobile",loginName);
+        example.createCriteria().orEqualTo("loginName",loginName).orEqualTo("mobile",loginName);
         userMapper.selectByExample(example);
         User user = Optional.ofNullable(userMapper.selectByExample(example)).filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(null);
         if (null == user || null == user.getId()) {
