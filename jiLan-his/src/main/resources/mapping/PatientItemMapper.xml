@@ -2,14 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.PatientItemMapper">
-    <select id="getByMohu" resultType="com.acmed.his.model.PatientItem">
-        SELECT * FROM t_b_patient_item
-        WHERE orgcode = #{orgCode}
+    <select id="getByMohu" resultType="com.acmed.his.model.dto.PatientItemDto">
+        SELECT t1.* ,t2.avatar
+        FROM t_b_patient_item t1
+        LEFT JOIN t_b_patient AS t2 ON t2.id = t1.patientid
+        WHERE t1.orgcode = #{orgCode}
         <if test="@Ognl@isNotEmpty(vague)">
-            AND (mobile like CONCAT(#{vague},'%') OR patientName LIKE CONCAT(#{vague},'%'))
+            AND (t1.mobile like CONCAT(#{vague},'%') OR t1.patientName LIKE CONCAT(#{vague},'%'))
         </if>
         <if test="@Ognl@isNotEmpty(blackFlag)">
-            AND blackflag = #{blackFlag}
+            AND t1.blackflag = #{blackFlag}
         </if>
     </select>
 </mapper>

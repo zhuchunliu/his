@@ -87,6 +87,9 @@ public class Apply {
     @ApiModelProperty("医生id")
     private Integer doctorId;
 
+    @ApiModelProperty("医生名字")
+    private String doctorName;
+
     @ApiModelProperty("预约时间")
     private String appointmentTime;
 

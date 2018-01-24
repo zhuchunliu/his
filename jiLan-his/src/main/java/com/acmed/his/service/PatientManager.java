@@ -55,7 +55,7 @@ public class PatientManager {
             }
         }
         String now = LocalDateTime.now().toString();
-        patient.setInputCode(PinYinUtil.getPinYinHeadChar(patient.getUserName()));
+        patient.setInputCode(PinYinUtil.getPinYinHeadChar(patient.getRealName()));
         patient.setOpenid(null);
         patient.setUnionid(null);
         patient.setModifyBy(null);
@@ -73,6 +73,9 @@ public class PatientManager {
     }
 
     public int update(Patient patient){
+        patient.setCreateAt(null);
+        patient.setCreateBy(null);
+        patient.setModifyAt(LocalDateTime.now().toString());
         return patientMapper.updateByPrimaryKeySelective(patient);
     }
 
@@ -112,12 +115,12 @@ public class PatientManager {
 
     /**
      * 根据患者姓名查询患者list（可能存在同名同姓）
-     * @param userName 患者姓名
+     * @param realName 患者姓名
      * @return List<Patient>
      */
-    public List<Patient> getPatientByUserName(String userName){
+    public List<Patient> getPatientByRealName(String realName){
         Patient param = new Patient();
-        param.setUserName(userName);
+        param.setRealName(realName);
         return patientMapper.select(param);
     }
 
@@ -148,7 +151,7 @@ public class PatientManager {
             BeanUtils.copyProperties(wxRegistPatientMo,patient);
             patient.setId(null);
             patient.setOpenid(openid);
-            patient.setInputCode(patient.getUserName());
+            patient.setInputCode(patient.getRealName());
             patient.setUnionid(null);
             patient.setCreateAt(now);
             patient.setModifyAt(now);

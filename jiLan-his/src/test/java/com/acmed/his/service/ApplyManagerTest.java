@@ -88,23 +88,25 @@ public class ApplyManagerTest {
 
     @Test
     public void addByPatient(){
-        ApplyMo mo = new ApplyMo();
-        mo.setPatientName("周三");
-        mo.setGender("1");
-        mo.setMobile("13288778877");
-        mo.setIdcard("320586199910316655");
-        mo.setSocialCard("fdd4445");
-        mo.setDoctorId(6);
-        mo.setAppointmentTime("2018-01-29");
+        for (int i = 1;i<6;i++){
+            ApplyMo mo = new ApplyMo();
+            mo.setPatientName("周三");
+            mo.setGender("1");
+            mo.setMobile("13288778877");
+            mo.setIdcard("320586199910316655");
+            mo.setSocialCard("fdd4445");
+            mo.setDoctorId(6);
+            mo.setAppointmentTime("2018-01-30");
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setId(7);
-        userInfo.setDept(13);
-        userInfo.setDeptName("泌尿外科");
-        userInfo.setOrgCode(6);
-        userInfo.setOrgName("北京大学第一医院");
-        userInfo.setApplyfee(1.0);
-        applyManager.addApply(mo,null,userInfo);
+            /*UserInfo userInfo = new UserInfo();
+            userInfo.setId(7);
+            userInfo.setDept(13);
+            userInfo.setDeptName("泌尿外科");
+            userInfo.setOrgCode(i);
+            userInfo.setOrgName("北京大学第一医院");
+            userInfo.setApplyfee(1.0);*/
+            applyManager.addApply(mo,"fe11af7e242249c087469c1dc8158b76DIfq",null);
+        }
     }
     @Test
     public  void aa(){

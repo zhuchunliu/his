@@ -4,12 +4,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.math.BigDecimal;
-import java.util.Date;
+
 
 /**
  * 患者信息
@@ -24,8 +22,11 @@ public class Patient {
     @ApiModelProperty("主键")
     private String id;
 
-    @ApiModelProperty("用户姓名")
+    @ApiModelProperty("登录名")
     private String userName;
+
+    @ApiModelProperty("真实姓名")
+    private String realName;
 
     @ApiModelProperty("性别 0:男;1:女")
     private String gender;
@@ -68,4 +69,10 @@ public class Patient {
 
     @ApiModelProperty("修改用户")
     private String modifyBy;
+
+    @ApiModelProperty("密码")
+    private String passWd;
+
+    @ApiModelProperty("头像")
+    private String avatar;
 }

@@ -7,11 +7,13 @@ import com.acmed.his.model.dto.ApplyDoctorDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyIdAndStatus;
 import com.acmed.his.pojo.mo.ApplyMo;
+import com.acmed.his.pojo.vo.ApplyPatientVo;
 import com.acmed.his.pojo.vo.ApplyVo;
 import com.acmed.his.service.ApplyManager;
 import com.acmed.his.service.PayManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
@@ -99,7 +101,7 @@ public class ApplyApi {
         return applyManager.pay(applyId,fee,"0",info.getUser());
     }
 
-    @ApiOperation(value = "条件查询")
+    @ApiOperation(value = "条件查询 医院使用")
     @GetMapping("tiaojianchaxun")
     public ResponseResult<PageResult<ApplyDoctorDto>> getByPinyinOrNameOrClinicnoTiaojianByPage(@AccessToken AccessInfo info,
                                                                                                 @ApiParam("机构id 0表示全部  传表示指定 不传表示自己所在机构") @RequestParam(value = "orgCode" ,required = false)Integer orgCode,
@@ -151,5 +153,36 @@ public class ApplyApi {
             return ResponseUtil.setErrorMeg(StatusCode.FAIL,"还未支付");
         }
         return applyManager.refund(applyId,payStatements.getFee().doubleValue(),payStatements.getFeeType(),info.getUser());
+    }
+    @ApiOperation(value = "自己的挂号列表  ")
+    @PostMapping("selfapplys")
+    public ResponseResult getselfapplylist(@AccessToken AccessInfo info, @RequestBody PageBase pageBase){
+        String patientId = info.getPatientId();
+        Apply apply = new Apply();
+        apply.setCreateBy(patientId);
+        PageBase<Apply> applyPageBase = new PageBase<>();
+        Integer pageNum = pageBase.getPageNum();
+        applyPageBase.setPageNum(pageNum);
+        Integer pageSize = pageBase.getPageSize();
+        applyPageBase.setPageSize(pageSize);
+        applyPageBase.setParam(apply);
+        PageResult<Apply> applysByPage = applyManager.getApplysByPage(applyPageBase);
+
+        Long total = applysByPage.getTotal();
+        PageResult<ApplyPatientVo> result = new PageResult<>();
+        result.setTotal(total);
+        result.setPageNum(pageNum);
+        result.setPageSize(pageSize);
+        List<ApplyPatientVo> list = new ArrayList<>();
+        List<Apply> data = applysByPage.getData();
+        if (data.size()!=0){
+            for (Apply apply1 : data){
+                ApplyPatientVo applyPatientVo = new ApplyPatientVo();
+                BeanUtils.copyProperties(apply1,applyPatientVo);
+                list.add(applyPatientVo);
+            }
+        }
+        result.setData(list);
+        return ResponseUtil.setSuccessResult(result);
     }
 }

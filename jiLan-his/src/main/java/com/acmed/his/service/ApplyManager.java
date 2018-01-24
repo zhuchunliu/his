@@ -346,6 +346,7 @@ public class ApplyManager {
         String deptName = null;
         Integer orgCode = null;
         String orgName = null;
+        String doctorName = null;
         // 挂号对象
         String createBy = null;
         Double fee = null;
@@ -360,6 +361,7 @@ public class ApplyManager {
             orgCode = userDetail.getOrgCode();
             orgName = userDetail.getOrgName();
             fee = userDetail.getApplyfee();
+            doctorName = userDetail.getUserName();
             createBy = patientId;
         }else if (StringUtils.isEmpty(patientId) && userInfo != null){
             //医生挂号
@@ -369,6 +371,7 @@ public class ApplyManager {
                 orgCode = userInfo.getOrgCode();
                 orgName = userInfo.getOrgName();
                 doctorId = userInfo.getId();
+                doctorName = userInfo.getUserName();
                 fee = userInfo.getApplyfee();
             }else {
                 User userDetail = userManager.getUserDetail(doctorId);
@@ -376,6 +379,7 @@ public class ApplyManager {
                 deptName = userDetail.getDeptName();
                 orgCode = userDetail.getOrgCode();
                 orgName = userDetail.getOrgName();
+                doctorName = userDetail.getUserName();
                 fee = userDetail.getApplyfee();
             }
             createBy = userInfo.getId().toString();
@@ -385,6 +389,7 @@ public class ApplyManager {
         Apply apply = new Apply();
         String applyId = UUIDUtil.generate();
         apply.setId(applyId);
+        apply.setDoctorName(doctorName);
         apply.setDoctorId(doctorId);
         apply.setAppointmentTime(mo.getAppointmentTime());
         Patient param = new Patient();
@@ -399,7 +404,7 @@ public class ApplyManager {
             // 不存在主表信息
             // 创建患者主表
             BeanUtils.copyProperties(mo,param);
-            param.setUserName(mo.getPatientName());
+            param.setRealName(mo.getPatientName());
             param.setCreateBy(createBy);
             String generatePatientId = UUIDUtil.generate();
             param.setId(generatePatientId);
@@ -487,6 +492,24 @@ public class ApplyManager {
     }
 
 
+    public List<Apply> getApplys(Apply apply){
+        return applyMapper.select(apply);
+    }
+
+    public PageResult<Apply> getApplysByPage(PageBase<Apply> pageBase){
+        Integer pageNum = pageBase.getPageNum();
+        Integer pageSize = pageBase.getPageSize();
+        PageResult<Apply> result = new PageResult<>();
+        PageHelper.startPage(pageNum,pageSize);
+        List<Apply> select = applyMapper.select(pageBase.getParam());
+        PageInfo<Apply> applyPageInfo = new PageInfo<>(select);
+        result.setTotal(applyPageInfo.getTotal());
+        result.setData(select);
+        result.setPageNum(pageNum);
+        result.setPageSize(pageSize);
+
+        return result;
+    }
 
 
     private int addApply(Apply apply){

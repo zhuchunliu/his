@@ -1,24 +1,18 @@
-package com.acmed.his.model;
+package com.acmed.his.model.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import tk.mybatis.mapper.annotation.NameStyle;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.math.BigDecimal;
 
 /**
- * PatientItem
+ * PatientItemDto
  *
  * @author jimson
- * @date 2018/1/16
+ * @date 2018/1/24
  */
 @Data
-@Table(name = "t_b_patient_item")
-@NameStyle
-public class PatientItem {
-    @Id
+public class PatientItemDto {
     @ApiModelProperty("主键")
     private String id;
 
@@ -111,4 +105,7 @@ public class PatientItem {
 
     @ApiModelProperty("出生日期")
     private String dateOfBirth;
+
+    @ApiModelProperty("头像")
+    private String avatar;
 }

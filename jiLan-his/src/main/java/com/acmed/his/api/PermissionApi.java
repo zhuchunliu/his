@@ -1,8 +1,6 @@
 package com.acmed.his.api;
 
-import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.constants.StatusCode;
-import com.acmed.his.model.Permission;
 import com.acmed.his.pojo.mo.PermissionMo;
 import com.acmed.his.service.PermissionManager;
 import com.acmed.his.support.AccessInfo;
@@ -10,7 +8,6 @@ import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;

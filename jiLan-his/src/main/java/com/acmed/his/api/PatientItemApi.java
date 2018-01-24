@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.PatientItem;
+import com.acmed.his.model.dto.PatientItemDto;
 import com.acmed.his.pojo.mo.PatientItemMo;
 import com.acmed.his.pojo.mo.PatientItemUpMo;
 import com.acmed.his.service.PatientItemManager;
@@ -33,12 +34,12 @@ public class PatientItemApi {
 
     @ApiOperation(value = "分页查询机构患者库")
     @PostMapping("getPatientPoolByPage")
-    public ResponseResult<PageResult<PatientItem>> getPatientPoolByPage(@AccessToken AccessInfo info,@RequestBody PageBase<PatientItemMo> pageBase){
+    public ResponseResult<PageResult<PatientItemDto>> getPatientPoolByPage(@AccessToken AccessInfo info, @RequestBody PageBase<PatientItemMo> pageBase){
         Integer orgCode = pageBase.getParam().getOrgCode();
         if (orgCode == null){
             pageBase.getParam().setOrgCode(info.getUser().getOrgCode());
         }
-        return ResponseUtil.setSuccessResult(patientItemManager.getPatientBlacklistByPage(pageBase,0));
+        return ResponseUtil.setSuccessResult(patientItemManager.getPatientBlacklistByPage(pageBase));
     }
 
 
@@ -71,5 +72,11 @@ public class PatientItemApi {
         }else{
             return ResponseUtil.setErrorMeg(StatusCode.FAIL,"权限不足");
         }
+    }
+
+    @ApiOperation(value = "根据id 查询患者库库内患者详情   医生使用")
+    @GetMapping("id")
+    public ResponseResult<PatientItemDto> getPatientItemDtoById(@AccessToken AccessInfo info, @ApiParam("患者库id") @RequestParam(value = "id" )String id){
+        return ResponseUtil.setSuccessResult(patientItemManager.getPatientItemDtoById(id));
     }
 }

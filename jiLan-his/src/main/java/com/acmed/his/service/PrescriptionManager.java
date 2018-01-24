@@ -298,7 +298,7 @@ public class PrescriptionManager {
             apply.setDept(userInfo.getDept());
             apply.setDeptName(userInfo.getDeptName());
             apply.setPatientId(patient.getId());
-            apply.setPatientName(patient.getUserName());
+            apply.setPatientName(patient.getRealName());
             apply.setGender(patient.getGender());
             apply.setAge(Optional.ofNullable(patient.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
             apply.setStatus("1");

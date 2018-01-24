@@ -27,7 +27,7 @@ public class PatientManagerTest {
     @Test
     public void add() throws Exception {
         Patient patient = new Patient();
-        patient.setUserName("王五");
+        patient.setRealName("王五");
         patient.setGender("0");
         patient.setAddress("江苏苏州");
         patient.setMobile("13288888888");
