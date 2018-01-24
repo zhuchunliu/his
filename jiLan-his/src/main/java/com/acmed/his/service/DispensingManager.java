@@ -17,9 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2017-12-05
@@ -58,13 +61,13 @@ public class DispensingManager {
     private PrescriptionItemStockMapper itemStockMapper;
 
 
-    public List<DispensingDto> getDispensingList(Integer pageNum , Integer pageSize, Integer orgCode, String name, String status) {
+    public List<DispensingDto> getDispensingList(Integer pageNum , Integer pageSize, Integer orgCode, String name, String status, String date) {
         PageHelper.startPage(pageNum,pageSize);
-        return preMapper.getDispensingList(orgCode,name,status);
+        return preMapper.getDispensingList(orgCode,name,status,date);
     }
 
-    public Integer getDispensingTotal(Integer orgCode, String name, String status) {
-        return preMapper.getDispensingTotal(orgCode,name,status);
+    public Integer getDispensingTotal(Integer orgCode, String name, String status,String date) {
+        return preMapper.getDispensingTotal(orgCode,name,status,date);
     }
 
     /**
@@ -86,7 +89,7 @@ public class DispensingManager {
         preMapper.updateByPrimaryKey(prescription);
 
         example = new Example(PrescriptionItem.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","0");
         Double drugFee = 0.0d;
         List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
         for(PrescriptionItem item : itemList){
@@ -111,7 +114,7 @@ public class DispensingManager {
 
         Double inspectFee = 0.0d;
         example = new Example(Inspect.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","0");
         List<Inspect> inspectList = inspectMapper.selectByExample(example);
         for(Inspect inspect : inspectList){
             inspectFee += inspect.getFee();
@@ -136,7 +139,7 @@ public class DispensingManager {
 
         Double chargeFee = 0.0d;
         example = new Example(Inspect.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","0");
         List<Charge> chargeList = chargeMapper.selectByExample(example);
         for(Charge charge : chargeList){
             chargeFee += charge.getFee();
@@ -209,6 +212,9 @@ public class DispensingManager {
             switch (refundMo.getType()){
                 case 1:
                     PrescriptionItem item = preItemMapper.selectByPrimaryKey(refundMo.getId());
+                    if(item.getPayStatus() == 2){
+                        break;
+                    }
                     item.setPayStatus(2);
                     preItemMapper.updateByPrimaryKey(item);
 
@@ -221,6 +227,8 @@ public class DispensingManager {
                     itemPayRefuse.setPatientId(apply.getPatientId());
                     itemPayRefuse.setItemId(item.getId());
                     itemPayRefuse.setFee(new BigDecimal(item.getFee()));
+                    itemPayRefuse.setReason(mo.getReason());
+                    itemPayRefuse.setState(mo.getState());
                     itemPayRefuse.setCreateAt(LocalDateTime.now().toString());
                     itemPayRefuse.setCreateBy(userInfo.getId().toString());
                     payManager.addPayRefuse(itemPayRefuse);
@@ -228,11 +236,14 @@ public class DispensingManager {
                     if(!groupFeeMap.containsKey(item.getGroupNum())){
                         groupFeeMap.put(item.getGroupNum(),item.getFee());
                     }else{
-                        groupFeeMap.put(item.getGroupNum(),groupFeeMap.get(item.getGroupNum()+item.getFee()));
+                        groupFeeMap.put(item.getGroupNum(),groupFeeMap.get(item.getGroupNum())+item.getFee());
                     }
                     break;
                 case 2:
                     Inspect inspect = inspectMapper.selectByPrimaryKey(refundMo.getId());
+                    if(inspect.getPayStatus()== 2){
+                        break;
+                    }
                     inspect.setPayStatus(2);
                     inspectMapper.updateByPrimaryKey(inspect);
 
@@ -245,6 +256,8 @@ public class DispensingManager {
                     inspectPayRefuse.setPatientId(apply.getPatientId());
                     inspectPayRefuse.setItemId(inspect.getId());
                     inspectPayRefuse.setFee(new BigDecimal(inspect.getFee()));
+                    inspectPayRefuse.setReason(mo.getReason());
+                    inspectPayRefuse.setState(mo.getState());
                     inspectPayRefuse.setCreateAt(LocalDateTime.now().toString());
                     inspectPayRefuse.setCreateBy(userInfo.getId().toString());
                     payManager.addPayRefuse(inspectPayRefuse);
@@ -252,11 +265,14 @@ public class DispensingManager {
                     if(!groupFeeMap.containsKey(inspect.getGroupNum())){
                         groupFeeMap.put(inspect.getGroupNum(),inspect.getFee());
                     }else{
-                        groupFeeMap.put(inspect.getGroupNum(),groupFeeMap.get(inspect.getGroupNum()+inspect.getFee()));
+                        groupFeeMap.put(inspect.getGroupNum(),groupFeeMap.get(inspect.getGroupNum())+inspect.getFee());
                     }
                     break;
                 case 3:
                     Charge charge = chargeMapper.selectByPrimaryKey(refundMo.getId());
+                    if(charge.getPayStatus() == 2){
+                        break;
+                    }
                     charge.setPayStatus(2);
                     chargeMapper.updateByPrimaryKey(charge);
 
@@ -269,6 +285,8 @@ public class DispensingManager {
                     chargePayRefuse.setPatientId(apply.getPatientId());
                     chargePayRefuse.setItemId(charge.getId());
                     chargePayRefuse.setFee(new BigDecimal(charge.getFee()));
+                    chargePayRefuse.setReason(mo.getReason());
+                    chargePayRefuse.setState(mo.getState());
                     chargePayRefuse.setCreateAt(LocalDateTime.now().toString());
                     chargePayRefuse.setCreateBy(userInfo.getId().toString());
                     payManager.addPayRefuse(chargePayRefuse);
@@ -276,7 +294,7 @@ public class DispensingManager {
                     if(!groupFeeMap.containsKey(charge.getGroupNum())){
                         groupFeeMap.put(charge.getGroupNum(),charge.getFee());
                     }else{
-                        groupFeeMap.put(charge.getGroupNum(),groupFeeMap.get(charge.getGroupNum()+charge.getFee()));
+                        groupFeeMap.put(charge.getGroupNum(),groupFeeMap.get(charge.getGroupNum())+charge.getFee());
                     }
                     break;
 
@@ -292,12 +310,13 @@ public class DispensingManager {
             if(!groupFeeMap.containsKey(fee.getGroupNum())){
                 continue;
             }
-            fee.setRefunded(fee.getRefunded()+groupFeeMap.get(fee.getGroupNum()));
+            fee.setRefunded(Optional.ofNullable(fee.getRefunded()).orElse(0d)+groupFeeMap.get(fee.getGroupNum()));
             fee.setModifyAt(LocalDateTime.now().toString());
             fee.setModifyBy(userInfo.getId().toString());
             feeMapper.updateByPrimaryKey(fee);
 
-            if(fee.getRefunded() != fee.getReceivables()){
+            if(!new DecimalFormat("#.00").format(fee.getRefunded().doubleValue()).equals(
+                    new DecimalFormat("#.00").format(fee.getReceivables().doubleValue()))){
                 flag = false;
             }
         }
@@ -339,8 +358,11 @@ public class DispensingManager {
             for (PrescriptionItem item : itemList) {
                 Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                 if (drug.getNum() < item.getNum()) {
-                    throw new BaseException(StatusCode.FAIL, drug.getGoodsName() + "库存不足");
+                    throw new BaseException(StatusCode.FAIL, Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()) + "库存不足");
                 } else {
+                    drug.setNum(drug.getNum()-item.getNum());
+                    drugMapper.updateByPrimaryKey(drug);//扣除药品库存
+
                     List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
                     Double num = item.getNum();
                     for (DrugStock drugStock : drugStockList) {
@@ -354,6 +376,7 @@ public class DispensingManager {
 
                         PrescriptionItemStock itemStock = new PrescriptionItemStock();
                         itemStock.setPrescriptionId(item.getPrescriptionId());
+                        itemStock.setItemId(item.getId());
                         itemStock.setDrugcode(item.getDrugCode());
                         itemStock.setApplyId(item.getApplyId());
                         itemStock.setBatchNumber(drugStock.getBatchNumber());
@@ -368,7 +391,5 @@ public class DispensingManager {
             itemStockMapper.insertList(itemStockList);
         }
     }
-
-
 
 }

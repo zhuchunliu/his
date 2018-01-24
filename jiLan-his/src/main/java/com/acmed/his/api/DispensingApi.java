@@ -5,31 +5,29 @@ import com.acmed.his.model.*;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.mo.DispensQueryMo;
 import com.acmed.his.pojo.mo.DispensingRefundMo;
-import com.acmed.his.pojo.vo.DispensingMedicineVo;
-import com.acmed.his.pojo.vo.DispensingRefundVo;
-import com.acmed.his.pojo.vo.DispensingVo;
-import com.acmed.his.pojo.vo.PrescriptionFeeVo;
+import com.acmed.his.pojo.vo.*;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.DispensingManager;
 import com.acmed.his.service.PrescriptionManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.util.PageBase;
-import com.acmed.his.util.PageResult;
-import com.acmed.his.util.ResponseResult;
-import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.util.*;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Example;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,10 +62,25 @@ public class DispensingApi {
     private DispensingManager dispensingManager;
 
     @Autowired
-    private PrescriptionManager preManager;
+    private PrescriptionItemStockMapper preItemStockMapper;
 
     @Autowired
-    private PrescriptionItemStockMapper preItemStockMapper;
+    private PayStatementsMapper payStatementsMapper;
+
+    @Autowired
+    private PayRefuseMapper payRefuseMapper;
+
+
+    @ApiOperation(value = "收支概况")
+    @GetMapping("/fee/survey")
+    public ResponseResult<DispensingFeeSurveyVo> getFeeSurvey(@Param("日期 yyyy-MM-dd格式 默认当天")@RequestParam(required = false) String date,
+                                                              @AccessToken AccessInfo info){
+        date = Optional.ofNullable(date).orElse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        List<Map<String,Object>> payList = payStatementsMapper.getFeeSurvey(date,info.getUser().getOrgCode());
+        List<Map<String,Object>> refundList = payRefuseMapper.getFeeSurvey(date,info.getUser().getOrgCode());
+
+        return ResponseUtil.setSuccessResult(new DispensingFeeSurveyVo(payList,refundList));
+    }
 
     @ApiOperation(value = "收费发药列表")
     @PostMapping("/list")
@@ -77,7 +90,8 @@ public class DispensingApi {
         List<DispensingVo> list = new ArrayList<>();
         List<DispensingDto> applyList = dispensingManager.getDispensingList(mo.getPageNum(),mo.getPageSize(),
                 info.getUser().getOrgCode(), Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null));
+                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null),
+                Optional.ofNullable(mo.getParam()).map(obj->obj.getDate()).orElse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
         applyList.forEach(obj->{
             DispensingVo vo = new DispensingVo();
             BeanUtils.copyProperties(obj,vo);
@@ -91,7 +105,8 @@ public class DispensingApi {
         });
         int total = dispensingManager.getDispensingTotal(info.getUser().getOrgCode(),
                 Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null));
+                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null),
+                Optional.ofNullable(mo.getParam()).map(obj->obj.getDate()).orElse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
         return ResponseUtil.setSuccessResult(new PageResult(list,(long)total));
     }
 
@@ -116,7 +131,7 @@ public class DispensingApi {
         if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
             return ResponseUtil.setParamEmptyError("applyId");
         }
-        dispensingManager.pay(JSONObject.parseObject(param).getString("id"),
+        dispensingManager.pay(JSONObject.parseObject(param).getString("applyId"),
                 JSONObject.parseObject(param).getString("feeType"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
@@ -131,7 +146,6 @@ public class DispensingApi {
         dispensingManager.dispensing(JSONObject.parseObject(param).getString("applyId"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
-
 
 
     @ApiOperation(value = "退款")
@@ -199,7 +213,7 @@ public class DispensingApi {
         Map<String,List<PrescriptionItemStock>> map = Maps.newHashMap();
         itemList.forEach(obj->{
             Example stockExample = new Example(PrescriptionItemStock.class);
-            stockExample.createCriteria().andEqualTo("prescriptionId",obj.getId());
+            stockExample.createCriteria().andEqualTo("itemId",obj.getId());
             map.put(obj.getId(),preItemStockMapper.selectByExample(stockExample));
         });
 

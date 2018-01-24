@@ -16,6 +16,12 @@ public class DispensingRefundMo {
     @ApiModelProperty("付费类型")
     private String feeType;
 
+    @ApiModelProperty("退款理由")
+    private String reason;
+
+    @ApiModelProperty("退款说明")
+    private String state;
+
     @ApiModelProperty("退款明细")
     private List<RefundMo> moList;
 

@@ -58,6 +58,9 @@
             <if test="@Ognl@isNotEmpty(status) and status == 4">
                 and pre.isdispensing = '1'
             </if>
+            <if test="@Ognl@isNotEmpty(date)">
+                and DATE_FORMAT(pre.createat,'%Y-%m-%d') = #{date}
+            </if>
         </trim>
     </select>
 
@@ -84,6 +87,9 @@
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 4">
                 and pre.isdispensing = '1'
+            </if>
+            <if test="@Ognl@isNotEmpty(date)">
+                and DATE_FORMAT(pre.createat,'%Y-%m-%d') = #{date}
             </if>
         </trim>
     </select>

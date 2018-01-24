@@ -22,7 +22,9 @@ public class ServiceExceptionHandler implements HandlerExceptionResolver {
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object o, Exception ex) {
         if(ex instanceof BaseException){
             response.setStatus(200);
-            return JsonModelAndViewBuilder.build(new ErrorMsg((BaseException)ex));
+            BaseException baseException = (BaseException)ex;
+            return JsonModelAndViewBuilder.build(
+                    new ErrorMsg(baseException.getStatusCode(),baseException.getMsg()));
         }else{
             logger.error(ex.getMessage(),ex);
             response.setStatus(200);

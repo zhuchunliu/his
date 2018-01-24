@@ -23,7 +23,8 @@ public interface PrescriptionMapper extends TkMapper<Prescription>{
      * @param status 发药状态：0:未发药;1:已发药
      * @return
      */
-    List<DispensingDto> getDispensingList(@Param("orgCode") Integer orgCode, @Param("name") String name, @Param("status") String status);
+    List<DispensingDto> getDispensingList(@Param("orgCode") Integer orgCode, @Param("name") String name,
+                                          @Param("status") String status,@Param("date") String date);
 
 
     /**
@@ -34,6 +35,7 @@ public interface PrescriptionMapper extends TkMapper<Prescription>{
      * @param status 发药状态：0:未发药;1:已发药
      * @return
      */
-    Integer getDispensingTotal(@Param("orgCode") Integer orgCode, @Param("name") String name,  @Param("status") String status);
+    Integer getDispensingTotal(@Param("orgCode") Integer orgCode, @Param("name") String name,
+                               @Param("status") String status,@Param("date") String date);
 
 }

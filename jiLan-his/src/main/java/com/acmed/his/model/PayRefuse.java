@@ -59,6 +59,12 @@ public class PayRefuse {
     @ApiModelProperty("退费状态")
     private String refuseStatus;
 
+    @ApiModelProperty("退款理由")
+    private String reason;
+
+    @ApiModelProperty("退款说明")
+    private String state;
+
     @ApiModelProperty("创建时间")
     private String createAt;
 

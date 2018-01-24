@@ -200,7 +200,7 @@ public class PrescriptionManager {
                     item.setRequirement(pre.getRequirement());
                     item.setRemark(pre.getRemark());
                     preItemMapper.insert(item);
-                    childPrice += info.getNum() * item.getFee();
+                    childPrice += item.getFee();
                 }
             }
 
