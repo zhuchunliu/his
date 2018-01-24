@@ -30,5 +30,8 @@ public class PrescriptionTplDto {
     @ApiModelProperty("描述")
     private String description;
 
+    @ApiModelProperty("是否是自己的模板 0：否 1:是")
+    private String isSelf;
+
 
 }
