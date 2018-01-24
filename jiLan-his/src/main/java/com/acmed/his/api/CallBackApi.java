@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.config.MyWXPayConfig;
 import com.github.wxpay.sdk.WXPay;
 import com.github.wxpay.sdk.WXPayUtil;
+import io.swagger.annotations.Api;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -18,6 +19,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("callback")
+@Api(tags = "回调",hidden = true)
 public class CallBackApi {
     @RequestMapping(value = "wxPay")
     public void wxPay(HttpServletRequest req, HttpServletResponse resp) throws Exception{

@@ -41,12 +41,12 @@ public class PatientApi {
      * @param patient 患者信息
      * @return ResponseResult
      */
-    @ApiOperation(value = "第三方添加患者信息")
-    @PostMapping("add")
+    //@ApiOperation(value = "第三方添加患者信息",hidden = true)// 暂时没有了
+    //@PostMapping("add")
     public ResponseResult addPatient(@RequestBody PatientMo patient){
         Patient patient1 = new Patient();
         BeanUtils.copyProperties(patient,patient1);
-        int add = patientManager.add(patient1);
+        patientManager.add(patient1);
         return ResponseUtil.setSuccessResult();
     }
 
@@ -92,39 +92,4 @@ public class PatientApi {
         return ResponseUtil.setSuccessResult(patientManager.getDayNumAnTotalNum(info.getUser().getOrgCode(), LocalDate.now().toString()));
     }
 
-    // 根据机构查询患者库
-
-    @ApiOperation(value = "分页查询机构患者库")
-    @GetMapping("getPatientPoolByPage")
-    public ResponseResult<PageResult<PatientItem>> getPatientPoolByPage(@AccessToken AccessInfo info,
-
-                                                                    @ApiParam("页数") @RequestParam(value = "pageNum" )Integer pageNum,
-                                                                    @ApiParam("每页记录数") @RequestParam(value = "pageSize" )Integer pageSize
-                                                                    ){
-        return ResponseUtil.setSuccessResult(patientManager.getPatientBlacklistByPage(info.getUser().getOrgCode(),pageNum,pageSize,0));
-    }
-
-
-    @ApiOperation(value = "分页查询机构患者黑名单库")
-    @GetMapping("getPatientBlacklistByPage")
-    public ResponseResult<PageResult<PatientItem>> getPatientBlacklistByPage(@AccessToken AccessInfo info,
-                                                                             @ApiParam("页数") @RequestParam(value = "pageNum" )Integer pageNum,
-                                                                             @ApiParam("每页记录数") @RequestParam(value = "pageSize" )Integer pageSize){
-        return ResponseUtil.setSuccessResult(patientManager.getPatientBlacklistByPage(info.getUser().getOrgCode(),pageNum,pageSize,1 ));
-    }
-
-
-    @ApiOperation(value = "添加黑名单")
-    @GetMapping("addPatientBlacklist")
-    public ResponseResult addPatientBlacklist(@AccessToken AccessInfo info,
-                                                                         @ApiParam("患者库id") @RequestParam(value = "id" )String id){
-        return ResponseUtil.setSuccessResult(patientManager.updatePatientItemBlackFlag(info.getUser().getOrgCode(),info.getUser().getId(),id,1));
-    }
-
-    @ApiOperation(value = "移除黑名单")
-    @GetMapping("removedPatientBlacklist")
-    public ResponseResult removedPatientBlacklist(@AccessToken AccessInfo info,
-                                                    @ApiParam("患者库id") @RequestParam(value = "id" )String id){
-        return ResponseUtil.setSuccessResult(patientManager.updatePatientItemBlackFlag(info.getUser().getOrgCode(),info.getUser().getId(),id,0));
-    }
 }

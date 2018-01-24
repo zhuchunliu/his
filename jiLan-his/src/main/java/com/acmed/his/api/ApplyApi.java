@@ -44,11 +44,19 @@ public class ApplyApi {
     @Autowired
     private PayManager payManager;
 
-    @ApiOperation(value = "添加挂号信息")
-    @PostMapping("add")
+    @ApiOperation(value = "患者添加挂号信息")
+    @PostMapping("addByPatient")
     public ResponseResult add(@RequestBody ApplyMo mo,
                               @AccessToken AccessInfo info){
-        applyManager.addApply(mo,info.getPatientId());
+        applyManager.addApply(mo,info.getPatientId(),null);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "医生添加挂号信息")
+    @PostMapping("addByDoctor")
+    public ResponseResult addByDoctor(@RequestBody ApplyMo mo,
+                              @AccessToken AccessInfo info){
+        applyManager.addApply(mo,null,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 

@@ -2,10 +2,13 @@ package com.acmed.his.service;
 
 import com.acmed.his.HisApplication;
 import com.acmed.his.model.Apply;
+import com.acmed.his.model.User;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
+import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -83,4 +86,37 @@ public class ApplyManagerTest {
         System.err.println(applyManager.refund(applyId,fee,feeType,userInfo));
     }
 
+    @Test
+    public void addByPatient(){
+        ApplyMo mo = new ApplyMo();
+        mo.setPatientName("周三");
+        mo.setGender("1");
+        mo.setMobile("13288778877");
+        mo.setIdcard("320586199910316655");
+        mo.setSocialCard("fdd4445");
+        mo.setDoctorId(6);
+        mo.setAppointmentTime("2018-01-29");
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(7);
+        userInfo.setDept(13);
+        userInfo.setDeptName("泌尿外科");
+        userInfo.setOrgCode(6);
+        userInfo.setOrgName("北京大学第一医院");
+        userInfo.setApplyfee(1.0);
+        applyManager.addApply(mo,null,userInfo);
+    }
+    @Test
+    public  void aa(){
+        User user = new User();
+        user.setUserName("wanger");
+
+        User user1 = new User();
+        user1.setAge(1);
+        BeanUtils.copyProperties(user,user1);
+        System.err.println(user1);
+
+
+
+    }
 }

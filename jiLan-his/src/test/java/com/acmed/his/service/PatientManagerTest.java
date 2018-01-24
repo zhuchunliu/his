@@ -31,7 +31,6 @@ public class PatientManagerTest {
         patient.setGender("0");
         patient.setAddress("江苏苏州");
         patient.setMobile("13288888888");
-        patient.setWeight(new BigDecimal(66.66));
         patient.setProf("律师");
         patient.setIdCard("320588199010106666");
         patient.setSocialCard("123456789");
@@ -62,12 +61,5 @@ public class PatientManagerTest {
     public void wxRegistPatient() throws Exception {
     }
 
-    @Test
-    public void addPatinetItem(){
-        PatientItem patientItem = new PatientItem();
-        patientItem.setOrgCode(3);
-        patientItem.setIdCard("335252525");
-        patientItem.setMobile("1234");
-        patientManager.addPatinetItem(patientItem);
-    }
+
 }

@@ -78,4 +78,13 @@ public class ApplyDoctorDto {
 
     @ApiModelProperty("头像")
     private String avatar;
+
+    @ApiModelProperty("过敏史")
+    private String anaphylaxis;
+
+    @ApiModelProperty("个人史")
+    private String personalHistory;
+
+    @ApiModelProperty("家族史")
+    private String familyHistory;
 }

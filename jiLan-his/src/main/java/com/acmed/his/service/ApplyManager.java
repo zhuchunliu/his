@@ -5,7 +5,6 @@ import com.acmed.his.dao.ApplyMapper;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.ApplyDoctorDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
-import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.*;
@@ -23,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * ApplyManager
@@ -40,7 +40,7 @@ public class ApplyManager {
     private PatientManager patientManager;
 
     @Autowired
-    private CommonManager commonManager;
+    private PatientItemManager patientItemManager;
 
     @Autowired
     private PayManager payManager;
@@ -53,13 +53,12 @@ public class ApplyManager {
 
     private static Logger logger = Logger.getLogger(ApplyManager.class);
 
-    /**
+/*    *//**
      * 添加挂号
      * @param mo 属性
      * @param patientId 患者主键
      * @return 0失败  1 成功
-     */
-    @Transactional
+     *//*
     public int addApply(ApplyMo mo, String patientId){
         Integer doctorId = mo.getDoctorId();
 
@@ -120,7 +119,7 @@ public class ApplyManager {
         }
 
         return 1;
-    }
+    }*/
 
 
     /**
@@ -341,4 +340,168 @@ public class ApplyManager {
     }
 
 
+    public ResponseResult<String> addApply(ApplyMo mo,String patientId,UserInfo userInfo){
+        Integer doctorId = mo.getDoctorId();
+        Integer dept = null;
+        String deptName = null;
+        Integer orgCode = null;
+        String orgName = null;
+        // 挂号对象
+        String createBy = null;
+        Double fee = null;
+        if (StringUtils.isNotEmpty(patientId) && userInfo == null){
+            // 患者挂号
+            if (doctorId == null){
+                return ResponseUtil.setErrorMeg(StatusCode.ERROR_PARAM,"参数错误");
+            }
+            User userDetail = userManager.getUserDetail(doctorId);
+            dept = userDetail.getDept();
+            deptName = userDetail.getDeptName();
+            orgCode = userDetail.getOrgCode();
+            orgName = userDetail.getOrgName();
+            fee = userDetail.getApplyfee();
+            createBy = patientId;
+        }else if (StringUtils.isEmpty(patientId) && userInfo != null){
+            //医生挂号
+            if (doctorId == null){
+                dept = userInfo.getDept();
+                deptName = userInfo.getDeptName();
+                orgCode = userInfo.getOrgCode();
+                orgName = userInfo.getOrgName();
+                doctorId = userInfo.getId();
+                fee = userInfo.getApplyfee();
+            }else {
+                User userDetail = userManager.getUserDetail(doctorId);
+                dept = userDetail.getDept();
+                deptName = userDetail.getDeptName();
+                orgCode = userDetail.getOrgCode();
+                orgName = userDetail.getOrgName();
+                fee = userDetail.getApplyfee();
+            }
+            createBy = userInfo.getId().toString();
+        }else {
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_PARAM,"参数错误");
+        }
+        Apply apply = new Apply();
+        String applyId = UUIDUtil.generate();
+        apply.setId(applyId);
+        apply.setDoctorId(doctorId);
+        apply.setAppointmentTime(mo.getAppointmentTime());
+        Patient param = new Patient();
+        param.setIdCard(mo.getIdcard());
+        List<Patient> byPatient = patientManager.getByPatient(param);
+        apply.setOrgCode(orgCode);
+        apply.setDept(dept);
+        apply.setDeptName(deptName);
+        apply.setOrgName(orgName);
+        apply.setCreateBy(createBy);
+        if (byPatient.size() == 0){
+            // 不存在主表信息
+            // 创建患者主表
+            BeanUtils.copyProperties(mo,param);
+            param.setUserName(mo.getPatientName());
+            param.setCreateBy(createBy);
+            String generatePatientId = UUIDUtil.generate();
+            param.setId(generatePatientId);
+            int addPatient = patientManager.add(param);
+            if (addPatient==0){
+                return ResponseUtil.setErrorMeg(StatusCode.FAIL,"请联系管理员");
+            }
+            // 创建子表
+            String generatePatientItemId = UUIDUtil.generate();
+            PatientItem patientItem = new PatientItem();
+            patientItem.setId(generatePatientItemId);
+            patientItem.setAnaphylaxis(mo.getAnaphylaxis());
+            patientItem.setAddress(mo.getAddress());
+            patientItem.setPatientId(generatePatientId);
+            patientItem.setPatientName(mo.getPatientName());
+            patientItem.setGender(mo.getGender());
+            patientItem.setCreateBy(createBy);
+            patientItem.setOrgCode(orgCode);
+            patientItem.setIdCard(mo.getIdcard());
+            patientItem.setMobile(mo.getMobile());
+            patientItem.setSocialCard(mo.getSocialCard());
+            int i = patientItemManager.addPatinetItem(patientItem);
+            if (i==0){
+                return ResponseUtil.setErrorMeg(StatusCode.FAIL,"请联系管理员");
+            }
+            BeanUtils.copyProperties(mo,apply);
+            apply.setIsFirst(1);
+            apply.setPatientId(generatePatientId);
+            apply.setPatientName(mo.getPatientName());
+            apply.setFee(fee);
+            int i1 = addApply(apply);
+            return ResponseUtil.setSuccessResult(applyId);
+        }else {
+            // 存在主表信息
+            Patient patient = byPatient.get(0);
+
+            PatientItem patientItem = new PatientItem();
+            patientItem.setOrgCode(orgCode);
+            patientItem.setPatientId(patient.getId());
+            List<PatientItem> patientItems = patientItemManager.patientItems(patientItem);
+            if (patientItems.size() != 0){
+                //存在子表
+                PatientItem patientItem1 = patientItems.get(0);
+                if (patientItem1.getBlackFlag()==1){
+                    // 被拉黑
+                    return ResponseUtil.setErrorMeg(StatusCode.FAIL,"您在该医院存在不良记录，具体操作请联系客服");
+                }
+                apply.setPatientId(patient.getId());
+                apply.setPatientName(patientItem1.getPatientName());
+                apply.setGender(patientItem1.getGender());
+                apply.setPinYin(patientItem1.getInputCode());
+                apply.setFee(fee);
+                apply.setAge(patientItem1.getAge());
+                apply.setIsFirst(0);
+                int i1 = addApply(apply);
+                return ResponseUtil.setSuccessResult(applyId);
+            }else {
+                // 不存在子表
+                // 创建子表
+                String generatePatientItemId = UUIDUtil.generate();
+                PatientItem patientItem1 = new PatientItem();
+                patientItem1.setId(generatePatientItemId);
+                patientItem1.setPatientId(patient.getId());
+                patientItem1.setPatientName(mo.getPatientName());
+                patientItem1.setGender(mo.getGender());
+                patientItem1.setCreateBy(createBy);
+                patientItem1.setOrgCode(orgCode);
+                patientItem1.setIdCard(mo.getIdcard());
+                patientItem1.setMobile(mo.getMobile());
+                patientItem1.setSocialCard(mo.getSocialCard());
+                patientItem1.setAnaphylaxis(mo.getAnaphylaxis());
+                patientItem1.setAddress(mo.getAddress());
+                int i = patientItemManager.addPatinetItem(patientItem1);
+                apply.setPatientId(patient.getId());
+                apply.setPatientName(patientItem1.getPatientName());
+                apply.setGender(patientItem1.getGender());
+                apply.setPinYin(patientItem1.getInputCode());
+                apply.setFee(fee);
+                apply.setAge(patientItem1.getAge());
+                apply.setIsFirst(0);
+                int i1 = addApply(apply);
+                return ResponseUtil.setSuccessResult(applyId);
+            }
+        }
+    }
+
+
+
+
+    private int addApply(Apply apply){
+        apply.setId(Optional.ofNullable(apply.getId()).orElse(UUIDUtil.generate()));
+        apply.setCreateAt(LocalDateTime.now().toString());
+        // 挂号单号在付款完成后生成
+        //String formatVal = commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000");
+        apply.setClinicNo(null);
+        apply.setIsPaid("0");
+        apply.setStatus("0");
+        apply.setModifyBy(null);
+        apply.setModifyAt(null);
+        if (StringUtils.isNotEmpty(apply.getPatientName())){
+            apply.setPinYin(PinYinUtil.getPinYinHeadChar(apply.getPatientName()));
+        }
+        return applyMapper.insert(apply);
+    }
 }

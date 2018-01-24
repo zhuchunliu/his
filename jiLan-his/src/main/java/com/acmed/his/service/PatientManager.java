@@ -1,17 +1,13 @@
 package com.acmed.his.service;
 
 import com.acmed.his.constants.StatusCode;
-import com.acmed.his.dao.PatientItemMapper;
 import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.Patient;
-import com.acmed.his.model.PatientItem;
 import com.acmed.his.model.dto.OrgPatientNumDto;
 import com.acmed.his.model.dto.PatientCountDto;
 import com.acmed.his.pojo.mo.WxRegistPatientMo;
 import com.acmed.his.pojo.vo.PatientInfoVo;
 import com.acmed.his.util.*;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.soecode.wxtools.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -41,21 +37,6 @@ public class PatientManager {
     @Autowired
     private WxManager wxManager;
 
-    @Autowired
-    private PatientItemMapper patientItemMapper;
-
-
-    /**
-     * 添加子表
-     * @param patientItem
-     * @return
-     */
-    public int addPatinetItem(PatientItem patientItem){
-        patientItem.setId(UUIDUtil.generate());
-        patientItem.setBlackFlag(0);
-        patientItem.setCreateAt(LocalDateTime.now().toString());
-        return patientItemMapper.insert(patientItem);
-    }
 
     /**
      * 第三方添加患者信息
@@ -75,11 +56,18 @@ public class PatientManager {
         }
         String now = LocalDateTime.now().toString();
         patient.setInputCode(PinYinUtil.getPinYinHeadChar(patient.getUserName()));
-        patient.setId(null);
         patient.setOpenid(null);
         patient.setUnionid(null);
+        patient.setModifyBy(null);
         patient.setCreateAt(now);
-        patient.setModifyAt(now);
+        patient.setModifyAt(null);
+        if (patient.getIdCard() != null){
+            LocalDate localDate = IdCardUtil.idCardToDate(patient.getIdCard());
+            if (localDate!=null){
+                System.err.println(localDate.toString());
+                patient.setDateOfBirth(localDate.toString());
+            }
+        }
         patient.setId(Optional.ofNullable(patient.getId()).orElse(UUIDUtil.generate()));//新开就诊时，用户id由开诊接口创建
         return patientMapper.insert(patient);
     }
@@ -97,6 +85,9 @@ public class PatientManager {
         return patientMapper.selectByPrimaryKey(id);
     }
 
+    public List<Patient> getByPatient(Patient patient){
+        return patientMapper.select(patient);
+    }
     /**
      * 根据openid 查询患者详情
      * @param openid 微信openid
@@ -216,51 +207,5 @@ public class PatientManager {
         return patientMapper.getDayNumAnTotalNum(orgCode,date);
     }
 
-    /**
-     * 查询患者库
-     * @param orgCode 机构编码
-     * @param pageNum 页码
-     * @param pageSize 每页条数
-     * @param blackFlag 拉黑标记  0 未拉黑 1 已拉黑
-     * @return PageResult<PatientItem>
-     */
-    public PageResult<PatientItem> getPatientBlacklistByPage(Integer orgCode, Integer pageNum, Integer pageSize,Integer blackFlag){
-        PatientItem patientItem = new PatientItem();
-        patientItem.setOrgCode(orgCode);
-        patientItem.setBlackFlag(1);
-        PageHelper.startPage(pageNum,pageSize);
-        List<PatientItem> select = patientItemMapper.select(patientItem);
-        PageInfo<PatientItem> patientPageInfo = new PageInfo<>(select);
-        PageResult<PatientItem> pageResult = new PageResult<>();
-        pageResult.setData(select);
-        pageResult.setTotal(patientPageInfo.getTotal());
-        pageResult.setPageNum(pageNum);
-        pageResult.setPageSize(pageSize);
-        return pageResult;
-    }
-
-    /**
-     * 患者库黑名单操作
-     * @param orgCode 机构code
-     * @param userId 用户id
-     * @param id 患者库id
-     * @param blackFlag 删除标记
-     * @return 0失败 1成功
-     */
-    public int updatePatientItemBlackFlag(Integer orgCode,Integer userId,String id,Integer blackFlag){
-        PatientItem patientItem = new PatientItem();
-        patientItem.setId(id);
-        patientItem.setOrgCode(orgCode);
-        PatientItem patientItem1 = patientItemMapper.selectOne(patientItem);
-        if (patientItem1!=null){
-            patientItem.setBlackFlag(blackFlag);
-            patientItem.setModifyAt(LocalDateTime.now().toString());
-            patientItem.setModifyBy(userId.toString());
-            return patientItemMapper.updateByPrimaryKeySelective(patientItem);
-        }else {
-            return 0;
-        }
-
-    }
 
 }

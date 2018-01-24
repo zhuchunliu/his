@@ -35,8 +35,39 @@
 
 
     <select id="getByPinyinOrNameOrClinicnoTiaojian" resultType="com.acmed.his.model.dto.ApplyDoctorDto">
-        SELECT t1.*,t2.idcard,t2.mobile,t2.avatar FROM t_b_apply t1
+        SELECT
+        t1.id, -- 挂号单id
+        t3.avatar,  -- 头像
+        t2.idcard, -- 身份证号
+        t2.mobile, -- 手机号
+        t1.clinicno, -- 门诊编号
+        t2.age,
+        t1.orgcode,
+        t1.orgname,
+        t1.patientid,
+        t1.patientname,
+        t1.gender,
+        t1.pinyin,
+        t1.fee,
+        t1.ispaid,
+        t1.feetype,
+        t1.expire,
+        t1.`status`,
+        t1.dept,
+        t1.deptname,
+        t1.totalfee,
+        t2.socialcard,
+        t2.address,
+        t1.appointmenttime,
+        t1.isfirst,
+        t2.anaphylaxis,
+        t2.personalhistory,
+        t2.familyhistory
+        FROM t_b_apply t1
+
         LEFT JOIN t_b_patient_item AS  t2  ON t2.patientid = t1.patientid
+        LEFT JOIN  t_b_patient AS t3 ON t3.id = t1.patientid
+
         <trim prefixOverrides="and" prefix="where">
             <if test="@Ognl@isNotEmpty(startTime)">
                 <![CDATA[ AND t1.appointmenttime >= #{startTime} ]]>

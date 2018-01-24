@@ -39,9 +39,6 @@ public class Patient {
     @ApiModelProperty("号码")
     private String mobile;
 
-    @ApiModelProperty("体重")
-    private BigDecimal weight;
-
     @ApiModelProperty("职业")
     private String prof;
 
@@ -50,9 +47,6 @@ public class Patient {
 
     @ApiModelProperty("社保卡")
     private String socialCard;
-
-    @ApiModelProperty("过敏史")
-    private String anaphylaxis;
 
     @ApiModelProperty("拼音")
     private String inputCode;

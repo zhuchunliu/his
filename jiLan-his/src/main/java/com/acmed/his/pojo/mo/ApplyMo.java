@@ -14,9 +14,6 @@ public class ApplyMo {
     @ApiModelProperty("性别 0:男;1:女")
     private String gender;
 
-    @ApiModelProperty("年龄")
-    private Integer age;
-
     @ApiModelProperty("手机号")
     private String mobile;
 
@@ -26,9 +23,15 @@ public class ApplyMo {
     @ApiModelProperty("社保卡")
     private String socialCard;
 
-    @ApiModelProperty("医生id")
+    @ApiModelProperty("医生id 必填")
     private Integer doctorId;
 
     @ApiModelProperty("预约时间")
     private String appointmentTime;
+
+    @ApiModelProperty("地址")
+    private String address;
+
+    @ApiModelProperty("过敏史")
+    private String anaphylaxis;
 }
