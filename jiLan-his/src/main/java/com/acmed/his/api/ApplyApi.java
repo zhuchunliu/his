@@ -7,6 +7,7 @@ import com.acmed.his.model.dto.ApplyDoctorDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyIdAndStatus;
 import com.acmed.his.pojo.mo.ApplyMo;
+import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.ApplyPatientVo;
 import com.acmed.his.pojo.vo.ApplyVo;
 import com.acmed.his.service.ApplyManager;
@@ -50,16 +51,14 @@ public class ApplyApi {
     @PostMapping("addByPatient")
     public ResponseResult add(@RequestBody ApplyMo mo,
                               @AccessToken AccessInfo info){
-        applyManager.addApply(mo,info.getPatientId(),null);
-        return ResponseUtil.setSuccessResult();
+        return applyManager.addApply(mo,info.getPatientId(),null);
     }
 
     @ApiOperation(value = "医生添加挂号信息")
     @PostMapping("addByDoctor")
     public ResponseResult addByDoctor(@RequestBody ApplyMo mo,
                               @AccessToken AccessInfo info){
-        applyManager.addApply(mo,null,info.getUser());
-        return ResponseUtil.setSuccessResult();
+        return applyManager.addApply(mo,null,info.getUser());
     }
 
     @ApiOperation(value = "根据患者id 查询列表,传患者id就是查询患者的挂号列表  如果不传就是差自己的挂号列表")
@@ -80,9 +79,9 @@ public class ApplyApi {
 
     @ApiOperation(value = "根据挂号单id查询")
     @GetMapping("id")
-    public ResponseResult<ApplyDoctorDto> id(@ApiParam("挂号单id") @RequestParam(value = "id" ) String id){
+    public ResponseResult<ApplyDoctorVo> id(@ApiParam("挂号单id") @RequestParam(value = "id" ) String id){
         Apply applyById = applyManager.getApplyById(id);
-        ApplyDoctorDto result = new ApplyDoctorDto();
+        ApplyDoctorVo result = new ApplyDoctorVo();
         BeanUtils.copyProperties(applyById,result);
         return ResponseUtil.setSuccessResult(result);
     }
@@ -103,7 +102,7 @@ public class ApplyApi {
 
     @ApiOperation(value = "条件查询 医院使用")
     @GetMapping("tiaojianchaxun")
-    public ResponseResult<PageResult<ApplyDoctorDto>> getByPinyinOrNameOrClinicnoTiaojianByPage(@AccessToken AccessInfo info,
+    public ResponseResult<PageResult<ApplyDoctorVo>> getByPinyinOrNameOrClinicnoTiaojianByPage(@AccessToken AccessInfo info,
                                                                                                 @ApiParam("机构id 0表示全部  传表示指定 不传表示自己所在机构") @RequestParam(value = "orgCode" ,required = false)Integer orgCode,
                                                                                                 @ApiParam("科室id 0表示全部  传表示指定 不传表示自己所在科室") @RequestParam(value = "dept" ,required = false)Integer dept,
                                                                                                 @ApiParam("开始时间 如2018-01-02 不传表示今天") @RequestParam(value = "startTime" ,required = false)String startTime,
@@ -131,7 +130,8 @@ public class ApplyApi {
         if (StringUtils.isEmpty(endTime)){
             endTime = LocalDate.now().toString();
         }
-        return ResponseUtil.setSuccessResult(applyManager.getByPinyinOrNameOrClinicnoTiaojianByPage( orgCode,  dept,  startTime,  endTime,  status,  param,  isPaid,  pageNum,  pageSize));
+        PageResult<ApplyDoctorVo> byPinyinOrNameOrClinicnoTiaojianByPage = applyManager.getByPinyinOrNameOrClinicnoTiaojianByPage(orgCode, dept, startTime, endTime, status, param, isPaid, pageNum, pageSize);
+        return ResponseUtil.setSuccessResult(byPinyinOrNameOrClinicnoTiaojianByPage);
     }
     @ApiOperation(value = "现金退挂号费")
     @GetMapping("cashrefund")
@@ -167,7 +167,6 @@ public class ApplyApi {
         applyPageBase.setPageSize(pageSize);
         applyPageBase.setParam(apply);
         PageResult<Apply> applysByPage = applyManager.getApplysByPage(applyPageBase);
-
         Long total = applysByPage.getTotal();
         PageResult<ApplyPatientVo> result = new PageResult<>();
         result.setTotal(total);

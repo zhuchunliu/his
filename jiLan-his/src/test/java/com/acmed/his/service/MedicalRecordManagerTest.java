@@ -1,6 +1,7 @@
 package com.acmed.his.service;
 
 import com.acmed.his.HisApplication;
+import com.acmed.his.model.MedicalRecord;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +37,13 @@ public class MedicalRecordManagerTest {
     @Test
     public void getMedicalRecordById() throws Exception {
         medicalRecordManager.getMedicalRecordById(1);
+    }
+    @Test
+    public void getMedicalRecordListByMedicalRecord(){
+        MedicalRecord medicalRecord = new MedicalRecord();
+        //medicalRecord.setCreateBy("2");
+        medicalRecord.setOrgCode(1);
+        medicalRecord.setPatientItemId("54398d7568a94e50ba6716250a10e52aX5DZ");
+        System.err.println(medicalRecordManager.getMedicalRecordListByMedicalRecord(medicalRecord));
     }
 }

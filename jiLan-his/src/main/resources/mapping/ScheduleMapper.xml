@@ -63,10 +63,10 @@
               (t2.starttime <=  #{startTime}  and t2.endtime is null))
         ]]>
         <if test="@Ognl@isNotEmpty(orgCode) ">
-            AND tt.orgcode = #{orgCode}
+            AND t1.orgcode = #{orgCode}
         </if>
         <if test="@Ognl@isNotEmpty(deptId) ">
-            AND tt.dept = #{deptId}
+            AND t1.dept = #{deptId}
         </if>
 
     </select>

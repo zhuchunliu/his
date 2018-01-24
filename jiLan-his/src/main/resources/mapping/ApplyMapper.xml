@@ -45,6 +45,7 @@
         t1.orgcode,
         t1.orgname,
         t1.patientid,
+        t2.id as patientItemId,
         t1.patientname,
         t1.gender,
         t1.pinyin,

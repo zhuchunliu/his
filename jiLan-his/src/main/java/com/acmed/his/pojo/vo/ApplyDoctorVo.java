@@ -1,26 +1,16 @@
-package com.acmed.his.model;
+package com.acmed.his.pojo.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import tk.mybatis.mapper.annotation.NameStyle;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.util.Date;
 
 /**
- * 挂号
+ * ApplyDoctorVo
  *
- * Created by Darren on 2017-11-20
- **/
+ * @author jimson
+ * @date 2018/1/24
+ */
 @Data
-@Table(name = "t_b_apply")
-@NameStyle
-public class Apply {
-
-    @Id
+public class ApplyDoctorVo {
     @ApiModelProperty("挂号单id")
     private String id;
 
@@ -33,10 +23,7 @@ public class Apply {
     @ApiModelProperty("机构名")
     private String orgName;
 
-    @ApiModelProperty("患者id")
-    private String patientId;
-
-    @ApiModelProperty("患者庫id")
+    @ApiModelProperty("患者库id")
     private String patientItemId;
 
     @ApiModelProperty("患者姓名")
@@ -57,18 +44,6 @@ public class Apply {
     @ApiModelProperty("付费类型")
     private String feeType;
 
-    @ApiModelProperty("创建时间")
-    private String createAt;
-
-    @ApiModelProperty("修改时间")
-    private String modifyAt;
-
-    @ApiModelProperty("创建用户")
-    private String createBy;
-
-    @ApiModelProperty("修改用户")
-    private String modifyBy;
-
     @ApiModelProperty("过期时间")
     private String expire;
 
@@ -87,11 +62,11 @@ public class Apply {
     @ApiModelProperty("总费用")
     private Double totalFee;
 
-    @ApiModelProperty("医生id")
-    private Integer doctorId;
+    @ApiModelProperty("号码")
+    private String mobile;
 
-    @ApiModelProperty("医生名字")
-    private String doctorName;
+    @ApiModelProperty("身份证")
+    private String idCard;
 
     @ApiModelProperty("预约时间")
     private String appointmentTime;
@@ -99,5 +74,15 @@ public class Apply {
     @ApiModelProperty("是否是初诊   0不是初诊   1  是初诊")
     private Integer isFirst;
 
+    @ApiModelProperty("头像")
+    private String avatar;
 
+    @ApiModelProperty("过敏史")
+    private String anaphylaxis;
+
+    @ApiModelProperty("个人史")
+    private String personalHistory;
+
+    @ApiModelProperty("家族史")
+    private String familyHistory;
 }

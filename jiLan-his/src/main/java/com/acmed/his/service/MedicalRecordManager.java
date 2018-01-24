@@ -34,7 +34,7 @@ public class MedicalRecordManager {
      * @param medicalRecord 参数
      * @return 0 失败 1成功
      */
-    public int addMedicalRecord(MedicalRecord medicalRecord){
+    public int saveMedicalRecord(MedicalRecord medicalRecord){
         String id = medicalRecord.getId();
         if (StringUtils.isEmpty(id)){
             medicalRecord.setId(UUIDUtil.generate());
@@ -44,13 +44,7 @@ public class MedicalRecordManager {
                 return 0;
             }
             medicalRecord.setPatientId(apply.getPatientId());
-            medicalRecord.setOrgCode(apply.getOrgCode());
-            medicalRecord.setDept(apply.getDept());
-            medicalRecord.setDeptName(apply.getDeptName());
-            String now = LocalDateTime.now().toString();
-            medicalRecord.setCreateAt(now);
-            medicalRecord.setModifyAt(now);
-            medicalRecordMapper.insert(medicalRecord);
+            addMedicalRecord(medicalRecord);
             apply = new Apply();
             apply.setId(applyId);
             // 挂号单修改成已就诊
@@ -58,8 +52,30 @@ public class MedicalRecordManager {
             applyManager.updateApply(apply);
             return 1;
         }else {
-            return medicalRecordMapper.updateByPrimaryKeySelective(medicalRecord);
+            return updateMedicalRecord(medicalRecord);
         }
+    }
+
+    public int updateMedicalRecord(MedicalRecord medicalRecord){
+        String id = medicalRecord.getId();
+        if(StringUtils.isEmpty(id)){
+            return 0;
+        }
+        medicalRecord.setCreateBy(null);
+        medicalRecord.setCreateAt(null);
+        medicalRecord.setModifyBy(LocalDateTime.now().toString());
+        return medicalRecordMapper.insert(medicalRecord);
+    }
+
+    public int addMedicalRecord(MedicalRecord medicalRecord){
+        String id = medicalRecord.getId();
+        if(StringUtils.isEmpty(id)){
+            medicalRecord.setId(UUIDUtil.generate());
+        }
+        medicalRecord.setModifyBy(null);
+        medicalRecord.setModifyAt(null);
+        medicalRecord.setCreateAt(LocalDateTime.now().toString());
+        return medicalRecordMapper.insert(medicalRecord);
     }
 
     /**
@@ -68,7 +84,7 @@ public class MedicalRecordManager {
      * @param doctorId 医生id
      * @return List<MedicalRecord>
      */
-    public List<MedicalRecord> getMedicalRecordListByPatientId(Integer patientId,Integer doctorId){
+    public List<MedicalRecord> getMedicalRecordListByPatientItemId(Integer patientId,Integer doctorId){
         List<MedicalRecord> list = new ArrayList<>();
         if(patientId == null && doctorId == null){
             return list;
@@ -86,6 +102,10 @@ public class MedicalRecordManager {
             example.createCriteria().andEqualTo("createBy",doctorId).andEqualTo("patientId",patientId);
         }
         return medicalRecordMapper.selectByExample(example);
+    }
+
+    public List<MedicalRecord> getMedicalRecordListByMedicalRecord(MedicalRecord medicalRecord){
+        return medicalRecordMapper.selectByMedicalRecord(medicalRecord);
     }
 
     /**

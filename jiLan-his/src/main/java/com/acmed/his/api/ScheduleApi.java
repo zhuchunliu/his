@@ -99,8 +99,12 @@ public class ScheduleApi {
 
     @ApiOperation(value = "挂号医生列表")
     @GetMapping("/apply")
-    public ResponseResult<ScheduleApplyVo> list(@ApiParam("医院code") @RequestParam(value = "orgCode",required = false) Integer orgCode,
-                                                @ApiParam("科室主键") @RequestParam(value = "deptId",required = false) Integer deptId){
+    public ResponseResult<ScheduleApplyVo> list(@ApiParam("医院code 不传默认账号所在机构") @RequestParam(value = "orgCode",required = false) Integer orgCode,
+                                                @ApiParam("科室主键") @RequestParam(value = "deptId",required = false) Integer deptId,
+                                                @AccessToken AccessInfo info){
+        if(orgCode == null){
+            orgCode = info.getUser().getOrgCode();
+        }
         List<ScheduleApplyDto> sourceList = scheduleManager.getScheduleApplyList(orgCode,deptId);
 
         Map<String,String> scheduleMap = Maps.newHashMap();

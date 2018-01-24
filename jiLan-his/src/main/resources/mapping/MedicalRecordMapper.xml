@@ -8,4 +8,21 @@
                 LEFT JOIN t_b_apply a ON a.id = m.applyid
                 WHERE a.patientid = #{patientId}
         </select>
+
+        <select id="selectByMedicalRecord" resultType="com.acmed.his.model.MedicalRecord">
+          SELECT * FROM  t_b_medicalrecord
+            <trim prefixOverrides="and" prefix="where">
+                <if test="@Ognl@isNotEmpty(orgCode)">
+                    and orgcode = #{orgCode}
+                </if>
+                <if test="@Ognl@isNotEmpty(patientItemId)">
+                    and patientitemid = #{patientItemId}
+                </if>
+                <if test="@Ognl@isNotEmpty(createBy)">
+                    and createby = #{createBy}
+                </if>
+            </trim>
+            ORDER BY createat DESC
+        </select>
+
 </mapper>

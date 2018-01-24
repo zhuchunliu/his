@@ -35,7 +35,6 @@ public class ApplyPatientVo {
     @ApiModelProperty("科室名字")
     private String deptName;
 
-
     @ApiModelProperty("总费用")
     private Double totalFee;
 

@@ -34,4 +34,10 @@ public class ApplyMo {
 
     @ApiModelProperty("过敏史")
     private String anaphylaxis;
+
+    @ApiModelProperty("关系")
+    private String relation;
+
+    @ApiModelProperty("就诊人id 和患者基础信息选填一个 优先就诊人id")
+    private String patientCardId;
 }

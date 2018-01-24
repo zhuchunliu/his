@@ -28,7 +28,7 @@ public class IdCardUtil {
         }else{
             dates = 19+idCard.substring(6, 8);
         }
-        return Integer.parseInt(year)-Integer.parseInt(dates);
+        return Integer.parseInt(year)-Integer.parseInt(dates)+1;
     }
 
     /**

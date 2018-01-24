@@ -1,39 +1,24 @@
-package com.acmed.his.model;
+package com.acmed.his.pojo.vo;
 
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.models.auth.In;
 import lombok.Data;
-import tk.mybatis.mapper.annotation.NameStyle;
-
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.util.Date;
 
 /**
- * 病历
+ * MedicalRecordDoctorVo
  *
- * Created by Darren on 2017-11-20
- **/
+ * @author jimson
+ * @date 2018/1/24
+ */
 @Data
-@Table(name = "t_b_medicalrecord")
-@NameStyle
-public class MedicalRecord {
-
-    @Id
+public class MedicalRecordDoctorVo {
     @ApiModelProperty("id")
     private String id;
 
     @ApiModelProperty("挂号表id")
     private String applyId;
 
-    @ApiModelProperty("患者id")
-    private String patientId;
-
     @ApiModelProperty("患者庫id")
     private String patientItemId;
-
-    @ApiModelProperty("医疗机构编码")
-    private Integer orgCode;
 
     @ApiModelProperty("1 初诊、0 复诊")
     private String isFirst;
@@ -62,20 +47,10 @@ public class MedicalRecord {
     @ApiModelProperty("修改时间")
     private String modifyAt;
 
-    @ApiModelProperty("创建用户")
-    private String createBy;
-
-    @ApiModelProperty("修改用户")
-    private String modifyBy;
-
-    @ApiModelProperty("科室id")
-    private Integer dept;
-
     @ApiModelProperty("科室名字")
     private String deptName;
 
     @ApiModelProperty("备注")
     private String remark;
-
 
 }

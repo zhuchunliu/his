@@ -17,4 +17,6 @@ public interface MedicalRecordMapper extends TkMapper<MedicalRecord>{
      * @return 患者就诊记录
      */
     List<MedicalReDto> getMedicalReDto(@Param("patientId")Integer patientId);
+
+    List<MedicalRecord> selectByMedicalRecord(MedicalRecord medicalRecord);
 }

@@ -88,7 +88,7 @@ public class ApplyManagerTest {
 
     @Test
     public void addByPatient(){
-        for (int i = 1;i<6;i++){
+        for (int i = 1;i<2;i++){
             ApplyMo mo = new ApplyMo();
             mo.setPatientName("周三");
             mo.setGender("1");
@@ -96,8 +96,9 @@ public class ApplyManagerTest {
             mo.setIdcard("320586199910316655");
             mo.setSocialCard("fdd4445");
             mo.setDoctorId(6);
-            mo.setAppointmentTime("2018-01-30");
-
+            mo.setAppointmentTime("2018-02-02");
+            mo.setRelation("家人");
+            mo.setPatientCardId("376500dd108c4563ac091147488abbbfao5a");
             /*UserInfo userInfo = new UserInfo();
             userInfo.setId(7);
             userInfo.setDept(13);

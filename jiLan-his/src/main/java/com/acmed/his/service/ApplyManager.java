@@ -6,6 +6,7 @@ import com.acmed.his.model.*;
 import com.acmed.his.model.dto.ApplyDoctorDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyMo;
+import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.*;
 import com.github.pagehelper.PageHelper;
@@ -20,6 +21,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,12 +40,16 @@ public class ApplyManager {
 
     @Autowired
     private PatientManager patientManager;
-
+    @Autowired
+    private PatientCardManager patientCardManager;
     @Autowired
     private PatientItemManager patientItemManager;
 
     @Autowired
     private PayManager payManager;
+
+    @Autowired
+    private CommonManager commonManager;
 
     @Autowired
     private UserManager userManager;
@@ -179,6 +185,7 @@ public class ApplyManager {
             if ("0".equals(apply.getIsPaid())){
                 apply.setIsPaid("1");
                 apply.setFeeType(feeType);
+                apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
                 applyMapper.updateByPrimaryKey(apply);
                 PayStatements payStatements = new PayStatements();
                 payStatements.setFee(BigDecimal.valueOf(fee));
@@ -237,7 +244,7 @@ public class ApplyManager {
      * @param pageSize
      * @return
      */
-    public PageResult<ApplyDoctorDto> getByPinyinOrNameOrClinicnoTiaojianByPage(Integer orgCode, Integer dept, String startTime, String endTime, String status, String param, String isPaid, Integer pageNum, Integer pageSize){
+    public PageResult<ApplyDoctorVo> getByPinyinOrNameOrClinicnoTiaojianByPage(Integer orgCode, Integer dept, String startTime, String endTime, String status, String param, String isPaid, Integer pageNum, Integer pageSize){
         if (StringUtils.isNotEmpty(startTime)){
             startTime = DateTimeUtil.parsetLocalDateStart(startTime).toString();
         }
@@ -247,11 +254,19 @@ public class ApplyManager {
         PageHelper.startPage(pageNum,pageSize);
         List<ApplyDoctorDto> byPinyinOrNameOrClinicnoTiaojian = applyMapper.getByPinyinOrNameOrClinicnoTiaojian( orgCode,  dept,  startTime,  endTime,  status,  param,  isPaid);
         PageInfo<ApplyDoctorDto> applyDoctorDtoPageInfo = new PageInfo<>(byPinyinOrNameOrClinicnoTiaojian);
-        PageResult<ApplyDoctorDto> applyDoctorDtoPageResult = new PageResult<>();
+        PageResult<ApplyDoctorVo> applyDoctorDtoPageResult = new PageResult<>();
         applyDoctorDtoPageResult.setPageSize(pageSize);
         applyDoctorDtoPageResult.setPageNum(pageNum);
         applyDoctorDtoPageResult.setTotal(applyDoctorDtoPageInfo.getTotal());
-        applyDoctorDtoPageResult.setData(byPinyinOrNameOrClinicnoTiaojian);
+        List<ApplyDoctorVo> list = new ArrayList<>();
+        if (byPinyinOrNameOrClinicnoTiaojian.size()!=0){
+            for (ApplyDoctorDto applyDoctorDto :byPinyinOrNameOrClinicnoTiaojian){
+                ApplyDoctorVo applyDoctorVo = new ApplyDoctorVo();
+                BeanUtils.copyProperties(applyDoctorDto,applyDoctorVo);
+                list.add(applyDoctorVo);
+            }
+        }
+        applyDoctorDtoPageResult.setData(list);
         return applyDoctorDtoPageResult;
     }
 
@@ -341,6 +356,32 @@ public class ApplyManager {
 
 
     public ResponseResult<String> addApply(ApplyMo mo,String patientId,UserInfo userInfo){
+        String patientCardId = mo.getPatientCardId();
+        if (StringUtils.isNotEmpty(patientCardId)){
+            PatientCard patientCard = patientCardManager.patientCardDetail(patientCardId);
+            if (patientCard!=null){
+                mo.setSocialCard(patientCard.getSocialCard());
+                mo.setIdcard(patientCard.getIdCard());
+                mo.setPatientName(patientCard.getPatientName());
+                mo.setMobile(patientCard.getMobile());
+                mo.setGender(patientCard.getGender());
+            }
+        }else {
+            if (StringUtils.isNotEmpty(patientId)){
+                PatientCard patientCard = new PatientCard();
+                patientCard.setIdCard(mo.getIdcard());
+                patientCard.setCreateBy(patientId);
+                List<PatientCard> patientCardList = patientCardManager.getPatientCardList(patientCard);
+                if (patientCardList.size() == 0){
+                    patientCard.setGender(mo.getGender());
+                    patientCard.setSocialCard(mo.getSocialCard());
+                    patientCard.setMobile(mo.getMobile());
+                    patientCard.setRelation(mo.getRelation());
+                    patientCard.setPatientName(mo.getPatientName());
+                    patientCardManager.add(patientCard);
+                }
+            }
+        }
         Integer doctorId = mo.getDoctorId();
         Integer dept = null;
         String deptName = null;
@@ -435,6 +476,7 @@ public class ApplyManager {
             apply.setPatientId(generatePatientId);
             apply.setPatientName(mo.getPatientName());
             apply.setFee(fee);
+            apply.setPatientItemId(generatePatientItemId);
             int i1 = addApply(apply);
             return ResponseUtil.setSuccessResult(applyId);
         }else {
@@ -459,6 +501,7 @@ public class ApplyManager {
                 apply.setFee(fee);
                 apply.setAge(patientItem1.getAge());
                 apply.setIsFirst(0);
+                apply.setPatientItemId(patientItem1.getId());
                 int i1 = addApply(apply);
                 return ResponseUtil.setSuccessResult(applyId);
             }else {
@@ -485,6 +528,7 @@ public class ApplyManager {
                 apply.setFee(fee);
                 apply.setAge(patientItem1.getAge());
                 apply.setIsFirst(0);
+                apply.setPatientItemId(generatePatientItemId);
                 int i1 = addApply(apply);
                 return ResponseUtil.setSuccessResult(applyId);
             }

@@ -28,6 +28,9 @@ public class ApplyDoctorDto {
     @ApiModelProperty("患者id")
     private String patientId;
 
+    @ApiModelProperty("患者库id")
+    private String patientItemId;
+
     @ApiModelProperty("患者姓名")
     private String patientName;
 

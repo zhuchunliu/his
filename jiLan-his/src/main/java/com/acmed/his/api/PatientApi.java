@@ -7,6 +7,7 @@ import com.acmed.his.model.PatientItem;
 import com.acmed.his.model.dto.OrgPatientNumDto;
 import com.acmed.his.model.dto.PatientCountDto;
 import com.acmed.his.pojo.mo.PatientMo;
+import com.acmed.his.pojo.mo.PatientMobileUpMo;
 import com.acmed.his.pojo.mo.WxRegistPatientMo;
 import com.acmed.his.pojo.vo.PatientInfoVo;
 import com.acmed.his.service.PatientManager;
@@ -139,6 +140,18 @@ public class PatientApi {
         patientById.setPassWd(MD5Util.encode(newPasswd));
         patientById.setModifyBy(patientId);
         patientManager.update(patientById);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation("自己更新基础信息")
+    @PostMapping(value = "/updateBaseInfo")
+    public ResponseResult updateBaseInfo(@RequestBody PatientMobileUpMo param,
+                                         @AccessToken AccessInfo info){
+        Patient patient = new Patient();
+        BeanUtils.copyProperties(param,patient);
+        patient.setId(info.getPatientId());
+        patient.setModifyBy(info.getPatientId());
+        patientManager.update(patient);
         return ResponseUtil.setSuccessResult();
     }
 }
