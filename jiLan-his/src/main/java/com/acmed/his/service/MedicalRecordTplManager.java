@@ -37,6 +37,7 @@ public class MedicalRecordTplManager {
             medicalRecordTpl.setTplNamePinYin(PinYinUtil.getPinYinHeadChar(tplName));
         }
         medicalRecordTpl.setRemoved("0");
+        medicalRecordTpl.setIsValid("1");
         medicalRecordTpl.setCreateAt(LocalDateTime.now().toString());
         return medicalRecordTplMapper.insert(medicalRecordTpl);
     }

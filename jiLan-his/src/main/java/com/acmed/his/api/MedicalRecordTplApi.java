@@ -57,7 +57,7 @@ public class MedicalRecordTplApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "恢复病例模板")
+    @ApiOperation(value = "恢复病例模板",hidden = true)
     @GetMapping("/recover")
     public ResponseResult recoverMedicalRecordTpl(@ApiParam("模板主键") @RequestParam("id") Integer id,
                                               @AccessToken AccessInfo info){
@@ -73,6 +73,42 @@ public class MedicalRecordTplApi {
         medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
         return ResponseUtil.setSuccessResult();
     }
+
+    @ApiOperation(value = "禁用病例模板")
+    @GetMapping("/forbidden")
+    public ResponseResult forbiddenMedicalRecordTpl(@ApiParam("模板主键") @RequestParam("id") Integer id,
+                                              @AccessToken AccessInfo info){
+
+        MedicalRecordTpl medicalRecordTpl1 = medicalRecordTplManager.medicalRecordTplDetail(id);
+        if (!StringUtils.equals(info.getUserId().toString(),medicalRecordTpl1.getCreateBy())){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_PREMISSION,"不能操作他人模板");
+        }
+        MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
+        medicalRecordTpl.setId(id);
+        medicalRecordTpl.setModifyBy(info.getUserId().toString());
+        medicalRecordTpl.setIsValid("0");
+        medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
+        return ResponseUtil.setSuccessResult();
+    }
+
+
+    @ApiOperation(value = "启用病例模板")
+    @GetMapping("/using")
+    public ResponseResult usingMedicalRecordTpl(@ApiParam("模板主键") @RequestParam("id") Integer id,
+                                              @AccessToken AccessInfo info){
+        MedicalRecordTpl medicalRecordTpl1 = medicalRecordTplManager.medicalRecordTplDetail(id);
+        if (!StringUtils.equals(info.getUserId().toString(),medicalRecordTpl1.getCreateBy())){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_PREMISSION,"不能操作他人模板");
+        }
+        MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
+        medicalRecordTpl.setId(id);
+        medicalRecordTpl.setModifyBy(info.getUserId().toString());
+        medicalRecordTpl.setIsValid("1");
+        medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
+        return ResponseUtil.setSuccessResult();
+    }
+
+
 
     @ApiOperation(value = "添加/编辑 病例模板")
     @PostMapping("/save")
@@ -105,6 +141,19 @@ public class MedicalRecordTplApi {
         return ResponseUtil.setSuccessResult();
     }
 
+
+    @ApiOperation(value = "禁用病例模板总数")
+    @GetMapping("/forbiddennum")
+    public ResponseResult forbiddenMedicalRecordTpl(@AccessToken AccessInfo info){
+        MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
+        medicalRecordTpl.setRemoved("0");
+        medicalRecordTpl.setCreateBy(info.getUserId().toString());
+        medicalRecordTpl.setIsValid("0");
+        PageResult<MedicalRecordTplDto> byParamByPage = medicalRecordTplManager.getByParamByPage(medicalRecordTpl, 1, 1);
+        return ResponseUtil.setSuccessResult(byParamByPage.getTotal());
+    }
+
+
     @ApiOperation(value = "病例模板列表")
     @PostMapping("/list")
     public ResponseResult<PageResult<MedicalRecordTplVo>> medicalRecordTplList(@ApiParam("条件") @RequestBody PageBase<GetMedicalRecordTplMo> pageBase, @AccessToken AccessInfo info){
@@ -114,6 +163,7 @@ public class MedicalRecordTplApi {
             medicalRecordTpl.setDept(info.getUser().getDept());
             medicalRecordTpl.setOrgCode(info.getUser().getOrgCode());
             medicalRecordTpl.setDept(info.getUser().getDept());
+            medicalRecordTpl.setIsPublic("1");
         }else {
             Integer dept = param.getDept();
             Integer orgCode = param.getOrgCode();
@@ -121,6 +171,8 @@ public class MedicalRecordTplApi {
             if (isSelf!=null){
                 if (isSelf.equals(1)){
                     medicalRecordTpl.setUserId(info.getUserId());
+                }else {
+                    medicalRecordTpl.setIsPublic("1");
                 }
             }
             if (orgCode == null){
@@ -139,9 +191,10 @@ public class MedicalRecordTplApi {
             }
             medicalRecordTpl.setCategory(param.getCategory());
             medicalRecordTpl.setTplName(param.getTplName());
+            medicalRecordTpl.setIsValid(param.getIsValid());
         }
+        medicalRecordTpl.setRemoved("0");
         PageResult<MedicalRecordTplDto> byParamByPage = medicalRecordTplManager.getByParamByPage(medicalRecordTpl, pageBase.getPageNum(), pageBase.getPageSize());
-
         PageResult<MedicalRecordTplVo> result = new PageResult<>();
         result.setPageSize(byParamByPage.getPageSize());
         result.setPageNum(byParamByPage.getPageNum());
@@ -173,4 +226,6 @@ public class MedicalRecordTplApi {
         medicalRecordTpl.setId(id);
         return ResponseUtil.setSuccessResult(medicalRecordTplManager.getByParam(medicalRecordTpl));
     }
+
+
 }

@@ -39,6 +39,12 @@
         <if test="@Ognl@isNotEmpty(removed)">
             and t1.removed = #{removed}
         </if>
+        <if test="@Ognl@isNotEmpty(isValid)">
+            and t1.isvalid = #{isValid}
+        </if>
+        <if test="@Ognl@isNotEmpty(isPublic)">
+            and t1.ispublic = #{isPublic}
+        </if>
         <if test="@Ognl@isNotEmpty(tplName)">
             and (t1.tplname like CONCAT('%',#{tplName},'%') or t1.tplnamepinyin like CONCAT('%',#{tplName},'%'))
         </if>

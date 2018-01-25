@@ -74,4 +74,10 @@ public class MedicalRecordTplVo {
 
     @ApiModelProperty("是否是自己的 自己的才可以 修改 0 不是自己的   1 是自己的 ")
     private Integer isSelf;
+
+    @ApiModelProperty("是否有效(启用) 0:无；1：有")
+    private String isValid;
+
+    @ApiModelProperty("是否公开 0:否；1：是")
+    private String isPublic;
 }

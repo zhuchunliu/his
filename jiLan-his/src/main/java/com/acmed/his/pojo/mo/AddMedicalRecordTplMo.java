@@ -36,4 +36,7 @@ public class AddMedicalRecordTplMo {
 
     @ApiModelProperty("模板说明")
     private String declaratives;
+
+    @ApiModelProperty("是否公开 0:否；1：是")
+    private String isPublic;
 }

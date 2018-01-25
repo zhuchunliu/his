@@ -95,9 +95,9 @@ public class ApplyApi {
     @ApiOperation(value = "现金收挂号费")
     @GetMapping("cashcollection")
     public ResponseResult collection(@AccessToken AccessInfo info,
-                                     @ApiParam("挂号单id") @RequestParam(value = "applyId" )String applyId,
-                                     @ApiParam("金额") @RequestParam(value = "fee" )Double fee){
-        return applyManager.pay(applyId,fee,"0",info.getUser());
+                                     @ApiParam("挂号单id") @RequestParam(value = "applyId" )String applyId){
+        Apply applyById = applyManager.getApplyById(applyId);
+        return applyManager.pay(applyId,applyById.getFee(),"0",info.getUser());
     }
 
     @ApiOperation(value = "条件查询 医院使用")
