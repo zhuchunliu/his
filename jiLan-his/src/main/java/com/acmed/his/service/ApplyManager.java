@@ -528,7 +528,7 @@ public class ApplyManager {
                 apply.setGender(patientItem1.getGender());
                 apply.setPinYin(patientItem1.getInputCode());
                 apply.setFee(fee);
-                apply.setAge(patientItem1.getAge());
+                apply.setAge(IdCardUtil.idCardToAge(mo.getIdcard()));
                 apply.setIsFirst(0);
                 apply.setPatientItemId(generatePatientItemId);
                 int i1 = addApply(apply);

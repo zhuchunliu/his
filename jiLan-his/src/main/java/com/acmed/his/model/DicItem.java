@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -19,13 +21,16 @@ import javax.persistence.Table;
 public class DicItem {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(value = "主键不做业务",hidden = true)
+    private Integer id;
+
     @ApiModelProperty("字典项编码")
     private String dicItemCode;
 
     @ApiModelProperty("字典项名称")
     private String dicItemName;
 
-    @Id
     @ApiModelProperty("字典类型编码")
     private String dicTypeCode;
 

@@ -130,6 +130,12 @@ public class BaseInfoManager {
         return dicItemMapper.insert(dicItem);
     }
 
+    public int updateDicItem(DicItem dicItem){
+        dicItem.setDicItemCode(null);
+        dicItem.setDicTypeCode(null);
+        return dicItemMapper.updateByPrimaryKeySelective(dicItem);
+    }
+
     /**
      * 查询所有字典
      * @return List<Map<String,String>>
@@ -176,6 +182,15 @@ public class BaseInfoManager {
         example.setOrderByClause("sn desc");
         return dicItemMapper.selectByExample(example);
     }
+
+
+    public DicItem getByDicTypeCodeAndDicItemCode(String dicTypeCode,String dicItemCode){
+        DicItem param = new DicItem();
+        param.setDicTypeCode(dicTypeCode);
+        param.setDicItemCode(dicItemCode);
+        return dicItemMapper.selectOne(param);
+    }
+
 
     @Cacheable
     public DicItem getDicItem(String dicTypeCode,String dicItemCode){

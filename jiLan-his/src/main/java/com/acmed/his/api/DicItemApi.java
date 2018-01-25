@@ -1,9 +1,9 @@
 package com.acmed.his.api;
 
-import com.acmed.his.model.Area;
 import com.acmed.his.model.DicItem;
-import com.acmed.his.model.DicType;
 import com.acmed.his.pojo.mo.DicItemMo;
+import com.acmed.his.pojo.mo.DicItemRemoveMo;
+import com.acmed.his.pojo.mo.DicItemUpMo;
 import com.acmed.his.pojo.vo.DicDetailVo;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.util.ResponseResult;
@@ -50,5 +50,32 @@ public class DicItemApi {
     public ResponseResult<List<DicItem>> getDicItemsByDicTypeCode(@ApiParam("字典类型")@RequestParam("dicTypeCode") String dicTypeCode){
         List<DicItem> dicItemsByDicTypeCode = baseInfoManager.getDicItemsByDicTypeCode(dicTypeCode);
         return ResponseUtil.setSuccessResult(dicItemsByDicTypeCode);
+    }
+
+    @ApiOperation(value = "删除")
+    @PostMapping("/removed")
+    public ResponseResult removed(@RequestBody DicItemRemoveMo dicItemRemoveMo){
+        DicItem dicItem = baseInfoManager.getDicItem(dicItemRemoveMo.getDicTypeCode(), dicItemRemoveMo.getDicItemCode());
+        if (dicItem != null){
+            dicItem.setDicItemCode(null);
+            dicItem.setDicTypeCode(null);
+            dicItem.setRemoved("1");
+            baseInfoManager.updateDicItem(dicItem);
+        }
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "编辑")
+    @PostMapping("/save")
+    public ResponseResult save(@RequestBody DicItemUpMo dicItemUpMo){
+        DicItem dicItem = baseInfoManager.getDicItem(dicItemUpMo.getDicTypeCode(), dicItemUpMo.getDicItemCode());
+        if (dicItem != null){
+            dicItem.setDicItemCode(null);
+            dicItem.setDicTypeCode(null);
+            dicItem.setRemoved(null);
+            dicItem.setDicItemName(dicItemUpMo.getDicItemName());
+            baseInfoManager.updateDicItem(dicItem);
+        }
+        return ResponseUtil.setSuccessResult();
     }
 }
