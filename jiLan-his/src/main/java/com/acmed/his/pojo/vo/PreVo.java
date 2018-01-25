@@ -29,6 +29,9 @@ public class PreVo {
     @ApiModelProperty("病例")
     private MedicalRecordVo record = new MedicalRecordVo();
 
+    public PreVo(){
+
+    }
 
     public PreVo(Prescription prescription, List<Inspect> preInspectist,
                  List<Charge> preChargeList, List<PrescriptionItem> preItemList, Patient patientInfo, MedicalRecord medicalRecord) {

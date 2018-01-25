@@ -5,9 +5,11 @@ import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
 import com.acmed.his.pojo.mo.PreMo;
 import com.acmed.his.pojo.vo.PreVo;
+import com.acmed.his.pojo.vo.PrescriptionVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.DateTimeUtil;
 import com.acmed.his.util.UUIDUtil;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by Darren on 2017-11-22
@@ -108,6 +109,8 @@ public class PrescriptionManager {
 
         return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord);
     }
+
+
 
     /**
      * 一次性保存处方信息
@@ -350,5 +353,82 @@ public class PrescriptionManager {
      */
     public Double getSurveyFee(Integer orgCode,String startTime, String endTime) {
         return preItemMapper.getSurveyFee(orgCode,startTime,endTime);
+    }
+
+    /**
+     * 根据applyId获取处方信息
+     * @param applyId
+     * @return
+     */
+    public List<PrescriptionVo> getPreByApplyId(String applyId) {
+
+        Map<String,PrescriptionVo> map = new TreeMap<>();
+
+        Example example = new Example(PrescriptionItem.class);
+        example.createCriteria().andEqualTo("applyId",applyId);
+        example.orderBy("id").asc();
+        List<PrescriptionItem> preItemList = preItemMapper.selectByExample(example);
+
+        if(null != preItemList && 0 != preItemList.size()){
+            preItemList.forEach(obj->{
+                PreVo.ItemVo item = new PreVo().new ItemVo();
+                BeanUtils.copyProperties(obj,item);
+                item.setTotalFee(Optional.ofNullable(item.getNum()).orElse(0)*Optional.ofNullable(item.getFee()).orElse(0d));
+
+                if(!map.containsKey(obj.getGroupNum())){
+                    map.put(obj.getGroupNum(),new PrescriptionVo("1",item,null,null));
+                }else{
+                    map.get(obj.getGroupNum()).getItemList().add(item);
+                    map.get(obj.getGroupNum()).setType("1");
+                }
+            });
+
+        }
+
+        example = new Example(Inspect.class);
+        example.createCriteria().andEqualTo("applyId",applyId);
+        example.orderBy("id").asc();
+        List<Inspect> preInspectList = inspectMapper.selectByExample(example);
+
+        if(null != preInspectList && 0 != preInspectList.size()){
+            preInspectList.forEach((obj)->{
+                PreVo.InspectVo inspect = new PreVo().new InspectVo();
+                BeanUtils.copyProperties(obj,inspect);
+
+                if(!map.containsKey(obj.getGroupNum())){
+                    map.put(obj.getGroupNum(),new PrescriptionVo("2",null,inspect,null));
+                }else{
+                    map.get(obj.getGroupNum()).getInspectList().add(inspect);
+                    map.get(obj.getGroupNum()).setType("2");
+                }
+            });
+
+        }
+
+        example = new Example(Charge.class);
+        example.createCriteria().andEqualTo("applyId",applyId);
+        example.orderBy("id").asc();
+        List<Charge> chargeList = chargeMapper.selectByExample(example);
+
+        if(null != chargeList && 0 != chargeList.size()){
+            chargeList.forEach((obj)->{
+                PreVo.ChargeVo charge = new PreVo().new ChargeVo();
+                BeanUtils.copyProperties(obj,charge);
+
+                if(!map.containsKey(obj.getGroupNum())){
+                    map.put(obj.getGroupNum(),new PrescriptionVo(null,null,null,charge));
+                }else{
+                    map.get(obj.getGroupNum()).getChargeList().add(charge);
+                }
+            });
+
+        }
+        List<PrescriptionVo> list = Lists.newArrayList();
+        Iterator iterator = map.keySet().iterator();
+        while (iterator.hasNext()){
+            list.add(map.get(iterator.next()));
+        }
+
+        return list;
     }
 }
