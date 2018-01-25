@@ -122,7 +122,7 @@ public class MedicalRecordManager {
      * @param id id
      * @return 病例详情
      */
-    public MedicalRecord getMedicalRecordById(Integer id){
+    public MedicalRecord getMedicalRecordById(String id){
         return medicalRecordMapper.selectByPrimaryKey(id);
     }
 

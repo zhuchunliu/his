@@ -27,7 +27,7 @@ public class MedicalRecordTplManager {
     private MedicalRecordTplMapper medicalRecordTplMapper;
 
     /**
-     * 添加病例模板
+     * 添加病例模板 返回id
      * @param medicalRecordTpl
      * @return
      */
@@ -39,7 +39,8 @@ public class MedicalRecordTplManager {
         medicalRecordTpl.setRemoved("0");
         medicalRecordTpl.setIsValid("1");
         medicalRecordTpl.setCreateAt(LocalDateTime.now().toString());
-        return medicalRecordTplMapper.insert(medicalRecordTpl);
+        medicalRecordTplMapper.insert(medicalRecordTpl);
+        return medicalRecordTpl.getId();
     }
 
     /**
@@ -53,6 +54,8 @@ public class MedicalRecordTplManager {
             medicalRecordTpl.setTplNamePinYin(PinYinUtil.getPinYinHeadChar(tplName));
         }
         medicalRecordTpl.setModifyAt(LocalDateTime.now().toString());
+        medicalRecordTpl.setCreateBy(null);
+        medicalRecordTpl.setCreateAt(null);
         return medicalRecordTplMapper.updateByPrimaryKeySelective(medicalRecordTpl);
     }
 

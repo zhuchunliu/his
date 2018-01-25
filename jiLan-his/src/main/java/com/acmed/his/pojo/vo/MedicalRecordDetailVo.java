@@ -1,6 +1,9 @@
 package com.acmed.his.pojo.vo;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.util.List;
 
 /**
  * MedicalRecordDetailVo
@@ -8,6 +11,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author jimson
  * @date 2018/1/25
  */
+@Data
 public class MedicalRecordDetailVo {
     @ApiModelProperty("病例id")
     private String id;
@@ -50,4 +54,7 @@ public class MedicalRecordDetailVo {
 
     @ApiModelProperty("备注")
     private String remark;
+
+    @ApiModelProperty("处方列表")
+    private List<PrescriptionVo> prescriptionVoList;
 }

@@ -186,6 +186,8 @@ public class ApplyManager {
                 apply.setIsPaid("1");
                 apply.setFeeType(feeType);
                 apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+                apply.setModifyBy(userInfo.getId().toString());
+                apply.setModifyAt(LocalDateTime.now().toString());
                 applyMapper.updateByPrimaryKey(apply);
                 PayStatements payStatements = new PayStatements();
                 payStatements.setFee(BigDecimal.valueOf(fee));

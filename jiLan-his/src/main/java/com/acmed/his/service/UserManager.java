@@ -206,4 +206,8 @@ public class UserManager {
         userMapper.updateByPrimaryKey(user);
         return user;
     }
+
+    public List<User> getByUser(User user){
+        return userMapper.select(user);
+    }
 }

@@ -139,4 +139,10 @@ public class OrgManager {
         List<Org> list = orgMapper.getOrgList(lng-offset,lng+offset,lat-offset,lat+offset,orgName);
         return list;
     }
+
+    public List<Org> getOrgsByIdList(List<Integer> orgCodeList){
+        Example example = new Example(Org.class);
+        example.createCriteria().andIn("orgCode",orgCodeList);
+        return orgMapper.selectByExample(example);
+    }
 }

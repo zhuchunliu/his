@@ -3,12 +3,16 @@ package com.acmed.his.api;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.MedicalRecord;
+import com.acmed.his.model.Prescription;
 import com.acmed.his.model.dto.MedicalReDto;
 import com.acmed.his.pojo.mo.MedicalRecordAddMo;
+import com.acmed.his.pojo.vo.MedicalRecordDetailVo;
 import com.acmed.his.pojo.vo.MedicalRecordDoctorVo;
+import com.acmed.his.pojo.vo.PrescriptionVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.service.ApplyManager;
 import com.acmed.his.service.MedicalRecordManager;
+import com.acmed.his.service.PrescriptionManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
@@ -39,6 +43,9 @@ public class MedicalRecordApi {
 
     @Autowired
     private ApplyManager applyManager;
+
+    @Autowired
+    private PrescriptionManager prescriptionManager;
 
     @ApiOperation(value = "保存病例")
     @PostMapping("save")
@@ -89,12 +96,15 @@ public class MedicalRecordApi {
 
     @ApiOperation(value = "根据病历id查询病历详情")
     @GetMapping("id")
-    public ResponseResult<MedicalRecordDoctorVo> get(@ApiParam("病历id") @RequestParam("id")  Integer id){
-
-
-
-        MedicalRecordDoctorVo result = new MedicalRecordDoctorVo();
-        BeanUtils.copyProperties(medicalRecordManager.getMedicalRecordById(id),result);
-        return ResponseUtil.setSuccessResult(result);
+    public ResponseResult<MedicalRecordDetailVo> get(@ApiParam("病历id") @RequestParam("id")  String id){
+        MedicalRecord medicalRecordById = medicalRecordManager.getMedicalRecordById(id);
+        if (medicalRecordById == null){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"病例不存在");
+        }
+        List<PrescriptionVo> preByApply = prescriptionManager.getPreByApplyId(medicalRecordById.getApplyId());
+        MedicalRecordDetailVo medicalRecordDetailVo = new MedicalRecordDetailVo();
+        BeanUtils.copyProperties(medicalRecordById,medicalRecordDetailVo);
+        medicalRecordDetailVo.setPrescriptionVoList(preByApply);
+        return ResponseUtil.setSuccessResult(medicalRecordDetailVo);
     }
 }

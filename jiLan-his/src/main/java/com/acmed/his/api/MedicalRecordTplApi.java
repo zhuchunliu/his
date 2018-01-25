@@ -112,7 +112,7 @@ public class MedicalRecordTplApi {
 
     @ApiOperation(value = "添加/编辑 病例模板")
     @PostMapping("/save")
-    public ResponseResult saveMedicalRecordTpl(@ApiParam("传id  表示修改，不传表示新增") @RequestBody AddMedicalRecordTplMo param, @AccessToken AccessInfo info){
+    public ResponseResult<Integer> saveMedicalRecordTpl(@ApiParam("传id  表示修改，不传表示新增  新增的时候会返回模板id") @RequestBody AddMedicalRecordTplMo param, @AccessToken AccessInfo info){
         Integer id = param.getId();
         if (id == null){
             MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
@@ -121,7 +121,7 @@ public class MedicalRecordTplApi {
             medicalRecordTpl.setDept(info.getUser().getDept());
             medicalRecordTpl.setOrgCode(info.getUser().getOrgCode());
             medicalRecordTpl.setCreateBy(info.getUserId().toString());
-            medicalRecordTplManager.add(medicalRecordTpl);
+            return ResponseUtil.setSuccessResult(medicalRecordTplManager.add(medicalRecordTpl));
         }else {
             //修改
             MedicalRecordTpl medicalRecordTpl1 = medicalRecordTplManager.medicalRecordTplDetail(id);
@@ -135,10 +135,15 @@ public class MedicalRecordTplApi {
             if (byParam.size() != 0){
                 BeanUtils.copyProperties(param,medicalRecordTpl);
                 medicalRecordTpl.setModifyBy(info.getUserId().toString());
+                medicalRecordTpl.setUserId(null);
+                medicalRecordTpl.setDept(null);
+                medicalRecordTpl.setOrgCode(null);
+
                 medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
             }
+            return ResponseUtil.setSuccessResult();
         }
-        return ResponseUtil.setSuccessResult();
+
     }
 
 

@@ -36,7 +36,7 @@ public class MedicalRecordManagerTest {
 
     @Test
     public void getMedicalRecordById() throws Exception {
-        medicalRecordManager.getMedicalRecordById(1);
+        medicalRecordManager.getMedicalRecordById("1");
     }
     @Test
     public void getMedicalRecordListByMedicalRecord(){

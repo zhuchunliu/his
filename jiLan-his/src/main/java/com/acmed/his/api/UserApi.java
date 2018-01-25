@@ -2,11 +2,15 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.model.DicItem;
+import com.acmed.his.model.User;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.pojo.vo.UserPatientVo;
 import com.acmed.his.pojo.vo.UserVo;
+import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.UserManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -40,6 +44,9 @@ import java.util.concurrent.TimeUnit;
 public class UserApi {
     @Autowired
     private UserManager userManager;
+
+    @Autowired
+    private BaseInfoManager baseInfoManager;
 
     @Autowired
     @Qualifier(value="stringRedisTemplate")
@@ -183,5 +190,34 @@ public class UserApi {
     @GetMapping(value = "/user")
     public ResponseResult<UserInfo> getUser(@AccessToken AccessInfo info){
         return ResponseUtil.setSuccessResult(info.getUser());
+    }
+
+    @ApiOperation("根据科室获取医生列表")
+    @GetMapping(value = "/deptId")
+    public ResponseResult<List<UserPatientVo>> getUserBydeptId(@ApiParam("科室id") @RequestParam("deptId") Integer deptId){
+        User user = new User();
+        user.setDept(deptId);
+        user.setRemoved("0");
+        List<User> byUser = userManager.getByUser(user);
+        List<DicItem> dutys = baseInfoManager.getDicItemsByDicTypeCode("Duty");
+        List<DicItem> diagnosLevels = baseInfoManager.getDicItemsByDicTypeCode("DiagnosisLevel");
+
+        List<UserPatientVo> list = new ArrayList<>();
+        for (User userItem :byUser){
+            UserPatientVo userPatientVo = new UserPatientVo();
+            BeanUtils.copyProperties(userItem,userPatientVo);
+            for (DicItem duty : dutys){
+                if (StringUtils.equals(duty.getDicItemCode(),userItem.getDuty())){
+                    userPatientVo.setDutyStr(duty.getDicItemName());
+                }
+            }
+            for (DicItem diagnosLevel : diagnosLevels){
+                if (StringUtils.equals(diagnosLevel.getDicItemCode(),userItem.getDiagnosLevel())){
+                    userPatientVo.setDiagnosLevelStr(diagnosLevel.getDicItemName());
+                }
+            }
+            list.add(userPatientVo);
+        }
+        return ResponseUtil.setSuccessResult(list);
     }
 }

@@ -2,11 +2,14 @@ package com.acmed.his.api;
 
 import com.acmed.his.model.Dept;
 import com.acmed.his.model.Org;
+import com.acmed.his.model.PatientItem;
 import com.acmed.his.pojo.mo.OrgMo;
+import com.acmed.his.pojo.vo.OrgPatientVo;
 import com.acmed.his.pojo.vo.OrgVo;
 import com.acmed.his.service.ApplyManager;
 import com.acmed.his.service.DeptManager;
 import com.acmed.his.service.OrgManager;
+import com.acmed.his.service.PatientItemManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.LngLatUtil;
@@ -41,6 +44,9 @@ public class OrgApi {
 
     @Autowired
     private DeptManager deptManager;
+
+    @Autowired
+    private PatientItemManager patientItemManager;
 
 
     @ApiOperation(value = "新增/编辑 机构信息")
@@ -138,4 +144,30 @@ public class OrgApi {
         orgManager.delOrg(orgCode,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
+
+    @ApiOperation(value = "患者就诊过的机构列表")
+    @DeleteMapping("/orgPatientList")
+    public ResponseResult<List<OrgPatientVo>> delRole(@AccessToken AccessInfo info){
+        String patientId = info.getPatientId();
+        PatientItem patientItem = new PatientItem();
+        patientItem.setPatientId(patientId);
+        List<PatientItem> patientItems = patientItemManager.patientItems(patientItem);
+        List<Integer> orgCodes = new ArrayList<>();
+        for (PatientItem item : patientItems){
+            orgCodes.add(item.getOrgCode());
+        }
+        List<OrgPatientVo> orgPatientVoList = new ArrayList<>();
+        List<Org> orgList = orgManager.getOrgsByIdList(orgCodes);
+        for (Org org: orgList){
+            OrgPatientVo orgPatientVo = new OrgPatientVo();
+            orgPatientVo.setApplyNum(applyManager.getApplyNum(org.getOrgCode()));
+            orgPatientVo.setImgUrl(org.getImgUrl());
+            orgPatientVo.setOrgCode(org.getOrgCode());
+            orgPatientVo.setIntroduction(org.getIntroduction());
+            orgPatientVo.setOrgName(org.getOrgName());
+            orgPatientVoList.add(orgPatientVo);
+        }
+        return ResponseUtil.setSuccessResult(orgPatientVoList);
+    }
+
 }
