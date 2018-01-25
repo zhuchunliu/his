@@ -204,10 +204,10 @@ public class TemplateManager {
      * @return
      */
     @Transactional
-    public boolean savePrescripTpl(PrescriptionTplMo mo, UserInfo userInfo){
-
+    public Integer savePrescripTpl(PrescriptionTplMo mo, UserInfo userInfo){
+        PrescriptionTpl prescriptionTpl = null;
         if(null == mo.getId()){
-            PrescriptionTpl prescriptionTpl = new PrescriptionTpl();
+            prescriptionTpl = new PrescriptionTpl();
             BeanUtils.copyProperties(mo,prescriptionTpl);
             prescriptionTpl.setOrgCode(userInfo.getOrgCode());
             prescriptionTpl.setPinYin(Optional.ofNullable(mo.getTplName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
@@ -217,7 +217,7 @@ public class TemplateManager {
             prescriptionTplMapper.insert(prescriptionTpl);
 
         }else{
-            PrescriptionTpl prescriptionTpl = prescriptionTplMapper.selectByPrimaryKey(mo.getId());
+            prescriptionTpl = prescriptionTplMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,prescriptionTpl);
             prescriptionTpl.setPinYin(Optional.ofNullable(mo.getTplName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             prescriptionTpl.setModifyAt(LocalDateTime.now().toString());
@@ -226,7 +226,7 @@ public class TemplateManager {
 
 
         }
-        return true;
+        return prescriptionTpl.getId();
     }
 
     @Transactional

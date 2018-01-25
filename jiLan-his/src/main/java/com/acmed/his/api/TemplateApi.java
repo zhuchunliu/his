@@ -20,6 +20,7 @@ import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -199,8 +200,8 @@ public class TemplateApi {
     public ResponseResult savePrescripTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PrescriptionTplMo mo,
                                           @AccessToken AccessInfo info){
 
-        boolean flag = templateManager.savePrescripTpl(mo,info.getUser());
-        return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方模板失败");
+        Integer id = templateManager.savePrescripTpl(mo,info.getUser());
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("id",id));
     }
 
     @ApiOperation(value = "获取指定机构下的处方模板")
