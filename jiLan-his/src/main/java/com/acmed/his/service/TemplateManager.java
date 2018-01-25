@@ -3,6 +3,8 @@ package com.acmed.his.service;
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.AdviceTplDto;
+import com.acmed.his.model.dto.DiagnosisTplDto;
 import com.acmed.his.model.dto.PrescriptionTplDto;
 import com.acmed.his.pojo.mo.*;
 import com.acmed.his.pojo.vo.UserInfo;
@@ -47,21 +49,26 @@ public class TemplateManager {
 
     /**
      * 获取诊断模板列表
-     * @param orgCode 机构编码
-     * @return
+     *
+     * @param query
+     * @param pageSize
      */
-    public List<DiagnosisTpl> getDiagnosisTplList(Integer orgCode){
-        return diagnosisTplMapper.getDiagnosisTplList(orgCode,"1");
+    public List<DiagnosisTplDto> getDiagnosisTplList(TplQueryMo query, Integer pageNum, Integer pageSize , UserInfo userInfo){
+        PageHelper.startPage(pageNum,pageSize);
+
+        return diagnosisTplMapper.getDiagnosisTplList(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
+                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode());
     }
 
-    /**
-     * 获取诊断模板详情
-     * @param id 诊断模板主键
-     * @return
-     */
-    public DiagnosisTpl getDiagnosisTpl(Integer id){
-        return diagnosisTplMapper.selectByPrimaryKey(id);
+    public Integer getDiagnosisTplTotal(TplQueryMo query, UserInfo userInfo){
+        return diagnosisTplMapper.getDiagnosisTplTotal(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
+                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode());
     }
+
 
     /**
      * 删除诊断模板
@@ -70,7 +77,15 @@ public class TemplateManager {
      */
     public void delDiagnosisTpl(Integer id, UserInfo userInfo){
         DiagnosisTpl diagnosisTpl = diagnosisTplMapper.selectByPrimaryKey(id);
-        diagnosisTpl.setIsValid("0");
+        diagnosisTpl.setRemoved("1");
+        diagnosisTpl.setModifyAt(LocalDateTime.now().toString());
+        diagnosisTpl.setModifyBy(userInfo.getId().toString());
+        diagnosisTplMapper.updateByPrimaryKey(diagnosisTpl);
+    }
+
+    public void switchDiagnosisTpl(Integer id, UserInfo userInfo) {
+        DiagnosisTpl diagnosisTpl = diagnosisTplMapper.selectByPrimaryKey(id);
+        diagnosisTpl.setIsValid(diagnosisTpl.getIsValid().equals("1")?"0":"1");
         diagnosisTpl.setModifyAt(LocalDateTime.now().toString());
         diagnosisTpl.setModifyBy(userInfo.getId().toString());
         diagnosisTplMapper.updateByPrimaryKey(diagnosisTpl);
@@ -89,24 +104,35 @@ public class TemplateManager {
             diagnosisTpl.setCreateBy(userInfo.getId().toString());
             diagnosisTpl.setOrgCode(userInfo.getOrgCode());
             diagnosisTpl.setIsValid("1");
+            diagnosisTpl.setRemoved("0");
             diagnosisTplMapper.insert(diagnosisTpl);
         }else{
             DiagnosisTpl diagnosisTpl = diagnosisTplMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,diagnosisTpl);
             diagnosisTpl.setModifyAt(LocalDateTime.now().toString());
             diagnosisTpl.setModifyBy(userInfo.getId().toString());
-            diagnosisTpl.setIsValid("1");
             diagnosisTplMapper.updateByPrimaryKey(diagnosisTpl);
         }
     }
 
     /**
      * 获取医嘱模板列表
-     * @param orgCode 机构编码
      * @return
      */
-    public List<AdviceTpl> getAdviceTplList(Integer orgCode){
-        return adviceTplMapper.getAdviceTplList(orgCode,"1");
+    public List<AdviceTplDto> getAdviceTplList(TplQueryMo query, Integer pageNum, Integer pageSize , UserInfo userInfo){
+        PageHelper.startPage(pageNum,pageSize);
+
+        return adviceTplMapper.getAdviceTplList(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
+                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode());
+    }
+
+    public Integer getAdviceTplTotal(TplQueryMo query, UserInfo userInfo){
+        return adviceTplMapper.getAdviceTplTotal(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
+                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode());
     }
 
     /**
@@ -127,9 +153,19 @@ public class TemplateManager {
         AdviceTpl adviceTpl = adviceTplMapper.selectByPrimaryKey(id);
         adviceTpl.setModifyAt(LocalDateTime.now().toString());
         adviceTpl.setModifyBy(userInfo.getId().toString());
-        adviceTpl.setIsValid("0");
+        adviceTpl.setRemoved("1");
         adviceTplMapper.updateByPrimaryKey(adviceTpl);
     }
+
+    public void switchAdviceTpl(Integer id,UserInfo userInfo){
+        AdviceTpl adviceTpl = adviceTplMapper.selectByPrimaryKey(id);
+        adviceTpl.setModifyAt(LocalDateTime.now().toString());
+        adviceTpl.setModifyBy(userInfo.getId().toString());
+        adviceTpl.setIsValid(adviceTpl.getIsValid().equals("1")?"0":"1");
+        adviceTplMapper.updateByPrimaryKey(adviceTpl);
+    }
+
+
 
     /**
      * 新增/编辑 医嘱模板
@@ -144,11 +180,11 @@ public class TemplateManager {
             adviceTpl.setCreateBy(userInfo.getId().toString());
             adviceTpl.setOrgCode(userInfo.getOrgCode());
             adviceTpl.setIsValid("1");
+            adviceTpl.setRemoved("0");
             adviceTplMapper.insert(adviceTpl);
         }else{
             AdviceTpl adviceTpl = adviceTplMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,adviceTpl);
-            adviceTpl.setIsValid("1");
             adviceTpl.setModifyAt(LocalDateTime.now().toString());
             adviceTpl.setModifyBy(userInfo.getId().toString());
             adviceTplMapper.updateByPrimaryKey(adviceTpl);

@@ -20,4 +20,7 @@ public class AdviceTplMo {
 
     @ApiModelProperty("备注")
     private String memo;
+
+    @ApiModelProperty("模板类型  0:私有；1：共有")
+    private String isPublic;
 }

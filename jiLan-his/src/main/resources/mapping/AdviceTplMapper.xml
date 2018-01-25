@@ -1,16 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.acmed.his.dao.AdviceTplMapper">
-<resultMap id="adviceTpl" type="com.acmed.his.model.AdviceTpl">
-    <id property="id" column="id"></id>
-    <result property="orgCode" column="orgcode"></result>
-    <result property="advice" column="advice"></result>
-    <result property="isValid" column="isvalid"></result>
-</resultMap>
+    <mapper namespace="com.acmed.his.dao.AdviceTplMapper">
 
-<select id="getAdviceTplList"  resultMap="adviceTpl">
-    select * from t_b_advice_tpl where orgcode = #{orgCode} and isvalid = #{isValid}
-    order by category desc,createat desc
-</select>
+        <select id="getAdviceTplList" resultType="com.acmed.his.model.dto.AdviceTplDto">
+            select t1.id , t1.category,t1.isvalid , t1.ispublic,t1.advice,t1.createby,
+            t2.dicitemname as categoryName,t3.username as createUserName,
+            if(t1.createby=#{userInfo.id} ,1,0) as isSelf
+            from t_b_advice_tpl t1
+            JOIN t_p_s_dicitem t2 on t1.category  = t2.dicitemcode
+            LEFT JOIN t_p_s_user t3 on t1.createby = t3.id
+            where t1.orgcode = #{userInfo.orgCode} and t2.dictypecode = #{dicTypeCode} and t1.removed = '0'
+            <if test="@Ognl@isNotEmpty(name)">
+                and t2.dicitemname like concat('%',#{name},'%')
+            </if>
+            <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 0">
+                and t1.createby = #{userInfo.id} and t1.isPublic = #{isPublic}
+            </if>
+            <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 1">
+                and t1.ispublic = #{isPublic}
+            </if>
+            <if test="@Ognl@isEmpty(isPublic)">
+                and (t1.ispublic = 1 or  t1.createby = #{userInfo.id})
+            </if>
+            <if test="@Ognl@isNotEmpty(isValid)">
+                and t1.isvalid = #{isValid}
+            </if>
+            order by t1.category desc,t1.createat desc
+        </select>
+
+        <select id="getAdviceTplTotal" resultType="java.lang.Integer">
+            select count(1)
+            from t_b_advice_tpl t1
+            JOIN t_p_s_dicitem t2 on t1.category  = t2.dicitemcode
+            where t1.orgcode = #{userInfo.orgCode} and t2.dictypecode = #{dicTypeCode} and t1.removed = '0'
+            <if test="@Ognl@isNotEmpty(name)">
+                and t2.dicitemname like concat('%',#{name},'%')
+            </if>
+            <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 0">
+                and t1.createby = #{userInfo.id} and t1.isPublic = #{isPublic}
+            </if>
+            <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 1">
+                and t1.ispublic = #{isPublic}
+            </if>
+            <if test="@Ognl@isEmpty(isPublic)">
+                and (t1.ispublic = 1 or  t1.createby = #{userInfo.id})
+            </if>
+            <if test="@Ognl@isNotEmpty(isValid)">
+                and t1.isvalid = #{isValid}
+            </if>
+        </select>
 </mapper>
