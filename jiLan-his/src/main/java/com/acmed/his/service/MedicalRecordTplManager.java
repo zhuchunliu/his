@@ -2,6 +2,7 @@ package com.acmed.his.service;
 
 import com.acmed.his.dao.MedicalRecordTplMapper;
 import com.acmed.his.model.MedicalRecordTpl;
+import com.acmed.his.model.dto.MedicalRecordTplDto;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.PinYinUtil;
 import com.github.pagehelper.PageHelper;
@@ -59,7 +60,7 @@ public class MedicalRecordTplManager {
      * @param medicalRecordTpl
      * @return
      */
-    public List<MedicalRecordTpl> getByParam(MedicalRecordTpl medicalRecordTpl){
+    public List<MedicalRecordTplDto> getByParam(MedicalRecordTpl medicalRecordTpl){
         return medicalRecordTplMapper.selectByParam(medicalRecordTpl);
     }
 
@@ -68,14 +69,14 @@ public class MedicalRecordTplManager {
      * @param medicalRecordTpl
      * @return
      */
-    public PageResult<MedicalRecordTpl> getByParamByPage(MedicalRecordTpl medicalRecordTpl,Integer pageNum,Integer pageSize){
-        PageResult<MedicalRecordTpl> result = new PageResult<>();
+    public PageResult<MedicalRecordTplDto> getByParamByPage(MedicalRecordTpl medicalRecordTpl, Integer pageNum, Integer pageSize){
+        PageResult<MedicalRecordTplDto> result = new PageResult<>();
         result.setPageNum(pageNum);
         result.setPageSize(pageSize);
         PageHelper.startPage(pageNum,pageSize);
-        List<MedicalRecordTpl> medicalRecordTpls = medicalRecordTplMapper.selectByParam(medicalRecordTpl);
-        PageInfo<MedicalRecordTpl> medicalRecordTplPageInfo = new PageInfo<>(medicalRecordTpls);
-        result.setData(medicalRecordTpls);
+        List<MedicalRecordTplDto> medicalRecordTplDtos = medicalRecordTplMapper.selectByParam(medicalRecordTpl);
+        PageInfo<MedicalRecordTplDto> medicalRecordTplPageInfo = new PageInfo<>(medicalRecordTplDtos);
+        result.setData(medicalRecordTplDtos);
         result.setTotal(medicalRecordTplPageInfo.getTotal());
         return result;
     }

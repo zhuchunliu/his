@@ -1,6 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.MedicalRecordTpl;
+import com.acmed.his.model.dto.MedicalRecordTplDto;
 import com.acmed.his.util.TkMapper;
 
 import java.util.List;
@@ -17,5 +18,5 @@ public interface MedicalRecordTplMapper extends TkMapper<MedicalRecordTpl>{
      * @param medicalRecordTpl
      * @return
      */
-    List<MedicalRecordTpl> selectByParam(MedicalRecordTpl medicalRecordTpl);
+    List<MedicalRecordTplDto> selectByParam(MedicalRecordTpl medicalRecordTpl);
 }

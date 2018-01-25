@@ -54,6 +54,9 @@ public class MedicalRecordTplVo {
     @ApiModelProperty("病例模板类型 字典表 MedicalRecordTpl")
     private String category;
 
+    @ApiModelProperty("病例模板类型 名")
+    private String categoryName;
+
     @ApiModelProperty("创建时间")
     private String createAt;
 

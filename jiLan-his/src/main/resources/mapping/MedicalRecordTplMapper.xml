@@ -2,45 +2,46 @@
         <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.MedicalRecordTplMapper">
-    <select id="selectByParam" resultType="com.acmed.his.model.MedicalRecordTpl">
-        SELECT * FROM t_b_medicalrecord_tpl
-        <trim prefixOverrides="and" prefix="where">
-            <if test="@Ognl@isNotEmpty(id)">
-                and id = #{id}
-            </if>
-            <if test="@Ognl@isNotEmpty(orgCode)">
-                    and orgcode = #{orgCode}
-            </if>
-            <if test="@Ognl@isNotEmpty(dept)">
-                and dept = #{dept}
-            </if>
-            <if test="@Ognl@isNotEmpty(userId)">
-                and userid = #{userId}
-            </if>
-            <if test="@Ognl@isNotEmpty(chiefComplaint)">
-                and chiefcomplaint = #{chiefComplaint}
-            </if>
-            <if test="@Ognl@isNotEmpty(physicalExam)">
-                and physicalexam = #{physicalExam}
-            </if>
-            <if test="@Ognl@isNotEmpty(diagnosis)">
-                and diagnosis = #{diagnosis}
-            </if>
-            <if test="@Ognl@isNotEmpty(advice)">
-                and advice = #{advice}
-            </if>
-            <if test="@Ognl@isNotEmpty(category)">
-                and category = #{category}
-            </if>
-            <if test="@Ognl@isNotEmpty(remark)">
-                and remark = #{remark}
-            </if>
-            <if test="@Ognl@isNotEmpty(removed)">
-                and removed = #{removed}
-            </if>
-            <if test="@Ognl@isNotEmpty(tplName)">
-                and (tplname like CONCAT('%',#{tplName},'%') or tplnamepinyin like CONCAT('%',#{tplName},'%'))
-            </if>
-        </trim>
+    <select id="selectByParam" resultType="com.acmed.his.model.dto.MedicalRecordTplDto">
+        SELECT t1.*,t2.dicitemname AS categoryName FROM t_b_medicalrecord_tpl t1
+        LEFT JOIN t_p_s_dicitem AS t2 ON t2.dicitemcode = t1.category
+        WHERE t2.dictypecode = 'MedicalRecordTpl'
+        <if test="@Ognl@isNotEmpty(id)">
+            and t1.id = #{id}
+        </if>
+        <if test="@Ognl@isNotEmpty(orgCode)">
+                and t1.orgcode = #{orgCode}
+        </if>
+        <if test="@Ognl@isNotEmpty(dept)">
+            and t1.dept = #{dept}
+        </if>
+        <if test="@Ognl@isNotEmpty(userId)">
+            and t1.userid = #{userId}
+        </if>
+        <if test="@Ognl@isNotEmpty(chiefComplaint)">
+            and t1.chiefcomplaint = #{chiefComplaint}
+        </if>
+        <if test="@Ognl@isNotEmpty(physicalExam)">
+            and t1.physicalexam = #{physicalExam}
+        </if>
+        <if test="@Ognl@isNotEmpty(diagnosis)">
+            and t1.diagnosis = #{diagnosis}
+        </if>
+        <if test="@Ognl@isNotEmpty(advice)">
+            and t1.advice = #{advice}
+        </if>
+        <if test="@Ognl@isNotEmpty(category)">
+            and t1.category = #{category}
+        </if>
+        <if test="@Ognl@isNotEmpty(remark)">
+            and t1.remark = #{remark}
+        </if>
+        <if test="@Ognl@isNotEmpty(removed)">
+            and t1.removed = #{removed}
+        </if>
+        <if test="@Ognl@isNotEmpty(tplName)">
+            and (t1.tplname like CONCAT('%',#{tplName},'%') or t1.tplnamepinyin like CONCAT('%',#{tplName},'%'))
+        </if>
+
     </select>
 </mapper>

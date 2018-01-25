@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.MedicalRecordTpl;
+import com.acmed.his.model.dto.MedicalRecordTplDto;
 import com.acmed.his.pojo.mo.AddMedicalRecordTplMo;
 import com.acmed.his.pojo.mo.GetMedicalRecordTplMo;
 import com.acmed.his.pojo.vo.MedicalRecordTplVo;
@@ -78,7 +79,7 @@ public class MedicalRecordTplApi {
             MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
             medicalRecordTpl.setUserId(info.getUserId());
             medicalRecordTpl.setId(id);
-            List<MedicalRecordTpl> byParam = medicalRecordTplManager.getByParam(medicalRecordTpl);
+            List<MedicalRecordTplDto> byParam = medicalRecordTplManager.getByParam(medicalRecordTpl);
             if (byParam.size() != 0){
                 BeanUtils.copyProperties(param,medicalRecordTpl);
                 medicalRecordTpl.setModifyBy(info.getUserId().toString());
@@ -96,31 +97,35 @@ public class MedicalRecordTplApi {
         Integer dept = param.getDept();
         Integer orgCode = param.getOrgCode();
         Integer isSelf = param.getIsSelf();
-        if (isSelf == 1){
-            medicalRecordTpl.setUserId(info.getUserId());
+        if (isSelf!=null){
+            if (isSelf.equals(1)){
+                medicalRecordTpl.setUserId(info.getUserId());
+            }
         }
         if (orgCode == null){
-            param.setOrgCode(info.getUser().getOrgCode());
+            medicalRecordTpl.setOrgCode(info.getUser().getOrgCode());
         }else if(orgCode == 0){
-            param.setOrgCode(null);
+            medicalRecordTpl.setOrgCode(null);
         }else {
-            param.setOrgCode(orgCode);
+            medicalRecordTpl.setOrgCode(orgCode);
         }
         if (dept == null){
-            param.setDept(info.getUser().getDept());
+            medicalRecordTpl.setDept(info.getUser().getDept());
         }else if(dept == 0){
-            param.setDept(null);
+            medicalRecordTpl.setDept(null);
         }else {
-            param.setDept(orgCode);
+            medicalRecordTpl.setDept(orgCode);
         }
-        PageResult<MedicalRecordTpl> byParamByPage = medicalRecordTplManager.getByParamByPage(medicalRecordTpl, pageBase.getPageNum(), pageBase.getPageSize());
+        medicalRecordTpl.setCategory(param.getCategory());
+        medicalRecordTpl.setTplName(param.getTplName());
+        PageResult<MedicalRecordTplDto> byParamByPage = medicalRecordTplManager.getByParamByPage(medicalRecordTpl, pageBase.getPageNum(), pageBase.getPageSize());
 
         PageResult<MedicalRecordTplVo> result = new PageResult<>();
         result.setPageSize(byParamByPage.getPageSize());
         result.setPageNum(byParamByPage.getPageNum());
         result.setTotal(byParamByPage.getTotal());
 
-        List<MedicalRecordTpl> data = byParamByPage.getData();
+        List<MedicalRecordTplDto> data = byParamByPage.getData();
         List<MedicalRecordTplVo> medicalRecordTplVos = new ArrayList<>();
         if (data.size()!=0){
             for (MedicalRecordTpl source : data){
