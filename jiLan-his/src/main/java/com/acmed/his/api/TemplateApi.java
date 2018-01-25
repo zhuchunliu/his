@@ -50,9 +50,6 @@ public class TemplateApi {
     private DrugManager drugManager;
 
     @Autowired
-    private MedicalRecordTplManager medicalRecordTplManager;
-
-    @Autowired
     private PrescriptionTplMapper preTplMapper;
 
     @Autowired
@@ -282,76 +279,5 @@ public class TemplateApi {
 
         boolean flag = templateManager.savInspectTpl(mo);
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方模板失败");
-    }
-
-
-
-    @ApiOperation(value = "删除病例模板")
-    @GetMapping("/medicalRecordTpl/del")
-    public ResponseResult delMedicalRecordTpl(@ApiParam("模板主键") @RequestParam("id") Integer id,
-                                         @AccessToken AccessInfo info){
-        MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
-        medicalRecordTpl.setId(id);
-        medicalRecordTpl.setModifyBy(info.getUserId().toString());
-        medicalRecordTpl.setRemoved("1");
-        medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
-        return ResponseUtil.setSuccessResult();
-    }
-
-
-
-    @ApiOperation(value = "添加/编辑 病例模板")
-    @PostMapping("/medicalRecordTpl/save")
-    public ResponseResult saveMedicalRecordTpl(@ApiParam("传id  表示修改，不传表示新增") @RequestBody AddMedicalRecordTplMo param,@AccessToken AccessInfo info){
-        Integer id = param.getId();
-        if (id == null){
-            MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
-            BeanUtils.copyProperties(param,medicalRecordTpl);
-            medicalRecordTpl.setUserId(info.getUserId());
-            medicalRecordTpl.setDept(info.getUser().getDept());
-            medicalRecordTpl.setOrgCode(info.getUser().getOrgCode());
-            medicalRecordTpl.setCreateBy(info.getUserId().toString());
-            medicalRecordTplManager.add(medicalRecordTpl);
-        }else {
-            //修改
-            MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
-            medicalRecordTpl.setUserId(info.getUserId());
-            medicalRecordTpl.setId(id);
-            List<MedicalRecordTpl> byParam = medicalRecordTplManager.getByParam(medicalRecordTpl);
-            if (byParam.size() != 0){
-                BeanUtils.copyProperties(param,medicalRecordTpl);
-                medicalRecordTpl.setModifyBy(info.getUserId().toString());
-                medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
-            }
-        }
-        return ResponseUtil.setSuccessResult();
-    }
-
-    @ApiOperation(value = "病例模板列表")
-    @PostMapping("/medicalRecordTpl/list")
-    public ResponseResult medicalRecordTplList(@ApiParam("条件") @RequestBody PageBase<GetMedicalRecordTplMo> pageBase, @AccessToken AccessInfo info){
-        GetMedicalRecordTplMo param = pageBase.getParam();
-        MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
-        Integer dept = param.getDept();
-        Integer orgCode = param.getOrgCode();
-        Integer isSelf = param.getIsSelf();
-        if (isSelf == 1){
-            medicalRecordTpl.setUserId(info.getUserId());
-        }
-        if (orgCode == null){
-            param.setOrgCode(info.getUser().getOrgCode());
-        }else if(orgCode == 0){
-            param.setOrgCode(null);
-        }else {
-            param.setOrgCode(orgCode);
-        }
-        if (dept == null){
-            param.setDept(info.getUser().getDept());
-        }else if(dept == 0){
-            param.setDept(null);
-        }else {
-            param.setDept(orgCode);
-        }
-        return ResponseUtil.setSuccessResult(medicalRecordTplManager.getByParamByPage(medicalRecordTpl,pageBase.getPageNum(),pageBase.getPageSize()));
     }
 }

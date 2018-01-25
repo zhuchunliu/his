@@ -80,4 +80,8 @@ public class MedicalRecordTplManager {
         return result;
     }
 
+    public MedicalRecordTpl medicalRecordTplDetail(Integer id){
+        return medicalRecordTplMapper.selectByPrimaryKey(id);
+    }
+
 }
