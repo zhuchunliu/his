@@ -23,6 +23,9 @@ public class GetMedicalRecordTplMo {
     @ApiModelProperty("科室id 不传表示自己 0 表示全部 其他指定")
     private Integer dept;
 
-    @ApiModelProperty("是否是自己的")
+    @ApiModelProperty("是否是自己的 0 不是自己  1是自己  不传表示全部")
     private Integer isSelf;
+
+    @ApiModelProperty("0 未删除  1 已删除 不传给全部")
+    private String removed;
 }

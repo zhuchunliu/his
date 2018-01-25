@@ -77,15 +77,22 @@ public class MedicalRecordApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
-    @ApiOperation(value = "查询患者就诊列表",hidden = true)
+    @ApiOperation(value = "查询患者就诊列表 记录",hidden = true)
     @GetMapping("getMedicalReList")
     public ResponseResult<List<MedicalReDto>> getMedicalReList(@ApiParam("患者id") @RequestParam("patientId") Integer patientId){
         return ResponseUtil.setSuccessResult(medicalRecordManager.getMedicalReDtoList(patientId));
     }
 
+
+
+
+
     @ApiOperation(value = "根据病历id查询病历详情")
     @GetMapping("id")
     public ResponseResult<MedicalRecordDoctorVo> get(@ApiParam("病历id") @RequestParam("id")  Integer id){
+
+
+
         MedicalRecordDoctorVo result = new MedicalRecordDoctorVo();
         BeanUtils.copyProperties(medicalRecordManager.getMedicalRecordById(id),result);
         return ResponseUtil.setSuccessResult(result);

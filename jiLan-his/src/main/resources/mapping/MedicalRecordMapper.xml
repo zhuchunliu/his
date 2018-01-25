@@ -3,7 +3,17 @@
                 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.MedicalRecordMapper">
         <select id="getMedicalReDto" resultType="com.acmed.his.model.dto.MedicalReDto">
-                SELECT m.id medicalrecordId,u.id doctorId,u.nickname doctorName,a.dept deptId,a.deptname deptName,a.orgname orgName,a.orgcode orgCode,a.id applyId,a.patientid patientId,m.createat createAt FROM t_b_medicalrecord m
+                SELECT m.id medicalrecordId,
+                u.id doctorId,
+                u.nickname doctorName,
+                a.dept deptId,
+                a.deptname deptName,
+                a.orgname orgName,
+                a.orgcode orgCode,
+                a.id applyId,
+                a.patientid patientId,
+                m.createat createAt
+                FROM t_b_medicalrecord m
                 LEFT JOIN t_p_s_user u ON u.id = m.createby
                 LEFT JOIN t_b_apply a ON a.id = m.applyid
                 WHERE a.patientid = #{patientId}
