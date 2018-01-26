@@ -4,7 +4,7 @@
 <mapper namespace="com.acmed.his.dao.DiagnosisTplMapper">
 
     <select id="getDiagnosisTplList" resultType="com.acmed.his.model.dto.DiagnosisTplDto">
-        select t1.id , t1.category,t1.isvalid , t1.ispublic,t1.diagnosis,t1.createby,
+        select t1.id ,t1.tplname ,t1.category,t1.isvalid , t1.ispublic,t1.diagnosis,t1.createby,
         t2.dicitemname as categoryName,t3.username as createUserName,
         if(t1.createby=#{userInfo.id} ,1,0) as isSelf
         from t_b_diagnosis_tpl t1
@@ -12,7 +12,7 @@
         LEFT JOIN t_p_s_user t3 on t1.createby = t3.id
         where t1.orgcode = #{userInfo.orgCode} and t2.dictypecode = #{dicTypeCode} and t1.removed = '0'
         <if test="@Ognl@isNotEmpty(name)">
-            and t2.dicitemname like concat('%',#{name},'%')
+            and t1.tplname like concat('%',#{name},'%')
         </if>
         <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 0">
             and t1.createby = #{userInfo.id} and t1.isPublic = #{isPublic}
@@ -26,7 +26,7 @@
         <if test="@Ognl@isNotEmpty(isValid)">
             and t1.isvalid = #{isValid}
         </if>
-        order by t1.category desc,t1.createat desc
+        order by t1.createat desc
     </select>
 
     <select id="getDiagnosisTplTotal" resultType="java.lang.Integer">
@@ -35,7 +35,7 @@
         JOIN t_p_s_dicitem t2 on t1.category  = t2.dicitemcode
         where t1.orgcode = #{userInfo.orgCode} and t2.dictypecode = #{dicTypeCode} and t1.removed = '0'
         <if test="@Ognl@isNotEmpty(name)">
-            and t2.dicitemname like concat('%',#{name},'%')
+            and t1.tplname like concat('%',#{name},'%')
         </if>
         <if test="@Ognl@isNotEmpty(isPublic) and isPublic == 0">
             and t1.createby = #{userInfo.id} and t1.isPublic = #{isPublic}

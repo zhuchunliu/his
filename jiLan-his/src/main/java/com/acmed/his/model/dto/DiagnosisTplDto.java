@@ -12,6 +12,9 @@ public class DiagnosisTplDto {
     @ApiModelProperty("诊断模板id")
     private Integer id;
 
+    @ApiModelProperty("模板名称")
+    private String tplName;
+
     @ApiModelProperty("诊断类型")
     private String category;
 

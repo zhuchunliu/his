@@ -26,6 +26,9 @@ public class DiagnosisTpl {
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
 
+    @ApiModelProperty("模板名称")
+    private String tplName;
+
     @ApiModelProperty("诊断分类:字典中获取")
     private String category;
 

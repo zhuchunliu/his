@@ -201,6 +201,7 @@ public class TemplateManager {
         return prescriptionTplMapper.getPrescripTplList(Optional.ofNullable(query).map(obj->obj.getTplName()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getCategory()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
                 userInfo, DicTypeEnum.PRESCRIPTION.getCode());
     }
 
@@ -208,6 +209,7 @@ public class TemplateManager {
         return prescriptionTplMapper.getPrescripTplTotal(Optional.ofNullable(query).map(obj->obj.getTplName()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getCategory()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
                 userInfo);
     }
 

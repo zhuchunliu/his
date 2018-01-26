@@ -11,6 +11,9 @@ public class DiagnosisTplMo {
     @ApiModelProperty("诊疗项目id")
     private Integer id;
 
+    @ApiModelProperty("模板名称")
+    private String tplName;
+
     @ApiModelProperty("诊断分类:字典中获取")
     private String category;
 

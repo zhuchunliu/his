@@ -17,4 +17,7 @@ public class PrescriptionQueryTplMo {
 
     @ApiModelProperty("模板类型  0:私有；1：共有")
     private String isPublic;
+
+    @ApiModelProperty("是否有效 0:无；1：有")
+    private String isValid;
 }

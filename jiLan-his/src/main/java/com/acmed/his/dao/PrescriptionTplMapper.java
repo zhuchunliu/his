@@ -13,11 +13,12 @@ import java.util.List;
  **/
 public interface PrescriptionTplMapper extends TkMapper<PrescriptionTpl>{
     List<PrescriptionTplDto> getPrescripTplList(@Param("tplName") String tplName,@Param("category") String category,
-                                                @Param("isPublic") String isPublic,@Param("userInfo") UserInfo userInfo,
-                                                @Param("dicTypeCode")String dicTypeCode);
+                                                @Param("isPublic") String isPublic,@Param("isValid") String isValid,
+                                                @Param("userInfo") UserInfo userInfo,@Param("dicTypeCode")String dicTypeCode);
 
     Integer getPrescripTplTotal(@Param("tplName") String tplName,@Param("category") String category,
-                                @Param("isPublic") String isPublic,@Param("userInfo") UserInfo userInfo);
+                                @Param("isPublic") String isPublic,@Param("isValid") String isValid,
+                                @Param("userInfo") UserInfo userInfo);
 
     PrescriptionTpl selectRecentTpl(PrescriptionTpl prescriptionTpl);
 }

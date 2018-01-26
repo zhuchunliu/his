@@ -11,6 +11,9 @@ public class AdviceTplDto {
     @ApiModelProperty("医嘱模板id")
     private Integer id;
 
+    @ApiModelProperty("模板名称")
+    private String tplName;
+
     @ApiModelProperty("医嘱类型")
     private String category;
 

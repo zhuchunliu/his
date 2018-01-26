@@ -40,6 +40,10 @@
         <if test="@Ognl@isEmpty(isPublic)">
            and (t1.ispublic = 1 or  t1.createby = #{userInfo.id})
         </if>
+        <if test="@Ognl@isNotEmpty(isValid)">
+            and t1.isvalid = #{isValid}
+        </if>
+        order by t1.createat desc
     </select>
 
     <select id="getPrescripTplTotal"  resultType="java.lang.Integer">
@@ -59,6 +63,9 @@
         </if>
         <if test="@Ognl@isEmpty(isPublic)">
             and (t1.ispublic = 1 or  t1.createby = #{userInfo.id})
+        </if>
+        <if test="@Ognl@isNotEmpty(isValid)">
+            and t1.isvalid = #{isValid}
         </if>
     </select>
 

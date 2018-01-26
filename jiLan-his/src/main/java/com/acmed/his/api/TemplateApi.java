@@ -140,7 +140,7 @@ public class TemplateApi {
         return ResponseUtil.setSuccessResult(result);
     }
 
-    @ApiOperation(value = "诊断模板-禁用数")
+    @ApiOperation(value = "医嘱模板-禁用数")
     @GetMapping("/advice/disable/num")
     public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceDisableNum(@AccessToken AccessInfo info){
         TplQueryMo mo = new TplQueryMo();
@@ -189,6 +189,14 @@ public class TemplateApi {
         result.setData(templateManager.getPrescripTplList(page.getParam(),page.getPageNum(),page.getPageSize(), info.getUser()));
         result.setTotal((long)templateManager.getPrescripTplTotal(page.getParam(), info.getUser()));
         return ResponseUtil.setSuccessResult(result);
+    }
+
+    @ApiOperation(value = "处方模板-禁用数")
+    @GetMapping("/prescripTpl/disable/num")
+    public ResponseResult<PageResult<DiagnosisTplDto>> getPrescripDisableNum(@AccessToken AccessInfo info){
+        PrescriptionQueryTplMo mo = new PrescriptionQueryTplMo();
+        mo.setIsValid("0");
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",templateManager.getPrescripTplTotal(mo,info.getUser())));
     }
 
     @ApiOperation(value = "禁用/启用 处方模板")
