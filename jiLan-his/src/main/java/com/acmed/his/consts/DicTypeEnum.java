@@ -27,7 +27,9 @@ public enum DicTypeEnum {
     SCHEDULE("Schedule","排班类型"),
     DUTY("Duty","职称等级"),
     DIAGNOSIS_LEVEL("DiagnosisLevel","门诊类型"),
-    REFUND_REASON("RefundReason","退款理由");
+    REFUND_REASON("RefundReason","退款理由"),
+    DRUG_FREQUENCY("DrugFrequency","用药频率");
+
     DicTypeEnum(String code,String name){
         this.code = code;
         this.name = name;

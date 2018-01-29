@@ -38,8 +38,8 @@ public class PrescriptionTplItem {
     @ApiModelProperty("单次剂量")
     private Integer dose;
 
-    @ApiModelProperty("频率,用药频率")
-    private Float frequency;
+    @ApiModelProperty("频率,用药频率  字典表：DrugFrequency")
+    private String frequency;
 
     @ApiModelProperty("备注")
     private String memo;

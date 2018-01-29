@@ -451,8 +451,8 @@ public class ApplyManager {
             param.setCreateBy(createBy);
             String generatePatientId = UUIDUtil.generate();
             param.setId(generatePatientId);
-            int addPatient = patientManager.add(param);
-            if (addPatient==0){
+            Patient addPatient = patientManager.add(param);
+            if (addPatient==null){
                 return ResponseUtil.setErrorMeg(StatusCode.FAIL,"请联系管理员");
             }
             // 创建子表

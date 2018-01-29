@@ -4,6 +4,7 @@ import com.acmed.his.model.*;
 import com.acmed.his.util.DateTimeUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.util.*;
@@ -34,7 +35,8 @@ public class PreVo {
     }
 
     public PreVo(Prescription prescription, List<Inspect> preInspectist,
-                 List<Charge> preChargeList, List<PrescriptionItem> preItemList, Patient patientInfo, MedicalRecord medicalRecord) {
+                 List<Charge> preChargeList, List<PrescriptionItem> preItemList, Patient patientInfo, MedicalRecord medicalRecord,
+                 Map<String,String> dicItemName) {
         if(null == prescription){
             return;
         }
@@ -56,7 +58,9 @@ public class PreVo {
                 PreVo.ItemVo item = new PreVo.ItemVo();
                 BeanUtils.copyProperties(obj,item);
                 item.setTotalFee(Optional.ofNullable(item.getNum()).orElse(0)*Optional.ofNullable(item.getFee()).orElse(0d));
-
+                if(!StringUtils.isEmpty(item.getFrequency())){
+                    item.setFrequencyName(dicItemName.get(item.getFrequency()));
+                }
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo("1",item,null,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -191,7 +195,10 @@ public class PreVo {
         private Integer num;
 
         @ApiModelProperty("频率")
-        private Integer frequency;
+        private String frequency;
+
+        @ApiModelProperty("频率")
+        private String frequencyName;
 
         @ApiModelProperty("单次剂量")
         private Integer dose;

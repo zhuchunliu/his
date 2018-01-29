@@ -10,6 +10,7 @@ import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.DateTimeUtil;
 import com.acmed.his.util.UUIDUtil;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,9 @@ public class PrescriptionManager {
     @Autowired
     private PrescriptionFeeMapper feeMapper;
 
+    @Autowired
+    private BaseInfoManager baseInfoManager;
+
 
     /**
      * 根据挂号单查找处方列表
@@ -106,8 +110,12 @@ public class PrescriptionManager {
         MedicalRecord medicalRecord = Optional.ofNullable(recordMapper.selectByExample(example)).
                 filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(new MedicalRecord());
 
-
-        return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord);
+        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FREQUENCY.getCode());
+        Map<String,String> dicItemName = Maps.newHashMap();
+        dicItemList.forEach(obj->{
+            dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+        });
+        return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord,dicItemName);
     }
 
 
@@ -278,10 +286,9 @@ public class PrescriptionManager {
             patientManager.update(patient);
         }else{//如果是新用户，则添加用户信息
             BeanUtils.copyProperties(mo.getPatient(),patient);
-            patient.setId(UUIDUtil.generate());
             patient.setCreateBy(userInfo.getId().toString());
             patient.setCreateAt(LocalDateTime.now().toString());
-            patientManager.add(patient);
+            patient = patientManager.add(patient);
         }
         return patient;
     }

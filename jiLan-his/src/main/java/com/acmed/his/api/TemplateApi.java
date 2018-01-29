@@ -240,6 +240,9 @@ public class TemplateApi {
                     vo.setPackUnit(drug.getPackUnit());
                     vo.setUnit(drug.getUnit());
                 }
+                if(!StringUtils.isEmpty(obj.getFrequency())){
+                    vo.setFrequencyName(Optional.ofNullable(baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),obj.getFrequency())).map(item->item.getDicItemName()).orElse(null));
+                }
                 list.add(vo);
 
             });

@@ -30,7 +30,7 @@ public class PrescriptionTplItemMo {
         private Integer dose;
 
         @ApiModelProperty("频率,用药频率")
-        private Float frequency;
+        private String frequency;
 
         @ApiModelProperty("备注")
         private String memo;

@@ -51,8 +51,8 @@ public class PrescriptionItem {
     @ApiModelProperty("零售价")
     private Double retailPrice;
 
-    @ApiModelProperty("频率")
-    private Integer frequency;
+    @ApiModelProperty("频率 字典表：DrugFrequency")
+    private String frequency;
 
     @ApiModelProperty("单次剂量")
     private Integer dose;

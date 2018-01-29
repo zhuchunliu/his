@@ -43,7 +43,7 @@ public class PatientManager {
      * @param patient 参数
      * @return 0 失败  1 成功
      */
-    public int add(Patient patient){
+    public Patient add(Patient patient){
         // 查询身份证是否已经注册过
         if(!StringUtils.isEmpty(patient.getIdCard())) {
             Patient param = new Patient();
@@ -51,7 +51,7 @@ public class PatientManager {
             List<Patient> select = patientMapper.select(param);
             if (select.size() != 0) {
                 // 表示已经注册过
-                return 0;
+                return patient;
             }
         }
         String now = LocalDateTime.now().toString();
@@ -69,7 +69,8 @@ public class PatientManager {
             }
         }
         patient.setId(Optional.ofNullable(patient.getId()).orElse(UUIDUtil.generate()));//新开就诊时，用户id由开诊接口创建
-        return patientMapper.insert(patient);
+        int value = patientMapper.insert(patient);
+        return value == 0 ?null : patient;
     }
 
     public int update(Patient patient){
