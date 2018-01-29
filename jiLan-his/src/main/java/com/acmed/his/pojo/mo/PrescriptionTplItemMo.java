@@ -18,7 +18,7 @@ public class PrescriptionTplItemMo {
     private List<ItemMo> list;
 
     @Data
-    public class ItemMo {
+    public static class ItemMo {
 
         @ApiModelProperty("药品编码")
         private String drugCode;

@@ -35,7 +35,7 @@ public class PurchaseMo {
     private List<PurchaseDetail> detailList;
 
     @Data
-    public class PurchaseDetail{
+    public static class PurchaseDetail{
         @ApiModelProperty("主键 null：新增;not null：编辑")
         private String id;
 

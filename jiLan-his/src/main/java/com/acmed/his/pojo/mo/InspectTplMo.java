@@ -16,7 +16,7 @@ public class InspectTplMo {
     private List<InspectMo> list;
 
     @Data
-    public class InspectMo{
+    public static class InspectMo{
         @ApiModelProperty("检查目的")
         private String aim;
 

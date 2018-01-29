@@ -27,7 +27,7 @@ public class  PreMo {
     private MedicalRecordMo record;
 
     @Data
-    public class PrescriptMo {
+    public static class PrescriptMo {
         @ApiModelProperty("药品集合")
         private List<PreMo.ItemMo> itemList;
 
@@ -96,7 +96,7 @@ public class  PreMo {
     }
 
     @Data
-    public class PatientMo{
+    public static class PatientMo{
         @ApiModelProperty("用户主键 非必填 null:系统自动添加用户；not null：系统编辑用户")
         private String patientId;
 
@@ -122,7 +122,7 @@ public class  PreMo {
 
 
     @Data
-    public class MedicalRecordMo{
+    public static class MedicalRecordMo{
         @ApiModelProperty("主诉")
         private String chiefComplaint;
 

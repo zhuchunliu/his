@@ -26,7 +26,7 @@ public class DispensingRefundMo {
     private List<RefundMo> moList;
 
     @Data
-    public class RefundMo{
+    public static class RefundMo{
         @ApiModelProperty("主键")
         private String id;
 
