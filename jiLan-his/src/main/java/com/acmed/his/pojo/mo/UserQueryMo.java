@@ -17,4 +17,7 @@ public class UserQueryMo {
 
     @ApiModelProperty("科室id")
     private Integer deptId;
+
+    @ApiModelProperty("状态 0:禁用，1：启用")
+    private String status;
 }

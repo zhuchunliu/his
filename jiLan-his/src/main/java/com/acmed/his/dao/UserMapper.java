@@ -18,10 +18,12 @@ public interface UserMapper extends TkMapper<User> {
     User getUserByOpenid(@Param("openid") String openid);
 
     List<UserDto> getUserList(@Param("deptId") Integer deptId, @Param("mobile") String mobile,
-                              @Param("userName") String userName, @Param("orgCode") Integer orgCode,
+                              @Param("userName") String userName, @Param("status") String status,
+                              @Param("orgCode") Integer orgCode,
                               @Param("userCategory")String userCategory,@Param("diagnosisLevel")String diagnosisLevel,
                               @Param("duty")String duty);
 
     Integer getUserTotal(@Param("deptId") Integer deptId, @Param("mobile") String mobile,
-                     @Param("userName") String userName, @Param("orgCode") Integer orgCode);
+                     @Param("userName") String userName, @Param("status") String status,
+                         @Param("orgCode") Integer orgCode);
 }

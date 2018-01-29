@@ -56,7 +56,8 @@ public class UserManager {
         PageHelper.startPage(pageNum,pageSize);
         return userMapper.getUserList(Optional.ofNullable(mo).map(obj->obj.getDeptId()).orElse(null),
                 Optional.ofNullable(mo).map(obj->obj.getMobile()).orElse(null),
-                Optional.ofNullable(mo).map(obj->obj.getUserName()).orElse(null),userInfo.getOrgCode(),
+                Optional.ofNullable(mo).map(obj->obj.getUserName()).orElse(null),
+                Optional.ofNullable(mo).map(obj->obj.getStatus()).orElse(null),userInfo.getOrgCode(),
                 DicTypeEnum.USER_CATEGORY.getCode(),DicTypeEnum.DIAGNOSIS_LEVEL.getCode(),
                 DicTypeEnum.DUTY.getCode());
     }
@@ -64,7 +65,8 @@ public class UserManager {
     public int getUserTotal(UserQueryMo mo, UserInfo userInfo) {
         return userMapper.getUserTotal(Optional.ofNullable(mo).map(obj->obj.getDeptId()).orElse(null),
                 Optional.ofNullable(mo).map(obj->obj.getMobile()).orElse(null),
-                Optional.ofNullable(mo).map(obj->obj.getUserName()).orElse(null),userInfo.getOrgCode());
+                Optional.ofNullable(mo).map(obj->obj.getUserName()).orElse(null),
+                Optional.ofNullable(mo).map(obj->obj.getStatus()).orElse(null),userInfo.getOrgCode());
     }
 
     /**
@@ -84,7 +86,7 @@ public class UserManager {
 
         if(!StringUtils.isEmpty(mo.getLoginName()) ) { //验证手机号，用户名是否已经存在
             Example example = new Example(User.class);
-            example.createCriteria().andEqualTo("loginName",mo.getUserName());
+            example.createCriteria().andEqualTo("loginName",mo.getLoginName());
             Integer id = Optional.ofNullable(userMapper.selectByExample(example)).
                     filter(obj->0!=obj.size()).map(obj->obj.get(0)).map(obj->obj.getId()).orElse(null);
             if((null != id && null == mo.getId())  || (null != id && id != mo.getId())){
@@ -94,7 +96,7 @@ public class UserManager {
 
         if(!StringUtils.isEmpty(mo.getMobile())){
             Example example = new Example(User.class);
-            example.createCriteria().andEqualTo("mobile",mo.getUserName());
+            example.createCriteria().andEqualTo("mobile",mo.getMobile());
             Integer id = Optional.ofNullable(userMapper.selectByExample(example)).
                     filter(obj->0!=obj.size()).map(obj->obj.get(0)).map(obj->obj.getId()).orElse(null);
             if((null != id && null == mo.getId())  || (null != id && id != mo.getId())){
@@ -130,8 +132,9 @@ public class UserManager {
         Example example = new Example(UserVsRole.class);
         example.createCriteria().andEqualTo("rid",user.getId());
         userVsRoleMapper.deleteByExample(example);
-
-        userVsRoleMapper.addUserRole(user.getId(), mo.getRoleIds().split(","));
+        if(StringUtils.isNotEmpty(mo.getRoleIds())) {
+            userVsRoleMapper.addUserRole(user.getId(), mo.getRoleIds().split(","));
+        }
         return user;
 
     }

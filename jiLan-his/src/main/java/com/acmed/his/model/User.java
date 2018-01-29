@@ -62,7 +62,7 @@ public class User implements Serializable{
     @ApiModelProperty("用户类型")
     private String category;
 
-    @ApiModelProperty("状态")
+    @ApiModelProperty("状态 0:禁用，1：启用")
     private String status;
 
     @ApiModelProperty("挂号费")

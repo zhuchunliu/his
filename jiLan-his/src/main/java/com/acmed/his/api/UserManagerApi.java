@@ -2,7 +2,6 @@ package com.acmed.his.api;
 
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.RoleMapper;
-import com.acmed.his.dao.UserVsRoleMapper;
 import com.acmed.his.model.Role;
 import com.acmed.his.model.dto.UserDto;
 import com.acmed.his.pojo.mo.UserMo;
@@ -18,6 +17,7 @@ import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -86,14 +86,16 @@ public class UserManagerApi {
                 map(obj->baseInfoManager.getDicItem(DicTypeEnum.DUTY.getCode(),obj).getDicItemName()).orElse(null));
 
         List<Role> roleList = roleManager.getRoleList("1");
-        List<Role> checkedRoleList = roleMapper.getRoleByUser(id);
-
+        List<Integer> checkedRoleIdList = Lists.newArrayList();
+        roleMapper.getRoleByUser(id).forEach(obj->{
+            checkedRoleIdList.add(obj.getId());
+        });
         List<UserVo.UserRoleVo> userRoleVoList = Lists.newArrayList();
         roleList.forEach(role->{
             UserVo.UserRoleVo userRoleVo = new UserVo().new UserRoleVo();
             userRoleVo.setRoleId(role.getId());
             userRoleVo.setRoleName(role.getRoleName());
-            userRoleVo.setIsChecked(checkedRoleList.contains(role)?"1":"0");
+            userRoleVo.setIsChecked(checkedRoleIdList.contains(role.getId())?"1":"0");
             userRoleVoList.add(userRoleVo);
         });
         vo.setUserRoleVoList(userRoleVoList);
@@ -117,5 +119,13 @@ public class UserManagerApi {
         }
         userManager.switchUser(JSONObject.parseObject(param).getInteger("id"),info.getUser());
         return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "禁用数")
+    @GetMapping("/disable/num")
+    public ResponseResult getDisableNum(@AccessToken AccessInfo info){
+        UserQueryMo mo = new UserQueryMo();
+        mo.setStatus("0");
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",userManager.getUserTotal(mo,info.getUser())));
     }
 }
