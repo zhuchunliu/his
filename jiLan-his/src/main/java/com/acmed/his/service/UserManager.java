@@ -1,16 +1,22 @@
 package com.acmed.his.service;
 
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.*;
 import com.acmed.his.exceptions.BaseException;
+import com.acmed.his.model.DicType;
 import com.acmed.his.model.Role;
 import com.acmed.his.model.User;
 import com.acmed.his.model.UserVsRole;
+import com.acmed.his.model.dto.UserDto;
 import com.acmed.his.pojo.mo.UserMo;
+import com.acmed.his.pojo.mo.UserQueryMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.MD5Util;
 import com.acmed.his.util.PassWordUtil;
+import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -48,19 +54,19 @@ public class UserManager {
      * 获取用户列表信息
      * @return
      */
-    public List<User> getUserList(UserInfo userInfo,Integer deptId){
-        // TODO :管理员查询所有用户，规则需要待定
-        if(null == userInfo.getOrgCode()){
-            return userMapper.selectAll();
-        }else{
-            Example example = new Example(User.class);
-            Example.Criteria criteria = example.createCriteria();
-            criteria.andEqualTo("orgCode",userInfo.getOrgCode());
-            if(null != deptId){
-                criteria.andEqualTo("dept",deptId);
-            }
-            return userMapper.selectByExample(example);
-        }
+    public List<UserDto> getUserList(UserQueryMo mo, UserInfo userInfo, Integer pageNum , Integer pageSize){
+        PageHelper.startPage(pageNum,pageSize);
+        return userMapper.getUserList(Optional.ofNullable(mo).map(obj->obj.getDeptId()).orElse(null),
+                Optional.ofNullable(mo).map(obj->obj.getMobile()).orElse(null),
+                Optional.ofNullable(mo).map(obj->obj.getUserName()).orElse(null),userInfo.getOrgCode(),
+                DicTypeEnum.USER_CATEGORY.getCode(),DicTypeEnum.DIAGNOSIS_LEVEL.getCode(),
+                DicTypeEnum.DUTY.getCode());
+    }
+
+    public int getUserTotal(UserQueryMo mo, UserInfo userInfo) {
+        return userMapper.getUserTotal(Optional.ofNullable(mo).map(obj->obj.getDeptId()).orElse(null),
+                Optional.ofNullable(mo).map(obj->obj.getMobile()).orElse(null),
+                Optional.ofNullable(mo).map(obj->obj.getUserName()).orElse(null),userInfo.getOrgCode());
     }
 
     /**
@@ -72,26 +78,50 @@ public class UserManager {
             @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
     })
     public User save(UserMo mo, UserInfo userInfo){
+
         //如果前端没有设置机构信息，则为当前设置用户同一机构【老板加人】；前端设置机构【管理员后台加老板用户操作】
-        mo.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
-                Optional.ofNullable(orgMapper.selectByPrimaryKey(mo.getOrgCode())).map(org->org.getOrgName()).orElse(null));
         mo.setOrgCode(Optional.ofNullable(mo.getOrgCode()).orElse(userInfo.getOrgCode()));
-        mo.setDeptName(null == mo.getDept()?userInfo.getDeptName():
-                Optional.ofNullable(deptMapper.selectByPrimaryKey(mo.getDept())).map(dept->dept.getDept()).orElse(null));
         mo.setDept(Optional.ofNullable(mo.getDept()).orElse(userInfo.getDept()));
 
-//        mo.setPassWd(Optional.ofNullable(mo.getPassWd()).map(MD5Util::encode).orElse(null));
+        if(!StringUtils.isEmpty(mo.getLoginName()) ) { //验证手机号，用户名是否已经存在
+            Example example = new Example(User.class);
+            example.createCriteria().andEqualTo("loginName",mo.getUserName());
+            Integer id = Optional.ofNullable(userMapper.selectByExample(example)).
+                    filter(obj->0!=obj.size()).map(obj->obj.get(0)).map(obj->obj.getId()).orElse(null);
+            if((null != id && null == mo.getId())  || (null != id && id != mo.getId())){
+                throw new BaseException(StatusCode.FAIL,"登录名不能重复");
+            }
+        }
+
+        if(!StringUtils.isEmpty(mo.getMobile())){
+            Example example = new Example(User.class);
+            example.createCriteria().andEqualTo("mobile",mo.getUserName());
+            Integer id = Optional.ofNullable(userMapper.selectByExample(example)).
+                    filter(obj->0!=obj.size()).map(obj->obj.get(0)).map(obj->obj.getId()).orElse(null);
+            if((null != id && null == mo.getId())  || (null != id && id != mo.getId())){
+                throw new BaseException(StatusCode.FAIL,"手机号不能重复");
+            }
+        }
 
         if(null == mo.getId()){
             User user = new User();
             BeanUtils.copyProperties(mo,user);
             user.setCreateAt(LocalDateTime.now().toString());
             user.setCreateBy(userInfo.getId().toString());
+            user.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
+                    Optional.ofNullable(orgMapper.selectByPrimaryKey(mo.getOrgCode())).map(org->org.getOrgName()).orElse(null));
+            user.setDeptName(null == mo.getDept()?userInfo.getDeptName():
+                    Optional.ofNullable(deptMapper.selectByPrimaryKey(mo.getDept())).map(dept->dept.getDept()).orElse(null));
+            user.setPassWd(MD5Util.encode("123456"));
             user.setRemoved("0");
             userMapper.insert(user);
             return user;
         }else{
             User user = userMapper.selectByPrimaryKey(mo.getId());
+            user.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
+                    Optional.ofNullable(orgMapper.selectByPrimaryKey(mo.getOrgCode())).map(org->org.getOrgName()).orElse(null));
+            user.setDeptName(null == mo.getDept()?userInfo.getDeptName():
+                    Optional.ofNullable(deptMapper.selectByPrimaryKey(mo.getDept())).map(dept->dept.getDept()).orElse(null));
             BeanUtils.copyProperties(mo,user);
             user.setModifyAt(LocalDateTime.now().toString());
             user.setModifyBy(userInfo.getId().toString());
@@ -128,6 +158,24 @@ public class UserManager {
         return user;
     }
 
+    /**
+     * 禁用、启用用户信息
+     * @param id
+     * @param userInfo
+     * @return
+     */
+    @Caching(evict = {
+            @CacheEvict(value = "user",key = "#id"),
+            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+    })
+    public User switchUser(Integer id,UserInfo userInfo){
+        User user = userMapper.selectByPrimaryKey(id);
+        user.setStatus(user.getStatus().equals("1")?"0":"1");
+        user.setModifyAt(LocalDateTime.now().toString());
+        user.setModifyBy(userInfo.getId().toString());
+        userMapper.updateByPrimaryKey(user);
+        return user;
+    }
 
 
     /**
@@ -158,6 +206,8 @@ public class UserManager {
         userVsRole.setUid(uid);
         userVsRoleMapper.delete(userVsRole);
     }
+
+
 
     /**
      * 根据openid获取用户信息
@@ -210,4 +260,7 @@ public class UserManager {
     public List<User> getByUser(User user){
         return userMapper.select(user);
     }
+
+
+
 }

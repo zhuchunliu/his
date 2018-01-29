@@ -27,6 +27,12 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("频率,用药频率")
     private Float frequency;
 
+    @ApiModelProperty("包装单位")
+    private String packUnit;
+
+    @ApiModelProperty("计价单位")
+    private String unit;
+
     @ApiModelProperty("备注")
     private String memo;
 

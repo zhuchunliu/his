@@ -23,13 +23,13 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/pre")
-@Api(tags = "处方")
+@Api(tags = "新开就诊")
 public class PrescriptionApi {
 
     @Autowired
     private PrescriptionManager preManager;
 
-    @ApiOperation(value = "保存处方【药品+检查】")
+    @ApiOperation(value = "保存处方")
     @PostMapping
     public ResponseResult savePre(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PreMo mo,
                                   @AccessToken AccessInfo info){
@@ -37,7 +37,7 @@ public class PrescriptionApi {
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方失败");
     }
 
-    @ApiOperation(value = "获取处方【药品+检查】")
+    @ApiOperation(value = "获取处方")
     @GetMapping
     public ResponseResult<PreVo> getPre(@ApiParam("id 主键") @RequestParam("id") String id){
         return ResponseUtil.setSuccessResult(preManager.getPre(id));

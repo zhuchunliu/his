@@ -23,7 +23,7 @@
          t2.username as createUserName,if(t1.createby=#{userInfo.id} ,1,0) as isSelf
         from t_b_prescription_tpl t1
         LEFT JOIN t_p_s_user t2 on t1.createby = t2.id
-        where t1.orgcode = #{userInfo.orgCode}
+        where t1.orgcode = #{userInfo.orgCode} and t1.removed = '0'
 
         <if test="@Ognl@isNotEmpty(tplName)">
             and (t1.tplname LIKE concat('%', #{tplName} , '%') or pinyin LIKE concat('%', #{tplName} , '%'))
@@ -47,7 +47,7 @@
     </select>
 
     <select id="getPrescripTplTotal"  resultType="java.lang.Integer">
-        select count(1) from t_b_prescription_tpl t1 where orgcode = #{userInfo.orgCode}
+        select count(1) from t_b_prescription_tpl t1 where orgcode = #{userInfo.orgCode} and t1.removed = '0'
 
         <if test="@Ognl@isNotEmpty(tplName)">
             and (t1.tplname LIKE concat('%', #{tplName} , '%') or pinyin LIKE concat('%', #{tplName} , '%'))

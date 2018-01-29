@@ -45,6 +45,9 @@ public class PrescriptionTpl {
     @ApiModelProperty("是否公开 0:否；1：是")
     private String isPublic;
 
+    @ApiModelProperty("删除标识:0 未删除,1:删除")
+    private String removed;
+
     @ApiModelProperty("注册时间")
     private String createAt;
 

@@ -2,10 +2,13 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.User;
+import com.acmed.his.model.dto.UserDto;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.UserMo;
+import com.acmed.his.pojo.mo.UserQueryMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.vo.UserPatientVo;
@@ -14,16 +17,12 @@ import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.UserManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.util.RandomUtil;
-import com.acmed.his.util.ResponseResult;
-import com.acmed.his.util.ResponseUtil;
-import com.acmed.his.util.SmsUtil;
+import com.acmed.his.util.*;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -62,28 +61,34 @@ public class UserApi {
     }
 
     @ApiOperation(value = "获取用户列表")
-    @GetMapping("/list")
-    public ResponseResult<List<UserVo>> getUserList(@AccessToken AccessInfo info,
-                                                    @Param("科室id") @RequestParam(value = "deptId",required = false) Integer deptId){
-        List<UserVo> list = new ArrayList<>();
-        userManager.getUserList(info.getUser(),deptId).forEach(obj->{
-            UserVo userVo = new UserVo();
-            BeanUtils.copyProperties(obj,userVo);
-            list.add(userVo);
-        });
-        return ResponseUtil.setSuccessResult(list);
+    @PostMapping("/list")
+    public ResponseResult<PageResult<UserDto>> getUserList(@RequestBody PageBase<UserQueryMo> pageBase,
+                                                           @AccessToken AccessInfo info){
+        PageResult result = new PageResult();
+        List<UserDto> list = userManager.getUserList(pageBase.getParam(),info.getUser(),pageBase.getPageNum(),pageBase.getPageSize());
+        int total = userManager.getUserTotal(pageBase.getParam(),info.getUser());
+        result.setData(list);
+        result.setTotal((long)total);
+
+        return ResponseUtil.setSuccessResult(result);
     }
 
     @ApiOperation(value = "获取用户详情")
     @GetMapping("/detail")
     public ResponseResult<UserVo> getUserDetail(@ApiParam("用户主键 null:获取当前登录人的个人信息") @RequestParam(value = "id",required = false) Integer id,
                                                 @AccessToken AccessInfo info){
-        UserVo userVo = new UserVo();
-        if(null == id){
-            id = info.getUser().getId();
-        }
-        BeanUtils.copyProperties(userManager.getUserDetail(id),userVo);
-        return ResponseUtil.setSuccessResult(userVo);
+        id = Optional.ofNullable(id).orElse(info.getUserId());
+        UserVo vo = new UserVo();
+        BeanUtils.copyProperties(userManager.getUserDetail(id),vo);
+
+        vo.setCategoryName(Optional.ofNullable(vo.getCategory()).
+                map(obj->baseInfoManager.getDicItem(DicTypeEnum.USER_CATEGORY.getCode(),obj).getDicItemName()).orElse(null));
+        vo.setDiagnosLevelName(Optional.ofNullable(vo.getDiagnosLevel()).
+                map(obj->baseInfoManager.getDicItem(DicTypeEnum.DIAGNOSIS_LEVEL.getCode(),obj).getDicItemName()).orElse(null));
+        vo.setDutyName(Optional.ofNullable(vo.getDuty()).
+                map(obj->baseInfoManager.getDicItem(DicTypeEnum.DUTY.getCode(),obj).getDicItemName()).orElse(null));
+
+        return ResponseUtil.setSuccessResult(vo);
     }
 
     @ApiOperation(value = "获取用户详情")
@@ -99,6 +104,17 @@ public class UserApi {
     public ResponseResult delUser(@ApiParam("用户主键") @RequestParam("id") Integer id,
                                   @AccessToken AccessInfo info){
         userManager.delUser(id,info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "禁用、启用 用户")
+    @PostMapping("/switch")
+    public ResponseResult switchUser(@ApiParam("{\"id\":\"\"} id：用户主键") @RequestBody String param,
+                                  @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+            return ResponseUtil.setParamEmptyError("id");
+        }
+        userManager.switchUser(JSONObject.parseObject(param).getInteger("id"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 

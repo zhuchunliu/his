@@ -1,7 +1,5 @@
 package com.acmed.his.api;
 
-import com.acmed.his.constants.CommonConstants;
-import com.acmed.his.model.RoleVsPermission;
 import com.acmed.his.pojo.mo.PermissionMo;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.RoleVsPermissionMo;
@@ -11,7 +9,6 @@ import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;

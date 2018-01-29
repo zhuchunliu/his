@@ -23,7 +23,7 @@ public class UserManagerTest {
 
     @Test
     public void getUserList(){
-        userManager.getUserList(new UserInfo(),null).forEach((obj)->System.err.println(obj));
+//        userManager.getUserList(new UserInfo(),null).forEach((obj)->System.err.println(obj));
     }
 
     @Test

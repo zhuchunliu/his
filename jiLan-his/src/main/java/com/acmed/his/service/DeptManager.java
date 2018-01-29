@@ -28,7 +28,7 @@ public class DeptManager {
      */
     public List<Dept> getDeptList(Integer orgCode){
         Example example = new Example(Dept.class);
-        example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("status",CommonConstants.ENABLED_STATUS);
+        example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("removed","0");
         return deptMapper.selectByExample(example);
     }
 
@@ -52,7 +52,8 @@ public class DeptManager {
         if(null == mo.getId()){
             Dept dept = new Dept();
             BeanUtils.copyProperties(mo,dept);
-            dept.setStatus(CommonConstants.ENABLED_STATUS);
+            dept.setOrgCode(userInfo.getOrgCode());
+            dept.setRemoved("0");
             dept.setCreateBy(userInfo.getId().toString());
             dept.setCreateAt(LocalDateTime.now().toString());
             deptMapper.insert(dept);
@@ -79,7 +80,7 @@ public class DeptManager {
      */
     public void delDept(Integer id,UserInfo userInfo){
         Dept dept = deptMapper.selectByPrimaryKey(id);
-        dept.setStatus(CommonConstants.DISABLED_STATUS);
+        dept.setRemoved("1");
         dept.setModifyAt(LocalDateTime.now().toString());
         dept.setModifyBy(userInfo.getId().toString());
         deptMapper.updateByPrimaryKey(dept);

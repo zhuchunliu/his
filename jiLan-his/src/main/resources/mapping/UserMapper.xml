@@ -31,4 +31,44 @@
     <select id="getUserByOpenid" parameterType="java.lang.String" resultMap="userMap">
         select * from t_p_s_user where openid = #{openid}
     </select>
+
+    <select id="getUserList" resultType="com.acmed.his.model.dto.UserDto">
+        select t1.*,t2.dicitemname as categoryName,t3.dicitemname as diagnosLevelName
+         t4.dicitemname as dutyName from t_p_s_user t1
+        LEFT JOIN t_p_s_dicitem t2 ON t1.category = t2.dicitemcode and t2.dictypecode = #{userCategory}
+        LEFT JOIN t_p_s_dicitem t3 ON t1.category = t2.dicitemcode and t2.dictypecode = #{diagnosisLevel}
+        LEFT JOIN t_p_s_dicitem t4 ON t1.category = t2.dicitemcode and t2.dictypecode = #{duty}
+        <trim prefix="where" prefixOverrides="and">
+            <if test="@Ognl@isNotEmpty(deptId)">
+                and t1.dept = #{deptId}
+            </if>
+            <if test="@Ognl@isNotEmpty(mobile)">
+                and t1.mobile like concat('%',#{mobile},'%')
+            </if>
+            <if test="@Ognl@isNotEmpty(userName)">
+                and t1.username like concat('%',#{userName},'%')
+            </if>
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                and t1.orgcode = #{orgCode}
+            </if>
+        </trim>
+    </select>
+
+    <select id="getUserTotal" resultType="java.lang.Integer">
+        select count(1) from t_p_s_user t1
+        <trim prefix="where" prefixOverrides="and">
+            <if test="@Ognl@isNotEmpty(deptId)">
+                and t1.dept = #{deptId}
+            </if>
+            <if test="@Ognl@isNotEmpty(mobile)">
+                and t1.mobile like concat('%',#{mobile},'%')
+            </if>
+            <if test="@Ognl@isNotEmpty(userName)">
+                and t1.username like concat('%',#{userName},'%')
+            </if>
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                and t1.orgcode = #{orgCode}
+            </if>
+        </trim>
+    </select>
 </mapper>

@@ -1,13 +1,13 @@
-package com.acmed.his.pojo.vo;
+package com.acmed.his.model.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * Created by Darren on 2017-11-26
+ * Created by Darren on 2018-01-26
  **/
 @Data
-public class UserVo {
+public class UserDto {
     @ApiModelProperty("id null：新增，not null ：编辑")
     private Integer id;
 

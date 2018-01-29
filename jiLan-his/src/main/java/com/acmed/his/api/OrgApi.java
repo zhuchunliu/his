@@ -130,7 +130,7 @@ public class OrgApi {
         BeanUtils.copyProperties(orgManager.getOrgDetail(orgCode),mo);
         mo.setApplyNum(applyManager.getApplyNum(mo.getOrgCode()));
         Dept dept = new Dept();
-        dept.setStatus("0");
+        dept.setRemoved("0");
         dept.setOrgCode(orgCode);
         dept.setSuperiorityFlag(superiorityFlag);
         mo.setDeptList(deptManager.getDeptList(dept));

@@ -237,6 +237,20 @@ public class TemplateManager {
     }
 
     /**
+     * 删除处方模板
+      * @param id
+     * @param userInfo
+     */
+    @Transactional
+    public void delPrescripTpl(Integer id,UserInfo userInfo){
+        PrescriptionTpl prescriptionTpl = prescriptionTplMapper.selectByPrimaryKey(id);
+        prescriptionTpl.setModifyAt(LocalDateTime.now().toString());
+        prescriptionTpl.setModifyBy(userInfo.getId().toString());
+        prescriptionTpl.setRemoved("1");
+        prescriptionTplMapper.updateByPrimaryKey(prescriptionTpl);
+    }
+
+    /**
      * 新增/编辑 处方模板
      * @param mo 处方模板
      * @return
@@ -252,6 +266,7 @@ public class TemplateManager {
             prescriptionTpl.setCreateAt(LocalDateTime.now().toString());
             prescriptionTpl.setCreateBy(userInfo.getId().toString());
             prescriptionTpl.setIsValid("1");
+            prescriptionTpl.setRemoved("0");
             prescriptionTplMapper.insert(prescriptionTpl);
 
         }else{

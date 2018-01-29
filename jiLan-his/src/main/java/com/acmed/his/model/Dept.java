@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
+import javax.annotation.Detainted;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,8 +32,11 @@ public class Dept {
     @ApiModelProperty("科室")
     private String dept;
 
-    @ApiModelProperty("状态 0:启用，1：禁用")
-    private String status;
+    @ApiModelProperty("是否是优势科室   0不是  1 是")
+    private Integer superiorityFlag;
+
+    @ApiModelProperty("删除标识:0 未删除,1:删除")
+    private String removed;
 
     @ApiModelProperty("创建时间")
     private String createAt;
@@ -46,6 +50,5 @@ public class Dept {
     @ApiModelProperty("修改人")
     private String modifyBy;
 
-    @ApiModelProperty("是否是优势科室   0不是  1 是")
-    private Integer superiorityFlag;
+
 }

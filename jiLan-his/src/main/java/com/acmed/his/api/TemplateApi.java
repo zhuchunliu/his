@@ -210,6 +210,17 @@ public class TemplateApi {
         return ResponseUtil.setSuccessResult();
     }
 
+    @ApiOperation(value = "删除 处方模板")
+    @DeleteMapping("/prescripTpl/del")
+    public ResponseResult delPrescripTpl(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
+                                            @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+            return ResponseUtil.setParamEmptyError("id");
+        }
+        templateManager.delPrescripTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
     @ApiOperation(value = "获取处方配置详情")
     @GetMapping("/prescripTpl/detail")
     public ResponseResult getPrescripTplDetail(@ApiParam("模板主键") @RequestParam("id") Integer id,
@@ -226,6 +237,8 @@ public class TemplateApi {
                 if(null != drug){
                     vo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
                     vo.setFee(drug.getRetailPrice());
+                    vo.setPackUnit(drug.getPackUnit());
+                    vo.setUnit(drug.getUnit());
                 }
                 list.add(vo);
 
