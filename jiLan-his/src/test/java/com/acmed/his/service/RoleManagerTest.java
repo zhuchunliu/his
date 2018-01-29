@@ -22,16 +22,16 @@ public class RoleManagerTest {
 
     @Test
     public void getRoleList(){
-        roleManager.getRoleList().forEach((obj)->System.err.println(obj));
+//        roleManager.getRoleList().forEach((obj)->System.err.println(obj));
     }
 
     @Test
     public void save(){
         RoleMo role = new RoleMo();
-        role.setRoleCode("admin");
+//        role.setRoleCode("admin");
         roleManager.save(role,new UserInfo());
 
-        role.setRoleCode("doctor");
+//        role.setRoleCode("doctor");
         roleManager.save(role,new UserInfo());
     }
 
@@ -39,7 +39,7 @@ public class RoleManagerTest {
     public void update(){
         RoleMo role = new RoleMo();
         role.setId(1);
-        role.setRoleCode("admin-update");
+//        role.setRoleCode("admin-update");
         roleManager.save(role,new UserInfo());
 
     }
@@ -66,7 +66,7 @@ public class RoleManagerTest {
 
     @Test
     public void delRolePermission() {
-        roleManager.delRolePermission(1,2);
+//        roleManager.delRolePermission(1,2);
     }
 
 }

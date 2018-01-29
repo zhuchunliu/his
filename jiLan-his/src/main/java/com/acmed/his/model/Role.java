@@ -34,6 +34,9 @@ public class Role {
     @ApiModelProperty("权限组描述")
     private String roleDesc;
 
+    @ApiModelProperty("是否有效 0:无；1：有")
+    private String isValid;
+
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;
 

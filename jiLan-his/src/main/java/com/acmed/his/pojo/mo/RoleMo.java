@@ -13,8 +13,8 @@ public class RoleMo {
     @Id
     private Integer id;
 
-    @ApiModelProperty("权限组编码")
-    private String roleCode;
+//    @ApiModelProperty("权限组编码")
+//    private String roleCode;
 
     @ApiModelProperty("权限组名称")
     private String roleName;

@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Darren on 2017/11/21.
  */
 @RestController
-@Api(tags = "权限管理")
+@Api(tags = "权限管理",hidden = true)
 @RequestMapping("/permission")
 public class PermissionApi {
     @Autowired

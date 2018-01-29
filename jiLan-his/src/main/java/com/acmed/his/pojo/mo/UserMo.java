@@ -35,9 +35,6 @@ public class UserMo implements Serializable{
     @ApiModelProperty("科室")
     private Integer dept;
 
-    @ApiModelProperty("用户类型 字典表：UserCategory")
-    private String category;
-
     @ApiModelProperty("状态：0启用,1禁用")
     private String status;
 

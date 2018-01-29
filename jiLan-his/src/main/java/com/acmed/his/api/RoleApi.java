@@ -1,19 +1,26 @@
 package com.acmed.his.api;
 
-import com.acmed.his.pojo.mo.PermissionMo;
+import com.acmed.his.dao.PermissionMapper;
+import com.acmed.his.model.Permission;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.RoleVsPermissionMo;
+import com.acmed.his.pojo.vo.RoleVsPermissionVo;
 import com.acmed.his.service.RoleManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +36,9 @@ public class RoleApi {
     @Autowired
     private RoleManager roleManager;
 
+    @Autowired
+    private PermissionMapper permissionMapper;
+
     @ApiOperation(value = "新增/编辑 角色信息")
     @PostMapping("/save")
     public ResponseResult saveRole(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody RoleMo roleMo,
@@ -39,10 +49,10 @@ public class RoleApi {
 
     @ApiOperation(value = "获取角色列表")
     @GetMapping("/list")
-    public ResponseResult<List<RoleMo>> getRoleList(){
+    public ResponseResult<List<RoleMo>> getRoleList(@Param("是否有效 0:无；1：有")@RequestParam(value = "idValid",required = false) String isValid){
         List<RoleMo> list = new ArrayList<>();
 
-        roleManager.getRoleList().forEach(obj->{
+        roleManager.getRoleList(isValid).forEach(obj->{
             RoleMo roleMo = new RoleMo();
             BeanUtils.copyProperties(obj,roleMo);
             list.add(roleMo);
@@ -60,41 +70,72 @@ public class RoleApi {
 
     @ApiOperation(value = "删除角色信息")
     @DeleteMapping("/del")
-    public ResponseResult delRole(@ApiParam("角色主键") @RequestParam("id") Integer id,
+    public ResponseResult delRole(@ApiParam("{\"id\":\"\"} id：角色主键") @RequestBody String param,
                                   @AccessToken AccessInfo info){
-        roleManager.delRole(id,info.getUser());
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+            return ResponseUtil.setParamEmptyError("id");
+        }
+        roleManager.delRole(JSONObject.parseObject(param).getInteger("id"),info.getUser());
         return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "禁用，启用角色信息")
+    @DeleteMapping("/switch")
+    public ResponseResult switchRole(@ApiParam("{\"id\":\"\"} id：角色主键") @RequestBody String param,
+                                  @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+            return ResponseUtil.setParamEmptyError("id");
+        }
+        roleManager.switchRole(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "角色禁用数")
+    @GetMapping("/disable/num")
+    public ResponseResult getDisableNum(@AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",roleManager.getDisableNum()));
     }
 
 
     @ApiOperation(value = "获取角色绑定的权限列表")
-    @GetMapping("/permission/list")
-    public ResponseResult<List<PermissionMo>> getPermissionByRole(@ApiParam("角色主键") @RequestParam("rid") Integer rid) {
-        List<PermissionMo> list = new ArrayList<>();
+    @GetMapping("/permission")
+    public ResponseResult<List<RoleVsPermissionVo>> getPermissionByRole(@ApiParam("角色主键") @RequestParam("rid") Integer rid) {
 
+        List<Integer> checkedList = Lists.newArrayList();
         roleManager.getPermissionByRole(rid).forEach(obj -> {
-            PermissionMo mo = new PermissionMo();
-            BeanUtils.copyProperties(obj, mo);
-            list.add(mo);
+            checkedList.add(obj.getId());
         });
+
+        List<Permission> parentList = permissionMapper.getBasePermission();
+
+        List<RoleVsPermissionVo> list = Lists.newArrayList();
+        parentList.forEach(parent->{
+
+            List<Permission> childList = permissionMapper.getPermissionByPid(parent.getId());
+            List<RoleVsPermissionVo.PermissionChild> childMoList = Lists.newArrayList();
+            childList.forEach(child->{
+                RoleVsPermissionVo.PermissionChild pchild = new RoleVsPermissionVo().new PermissionChild();
+                pchild.setId(child.getId());
+                pchild.setPerName(child.getPerName());
+                pchild.setIsChecked(checkedList.contains(child.getId())?"1":"0");
+                childMoList.add(pchild);
+            });
+            RoleVsPermissionVo vo = new RoleVsPermissionVo();
+            vo.setPerName(parent.getPerName());
+            vo.setList(childMoList);
+            list.add(vo);
+        });
+
         return ResponseUtil.setSuccessResult(list);
 
     }
 
     @ApiOperation(value = "绑定角色对应的全息信息")
-    @PostMapping("/permission/add")
-    public ResponseResult addRolePermission(@ApiParam("角色权限") @RequestBody RoleVsPermissionMo mo) {
+    @PostMapping("/permission/save")
+    public ResponseResult saveRolePermission(@ApiParam("角色权限") @RequestBody RoleVsPermissionMo mo) {
         roleManager.addRolePermission(mo);
         return ResponseUtil.setSuccessResult();
 
     }
 
-    @ApiOperation(value = "删除角色绑定的权限信息")
-    @DeleteMapping("/permission/del")
-    public ResponseResult delRolePermission(@ApiParam("角色主键") @RequestParam("rid") Integer rid,
-                                            @ApiParam("权限主键") @RequestParam("pid") Integer pid) {
-        roleManager.delRolePermission(rid,pid);
-        return ResponseUtil.setSuccessResult();
-
-    }
 }
