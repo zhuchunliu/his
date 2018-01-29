@@ -26,8 +26,8 @@ public class UserMo implements Serializable{
     @ApiModelProperty("性别")
     private String gender;
 
-    @ApiModelProperty("年龄")
-    private Integer age;
+    @ApiModelProperty("出生日期")
+    private String dateOfBirth;
 
     @ApiModelProperty("所属机构 默认：当前操作人所属机构")
     private Integer orgCode;
@@ -55,6 +55,9 @@ public class UserMo implements Serializable{
 
     @ApiModelProperty("头像")
     private String avatar;
+
+    @ApiModelProperty("权限id 多个值，逗号间隔")
+    private String roleIds;
 
 
 

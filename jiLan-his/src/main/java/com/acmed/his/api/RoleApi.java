@@ -3,7 +3,6 @@ package com.acmed.his.api;
 import com.acmed.his.dao.PermissionMapper;
 import com.acmed.his.model.Permission;
 import com.acmed.his.pojo.mo.RoleMo;
-import com.acmed.his.pojo.mo.RoleVsPermissionMo;
 import com.acmed.his.pojo.vo.RoleVsPermissionVo;
 import com.acmed.his.service.RoleManager;
 import com.acmed.his.support.AccessInfo;
@@ -20,7 +19,6 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,12 +97,14 @@ public class RoleApi {
 
     @ApiOperation(value = "获取角色绑定的权限列表")
     @GetMapping("/permission")
-    public ResponseResult<List<RoleVsPermissionVo>> getPermissionByRole(@ApiParam("角色主键") @RequestParam("rid") Integer rid) {
+    public ResponseResult<List<RoleVsPermissionVo>> getPermissionByRole(@ApiParam("角色主键") @RequestParam(value = "rid",required = false) Integer rid) {
 
         List<Integer> checkedList = Lists.newArrayList();
-        roleManager.getPermissionByRole(rid).forEach(obj -> {
-            checkedList.add(obj.getId());
-        });
+        if(null != rid) {
+            roleManager.getPermissionByRole(rid).forEach(obj -> {
+                checkedList.add(obj.getId());
+            });
+        }
 
         List<Permission> parentList = permissionMapper.getBasePermission();
 
@@ -130,12 +130,5 @@ public class RoleApi {
 
     }
 
-    @ApiOperation(value = "绑定角色对应的全息信息")
-    @PostMapping("/permission/save")
-    public ResponseResult saveRolePermission(@ApiParam("角色权限") @RequestBody RoleVsPermissionMo mo) {
-        roleManager.addRolePermission(mo);
-        return ResponseUtil.setSuccessResult();
-
-    }
 
 }

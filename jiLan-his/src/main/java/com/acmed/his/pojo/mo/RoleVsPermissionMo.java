@@ -10,9 +10,11 @@ import javax.persistence.Id;
  **/
 @Data
 public class RoleVsPermissionMo {
-    @ApiModelProperty("权限id集合,逗号间隔")
-    private String pids;
+
 
     @ApiModelProperty("角色id")
     private Integer rid;
+
+    @ApiModelProperty("角色名称")
+    private String roleName;
 }

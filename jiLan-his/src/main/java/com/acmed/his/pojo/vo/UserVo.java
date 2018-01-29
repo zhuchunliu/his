@@ -3,6 +3,8 @@ package com.acmed.his.pojo.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Created by Darren on 2017-11-26
  **/
@@ -70,4 +72,20 @@ public class UserVo {
 
     @ApiModelProperty("头像")
     private String avatar;
+
+    private List<UserRoleVo> userRoleVoList;
+
+    @Data
+    public class UserRoleVo{
+        @ApiModelProperty("角色主键")
+        private Integer roleId;
+
+        @ApiModelProperty("权限组名称")
+        private String roleName;
+
+        @ApiModelProperty("是否选中 0:未选中，1：已结选中")
+        private String isChecked;
+
+    }
+
 }

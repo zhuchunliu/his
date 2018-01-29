@@ -23,7 +23,7 @@ public class RoleVsPermissionVo {
         @ApiModelProperty("权限名称")
         private String perName;
 
-        @ApiModelProperty("是否选中 0:未选中，1：已结选中")
+        @ApiModelProperty("是否选中 0:未选中，1：已被选中")
         private String isChecked;
     }
 }

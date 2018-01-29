@@ -51,6 +51,7 @@ public class RoleManager {
     /**
      * 保存、更新角色信息
      */
+    @Transactional
     public void save(RoleMo mo, UserInfo userInfo){
 
         if(null == mo.getId()){
@@ -68,6 +69,11 @@ public class RoleManager {
             role.setOperatorUserId(userInfo.getId().toString());
             roleMapper.updateByPrimaryKey(role);
         }
+
+        Example example = new Example(RoleVsPermission.class);
+        example.createCriteria().andEqualTo("rid",mo.getId());
+        roleVsPermissionMapper.deleteByExample(example);
+        roleVsPermissionMapper.addRolePermission(mo.getId(),mo.getPids().split(","));
     }
 
     /**
@@ -118,19 +124,6 @@ public class RoleManager {
     public List<Permission> getPermissionByRole(Integer rid) {
         return permissionMapper.getPermissionByRole(rid);
     }
-
-    /**
-     * 绑定角色对应的权限信息
-     * @param mo
-     */
-    @Transactional
-    public void addRolePermission(RoleVsPermissionMo mo) {
-        Example example = new Example(RoleVsPermission.class);
-        example.createCriteria().andEqualTo("rid",mo.getRid());
-        roleVsPermissionMapper.deleteByExample(example);
-        roleVsPermissionMapper.addRolePermission(mo.getRid(),mo.getPids().split(","));
-    }
-
 
 
 }

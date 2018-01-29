@@ -33,8 +33,11 @@
     </select>
 
     <select id="getUserList" resultType="com.acmed.his.model.dto.UserDto">
-        select t1.*,t2.dicitemname as categoryName,t3.dicitemname as diagnosLevelName
-         t4.dicitemname as dutyName from t_p_s_user t1
+        select t1.*,t2.dicitemname as categoryName,t3.dicitemname as diagnosLevelName,
+         t4.dicitemname as dutyName,
+        (select GROUP_CONCAT(tr.rolename) from t_p_s_user_vs_role tur
+            JOIN t_p_s_role tr on tur.rid = tr.id where tur.uid = t1.id) as roleName
+        from t_p_s_user t1
         LEFT JOIN t_p_s_dicitem t2 ON t1.category = t2.dicitemcode and t2.dictypecode = #{userCategory}
         LEFT JOIN t_p_s_dicitem t3 ON t1.category = t2.dicitemcode and t2.dictypecode = #{diagnosisLevel}
         LEFT JOIN t_p_s_dicitem t4 ON t1.category = t2.dicitemcode and t2.dictypecode = #{duty}

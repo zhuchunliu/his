@@ -23,14 +23,14 @@ public class UserDto {
     @ApiModelProperty("性别")
     private String gender;
 
-    @ApiModelProperty("年龄")
-    private Integer age;
+    @ApiModelProperty("出生日期")
+    private String dateOfBirth;
 
     @ApiModelProperty("所属机构")
     private Integer orgCode;
 
     @ApiModelProperty("所属机构")
-    private Integer orgName;
+    private String orgName;
 
     @ApiModelProperty("科室")
     private Integer dept;
@@ -70,4 +70,7 @@ public class UserDto {
 
     @ApiModelProperty("头像")
     private String avatar;
+
+    @ApiModelProperty("医生职务")
+    private String roleName;
 }

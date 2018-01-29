@@ -10,15 +10,15 @@ import javax.persistence.Id;
  **/
 @Data
 public class RoleMo {
-    @Id
+    @ApiModelProperty("权限id null：添加，not null：编辑")
     private Integer id;
-
-//    @ApiModelProperty("权限组编码")
-//    private String roleCode;
 
     @ApiModelProperty("权限组名称")
     private String roleName;
 
     @ApiModelProperty("权限组描述")
     private String roleDesc;
+
+    @ApiModelProperty("权限id集合,逗号间隔")
+    private String pids;
 }

@@ -48,7 +48,7 @@ public class UserManagerTest {
 
     @Test
     public void getRoleByUser() {
-        userManager.getRoleByUser(1).forEach((obj)->System.err.println(obj));
+//        userManager.getRoleByUser(1).forEach((obj)->System.err.println(obj));
     }
 
     @Test
@@ -56,14 +56,14 @@ public class UserManagerTest {
         UserVsRoleMo mo = new UserVsRoleMo();
         mo.setUid(1);
         mo.setRids("1");
-        userManager.addUserRole(mo);
+//        userManager.addUserRole(mo);
 
         mo.setRids("3");
-        userManager.addUserRole(mo);
+//        userManager.addUserRole(mo);
     }
 
     @Test
     public void delUserRole() {
-        userManager.delUserRole(1,3);
+//        userManager.delUserRole(1,3);
     }
 }

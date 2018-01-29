@@ -3,22 +3,25 @@ package com.acmed.his.api;
 import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.DicTypeEnum;
+import com.acmed.his.dao.RoleMapper;
+import com.acmed.his.dao.UserVsRoleMapper;
 import com.acmed.his.model.DicItem;
+import com.acmed.his.model.Role;
 import com.acmed.his.model.User;
 import com.acmed.his.model.dto.UserDto;
-import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserQueryMo;
-import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.vo.UserPatientVo;
 import com.acmed.his.pojo.vo.UserVo;
 import com.acmed.his.service.BaseInfoManager;
+import com.acmed.his.service.RoleManager;
 import com.acmed.his.service.UserManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.*;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -38,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Darren on 2017/11/21.
  */
 @RestController
-@Api(tags = "用户信息",description = "用户接口/用户-角色绑定")
+@Api(tags = "用户信息")
 @RequestMapping("/user")
 public class UserApi {
     @Autowired
@@ -51,46 +54,6 @@ public class UserApi {
     @Qualifier(value="stringRedisTemplate")
     private RedisTemplate redisTemplate;
 
-
-    @ApiOperation(value = "新增/编辑 用户信息")
-    @PostMapping("/save")
-    public ResponseResult saveUser(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody UserMo userMo,
-                                   @AccessToken AccessInfo info){
-        userManager.save(userMo,info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
-
-    @ApiOperation(value = "获取用户列表")
-    @PostMapping("/list")
-    public ResponseResult<PageResult<UserDto>> getUserList(@RequestBody PageBase<UserQueryMo> pageBase,
-                                                           @AccessToken AccessInfo info){
-        PageResult result = new PageResult();
-        List<UserDto> list = userManager.getUserList(pageBase.getParam(),info.getUser(),pageBase.getPageNum(),pageBase.getPageSize());
-        int total = userManager.getUserTotal(pageBase.getParam(),info.getUser());
-        result.setData(list);
-        result.setTotal((long)total);
-
-        return ResponseUtil.setSuccessResult(result);
-    }
-
-    @ApiOperation(value = "获取用户详情")
-    @GetMapping("/detail")
-    public ResponseResult<UserVo> getUserDetail(@ApiParam("用户主键 null:获取当前登录人的个人信息") @RequestParam(value = "id",required = false) Integer id,
-                                                @AccessToken AccessInfo info){
-        id = Optional.ofNullable(id).orElse(info.getUserId());
-        UserVo vo = new UserVo();
-        BeanUtils.copyProperties(userManager.getUserDetail(id),vo);
-
-        vo.setCategoryName(Optional.ofNullable(vo.getCategory()).
-                map(obj->baseInfoManager.getDicItem(DicTypeEnum.USER_CATEGORY.getCode(),obj).getDicItemName()).orElse(null));
-        vo.setDiagnosLevelName(Optional.ofNullable(vo.getDiagnosLevel()).
-                map(obj->baseInfoManager.getDicItem(DicTypeEnum.DIAGNOSIS_LEVEL.getCode(),obj).getDicItemName()).orElse(null));
-        vo.setDutyName(Optional.ofNullable(vo.getDuty()).
-                map(obj->baseInfoManager.getDicItem(DicTypeEnum.DUTY.getCode(),obj).getDicItemName()).orElse(null));
-
-        return ResponseUtil.setSuccessResult(vo);
-    }
-
     @ApiOperation(value = "获取用户详情")
     @GetMapping("/openid")
     public ResponseResult<UserVo> getUserDetailOpen(@ApiParam("用户主键") @RequestParam("openid") Integer openid){
@@ -99,55 +62,6 @@ public class UserApi {
         return ResponseUtil.setSuccessResult(userVo);
     }
 
-    @ApiOperation(value = "删除用户信息")
-    @DeleteMapping("/del")
-    public ResponseResult delUser(@ApiParam("用户主键") @RequestParam("id") Integer id,
-                                  @AccessToken AccessInfo info){
-        userManager.delUser(id,info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
-
-    @ApiOperation(value = "禁用、启用 用户")
-    @PostMapping("/switch")
-    public ResponseResult switchUser(@ApiParam("{\"id\":\"\"} id：用户主键") @RequestBody String param,
-                                  @AccessToken AccessInfo info){
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
-        }
-        userManager.switchUser(JSONObject.parseObject(param).getInteger("id"),info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
-
-    @ApiOperation(value = "获取用户角色列表")
-    @GetMapping("/role/list")
-    public ResponseResult<List<RoleMo>> getPermissionByRole(@ApiParam("用户主键") @RequestParam("uid") Integer uid) {
-        List<RoleMo> list = new ArrayList<>();
-
-        userManager.getRoleByUser(uid).forEach(obj->{
-            RoleMo roleMo = new RoleMo();
-            BeanUtils.copyProperties(obj,roleMo);
-            list.add(roleMo);
-        });
-        return ResponseUtil.setSuccessResult(list);
-
-    }
-
-    @ApiOperation(value = "绑定用户对于的角色信息")
-    @PostMapping("/role/add")
-    public ResponseResult addRolePermission(@ApiParam("用户角色") @RequestBody UserVsRoleMo mo) {
-        userManager.addUserRole(mo);
-        return ResponseUtil.setSuccessResult();
-
-    }
-
-    @ApiOperation(value = "删除用户绑定的角色信息")
-    @DeleteMapping("/role/del")
-    public ResponseResult delRolePermission(@ApiParam("用户主键") @RequestParam("uid") Integer uid,
-                                            @ApiParam("角色主键") @RequestParam("rid") Integer rid) {
-        userManager.delUserRole(uid,rid);
-        return ResponseUtil.setSuccessResult();
-
-    }
 
     @ApiOperation("修改密码")
     @PostMapping(value = "/passwd")
@@ -208,7 +122,7 @@ public class UserApi {
         return ResponseUtil.setSuccessResult(info.getUser());
     }
 
-    @ApiOperation("根据科室获取医生列表")
+    @ApiOperation(value = "根据科室获取医生列表",hidden = true)
     @GetMapping(value = "/deptId")
     public ResponseResult<List<UserPatientVo>> getUserBydeptId(@ApiParam("科室id") @RequestParam("deptId") Integer deptId){
         User user = new User();

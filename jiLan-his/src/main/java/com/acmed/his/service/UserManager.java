@@ -23,6 +23,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
@@ -37,9 +38,6 @@ public class UserManager {
 
     @Autowired
     private UserMapper userMapper;
-
-    @Autowired
-    private RoleMapper roleMapper;
 
     @Autowired
     private UserVsRoleMapper userVsRoleMapper;
@@ -77,6 +75,7 @@ public class UserManager {
             @CacheEvict(value = "user",key = "#mo.id"),
             @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
     })
+    @Transactional
     public User save(UserMo mo, UserInfo userInfo){
 
         //如果前端没有设置机构信息，则为当前设置用户同一机构【老板加人】；前端设置机构【管理员后台加老板用户操作】
@@ -103,8 +102,9 @@ public class UserManager {
             }
         }
 
+        User user = null;
         if(null == mo.getId()){
-            User user = new User();
+            user = new User();
             BeanUtils.copyProperties(mo,user);
             user.setCreateAt(LocalDateTime.now().toString());
             user.setCreateBy(userInfo.getId().toString());
@@ -115,9 +115,8 @@ public class UserManager {
             user.setPassWd(MD5Util.encode("123456"));
             user.setRemoved("0");
             userMapper.insert(user);
-            return user;
         }else{
-            User user = userMapper.selectByPrimaryKey(mo.getId());
+            user = userMapper.selectByPrimaryKey(mo.getId());
             user.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
                     Optional.ofNullable(orgMapper.selectByPrimaryKey(mo.getOrgCode())).map(org->org.getOrgName()).orElse(null));
             user.setDeptName(null == mo.getDept()?userInfo.getDeptName():
@@ -126,8 +125,14 @@ public class UserManager {
             user.setModifyAt(LocalDateTime.now().toString());
             user.setModifyBy(userInfo.getId().toString());
             userMapper.updateByPrimaryKey(user);
-            return user;
         }
+
+        Example example = new Example(UserVsRole.class);
+        example.createCriteria().andEqualTo("rid",user.getId());
+        userVsRoleMapper.deleteByExample(example);
+
+        userVsRoleMapper.addUserRole(user.getId(), mo.getRoleIds().split(","));
+        return user;
 
     }
 
@@ -175,36 +180,6 @@ public class UserManager {
         user.setModifyBy(userInfo.getId().toString());
         userMapper.updateByPrimaryKey(user);
         return user;
-    }
-
-
-    /**
-     * 获取用户绑定的权限信息
-     * @param uid
-     * @return
-     */
-    public List<Role> getRoleByUser(Integer uid) {
-        return  roleMapper.getRoleByUser(uid);
-    }
-
-    /**
-     * 绑定用户权限信息
-     * @param mo
-     */
-    public void addUserRole(UserVsRoleMo mo) {
-        userVsRoleMapper.addUserRole(mo.getUid(), mo.getRids().split(","));
-    }
-
-    /**
-     * 删除用户权限信息
-     * @param rid
-     * @param uid
-     */
-    public void delUserRole(Integer uid, Integer rid) {
-        UserVsRole userVsRole = new UserVsRole();
-        userVsRole.setRid(rid);
-        userVsRole.setUid(uid);
-        userVsRoleMapper.delete(userVsRole);
     }
 
 
