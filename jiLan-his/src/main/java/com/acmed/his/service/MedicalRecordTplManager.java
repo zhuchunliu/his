@@ -36,6 +36,9 @@ public class MedicalRecordTplManager {
         if (StringUtils.isNotEmpty(tplName)){
             medicalRecordTpl.setTplNamePinYin(PinYinUtil.getPinYinHeadChar(tplName));
         }
+        if (StringUtils.isNotEmpty(medicalRecordTpl.getIsPublic())){
+            medicalRecordTpl.setIsPublic("0");
+        }
         medicalRecordTpl.setRemoved("0");
         medicalRecordTpl.setIsValid("1");
         medicalRecordTpl.setCreateAt(LocalDateTime.now().toString());
