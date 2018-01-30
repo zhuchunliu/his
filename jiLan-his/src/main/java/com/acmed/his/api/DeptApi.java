@@ -67,7 +67,7 @@ public class DeptApi {
         return ResponseUtil.setSuccessResult(deptMo);
     }
 
-    @ApiOperation(value = "删除机构信息")
+    @ApiOperation(value = "删除科室信息")
     @DeleteMapping("/del")
     public ResponseResult delDept(@ApiParam("科室主键") @RequestParam("id") Integer id,
                                   @AccessToken AccessInfo info){

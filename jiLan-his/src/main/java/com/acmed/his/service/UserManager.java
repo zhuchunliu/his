@@ -108,6 +108,7 @@ public class UserManager {
         if(null == mo.getId()){
             user = new User();
             BeanUtils.copyProperties(mo,user);
+            user.setStatus("1");
             user.setCreateAt(LocalDateTime.now().toString());
             user.setCreateBy(userInfo.getId().toString());
             user.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
