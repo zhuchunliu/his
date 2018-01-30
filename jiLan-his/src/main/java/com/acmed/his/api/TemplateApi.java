@@ -96,12 +96,9 @@ public class TemplateApi {
 
     @ApiOperation(value = "删除诊断模板")
     @DeleteMapping("/diagnosis/del")
-    public ResponseResult delDiagnosis(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
+    public ResponseResult delDiagnosis(@ApiParam("模板主键") @RequestParam Integer id,
                                        @AccessToken AccessInfo info){
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
-        }
-        templateManager.delDiagnosisTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+        templateManager.delDiagnosisTpl(id,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
@@ -151,12 +148,10 @@ public class TemplateApi {
 
     @ApiOperation(value = "删除医嘱模板")
     @DeleteMapping("/advice/del")
-    public ResponseResult delAdviceDetail(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
+    public ResponseResult delAdviceDetail(@ApiParam("模板主键") @RequestParam Integer id,
                                           @AccessToken AccessInfo info){
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
-        }
-        templateManager.delAdviceTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+
+        templateManager.delAdviceTpl(id,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
@@ -212,12 +207,10 @@ public class TemplateApi {
 
     @ApiOperation(value = "删除 处方模板")
     @DeleteMapping("/prescripTpl/del")
-    public ResponseResult delPrescripTpl(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
+    public ResponseResult delPrescripTpl(@ApiParam("模板主键") @RequestParam Integer id,
                                             @AccessToken AccessInfo info){
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
-        }
-        templateManager.delPrescripTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+
+        templateManager.delPrescripTpl(id,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 

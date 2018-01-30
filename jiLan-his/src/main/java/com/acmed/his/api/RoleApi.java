@@ -47,7 +47,7 @@ public class RoleApi {
 
     @ApiOperation(value = "获取角色列表")
     @GetMapping("/list")
-    public ResponseResult<List<RoleMo>> getRoleList(@Param("是否有效 0:无；1：有")@RequestParam(value = "idValid",required = false) String isValid){
+    public ResponseResult<List<RoleMo>> getRoleList(@ApiParam("是否有效 0:无；1：有")@RequestParam(value = "idValid",required = false) String isValid){
         List<RoleMo> list = new ArrayList<>();
 
         roleManager.getRoleList(isValid).forEach(obj->{
