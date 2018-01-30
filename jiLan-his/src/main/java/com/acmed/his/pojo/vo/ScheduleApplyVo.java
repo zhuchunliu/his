@@ -16,10 +16,10 @@ public class ScheduleApplyVo {
     @ApiModelProperty("日期")
     private String date;
 
-    private List<Detail> detailList;
+    private List<ScheduleApplyDetail> detailList;
 
     @Data
-    public class Detail{
+    public class ScheduleApplyDetail{
         @ApiModelProperty("用户主键表")
         private Integer userid;
 

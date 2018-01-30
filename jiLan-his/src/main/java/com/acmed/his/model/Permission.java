@@ -43,6 +43,9 @@ public class Permission {
     @ApiModelProperty("类型:菜单,操作权限，按钮")
     private String category;
 
+    @ApiModelProperty("请求路径")
+    private String url;
+
     @ApiModelProperty("操作人")
     private String operatorUserId;
 

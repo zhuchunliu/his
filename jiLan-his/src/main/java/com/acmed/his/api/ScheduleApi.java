@@ -1,8 +1,6 @@
 package com.acmed.his.api;
 
 import com.acmed.his.consts.DicTypeEnum;
-import com.acmed.his.model.DicItem;
-import com.acmed.his.model.DicType;
 import com.acmed.his.model.dto.ScheduleApplyDto;
 import com.acmed.his.model.dto.ScheduleDto;
 import com.acmed.his.pojo.mo.ScheduleMo;
@@ -14,14 +12,12 @@ import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -55,16 +51,6 @@ public class ScheduleApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "设置循环")
-    @PostMapping("/circle")
-    public ResponseResult circle(@ApiParam("{\"userId\":\"\"},userId：") @RequestBody String param,
-                                 @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("userId")){
-            return ResponseUtil.setParamEmptyError("userId");
-        }
-        scheduleManager.circle(JSONObject.parseObject(param).get("userId").toString(),info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
 
     @ApiOperation(value = "获取排班列表")
     @GetMapping("/list")
@@ -84,9 +70,9 @@ public class ScheduleApi {
 
     @ApiOperation(value = "获取上周排班信息[复制上周用]")
     @GetMapping("/previous")
-    public ResponseResult<ScheduleVo> list(@ApiParam("人员主键集合，逗号间隔") @RequestParam(value = "userIds") String userIds,
-                                           @ApiParam("日期") @RequestParam(value = "time",required = false) String time){
-        List<ScheduleDto> sourceList = scheduleManager.getScheduleList(userIds,time);
+    public ResponseResult<ScheduleVo> getPreviousList(@ApiParam("人员主键集合，逗号间隔;不传查询所有用户的排班信息") @RequestParam(value = "userIds",required = false) String userIds,
+                                           @ApiParam("日期 默认为当前天") @RequestParam(value = "time",required = false) String time){
+        List<ScheduleDto> sourceList = scheduleManager.getPreviousList(userIds,time);
         List<ScheduleVo> list = new ArrayList<>();
         sourceList.forEach(obj->{
             ScheduleVo vo = new ScheduleVo();
@@ -125,7 +111,7 @@ public class ScheduleApi {
             ScheduleApplyVo vo = new ScheduleApplyVo();
             vo.setWeek("周"+weekarr[index]);
             vo.setDate(LocalDateTime.now().plusDays(6).format(DateTimeFormatter.ofPattern("MM/dd")));
-            List<ScheduleApplyVo.Detail> detailList = Lists.newArrayList();
+            List<ScheduleApplyVo.ScheduleApplyDetail> detailList = Lists.newArrayList();
             for(ScheduleApplyDto dto : sourceList){
 
                 String schedule = null;
@@ -141,7 +127,7 @@ public class ScheduleApi {
                 if(StringUtils.isEmpty(schedule)){
                     continue;
                 }
-                ScheduleApplyVo.Detail detail = new ScheduleApplyVo().new Detail();
+                ScheduleApplyVo.ScheduleApplyDetail detail = new ScheduleApplyVo().new ScheduleApplyDetail();
                 BeanUtils.copyProperties(dto,detail);
                 detail.setDiagnosLevelName(Optional.ofNullable(dto.getDiagnosLevel()).map(val->diagnosisMap.get(val)).orElse(null));
                 detail.setDutyName(Optional.ofNullable(dto.getDuty()).map(val->dutyMap.get(val)).orElse(null));

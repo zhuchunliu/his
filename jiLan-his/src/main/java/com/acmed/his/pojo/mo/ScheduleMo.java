@@ -18,8 +18,4 @@ public class ScheduleMo {
 
     @ApiModelProperty("排班类型")
     private String type;
-
-    @ApiModelProperty("是否自动循环 0:否；1:是")
-    private String circle;
-
 }

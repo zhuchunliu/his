@@ -53,9 +53,6 @@ public class Schedule {
     @ApiModelProperty("周日排班情况")
     private String sunday;
 
-    @ApiModelProperty("是否自动循环 0:否；1:是")
-    private String circle;
-
     @ApiModelProperty("创建时间")
     private String createAt;
 
