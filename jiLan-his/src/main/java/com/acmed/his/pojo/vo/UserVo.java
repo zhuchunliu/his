@@ -28,6 +28,9 @@ public class UserVo {
     @ApiModelProperty("年龄")
     private Integer age;
 
+    @ApiModelProperty("出生日期")
+    private String dateOfBirth;
+
     @ApiModelProperty("所属机构")
     private Integer orgCode;
 

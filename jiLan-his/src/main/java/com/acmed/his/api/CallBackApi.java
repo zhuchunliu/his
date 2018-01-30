@@ -6,6 +6,7 @@ import com.github.wxpay.sdk.WXPayUtil;
 import io.swagger.annotations.Api;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("callback")
 @Api(tags = "回调",hidden = true)
+@ApiIgnore
 public class CallBackApi {
     @RequestMapping(value = "wxPay")
     public void wxPay(HttpServletRequest req, HttpServletResponse resp) throws Exception{
