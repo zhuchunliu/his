@@ -15,7 +15,6 @@ import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.*;
 
 import com.alibaba.druid.support.json.JSONUtils;
-import com.google.common.annotations.VisibleForTesting;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;

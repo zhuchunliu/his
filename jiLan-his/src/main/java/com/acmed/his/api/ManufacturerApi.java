@@ -1,7 +1,6 @@
 package com.acmed.his.api;
 
 import com.acmed.his.model.Manufacturer;
-import com.acmed.his.service.DrugManager;
 import com.acmed.his.service.ManufacturerManager;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
@@ -13,7 +12,6 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * ManufacturerApi
