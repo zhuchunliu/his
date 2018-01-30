@@ -68,17 +68,15 @@ public class RoleApi {
 
     @ApiOperation(value = "删除角色信息")
     @DeleteMapping("/del")
-    public ResponseResult delRole(@ApiParam("{\"id\":\"\"} id：角色主键") @RequestBody String param,
+    public ResponseResult delRole(@ApiParam("角色主键") @RequestParam("id") Integer id,
                                   @AccessToken AccessInfo info){
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
-        }
-        roleManager.delRole(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+
+        roleManager.delRole(id,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "禁用，启用角色信息")
-    @DeleteMapping("/switch")
+    @PostMapping("/switch")
     public ResponseResult switchRole(@ApiParam("{\"id\":\"\"} id：角色主键") @RequestBody String param,
                                   @AccessToken AccessInfo info){
         if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
