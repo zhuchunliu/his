@@ -2,6 +2,8 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.Apply;
+import com.acmed.his.model.Patient;
+import com.acmed.his.model.PatientItem;
 import com.acmed.his.model.PayStatements;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyMo;
@@ -9,6 +11,7 @@ import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.ApplyPatientVo;
 import com.acmed.his.pojo.vo.ApplyVo;
 import com.acmed.his.service.ApplyManager;
+import com.acmed.his.service.PatientItemManager;
 import com.acmed.his.service.PayManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -19,6 +22,7 @@ import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.Info;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +49,9 @@ public class ApplyApi {
     @Autowired
     private PayManager payManager;
 
+    @Autowired
+    private PatientItemManager patientItemManager;
+
     @ApiOperation(value = "患者添加挂号信息")
     @PostMapping("addByPatient")
     public ResponseResult add(@RequestBody ApplyMo mo,
@@ -59,15 +66,21 @@ public class ApplyApi {
         return applyManager.addApply(mo,null,info.getUser());
     }
 
-    @ApiOperation(value = "根据患者id 查询列表,传患者id就是查询患者的挂号列表  如果不传就是差自己的挂号列表")
-    @GetMapping("patientId")
-    public ResponseResult<ApplyVo> patientId(@ApiParam("患者id") @RequestParam(value = "patientId",required = false) String patientId,
-                                    @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(patientId)){
-            patientId = info.getPatientId();
+    @ApiOperation(value = "医生查看患者在本医院的挂号列表")
+    @GetMapping("patientItemId")
+    public ResponseResult<ApplyVo> patientId(@ApiParam("患者库id") @RequestParam(value = "patientItemId") String patientItemId,@AccessToken AccessInfo info){
+        PatientItem byId = patientItemManager.getById(patientItemId);
+        if (byId == null){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_DATA_EMPTY,"没有找到对应的患者");
+        }
+        if (!byId.getOrgCode().equals(info.getUser().getOrgCode())){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_DATA_EMPTY,"没有找到对应的患者");
         }
         List<ApplyVo> list = new ArrayList<>();
-        applyManager.getApplyByPatientId(patientId).forEach(obj->{
+        Apply apply = new Apply();
+        apply.setPatientItemId(patientItemId);
+        apply.setOrgCode(info.getUser().getOrgCode());
+        applyManager.getApplys(apply).forEach(obj->{
             ApplyVo applyVo = new ApplyVo();
             BeanUtils.copyProperties(obj,applyVo);
             list.add(applyVo);
