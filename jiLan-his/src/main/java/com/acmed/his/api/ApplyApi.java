@@ -63,6 +63,11 @@ public class ApplyApi {
     @PostMapping("addByDoctor")
     public ResponseResult addByDoctor(@RequestBody ApplyMo mo,
                               @AccessToken AccessInfo info){
+        String idcard = mo.getIdcard();
+        if (idcard.length() == 8){
+            // 表示传的是生日
+            mo.setIdcard("000000"+idcard+"0000");
+        }
         return applyManager.addApply(mo,null,info.getUser());
     }
 

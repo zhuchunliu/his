@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 public class PatientItemMo {
-    @ApiModelProperty("患者姓名/手机号 模糊匹配")
+    @ApiModelProperty("患者姓名/手机号/生日 模糊匹配")
     private String vague;
 
     @ApiModelProperty("机构编码  不传传默认是账号所在机构")
