@@ -16,12 +16,14 @@
     </select>
 
     <select id="hasPermission" resultType="java.lang.Integer">
-        select count(1) from t_p_s_user_vs_role ur
-        join t_p_s_role role on ur.rid = role.id
-        join t_p_s_role_vs_permission rp on role.id = rp.rid
-        join t_p_s_permission per on rp.pid = per.id
-        where ur.uid = #{uid} and role.removed = '0'
-        and  (percode like CONCAT(#{prefix},'%') or percode like CONCAT(#{path},'%'))
+        select count(1) from t_p_s_permission where pid in (
+            select per.id from t_p_s_user_vs_role ur
+            join t_p_s_role role on ur.rid = role.id
+            join t_p_s_role_vs_permission rp on role.id = rp.rid
+            join t_p_s_permission per on rp.pid = per.id
+            where ur.uid = #{uid} and role.removed = '0' and role.isvalid = '1'
+        ) and  url = #{path};
+
 
     </select>
 
@@ -31,5 +33,19 @@
 
     <select id="getPermissionByPid" resultType="com.acmed.his.model.Permission">
         select * from t_p_s_permission where pid = #{pid} order by sn asc
+    </select>
+
+    <select id="getNeedFilterPermissionList" resultType="com.acmed.his.model.Permission">
+        select * from t_p_s_permission where url is not null
+    </select>
+
+
+    <select id="getPermissionByUserId" resultType="com.acmed.his.model.Permission">
+        select per.* from t_p_s_user_vs_role ur
+        join t_p_s_role role on ur.rid = role.id
+        join t_p_s_role_vs_permission rp on role.id = rp.rid
+        join t_p_s_permission per on rp.pid = per.id
+        where ur.uid = #{uid} and role.removed = '0' and role.isvalid = '1'
+        order by pid asc , sn asc
     </select>
 </mapper>

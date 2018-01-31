@@ -15,9 +15,13 @@ import java.util.List;
 public interface PermissionMapper extends TkMapper<Permission> {
     List<Permission> getPermissionByRole(@Param("rid") Integer roleId);
 
-    Integer hasPermission(@Param("uid") String uid, @Param("prefix") String prefix, @Param("path") String path);
+    Integer hasPermission(@Param("uid") String uid, @Param("path") String path);
 
     List<Permission> getBasePermission();
 
     List<Permission> getPermissionByPid(@Param("pid") Integer pid);
+
+    List<Permission> getNeedFilterPermissionList();
+
+    List<Permission> getPermissionByUserId(@Param("uid") Integer uid);
 }

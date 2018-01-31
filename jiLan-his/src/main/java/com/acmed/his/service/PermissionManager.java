@@ -91,6 +91,20 @@ public class PermissionManager {
      * @param path
      */
     public boolean hasPermission(String uid, String path) {
-        return permissionMapper.hasPermission(uid,path.split("/")[1],path.substring(1))>0;
+        return permissionMapper.hasPermission(uid,path)>0;
+    }
+
+
+    public List<Permission> getNeedFilterPermissionList(){
+        return permissionMapper.getNeedFilterPermissionList();
+    }
+
+    /**
+     * 获取用户可以访问的权限列表
+     * @param uid
+     * @return
+     */
+    public List<Permission> getPermissionByUserId(Integer uid) {
+        return permissionMapper.getPermissionByUserId(uid);
     }
 }

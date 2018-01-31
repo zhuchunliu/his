@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 权限拦截
@@ -67,6 +68,10 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
         Map<Object, Object> map = hash.entries(String.format(RedisKeyConstants.USERKEY_PRE, loginId));
         if(null == map || !map.containsKey(RedisKeyConstants.USERTOKEN_PRE) || !map.get(RedisKeyConstants.USERTOKEN_PRE).equals(token)){//token不存在或过期
             throw new BaseException(StatusCode.ERROR_TOKEN);
+        }
+
+        if(loginId.startsWith("USER_PAD")) {//刷新token有效期
+            redisTemplate.expire(String.format(RedisKeyConstants.USERKEY_PRE, loginId), CommonConstants.LOGININFO_EXPIRE_SECONDS, TimeUnit.SECONDS);
         }
         request.setAttribute("loginId",loginId);
         return true;

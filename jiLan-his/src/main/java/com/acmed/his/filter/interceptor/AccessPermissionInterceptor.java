@@ -1,10 +1,10 @@
 package com.acmed.his.filter.interceptor;
 
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.model.Permission;
 import com.acmed.his.service.PermissionManager;
-import com.acmed.his.support.APIScanner;
-import com.acmed.his.support.WithoutToken;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,16 +20,16 @@ import java.util.List;
 public class AccessPermissionInterceptor implements HandlerInterceptor {
 
     private PermissionManager permissionManager;
+    private ImmutableSet<String> ignore;
 
     public AccessPermissionInterceptor(ApplicationContext applicationContext) {
         this.permissionManager = applicationContext.getBean(PermissionManager.class);
-    }
-
-    private static final ImmutableSet<String> ignore;
-
-    static {
-        List<String> parseFromPackage = APIScanner.getAPIByAnnotation("com.acmed.his.api", WithoutToken.class);
-        ignore = ImmutableSet.copyOf(parseFromPackage);
+        List<Permission> permissionList = permissionManager.getNeedFilterPermissionList();
+        List<String> urlList = Lists.newArrayList();
+        permissionList.forEach(obj->{
+            urlList.add(obj.getUrl());
+        });
+        ignore = ImmutableSet.copyOf(urlList);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class AccessPermissionInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        if(ignore.contains(request.getMethod()+request.getServletPath())){
+        if(!ignore.contains(request.getServletPath())){
             return true;
         }
 

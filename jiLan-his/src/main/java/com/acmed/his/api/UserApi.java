@@ -3,16 +3,17 @@ package com.acmed.his.api;
 import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.DicItem;
+import com.acmed.his.model.Permission;
 import com.acmed.his.model.User;
-import com.acmed.his.pojo.vo.UserInfo;
-import com.acmed.his.pojo.vo.UserPatientVo;
-import com.acmed.his.pojo.vo.UserVo;
+import com.acmed.his.pojo.vo.*;
 import com.acmed.his.service.BaseInfoManager;
+import com.acmed.his.service.PermissionManager;
 import com.acmed.his.service.UserManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.*;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -40,6 +41,9 @@ public class UserApi {
 
     @Autowired
     private BaseInfoManager baseInfoManager;
+
+    @Autowired
+    private PermissionManager permissionManager;
 
     @Autowired
     @Qualifier(value="stringRedisTemplate")
@@ -139,6 +143,17 @@ public class UserApi {
             }
             list.add(userPatientVo);
         }
+        return ResponseUtil.setSuccessResult(list);
+    }
+
+    @ApiOperation(value = "获取可访问菜单列表")
+    @GetMapping("/menu")
+    public ResponseResult<List<MenuVo>> getMenu(@AccessToken AccessInfo info) {
+        List<Permission> source = permissionManager.getPermissionByUserId(info.getUserId());
+        List<MenuVo> list = Lists.newArrayList();
+        source.forEach(obj->{
+            list.add(new MenuVo(obj));
+        });
         return ResponseUtil.setSuccessResult(list);
     }
 }

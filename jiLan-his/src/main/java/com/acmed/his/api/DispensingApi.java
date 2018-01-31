@@ -93,7 +93,7 @@ public class DispensingApi {
         applyList.forEach(obj->{
             DispensingVo vo = new DispensingVo();
             BeanUtils.copyProperties(obj,vo);
-            if("0".equals(obj.getIsPaid())) vo.setStatus("0");
+            if("0".equals(obj.getIsPaid())) vo.setStatus("1");
             if("1".equals(obj.getIsPaid()) && "0".equals(obj.getIsDispensing())) vo.setStatus("2");
             if("2".equals(obj.getIsPaid())) vo.setStatus("3");
             if("3".equals(obj.getIsPaid())) vo.setStatus("4");
