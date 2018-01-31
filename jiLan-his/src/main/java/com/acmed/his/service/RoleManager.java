@@ -53,9 +53,9 @@ public class RoleManager {
      */
     @Transactional
     public void save(RoleMo mo, UserInfo userInfo){
-
+        Role role = null;
         if(null == mo.getId()){
-            Role role = new Role();
+            role = new Role();
             BeanUtils.copyProperties(mo,role);
             role.setIsValid("1");
             role.setRemoved("0");
@@ -63,7 +63,7 @@ public class RoleManager {
             role.setOperatorUserId(userInfo.getId().toString());
             roleMapper.insert(role);
         }else{
-            Role role = roleMapper.selectByPrimaryKey(mo.getId());
+            role = roleMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,role);
             role.setModifyTime(LocalDateTime.now().toString());
             role.setOperatorUserId(userInfo.getId().toString());
@@ -71,9 +71,9 @@ public class RoleManager {
         }
 
         Example example = new Example(RoleVsPermission.class);
-        example.createCriteria().andEqualTo("rid",mo.getId());
+        example.createCriteria().andEqualTo("rid",role.getId());
         roleVsPermissionMapper.deleteByExample(example);
-        roleVsPermissionMapper.addRolePermission(mo.getId(),mo.getPids().split(","));
+        roleVsPermissionMapper.addRolePermission(role.getId(),mo.getPids().split(","));
     }
 
     /**
