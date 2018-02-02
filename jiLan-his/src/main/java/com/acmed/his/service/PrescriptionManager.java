@@ -289,6 +289,7 @@ public class PrescriptionManager {
         if(null == patientItem){
             patientItem = new PatientItem();
             BeanUtils.copyProperties(mo.getPatient(),patientItem);
+            patientItem.setPatientName(mo.getPatient().getRealName());
             patientItem.setOrgCode(userInfo.getOrgCode());
             patientItem.setPatientId(patient.getId());
             patientItemManager.addPatinetItem(patientItem);

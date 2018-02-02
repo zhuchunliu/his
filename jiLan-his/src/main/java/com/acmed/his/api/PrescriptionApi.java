@@ -37,6 +37,14 @@ public class PrescriptionApi {
         if(null == mo.getPatient() || StringUtils.isEmpty(mo.getPatient().getIdCard())){
             return ResponseUtil.setParamEmptyError("患者身份证号不能为空!");
         }
+
+        if (mo.getPatient().getIdCard().length() == 8){
+            // 表示传的是生日
+            String orgCode = "0000000"+info.getUser().getOrgCode();
+            long l = System.currentTimeMillis();
+            String s = l + "";
+            mo.getPatient().setIdCard(orgCode.substring(orgCode.length()-6)+mo.getPatient().getIdCard()+s.substring(s.length()-4));
+        }
         boolean flag = preManager.savePre(mo,info.getUser());
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方失败");
     }
