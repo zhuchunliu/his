@@ -112,7 +112,7 @@ public class PrescriptionManager {
         Patient patient = patientManager.getPatientById(prescription.getPatientId());
 
         example = new Example(MedicalRecord.class);
-        example.createCriteria().andEqualTo("patientId",prescription.getPatientId());
+        example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
         MedicalRecord medicalRecord = Optional.ofNullable(recordMapper.selectByExample(example)).
                 filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(new MedicalRecord());
 
@@ -348,6 +348,7 @@ public class PrescriptionManager {
        MedicalRecord medicalRecord = Optional.ofNullable(recordManager.getMedicalRecordByApplyId(apply.getId())).orElse(new MedicalRecord());
        BeanUtils.copyProperties(mo.getRecord(),medicalRecord,"id");
        BeanUtils.copyProperties(apply,medicalRecord,"id");
+       medicalRecord.setApplyId(apply.getId());
        recordManager.saveMedicalRecord(medicalRecord);
     }
 
