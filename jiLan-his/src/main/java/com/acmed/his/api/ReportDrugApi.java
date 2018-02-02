@@ -119,7 +119,7 @@ public class ReportDrugApi {
         BeanUtils.copyProperties(pageBase,pageResult);
         pageResult.setTotal((long)total);
         pageResult.setData(list);
-        return ResponseUtil.setSuccessResult(list);
+        return ResponseUtil.setSuccessResult(pageResult);
     }
 
     @ApiOperation(value = "药品入库列表")
