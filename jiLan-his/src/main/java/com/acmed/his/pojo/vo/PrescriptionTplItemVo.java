@@ -15,6 +15,9 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("药品名称")
     private String drugName;
 
+    @ApiModelProperty("药品分类 0:西药；1：中成药；2：中药；3：血液制品；4：诊断试剂")
+    private String category;
+
     @ApiModelProperty("单价")
     private Double fee;
 
