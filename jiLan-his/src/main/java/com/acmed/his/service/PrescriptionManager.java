@@ -192,7 +192,10 @@ public class PrescriptionManager {
             Double childPrice = 0.0d;
             if(null != pre.getItemList()) {
                 for (PreMo.ItemMo info : pre.getItemList()) {
-                    Drug drug = drugMapper.selectByPrimaryKey(info.getDrugId());
+                    Drug drug = drugMapper.getByDrugCode(info.getDrugCode());
+                    if(null == drug){
+                        continue;
+                    }
                     PrescriptionItem item = new PrescriptionItem();
                     BeanUtils.copyProperties(info,item,"id");
                     item.setId(UUIDUtil.generate());
@@ -200,7 +203,7 @@ public class PrescriptionManager {
                     item.setCategory(drug.getCategory());
                     item.setPrescriptionId(prescription.getId());
                     item.setApplyId(apply.getId());
-                    item.setDrugId(info.getDrugId());
+                    item.setDrugId(drug.getId());
                     item.setDrugCode(drug.getDrugCode());
                     item.setPayStatus(0);
                     item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d));//存当前进价

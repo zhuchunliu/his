@@ -34,6 +34,11 @@ public class PrescriptionApi {
     @PostMapping
     public ResponseResult savePre(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PreMo mo,
                                   @AccessToken AccessInfo info){
+
+        if(null == mo.getPatient() || StringUtils.isEmpty(mo.getPatient().getRealName())){
+            return ResponseUtil.setParamEmptyError("患者姓名不能为空!");
+        }
+
         if(null == mo.getPatient() || StringUtils.isEmpty(mo.getPatient().getIdCard())){
             return ResponseUtil.setParamEmptyError("患者身份证号不能为空!");
         }
