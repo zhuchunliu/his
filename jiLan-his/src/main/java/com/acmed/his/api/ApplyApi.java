@@ -66,7 +66,10 @@ public class ApplyApi {
         String idcard = mo.getIdcard();
         if (idcard.length() == 8){
             // 表示传的是生日
-            mo.setIdcard("000000"+idcard+"0000");
+            String orgCode = "0000000"+info.getUser().getOrgCode();
+            long l = System.currentTimeMillis();
+            String s = l + "";
+            mo.setIdcard(orgCode.substring(orgCode.length()-6)+idcard+s.substring(s.length()-4));
         }
         return applyManager.addApply(mo,null,info.getUser());
     }

@@ -12,6 +12,7 @@ import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.NumberFormtUtil;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -269,9 +270,9 @@ public class AccompanyingOrderApi {
         accompanyingOrder.setCreateBy(info.getPatientId());
         accompanyingOrder.setDelFlag(0);
         List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder,"createat DESC");
-        List<AccompanyingOrderPatientVo> result = new ArrayList<>();
+        List<AccompanyingOrderPatientVo> result = Lists.newArrayList();
         if (accompanyingOrders.size() != 0){
-            List<String> orderCodeList = new ArrayList<>();
+            List<String> orderCodeList = Lists.newArrayList();
             for (AccompanyingOrder item :accompanyingOrders){
                 orderCodeList.add(item.getOrderCode());
             }
@@ -323,7 +324,7 @@ public class AccompanyingOrderApi {
             orderBy = "starttime DESC";
         }
         List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder,orderBy);
-        List<SuppliersOrderVo> result = new ArrayList<>();
+        List<SuppliersOrderVo> result = Lists.newArrayList();
         if (accompanyingOrders.size() != 0){
             List<String> orderCodeList = new ArrayList<>();
             for (AccompanyingOrder item :accompanyingOrders){
