@@ -43,6 +43,10 @@ public class MedicalRecordManager {
             if (apply == null){
                 return 0;
             }
+            MedicalRecord medicalRecordByApplyId = getMedicalRecordByApplyId(applyId);
+            if (medicalRecordByApplyId != null){
+                return 0;
+            }
             medicalRecord.setPatientId(apply.getPatientId());
             addMedicalRecord(medicalRecord);
             apply = new Apply();
