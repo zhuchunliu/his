@@ -12,6 +12,7 @@ import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,9 @@ public class PrescriptionApi {
     @PostMapping
     public ResponseResult savePre(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PreMo mo,
                                   @AccessToken AccessInfo info){
+        if(null == mo.getPatient() || StringUtils.isEmpty(mo.getPatient().getIdCard())){
+            return ResponseUtil.setParamEmptyError("患者身份证号不能为空!");
+        }
         boolean flag = preManager.savePre(mo,info.getUser());
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方失败");
     }

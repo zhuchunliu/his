@@ -97,8 +97,6 @@ public class  PreMo {
 
     @Data
     public static class PatientMo{
-        @ApiModelProperty("用户主键 非必填 null:系统自动添加用户；not null：系统编辑用户")
-        private String patientId;
 
         @ApiModelProperty("用户姓名")
         private String realName;
@@ -106,8 +104,11 @@ public class  PreMo {
         @ApiModelProperty("性别 0:男;1:女")
         private String gender;
 
-        @ApiModelProperty("出生日期")
-        private String dateOfBirth;
+        @ApiModelProperty("身份证")
+        private String idCard;
+
+        @ApiModelProperty("社保卡")
+        private String socialCard;
 
         @ApiModelProperty("号码")
         private String mobile;

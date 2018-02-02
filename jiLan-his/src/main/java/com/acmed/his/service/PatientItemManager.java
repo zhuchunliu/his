@@ -140,4 +140,11 @@ public class PatientItemManager {
         patientItemDto.setAvatar(patientById.getAvatar());
         return patientItemDto;
     }
+
+    public PatientItem getPatientByIdCard(String idCard,Integer orgCode) {
+        PatientItem param = new PatientItem();
+        param.setIdCard(idCard);
+        param.setOrgCode(orgCode);
+        return patientItemMapper.selectOne(param);
+    }
 }

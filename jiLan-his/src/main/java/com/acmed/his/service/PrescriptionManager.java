@@ -62,6 +62,9 @@ public class PrescriptionManager {
     private PatientManager patientManager;
 
     @Autowired
+    private PatientItemManager patientItemManager;
+
+    @Autowired
     private MedicalRecordMapper recordMapper;
 
     @Autowired
@@ -130,10 +133,6 @@ public class PrescriptionManager {
     public boolean savePre(PreMo mo, UserInfo userInfo) {
         Apply apply = null;
         if(StringUtils.isEmpty(mo.getId())) {
-            //step0：
-            if(!StringUtils.isEmpty(mo.getApplyId())){//如果根据挂号单开处方，不允许换患者
-                mo.getPatient().setPatientId(applyMapper.selectByPrimaryKey(mo.getApplyId()).getPatientId());
-            }
 
             //step1:处理患者信息
             Patient patient = this.handlePatient(mo, userInfo);
@@ -279,16 +278,26 @@ public class PrescriptionManager {
      * @return
      */
     private Patient handlePatient(PreMo mo,UserInfo userInfo){
-        Patient patient = new Patient();
-        if(!StringUtils.isEmpty(mo.getPatient().getPatientId())){
-            patient = patientManager.getPatientById(mo.getPatient().getPatientId());
+        Patient patient = patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
+        if(null == patient){
+            patient = new Patient();
             BeanUtils.copyProperties(mo.getPatient(),patient);
-            patientManager.update(patient);
-        }else{//如果是新用户，则添加用户信息
-            BeanUtils.copyProperties(mo.getPatient(),patient);
-            patient.setCreateBy(userInfo.getId().toString());
-            patient.setCreateAt(LocalDateTime.now().toString());
             patient = patientManager.add(patient);
+        }
+
+        PatientItem patientItem = patientItemManager.getPatientByIdCard(mo.getPatient().getIdCard(),userInfo.getOrgCode());
+        if(null == patientItem){
+            patientItem = new PatientItem();
+            BeanUtils.copyProperties(mo.getPatient(),patientItem);
+            patientItem.setOrgCode(userInfo.getOrgCode());
+            patientItem.setPatientId(patient.getId());
+            patientItemManager.addPatinetItem(patientItem);
+        }else{
+            BeanUtils.copyProperties(mo.getPatient(),patientItem);
+            patientItem.setPatientName(mo.getPatient().getRealName());
+            patientItem.setOrgCode(userInfo.getOrgCode());
+            patientItem.setPatientId(patient.getId());
+            patientItemManager.updatePatientItem(patientItem);
         }
         return patient;
     }
