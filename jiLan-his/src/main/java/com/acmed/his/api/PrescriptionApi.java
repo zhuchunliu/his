@@ -35,21 +35,25 @@ public class PrescriptionApi {
     public ResponseResult savePre(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody PreMo mo,
                                   @AccessToken AccessInfo info){
 
-        if(null == mo.getPatient() || StringUtils.isEmpty(mo.getPatient().getRealName())){
-            return ResponseUtil.setParamEmptyError("患者姓名不能为空!");
+        if(StringUtils.isEmpty(mo.getApplyId())) {//挂号单为null验证用户信息
+
+            if (null == mo.getPatient() || StringUtils.isEmpty(mo.getPatient().getRealName())) {
+                return ResponseUtil.setParamEmptyError("患者姓名不能为空!");
+            }
+
+            if (null == mo.getPatient() || StringUtils.isEmpty(mo.getPatient().getIdCard())) {
+                return ResponseUtil.setParamEmptyError("患者身份证号不能为空!");
+            }
+
+            if (mo.getPatient().getIdCard().length() == 8){
+                // 表示传的是生日
+                String orgCode = "0000000"+info.getUser().getOrgCode();
+                long l = System.currentTimeMillis();
+                String s = l + "";
+                mo.getPatient().setIdCard(orgCode.substring(orgCode.length()-6)+mo.getPatient().getIdCard()+s.substring(s.length()-4));
+            }
         }
 
-        if(null == mo.getPatient() || StringUtils.isEmpty(mo.getPatient().getIdCard())){
-            return ResponseUtil.setParamEmptyError("患者身份证号不能为空!");
-        }
-
-        if (mo.getPatient().getIdCard().length() == 8){
-            // 表示传的是生日
-            String orgCode = "0000000"+info.getUser().getOrgCode();
-            long l = System.currentTimeMillis();
-            String s = l + "";
-            mo.getPatient().setIdCard(orgCode.substring(orgCode.length()-6)+mo.getPatient().getIdCard()+s.substring(s.length()-4));
-        }
         boolean flag = preManager.savePre(mo,info.getUser());
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方失败");
     }

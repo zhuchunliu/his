@@ -68,6 +68,9 @@ public class PrescriptionManager {
     private MedicalRecordMapper recordMapper;
 
     @Autowired
+    private MedicalRecordManager recordManager;
+
+    @Autowired
     private PrescriptionFeeMapper feeMapper;
 
     @Autowired
@@ -134,11 +137,15 @@ public class PrescriptionManager {
         Apply apply = null;
         if(StringUtils.isEmpty(mo.getId())) {
 
-            //step1:处理患者信息
-            Patient patient = this.handlePatient(mo, userInfo);
+            if(StringUtils.isEmpty(mo.getApplyId()) ){
+                //step1:处理患者信息
+                Patient patient = this.handlePatient(mo, userInfo);
 
-            //step2:处理挂号信息
-            apply = this.handleApply(mo, patient, userInfo);
+                //step2:处理挂号信息
+                apply = this.handleApply(mo, patient, userInfo);
+            }else{
+                apply = applyMapper.selectByPrimaryKey(mo.getApplyId());
+            }
 
         }else{//编辑不用处理患者和挂号信息，直接获取挂号信息
             if(StringUtils.isEmpty(mo.getApplyId())){//前端未传挂号主键
@@ -338,20 +345,10 @@ public class PrescriptionManager {
      * 处理病例信息
      */
     private void handleMedicalRecord(PreMo mo, Apply apply, UserInfo userInfo) {
-       MedicalRecord medicalRecord = Optional.ofNullable(recordMapper.selectByPrimaryKey(apply.getId())).orElse(new MedicalRecord());
+       MedicalRecord medicalRecord = Optional.ofNullable(recordManager.getMedicalRecordByApplyId(apply.getId())).orElse(new MedicalRecord());
        BeanUtils.copyProperties(mo.getRecord(),medicalRecord,"id");
        BeanUtils.copyProperties(apply,medicalRecord,"id");
-       if(StringUtils.isEmpty(medicalRecord.getId())){
-           medicalRecord.setId(UUIDUtil.generate());
-           medicalRecord.setCreateAt(LocalDateTime.now().toString());
-           medicalRecord.setCreateBy(userInfo.getId().toString());
-           recordMapper.insert(medicalRecord);
-       }else{
-           medicalRecord.setModifyAt(LocalDateTime.now().toString());
-           medicalRecord.setModifyBy(userInfo.getId().toString());
-           recordMapper.updateByPrimaryKey(medicalRecord);
-       }
-
+       recordManager.saveMedicalRecord(medicalRecord);
     }
 
     /**
