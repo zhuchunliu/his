@@ -56,7 +56,9 @@ public class MedicalRecordManager {
             applyManager.updateApply(apply);
             return 1;
         }else {
-            return updateMedicalRecord(medicalRecord);
+            return 0;
+            // 不支持修改
+            //return updateMedicalRecord(medicalRecord);
         }
     }
 
