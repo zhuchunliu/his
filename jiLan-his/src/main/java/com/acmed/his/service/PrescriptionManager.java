@@ -8,6 +8,7 @@ import com.acmed.his.pojo.vo.PreVo;
 import com.acmed.his.pojo.vo.PrescriptionVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.DateTimeUtil;
+import com.acmed.his.util.PinYinUtil;
 import com.acmed.his.util.UUIDUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -142,7 +144,11 @@ public class PrescriptionManager {
                 Patient patient = this.handlePatient(mo, userInfo);
 
                 //step2:处理挂号信息
-                apply = this.handleApply(mo, patient, userInfo);
+                PatientItem patientItem = new PatientItem();
+                patientItem.setOrgCode(userInfo.getOrgCode());
+                patientItem.setPatientId(patient.getId());
+                List<PatientItem> patientItems = patientItemManager.patientItems(patientItem);
+                apply = this.handleApply(mo, patient,patientItems.get(0), userInfo);
             }else{
                 apply = applyMapper.selectByPrimaryKey(mo.getApplyId());
             }
@@ -317,7 +323,7 @@ public class PrescriptionManager {
      * 处理挂号单信息
      * @return
      */
-    private Apply handleApply(PreMo mo,Patient patient,UserInfo userInfo){
+    private Apply handleApply(PreMo mo,Patient patient,PatientItem patientItem,UserInfo userInfo){
         Apply apply = new Apply();
         if(!StringUtils.isEmpty(mo.getApplyId())){
             apply = applyManager.getApplyById(mo.getApplyId());
@@ -327,11 +333,17 @@ public class PrescriptionManager {
             apply.setOrgName(userInfo.getOrgName());
             apply.setDept(userInfo.getDept());
             apply.setDeptName(userInfo.getDeptName());
+            apply.setDoctorId(userInfo.getId());
+            apply.setDeptName(userInfo.getUserName());
             apply.setPatientId(patient.getId());
-            apply.setPatientName(patient.getRealName());
+            apply.setPatientName(patientItem.getPatientName());
+            apply.setPinYin(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
             apply.setGender(patient.getGender());
             apply.setAge(Optional.ofNullable(patient.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
             apply.setStatus("1");
+            apply.setIsPaid("0");
+            apply.setIsFirst(0);
+            apply.setAppointmentTime(LocalDate.now().toString());
             apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
             apply.setFee(userInfo.getApplyfee());//设置成用户配置的挂号费
             apply.setCreateAt(LocalDateTime.now().toString());
