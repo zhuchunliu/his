@@ -334,7 +334,8 @@ public class PrescriptionManager {
             apply.setDept(userInfo.getDept());
             apply.setDeptName(userInfo.getDeptName());
             apply.setDoctorId(userInfo.getId());
-            apply.setDeptName(userInfo.getUserName());
+            apply.setDoctorName(userInfo.getUserName());
+            apply.setPatientItemId(patientItem.getId());
             apply.setPatientId(patient.getId());
             apply.setPatientName(patientItem.getPatientName());
             apply.setPinYin(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
