@@ -348,6 +348,13 @@ public class DispensingManager {
      */
     @Transactional
     public void lockStock(String applyId,UserInfo info) {
+        Example stockExample = new Example(PrescriptionItemStock.class);
+        stockExample.createCriteria().andEqualTo("applyId",applyId);
+        int count = itemStockMapper.selectCountByExample(stockExample);
+        if(0 != count){//已经锁定了库存，则不再占用库存
+            return;
+        }
+
         synchronized ("org_" + info.getOrgCode()) {
             Example example = new Example(PrescriptionItem.class);
             example.createCriteria().andEqualTo("applyId", applyId).andEqualTo("payStatus", 1);
