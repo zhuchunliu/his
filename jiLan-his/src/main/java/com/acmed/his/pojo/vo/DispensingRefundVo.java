@@ -45,7 +45,6 @@ public class DispensingRefundVo {
             itemList.forEach(obj->{
                 DispensingRefundVo.DisItemVo item = new DispensingRefundVo.DisItemVo();
                 BeanUtils.copyProperties(obj,item);
-
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new DisPrescriptVo(item,null,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -185,16 +184,16 @@ public class DispensingRefundVo {
         private String spec;
 
         @ApiModelProperty("数量")
-        private Integer num;
+        private Double num;
 
         @ApiModelProperty("计价单位")
         private String unit;
 
-        @ApiModelProperty("单价")
-        private Double fee;
+        @ApiModelProperty("零售价")
+        private Double retailPrice;
 
-        @ApiModelProperty("总价")
-        private Double totalFee;
+        @ApiModelProperty("费用")
+        private Double fee;
     }
 
 

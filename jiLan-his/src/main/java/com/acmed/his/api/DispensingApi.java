@@ -1,5 +1,6 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.DispensingDto;
@@ -150,7 +151,13 @@ public class DispensingApi {
     @PostMapping("/refund")
     public ResponseResult refund(@RequestBody DispensingRefundMo mo,
                                  @AccessToken AccessInfo info){
-
+        Prescription prescription = preMapper.getPreByApply(mo.getApplyId()).get(0);
+        if("0".equals(prescription.getIsPaid())){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"尚未付款，无法退款！");
+        }
+        if("1".equals(prescription.getIsDispensing())){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"已经发药，无法退款！");
+        }
         dispensingManager.refund(mo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
@@ -205,7 +212,7 @@ public class DispensingApi {
         Prescription prescription = preMapper.getPreByApply(applyId).get(0);
 
         Example example = new Example(PrescriptionItem.class);
-        example.createCriteria().andEqualTo("applyId",applyId);
+        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
         List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
 
         Map<String,List<PrescriptionItemStock>> map = Maps.newHashMap();
