@@ -4,6 +4,7 @@ import com.acmed.his.dao.FeeItemMapper;
 import com.acmed.his.model.FeeItem;
 import com.acmed.his.model.Org;
 import com.acmed.his.model.User;
+import com.acmed.his.model.dto.FeeItemDto;
 import com.acmed.his.pojo.mo.FeeItemMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.support.AccessInfo;
@@ -29,16 +30,8 @@ public class FeeItemManager {
      * 获取收费列表
      * @return
      */
-    public List<FeeItem> getFeeItemList(Integer orgCode,String feeCategory,String category){
-        Example example = new Example(FeeItem.class);
-        Example.Criteria criteria = example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("isValid","1");
-        if(!StringUtils.isEmpty(feeCategory)){
-            criteria.andEqualTo("feeCategory",feeCategory);
-        }
-        if(!StringUtils.isEmpty(category)){
-            criteria.andEqualTo("category",category);
-        }
-        return feeItemMapper.selectByExample(example);
+    public List<FeeItemDto> getFeeItemList(Integer orgCode, String feeCategory, String category){
+        return feeItemMapper.getFeeItemList(orgCode,"1",feeCategory,category);
     }
 
     /**

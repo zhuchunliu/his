@@ -28,4 +28,10 @@ public class FeeItemVo {
 
     @ApiModelProperty("药品备注")
     private String memo;
+
+    @ApiModelProperty("创建人")
+    private String createUserName;
+
+    @ApiModelProperty("创建时间")
+    private String createAt;
 }

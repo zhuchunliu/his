@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.FeeItemMapper">
+
+    <select id="getFeeItemList" resultType="com.acmed.his.model.dto.FeeItemDto">
+        select t1.*,t2.username as createUserName from t_b_feeitem t1
+        LEFT JOIN t_p_s_user t2 on t1.createby = t2.id
+        WHERE t1.orgcode = #{orgCode} and t1.isvalid = #{isValid}
+        <if test="@Ognl@isNotEmpty(feeCategory)">
+            and t1.feeCategory = #{feeCategory}
+        </if>
+        <if test="@Ognl@isNotEmpty(category)">
+            and t1.category = #{category}
+        </if>
+    </select>
+</mapper>
