@@ -42,6 +42,7 @@ public class FeeItemManager {
         if(null == mo.getId()){
             FeeItem item = this.getFeeItemDetail(userInfo.getOrgCode(),mo.getFeeCategory(),mo.getCategory());
             if(null != item){
+                item.setIsValid("1");
                 item.setModifyAt(LocalDateTime.now().toString());
                 item.setModifyBy(userInfo.getId().toString());
                 item.setMemo(mo.getMemo());
@@ -60,6 +61,7 @@ public class FeeItemManager {
         }else{
             FeeItem item = feeItemMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,item);
+            item.setIsValid("1");
             item.setModifyAt(LocalDateTime.now().toString());
             item.setModifyBy(userInfo.getId().toString());
             feeItemMapper.updateByPrimaryKey(item);

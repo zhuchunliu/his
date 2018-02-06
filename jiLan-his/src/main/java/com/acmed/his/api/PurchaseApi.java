@@ -1,9 +1,18 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.StatusCode;
+import com.acmed.his.dao.DrugMapper;
+import com.acmed.his.dao.PurchaseItemMapper;
+import com.acmed.his.dao.PurchaseMapper;
+import com.acmed.his.model.Drug;
+import com.acmed.his.model.Purchase;
+import com.acmed.his.model.PurchaseItem;
 import com.acmed.his.model.dto.PurchaseDto;
 import com.acmed.his.model.dto.PurchaseStockDto;
 import com.acmed.his.pojo.mo.PurchaseMo;
+import com.acmed.his.pojo.vo.PurchaseVo;
 import com.acmed.his.service.PurchaseManager;
+import com.acmed.his.service.SupplyManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.PageBase;
@@ -11,13 +20,18 @@ import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 采购API
@@ -30,13 +44,33 @@ public class PurchaseApi {
     @Autowired
     private PurchaseManager purchaseManager;
 
+    @Autowired
+    private PurchaseMapper purchaseMapper;
+
+    @Autowired
+    private PurchaseItemMapper purchaseItemMapper;
+
+    @Autowired
+    private SupplyManager supplyManager;
+
+    @Autowired
+    private DrugMapper drugMapper;
+
     @ApiOperation(value = "采购入库")
     @PostMapping("/purchase/save")
     public ResponseResult save(@RequestBody PurchaseMo mo,
                                @AccessToken AccessInfo info){
+
+        Purchase purchase = purchaseMapper.selectByPrimaryKey(mo.getId());
+        if(purchase.getStatus()==1){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"禁止重复审核");
+        }
+
         purchaseManager.save(mo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
+
+
 
     @ApiOperation(value = "入库审核列表")
     @GetMapping("/purchase/audit/list")
@@ -48,6 +82,31 @@ public class PurchaseApi {
                                     @AccessToken AccessInfo info){
         List<PurchaseDto> list = purchaseManager.getAuditList(purchaseNo,status,supplierId,startTime,endTime,info.getUser());
         return ResponseUtil.setSuccessResult(list);
+    }
+
+    @ApiOperation(value = "入库详情")
+    @GetMapping("/purchase/detail")
+    public ResponseResult<PurchaseVo> getPurchaseDetail(@ApiParam("入库主键") @RequestParam(value = "id") String id,
+                                                        @AccessToken AccessInfo info){
+        Purchase purchase = purchaseMapper.selectByPrimaryKey(id);
+        Example example = new Example(PurchaseItem.class);
+        example.createCriteria().andEqualTo("purchaseId",id);
+        List<PurchaseItem> list = purchaseItemMapper.selectByExample(example);
+        PurchaseVo vo = new PurchaseVo();
+        BeanUtils.copyProperties(purchase,vo);
+        vo.setSupplierName(Optional.ofNullable(supplyManager.getSupplyById(vo.getSupplierId())).map(obj->obj.getSupplyerName()).orElse(null));
+        List<PurchaseVo.PurchaseVoDetail> detailList = Lists.newArrayList();
+        list.forEach(obj->{
+            PurchaseVo.PurchaseVoDetail detail = new PurchaseVo.PurchaseVoDetail();
+            Drug drug = drugMapper.getByDrugCode(obj.getDrugCode());
+            detail.setName(drug.getName());
+            detail.setGoodsName(drug.getGoodsName());
+            detail.setSpec(drug.getSpec());
+            BeanUtils.copyProperties(obj,detail);
+            detailList.add(detail);
+        });
+        vo.setDetailList(detailList);
+        return ResponseUtil.setSuccessResult(vo);
     }
 
     @ApiOperation(value = "审核入库")
