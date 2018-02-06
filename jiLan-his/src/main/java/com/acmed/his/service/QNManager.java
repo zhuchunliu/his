@@ -1,6 +1,7 @@
 package com.acmed.his.service;
 
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.model.DicItem;
 import com.acmed.his.pojo.vo.UpTokenAndKeyVo;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
@@ -26,48 +27,23 @@ public class QNManager {
     @Autowired
     private Environment environment;
 
+    @Autowired
+    private BaseInfoManager baseInfoManager;
+
 
     /**
      * 获取上传token
      * @param type 类型
      * @return DTOUPTokenAndKey
      */
-    public UpTokenAndKeyVo getUpToken(Integer type){
+    public UpTokenAndKeyVo getUpToken(String type){
         Auth auth = Auth.create(environment.getProperty("qiniu.accessKey"),environment.getProperty("qiniu.secretKey"));
         String key = null;
-        switch (type){
-            case 1 :
-                key = "image/jibing/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//大病图片路径
-                break;
-            case 2 :
-                key = "image/idcard/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//身份证图片路径
-                break;
-            case 3 :
-                key = "image/practice/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//执业图片路径
-                break;
-            case 4 :
-                key = "image/professional/qualification/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//执业资格图片路径
-                break;
-            case 5 :
-                key = "image/user/headimg/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//头像
-                break;
-            case 6 :
-                key = "image/prize/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//奖品
-                break;
-            case 7 :
-                key = "image/medal/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//勋章
-                break;
-            case 8 :
-                key = "image/alarm/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//医闹图片路径
-                break;
-            case 9 :
-                key = "image/sudden/death/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//猝死图片路径
-                break;
-            case 10 :
-                key = "image/accompanying/casedetail/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//病情详情图
-                break;
-            default:
-                key = "image/other/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();//其他图
+        DicItem qnUpType = baseInfoManager.getDicItem("QnUpType", type);
+        if (qnUpType == null){
+            key = "img/other/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();
+        }else {
+            key = "img/"+qnUpType.getDicItemCode()+"/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();
         }
         String upToken = auth.uploadToken(environment.getProperty("qiniu.bucket"),key,10,null);
         UpTokenAndKeyVo dtoupTokenAndKey = new UpTokenAndKeyVo();

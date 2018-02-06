@@ -5,6 +5,7 @@ import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,9 +28,7 @@ public class QiNiuApi {
 
     @ApiOperation(value = "获取上传token")
     @RequestMapping(value = "getTokenAndKey",method = RequestMethod.GET)
-    public ResponseResult getTokenAndKey(@RequestParam("type") Integer type){
+    public ResponseResult getTokenAndKey(@ApiParam("字典表 QnUpType") @RequestParam("type") String type){
         return ResponseUtil.setSuccessResult(qnManager.getUpToken(type));
     }
-
-
 }
