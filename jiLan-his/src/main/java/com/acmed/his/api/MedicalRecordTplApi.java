@@ -172,14 +172,7 @@ public class MedicalRecordTplApi {
         }else {
             Integer dept = param.getDept();
             Integer orgCode = param.getOrgCode();
-            Integer isSelf = param.getIsSelf();
-            if (isSelf!=null){
-                if (isSelf.equals(1)){
-                    medicalRecordTpl.setUserId(info.getUserId());
-                }else {
-                    medicalRecordTpl.setIsPublic("1");
-                }
-            }
+            medicalRecordTpl.setUserId(info.getUserId());
             if (orgCode == null){
                 medicalRecordTpl.setOrgCode(info.getUser().getOrgCode());
             }else if(orgCode == 0){
@@ -197,6 +190,7 @@ public class MedicalRecordTplApi {
             medicalRecordTpl.setCategory(param.getCategory());
             medicalRecordTpl.setTplName(param.getTplName());
             medicalRecordTpl.setIsValid(param.getIsValid());
+            medicalRecordTpl.setIsPublic(param.getIsPublic());
         }
         medicalRecordTpl.setRemoved("0");
         PageResult<MedicalRecordTplDto> byParamByPage = medicalRecordTplManager.getByParamByPage(medicalRecordTpl, pageBase.getPageNum(), pageBase.getPageSize());

@@ -14,4 +14,7 @@ import lombok.Data;
 public class MedicalRecordTplDto extends MedicalRecordTpl {
     @ApiModelProperty("病例模板类型 名")
     private String categoryName;
+
+    @ApiModelProperty("创建人")
+    private String createUserName;
 }

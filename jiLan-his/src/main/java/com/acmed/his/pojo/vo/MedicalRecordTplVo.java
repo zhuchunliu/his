@@ -24,9 +24,6 @@ public class MedicalRecordTplVo {
     @ApiModelProperty("科室id")
     private Integer dept;
 
-    @ApiModelProperty("医生id")
-    private Integer userId;
-
     @ApiModelProperty("主诉")
     private String chiefComplaint;
 
@@ -63,12 +60,6 @@ public class MedicalRecordTplVo {
     @ApiModelProperty("修改时间")
     private String modifyAt;
 
-    @ApiModelProperty("创建用户")
-    private String createBy;
-
-    @ApiModelProperty("修改用户")
-    private String modifyBy;
-
     @ApiModelProperty("模板说明")
     private String declaratives;
 
@@ -80,4 +71,7 @@ public class MedicalRecordTplVo {
 
     @ApiModelProperty("是否公开 0:否；1：是")
     private String isPublic;
+
+    @ApiModelProperty("创建人")
+    private String createUserName;
 }

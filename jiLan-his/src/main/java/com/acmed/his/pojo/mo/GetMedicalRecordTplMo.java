@@ -26,6 +26,9 @@ public class GetMedicalRecordTplMo {
     @ApiModelProperty("是否是自己的 0 不是自己  1是自己  不传表示全部")
     private Integer isSelf;
 
+    @ApiModelProperty(" 0 私有  1共有  不传表示不匹配")
+    private String isPublic;
+
     @ApiModelProperty("是否有效(启用1  关闭0) 0:无；1：有   不传不做筛选")
     private String isValid;
 }

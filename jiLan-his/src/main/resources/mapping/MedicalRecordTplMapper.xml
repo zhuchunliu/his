@@ -3,8 +3,9 @@
                 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.MedicalRecordTplMapper">
     <select id="selectByParam" resultType="com.acmed.his.model.dto.MedicalRecordTplDto">
-        SELECT t1.*,t2.dicitemname AS categoryName FROM t_b_medicalrecord_tpl t1
+        SELECT t1.*,t2.dicitemname AS categoryName ,t3.username createUserName FROM t_b_medicalrecord_tpl t1
         LEFT JOIN t_p_s_dicitem AS t2 ON t2.dicitemcode = t1.category
+        LEFT JOIN t_p_s_user AS t3 ON t3.id = t1.createby
         WHERE t2.dictypecode = 'MedicalRecordTpl'
         <if test="@Ognl@isNotEmpty(id)">
             and t1.id = #{id}
@@ -43,7 +44,7 @@
             and t1.isvalid = #{isValid}
         </if>
         <if test="@Ognl@isNotEmpty(isPublic)">
-            and t1.ispublic = #{isPublic}
+            AND t1.ispublic = #{isPublic}
         </if>
         <if test="@Ognl@isNotEmpty(tplName)">
             and (t1.tplname like CONCAT('%',#{tplName},'%') or t1.tplnamepinyin like CONCAT('%',#{tplName},'%'))
