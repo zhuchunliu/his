@@ -155,9 +155,26 @@ public class ApplyApi {
     @ApiOperation(value = "现金退挂号费")
     @GetMapping("cashrefund")
     public ResponseResult refund(@AccessToken AccessInfo info,
-                                 @ApiParam("挂号单id") @RequestParam(value = "applyId" )String applyId,
-                                 @ApiParam("金额") @RequestParam(value = "fee" )Double fee){
-        return applyManager.refund(applyId,fee,"0",info.getUser());
+                                 @ApiParam("挂号单id") @RequestParam(value = "applyId" )String applyId){
+        Apply applyById = applyManager.getApplyById(applyId);
+        if (applyById!=null){
+            if (applyById.getIsPaid().equals("0")){
+                // 未支付
+                ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_NOT_PAY,"未支付");
+            }
+            if (applyById.getStatus().equals("0")){
+                applyManager.refund(applyId,applyById.getFee(),"0",info.getUser());
+                return ResponseUtil.setSuccessResult();
+            }else if(applyById.getStatus().equals("1")){
+                // 已就诊
+                ResponseUtil.setErrorMeg(StatusCode.FAIL,"已经就诊");
+            }else {
+                // 已取消
+                ResponseUtil.setErrorMeg(StatusCode.FAIL,"已取消");
+            }
+        }
+        // 未支付
+        return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"挂号单不存在");
     }
 
     @ApiOperation(value = "用户退线上支付挂号费号费")

@@ -42,7 +42,8 @@ public enum StatusCode {
 	ERROR_PAY_INIT_ERR (10023,"支付初始化失败"),
 	ERROR_COLLECTION(10024,"收款失败"),
 	ERROR_IS_REFUND (10025,"请不要重复退款"),
-	ERROR_DATA_EMPTY (10026,"没有查询到对应数据");
+	ERROR_DATA_EMPTY (10026,"没有查询到对应数据"),
+	ERROR_IS_NOT_PAY (10019,"未支付");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatusCode.class);
 
