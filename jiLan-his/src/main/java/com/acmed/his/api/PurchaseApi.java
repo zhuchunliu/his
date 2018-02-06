@@ -62,7 +62,7 @@ public class PurchaseApi {
                                @AccessToken AccessInfo info){
 
         Purchase purchase = purchaseMapper.selectByPrimaryKey(mo.getId());
-        if(purchase.getStatus()==1){
+        if(null != purchase && purchase.getStatus()==1){
             return ResponseUtil.setErrorMeg(StatusCode.FAIL,"禁止重复审核");
         }
 
