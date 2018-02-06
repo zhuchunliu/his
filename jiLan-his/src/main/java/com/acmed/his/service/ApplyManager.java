@@ -327,6 +327,11 @@ public class ApplyManager {
                                     payRefuse.setCreateBy(userId.toString());
                                     payRefuse.setPatientId(patientId);
                                     payManager.addPayRefuse(payRefuse);
+                                    Apply upApply = new Apply();
+                                    upApply.setId(applyId);
+                                    upApply.setStatus("2");
+                                    this.updateApply(upApply);
+
                                     return ResponseUtil.setSuccessResult();
                                 }else {
                                     return ResponseUtil.setErrorMeg(StatusCode.ERROR_REFUND_ERR,"退款失败");
@@ -335,6 +340,10 @@ public class ApplyManager {
                         }
 
                     }
+                    Apply upApply = new Apply();
+                    upApply.setId(applyId);
+                    upApply.setStatus("2");
+                    this.updateApply(upApply);
                     payRefuse.setFeeType(feeType);
                     payRefuse.setFee(new BigDecimal(fee));
                     payRefuse.setCreateBy(userId.toString());

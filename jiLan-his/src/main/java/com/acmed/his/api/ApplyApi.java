@@ -160,17 +160,16 @@ public class ApplyApi {
         if (applyById!=null){
             if (applyById.getIsPaid().equals("0")){
                 // 未支付
-                ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_NOT_PAY,"未支付");
+                return ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_NOT_PAY,"未支付");
             }
             if (applyById.getStatus().equals("0")){
-                applyManager.refund(applyId,applyById.getFee(),"0",info.getUser());
-                return ResponseUtil.setSuccessResult();
+                return applyManager.refund(applyId,applyById.getFee(),"0",info.getUser());
             }else if(applyById.getStatus().equals("1")){
                 // 已就诊
-                ResponseUtil.setErrorMeg(StatusCode.FAIL,"已经就诊");
+                return ResponseUtil.setErrorMeg(StatusCode.FAIL,"已经就诊");
             }else {
                 // 已取消
-                ResponseUtil.setErrorMeg(StatusCode.FAIL,"已取消");
+                return ResponseUtil.setErrorMeg(StatusCode.FAIL,"已取消");
             }
         }
         // 未支付
