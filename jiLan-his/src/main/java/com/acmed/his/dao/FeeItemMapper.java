@@ -13,5 +13,6 @@ import java.util.List;
 public interface FeeItemMapper extends TkMapper<FeeItem>{
 
     List<FeeItemDto> getFeeItemList(@Param("orgCode") Integer orgCode, @Param("isValid") String isValid,
-                                    @Param("feeCategory") String feeCategory, @Param("category") String category);
+                                    @Param("feeCategory") String feeCategory, @Param("category") String category,
+                                    @Param("categoryName") String categoryName);
 }

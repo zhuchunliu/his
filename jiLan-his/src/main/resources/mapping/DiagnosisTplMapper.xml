@@ -4,7 +4,7 @@
 <mapper namespace="com.acmed.his.dao.DiagnosisTplMapper">
 
     <select id="getDiagnosisTplList" resultType="com.acmed.his.model.dto.DiagnosisTplDto">
-        select t1.id ,t1.tplname ,t1.category,t1.isvalid , t1.ispublic,t1.diagnosis,t1.createby,
+        select t1.id ,t1.tplname ,t1.category,t1.isvalid , t1.ispublic,t1.diagnosis,t1.createby,t1.createAt,
         t2.dicitemname as categoryName,t3.username as createUserName,
         if(t1.createby=#{userInfo.id} ,1,0) as isSelf
         from t_b_diagnosis_tpl t1

@@ -4,14 +4,21 @@
 <mapper namespace="com.acmed.his.dao.FeeItemMapper">
 
     <select id="getFeeItemList" resultType="com.acmed.his.model.dto.FeeItemDto">
-        select t1.*,t2.username as createUserName from t_b_feeitem t1
+        select t1.*,t2.username as createUserName,
+        t3.dicitemname as categoryName,
+        case t1.feecategory when 'ChargeCategory' then '检查费用' WHEN  'InspectCategory' then '检查费用' else '挂号费用' end as feeCategoryName
+        from t_b_feeitem t1
         LEFT JOIN t_p_s_user t2 on t1.createby = t2.id
+        LEFT JOIN t_p_s_dicitem t3 ON t3.dictypecode = t1.feecategory and t3.dicitemcode = t1.category
         WHERE t1.orgcode = #{orgCode} and t1.isvalid = #{isValid}
         <if test="@Ognl@isNotEmpty(feeCategory)">
             and t1.feeCategory = #{feeCategory}
         </if>
         <if test="@Ognl@isNotEmpty(category)">
             and t1.category = #{category}
+        </if>
+        <if test="@Ognl@isNotEmpty(categoryName)">
+            and t3.dicitemname like concat ('%' , #{categoryName} , '%')
         </if>
     </select>
 </mapper>

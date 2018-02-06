@@ -17,8 +17,14 @@ public class FeeItemDto {
     @ApiModelProperty("费用类别:使用字典")
     private String feeCategory;
 
+    @ApiModelProperty("费用类别大项：字典表FeeItem")
+    private String feeCategoryName;
+
     @ApiModelProperty("具体费用类型，feeCategory关联的子类型")
     private String category;
+
+    @ApiModelProperty("费用大项目对应子项")
+    private String categoryName;
 
     @ApiModelProperty("项目价格")
     private Float itemPrice;

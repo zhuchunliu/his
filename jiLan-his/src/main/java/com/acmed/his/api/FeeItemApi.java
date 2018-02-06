@@ -54,14 +54,13 @@ public class FeeItemApi {
     @GetMapping("/list")
     public ResponseResult<List<FeeItemVo>> getFeeItemList(@AccessToken AccessInfo info,
                                                           @ApiParam("费用类别大项") @RequestParam(value = "feeCategory",required = false) String feeCategory,
-                                                          @ApiParam("费用类型细项") @RequestParam(value = "category",required = false) String category){
+                                                          @ApiParam("费用类型细项") @RequestParam(value = "category",required = false) String category,
+                                                          @ApiParam("费用类型细项名称") @RequestParam(value = "categoryName",required = false) String categoryName){
         List<FeeItemVo> list = new ArrayList<>();
 
-        feeItemManager.getFeeItemList(info.getUser().getOrgCode(),feeCategory,category).forEach((obj)->{
+        feeItemManager.getFeeItemList(info.getUser().getOrgCode(),feeCategory,category,categoryName).forEach((obj)->{
             FeeItemVo mo = new FeeItemVo();
             BeanUtils.copyProperties(obj,mo);
-            mo.setFeeCategoryName(baseInfoManager.getDicItem(DicTypeEnum.FEE_ITEM.getCode(),obj.getFeeCategory()).getDicItemName());
-            mo.setCategoryName(baseInfoManager.getDicItem(obj.getFeeCategory(),obj.getCategory()).getDicItemName());
             list.add(mo);
         });
         return ResponseUtil.setSuccessResult(list);

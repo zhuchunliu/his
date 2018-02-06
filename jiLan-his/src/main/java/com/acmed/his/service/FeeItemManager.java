@@ -30,8 +30,8 @@ public class FeeItemManager {
      * 获取收费列表
      * @return
      */
-    public List<FeeItemDto> getFeeItemList(Integer orgCode, String feeCategory, String category){
-        return feeItemMapper.getFeeItemList(orgCode,"1",feeCategory,category);
+    public List<FeeItemDto> getFeeItemList(Integer orgCode, String feeCategory, String category,String categoryName){
+        return feeItemMapper.getFeeItemList(orgCode,"1",feeCategory,category,categoryName);
     }
 
     /**

@@ -4,7 +4,7 @@
     <mapper namespace="com.acmed.his.dao.AdviceTplMapper">
 
         <select id="getAdviceTplList" resultType="com.acmed.his.model.dto.AdviceTplDto">
-            select t1.id , t1.tplname,t1.category,t1.isvalid , t1.ispublic,t1.advice,t1.createby,
+            select t1.id , t1.tplname,t1.category,t1.isvalid , t1.ispublic,t1.advice,t1.createby,t1.createat,
             t2.dicitemname as categoryName,t3.username as createUserName,
             if(t1.createby=#{userInfo.id} ,1,0) as isSelf
             from t_b_advice_tpl t1
