@@ -185,7 +185,7 @@ public class MedicalRecordTplApi {
             }else if(dept == 0){
                 medicalRecordTpl.setDept(null);
             }else {
-                medicalRecordTpl.setDept(orgCode);
+                medicalRecordTpl.setDept(dept);
             }
             medicalRecordTpl.setCategory(param.getCategory());
             medicalRecordTpl.setTplName(param.getTplName());
