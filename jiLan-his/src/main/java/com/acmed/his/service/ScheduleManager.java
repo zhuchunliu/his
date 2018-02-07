@@ -48,7 +48,7 @@ public class ScheduleManager {
 
         if(null == schedule){ //第一次 直接添加
             schedule = new Schedule();
-            schedule.setUserid(user.getId());
+            schedule.setUserid(mo.getUserid());
             schedule.setStartTime(startTime);
             schedule.setEndTime(endTime);
             schedule.setCreateAt(LocalDateTime.now().toString());

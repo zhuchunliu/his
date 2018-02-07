@@ -6,6 +6,7 @@ import com.acmed.his.filter.interceptor.AccessPermissionInterceptor;
 import com.acmed.his.filter.interceptor.AccessTokenInterceptor;
 import com.acmed.his.filter.interceptor.GateInterceptor;
 import com.acmed.his.support.AccessTokenResolver;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
