@@ -252,25 +252,25 @@
             SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 2 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
         ) AS t8 ON t8.orgcode = t1.orgcode
         LEFT JOIN (
-            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.source = 1 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_refuse t0 WHERE t0.source = 1 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
         ) AS t9 ON t9.orgcode = t1.orgcode
         LEFT JOIN (
-            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.source = 2 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_refuse t0 WHERE t0.source = 2 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
         ) AS t10 ON t10.orgcode = t1.orgcode
         LEFT JOIN (
-            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.source = 3 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_refuse t0 WHERE t0.source = 3 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
         ) AS t11 ON t11.orgcode = t1.orgcode
         LEFT JOIN (
-            SELECT SUM(t0.fee) fee,t0.orgcode  FROM t_b_pay_statements t0 WHERE t0.source = 4 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+            SELECT SUM(t0.fee) fee,t0.orgcode  FROM t_b_pay_refuse t0 WHERE t0.source = 4 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
         ) AS t12 ON t12.orgcode = t1.orgcode
         LEFT JOIN (
-            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 0 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_refuse t0 WHERE t0.feetype = 0 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
         ) AS t13 ON t13.orgcode = t1.orgcode
         LEFT JOIN (
-            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 1 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_refuse t0 WHERE t0.feetype = 1 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
         ) AS t14 ON t14.orgcode = t1.orgcode
         LEFT JOIN (
-            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 2 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_refuse t0 WHERE t0.feetype = 2 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
         ) AS t15 ON t15.orgcode = t1.orgcode
         WHERE t1.orgcode = #{orgCode}
     </select>
