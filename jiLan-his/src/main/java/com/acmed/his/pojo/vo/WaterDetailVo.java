@@ -30,6 +30,8 @@ public class WaterDetailVo {
     private String feeType;
     @ApiModelProperty("来源 1挂号  2药品  3检查  4附加费")
     private String source;
+    @ApiModelProperty("来源 1挂号  2药品  3检查  4附加费")
+    private String sourceStr;
     @ApiModelProperty("金额")
     private BigDecimal fee;
     @ApiModelProperty("患者名字")

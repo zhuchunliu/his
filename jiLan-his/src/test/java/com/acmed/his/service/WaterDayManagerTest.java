@@ -34,6 +34,10 @@ public class WaterDayManagerTest {
     public void paopi() throws ParseException {
         waterDayManager.paopi("20180104");
     }
+    @Test
+    public void task() throws ParseException {
+        waterDayManager.task();
+    }
 
     @Test
     public void waterDetailList() throws ParseException {

@@ -104,6 +104,17 @@ public class WaterDayApi {
                 }else {
                     waterDetailVo.setFeeTypeStr("现金");
                 }
+                //来源 1挂号  2药品  3检查  4附加费
+                String source1 = source.getSource();
+                if (StringUtils.equals("1",source1)){
+                    waterDetailVo.setSourceStr("挂号");
+                }else if (StringUtils.equals("2",source1)){
+                    waterDetailVo.setSourceStr("药品");
+                }else if (StringUtils.equals("3",source1)){
+                    waterDetailVo.setSourceStr("检测");
+                }else {
+                    waterDetailVo.setSourceStr("附加费");
+                }
                 waterDetailVos.add(waterDetailVo);
             }
         }
