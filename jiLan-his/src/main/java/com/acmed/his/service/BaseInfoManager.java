@@ -179,7 +179,7 @@ public class BaseInfoManager {
     public List<DicItem> getDicItemsByDicTypeCode(String dicTypeCode){
         Example example = new Example(DicItem.class);
         example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("removed","0");
-        example.setOrderByClause("sn desc");
+        example.setOrderByClause("id desc");
         return dicItemMapper.selectByExample(example);
     }
 
