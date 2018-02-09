@@ -42,4 +42,7 @@ public class DispensingDto {
 
     @ApiModelProperty("是否已付费 0:未付款；1：已经付款；2：部分退款；3：全额退款")
     private String isPaid;
+
+    @ApiModelProperty("是否包含药品 1:是，0:否")
+    private String contanisMedicine;
 }

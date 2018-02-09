@@ -33,7 +33,8 @@
     <select id = "getDispensingList" resultType="com.acmed.his.model.dto.DispensingDto">
         SELECT apply.id as applyid,apply.clinicno,apply.patientname,apply.gender,apply.age,
         patient.mobile,user.username as doctorname,
-        pre.fee,pre.isdispensing,pre.ispaid,pre.createat as diagnosedate
+        pre.fee,pre.isdispensing,pre.ispaid,pre.createat as diagnosedate,
+        case (select count(1) from t_b_prescription_item where  prescriptionid = pre.id) when 0 THEN 0 ELSE 1 END AS contanisMedicine
         from t_b_apply apply
         JOIN t_b_prescription pre on apply.id = pre.applyid
         JOIN t_b_patient patient on apply.patientid = patient.id

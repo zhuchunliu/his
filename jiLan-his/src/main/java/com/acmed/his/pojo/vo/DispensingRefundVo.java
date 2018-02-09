@@ -59,7 +59,7 @@ public class DispensingRefundVo {
             inspectList.forEach((obj)->{
                 DispensingRefundVo.DisInspectVo inspect = new DispensingRefundVo.DisInspectVo();
                 BeanUtils.copyProperties(obj,inspect);
-
+                inspect.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.INSPECT_CATEGORY.getCode(),obj.getCategory()).getDicItemName());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new DisPrescriptVo(null,inspect,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -130,6 +130,9 @@ public class DispensingRefundVo {
 
         @ApiModelProperty("检查类型")
         private String category;
+
+        @ApiModelProperty("检查类型名称")
+        private String categoryName;
 
         @ApiModelProperty("病情摘要")
         private String summary;

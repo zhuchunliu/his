@@ -41,5 +41,7 @@ public class DispensingVo {
     @ApiModelProperty("状态 1:未收费、2:未发药、3:部分退款、4：已退款、5：已完成")
     private String status;
 
+    @ApiModelProperty("是否包含药品 1:是，0:否")
+    private String contanisMedicine;
 
 }

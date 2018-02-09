@@ -41,6 +41,7 @@ public class DeptApi {
                                    @AccessToken AccessInfo info){
         if(StringUtils.isEmpty(deptMo.getDept())){
             return ResponseUtil.setErrorMeg(StatusCode.FAIL,"科室名称不能为空!");
+
         }
         deptManager.saveDept(deptMo,info.getUser());
         return ResponseUtil.setSuccessResult();
