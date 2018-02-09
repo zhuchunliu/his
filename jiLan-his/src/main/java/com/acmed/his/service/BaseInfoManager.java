@@ -125,15 +125,31 @@ public class BaseInfoManager {
      * @return 0 失败
      */
     public int addDicItem(DicItem dicItem){
-        dicItem.setRemoved("0");
-        dicItem.setDicItemCode(commonManager.getNextVal(dicItem.getDicTypeCode()));
-        return dicItemMapper.insert(dicItem);
+        DicItem dicItemParam = new DicItem();
+        dicItemParam.setDicItemName(dicItem.getDicItemName());
+        dicItemParam.setDicTypeCode(dicItem.getDicTypeCode());
+        List<DicItem> select = dicItemMapper.select(dicItemParam);
+        if (select.size() == 0){
+            dicItem.setRemoved("0");
+            dicItem.setDicItemCode(commonManager.getNextVal(dicItem.getDicTypeCode()));
+            return dicItemMapper.insert(dicItem);
+        }else {
+            return 0;
+        }
     }
 
     public int updateDicItem(DicItem dicItem){
-        dicItem.setDicItemCode(null);
-        dicItem.setDicTypeCode(null);
-        return dicItemMapper.updateByPrimaryKeySelective(dicItem);
+        DicItem dicItemParam = new DicItem();
+        dicItemParam.setDicItemName(dicItem.getDicItemName());
+        dicItemParam.setDicTypeCode(dicItem.getDicTypeCode());
+        List<DicItem> select = dicItemMapper.select(dicItemParam);
+        if (select.size() == 0){
+            dicItem.setDicItemCode(null);
+            dicItem.setDicTypeCode(null);
+            return dicItemMapper.updateByPrimaryKeySelective(dicItem);
+        }else {
+            return 0;
+        }
     }
 
     /**
@@ -179,7 +195,7 @@ public class BaseInfoManager {
     public List<DicItem> getDicItemsByDicTypeCode(String dicTypeCode){
         Example example = new Example(DicItem.class);
         example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("removed","0");
-        example.setOrderByClause("id desc");
+        example.setOrderByClause("id ASC");
         return dicItemMapper.selectByExample(example);
     }
 
