@@ -1,5 +1,6 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.pojo.mo.DeptMo;
 import com.acmed.his.pojo.vo.DeptVo;
 import com.acmed.his.service.DeptManager;
@@ -38,6 +39,9 @@ public class DeptApi {
     @PostMapping("/save")
     public ResponseResult saveDept(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody DeptMo deptMo,
                                    @AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(deptMo.getDept())){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"科室名称不能为空!");
+        }
         deptManager.saveDept(deptMo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }

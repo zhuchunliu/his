@@ -110,7 +110,7 @@ public class ScheduleApi {
         for(int index =LocalDateTime.now().getDayOfWeek().getValue() - 1 ; index < 7 ; index++){
             ScheduleApplyVo vo = new ScheduleApplyVo();
             vo.setWeek("周"+weekarr[index]);
-            vo.setDate(LocalDateTime.now().plusDays(6).format(DateTimeFormatter.ofPattern("MM/dd")));
+            vo.setDate(LocalDateTime.now().plusDays(index+1-LocalDateTime.now().getDayOfWeek().getValue()).format(DateTimeFormatter.ofPattern("MM/dd")));
             List<ScheduleApplyVo.ScheduleApplyDetail> detailList = Lists.newArrayList();
             for(ScheduleApplyDto dto : sourceList){
 

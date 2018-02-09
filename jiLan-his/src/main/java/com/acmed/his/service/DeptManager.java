@@ -1,10 +1,13 @@
 package com.acmed.his.service;
 
 import com.acmed.his.constants.CommonConstants;
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.DeptMapper;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Dept;
 import com.acmed.his.pojo.mo.DeptMo;
 import com.acmed.his.pojo.vo.UserInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +51,12 @@ public class DeptManager {
      */
     public void saveDept(DeptMo mo,UserInfo userInfo){
 
+        Example example = new Example(Dept.class);
+        example.createCriteria().andEqualTo("orgCode",userInfo.getOrgCode()).andEqualTo("dept",mo.getDept());
+        List<Dept> list = deptMapper.selectByExample(example);
+        if(null != list && 0 != list.size() &&  (null == mo.getId() || list.get(0).getId() != mo.getId())){
+            throw new BaseException(StatusCode.FAIL,"科室名称不能重复!");
+        }
 
         if(null == mo.getId()){
             Dept dept = new Dept();
