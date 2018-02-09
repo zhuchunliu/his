@@ -98,7 +98,7 @@ public class DispensingApi {
             if("1".equals(obj.getIsPaid()) && "0".equals(obj.getIsDispensing())) vo.setStatus("2");
             if("2".equals(obj.getIsPaid())) vo.setStatus("3");
             if("3".equals(obj.getIsPaid())) vo.setStatus("4");
-            if("1".equals(obj.getIsDispensing())) vo.setStatus("5");
+            if("1".equals(obj.getIsDispensing()) || ("1".equals(obj.getIsPaid()) && "0".equals(obj.getContanisMedicine()))) vo.setStatus("5");
 
             list.add(vo);
         });
