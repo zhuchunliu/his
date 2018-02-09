@@ -28,7 +28,11 @@ public interface PrescriptionItemMapper extends TkMapper<PrescriptionItem> {
 
     void refund(@Param("applyId") String applyId, @Param("groupNums") String[] groupNums);
 
-    Double getSurveyFee(@Param("orgCode") Integer orgCode,
+    Double getSurveySaleFee(@Param("orgCode") Integer orgCode,
                         @Param("startTime") String startTime,
                         @Param("endTime") String endTime);
+
+    Double getSurveyPurchaseFee(@Param("orgCode") Integer orgCode,
+                            @Param("startTime") String startTime,
+                            @Param("endTime") String endTime);
 }

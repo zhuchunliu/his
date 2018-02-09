@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,12 +62,12 @@ public class ReportDrugApi {
         startTime = Optional.ofNullable(startTime).map(DateTimeUtil::getBeginDate).orElse(null);
         endTime = Optional.ofNullable(endTime).map(DateTimeUtil::getEndDate).orElse(null);
 
-        Double saleFee = prescriptionManager.getSurveyFee(info.getUser().getOrgCode(),startTime,endTime);
-        Double purchaseFee =purchaseManager.getSurveyFee(info.getUser().getOrgCode(),startTime,endTime);
-        Map<String,Double> map = Maps.newHashMap();
+        Double saleFee = prescriptionManager.getSurveySaleFee(info.getUser().getOrgCode(),startTime,endTime);
+        Double purchaseFee =prescriptionManager.getSurveyPurchaseFee(info.getUser().getOrgCode(),startTime,endTime);
+        Map<String,Object> map = Maps.newHashMap();
         map.put("saleFee",saleFee);
         map.put("purchaseFee",purchaseFee);
-        map.put("profit",saleFee - purchaseFee);
+        map.put("profit",new DecimalFormat("#.00").format(saleFee.doubleValue()-purchaseFee.doubleValue()));
 
         return ResponseUtil.setSuccessResult(map);
 

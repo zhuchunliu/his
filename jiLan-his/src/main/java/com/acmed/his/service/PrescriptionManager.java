@@ -382,9 +382,15 @@ public class PrescriptionManager {
      * @param orgCode
      * @return
      */
-    public Double getSurveyFee(Integer orgCode,String startTime, String endTime) {
-        return preItemMapper.getSurveyFee(orgCode,startTime,endTime);
+    public Double getSurveySaleFee(Integer orgCode,String startTime, String endTime) {
+        return preItemMapper.getSurveySaleFee(orgCode,startTime,endTime);
     }
+
+    public Double getSurveyPurchaseFee(Integer orgCode,String startTime, String endTime) {
+        return preItemMapper.getSurveyPurchaseFee(orgCode,startTime,endTime);
+    }
+
+
 
     /**
      * 根据applyId获取处方信息
