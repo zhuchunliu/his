@@ -45,7 +45,8 @@
                 and apply.orgcode = #{orgCode}
             </if>
             <if test="@Ognl@isNotEmpty(name)">
-                and (apply.patientname like CONCAT('%',#{name},'%') or patient.mobile like CONCAT('%',#{name},'%'))
+                and (apply.patientname like CONCAT('%',#{name},'%') or patient.mobile like CONCAT('%',#{name},'%')
+                 or apply.clinicno like CONCAT('%',#{name},'%'))
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 1">
                 and pre.ispaid = '0'
@@ -76,7 +77,8 @@
                 and apply.orgcode = #{orgCode}
             </if>
             <if test="@Ognl@isNotEmpty(name)">
-                and (apply.patientname like CONCAT('%',#{name},'%') or patient.mobile like CONCAT('%',#{name},'%'))
+                and (apply.patientname like CONCAT('%',#{name},'%') or patient.mobile like CONCAT('%',#{name},'%')
+                or apply.clinicno like CONCAT('%',#{name},'%'))
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 1">
                 and pre.ispaid = '0'
