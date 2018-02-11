@@ -63,7 +63,7 @@
                 and DATE_FORMAT(pre.createat,'%Y-%m-%d') = #{date}
             </if>
         </trim>
-        order by ispaid ASC,isdispensing ASC
+        order by ispaid ASC,FIELD(isdispensing,0,2,1)
     </select>
 
     <select id = "getDispensingTotal" resultType="java.lang.Integer">
