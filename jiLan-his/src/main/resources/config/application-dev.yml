@@ -43,9 +43,9 @@ mapper:
 
 pagehelper:
     helperDialect: mysql
-    reasonable: true
-    supportMethodsArguments: true
-    params: count=countSql
+#    reasonable: true
+#    supportMethodsArguments: true
+#    params: count=countSql
 
 weixin:
   appid: wx3d71d42f9956d861

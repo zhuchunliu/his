@@ -69,7 +69,7 @@ public class ReportInspectManager {
      * @return
      */
     public List<InspectDayDto> getInspectDetailList(Integer orgCode, String startTime, String endTime,Integer pageNum, Integer pageSize) {
-        PageHelper.offsetPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum,pageSize);
         return inspectMapper.getItemList(orgCode,DicTypeEnum.INSPECT_CATEGORY.getCode(),startTime,endTime);
     }
 

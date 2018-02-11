@@ -10,6 +10,7 @@ import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.ScheduleManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.util.DateTimeUtil;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.google.common.collect.Lists;
@@ -86,12 +87,13 @@ public class ScheduleApi {
     @ApiOperation(value = "挂号医生列表")
     @GetMapping("/apply")
     public ResponseResult<ScheduleApplyVo> list(@ApiParam("医院code 不传默认账号所在机构") @RequestParam(value = "orgCode",required = false) Integer orgCode,
+                                                @ApiParam("挂号日期 默认当前周") @RequestParam(value = "date",required = false) String date,
                                                 @ApiParam("科室主键") @RequestParam(value = "deptId",required = false) Integer deptId,
                                                 @AccessToken AccessInfo info){
         if(orgCode == null){
             orgCode = info.getUser().getOrgCode();
         }
-        List<ScheduleApplyDto> sourceList = scheduleManager.getScheduleApplyList(orgCode,deptId);
+        List<ScheduleApplyDto> sourceList = scheduleManager.getScheduleApplyList(orgCode,deptId,date);
 
         Map<String,String> scheduleMap = Maps.newHashMap();
         baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.SCHEDULE.getCode()).forEach(obj->
@@ -105,12 +107,17 @@ public class ScheduleApi {
         baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DIAGNOSIS_LEVEL.getCode()).forEach(obj->
                 diagnosisMap.put(obj.getDicItemCode(),obj.getDicItemName()));
 
+        LocalDateTime dateTime = Optional.ofNullable(date).map(DateTimeUtil::parsetLocalDate).orElse(LocalDateTime.now());
+        if(LocalDateTime.now().isBefore(dateTime.minusDays(dateTime.getDayOfWeek().getValue()-1))){
+            dateTime = dateTime.minusDays(dateTime.getDayOfWeek().getValue()-1);
+        }
+
         List<ScheduleApplyVo> list = Lists.newArrayList();
         String[] weekarr = new String[]{"一","二","三","四","五","六","日"};
-        for(int index =LocalDateTime.now().getDayOfWeek().getValue() - 1 ; index < 7 ; index++){
+        for(int index =dateTime.getDayOfWeek().getValue() - 1 ; index < 7 ; index++){
             ScheduleApplyVo vo = new ScheduleApplyVo();
             vo.setWeek("周"+weekarr[index]);
-            vo.setDate(LocalDateTime.now().plusDays(index+1-LocalDateTime.now().getDayOfWeek().getValue()).format(DateTimeFormatter.ofPattern("MM/dd")));
+            vo.setDate(dateTime.plusDays(index+1-dateTime.getDayOfWeek().getValue()).format(DateTimeFormatter.ofPattern("MM/dd")));
             List<ScheduleApplyVo.ScheduleApplyDetail> detailList = Lists.newArrayList();
             for(ScheduleApplyDto dto : sourceList){
 

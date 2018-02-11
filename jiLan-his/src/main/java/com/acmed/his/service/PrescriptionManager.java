@@ -186,7 +186,7 @@ public class PrescriptionManager {
             prescription.setApplyId(apply.getId());
             prescription.setPrescriptionNo(apply.getId()+commonManager.getNextVal("Org"+apply.getId()));
             prescription.setIsPaid("0");
-            prescription.setIsDispensing("0");
+//            prescription.setIsDispensing("0");
             prescription.setCreateAt(LocalDateTime.now().toString());
             prescription.setCreateBy(userInfo.getId().toString());
             preMapper.insert(prescription);
@@ -200,6 +200,7 @@ public class PrescriptionManager {
         }
 
         Double price = 0d;
+        boolean contanisMedicine = false;
         for(int i=0; i< mo.getPreList().size(); i++){
             PreMo.PrescriptMo pre = mo.getPreList().get(i);
             Double childPrice = 0.0d;
@@ -209,6 +210,7 @@ public class PrescriptionManager {
                     if(null == drug){
                         continue;
                     }
+                    contanisMedicine = true;
                     PrescriptionItem item = new PrescriptionItem();
                     BeanUtils.copyProperties(info,item,"id");
                     item.setId(UUIDUtil.generate());
@@ -283,7 +285,7 @@ public class PrescriptionManager {
 
         }
 
-
+        prescription.setIsDispensing(contanisMedicine?"0":"2");
         prescription.setFee(price);
         preMapper.updateByPrimaryKey(prescription);
     }

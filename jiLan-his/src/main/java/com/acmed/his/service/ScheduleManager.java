@@ -128,10 +128,12 @@ public class ScheduleManager {
      * @param deptId
      * @return
      */
-    public List<ScheduleApplyDto> getScheduleApplyList(Integer orgCode, Integer deptId) {
-        int week = LocalDateTime.now().getDayOfWeek().getValue();
-        String startTime = LocalDateTime.now().minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
-        String endTime =  LocalDateTime.now().plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+    public List<ScheduleApplyDto> getScheduleApplyList(Integer orgCode, Integer deptId,String date) {
+        LocalDateTime dateTime = Optional.ofNullable(date).map(DateTimeUtil::parsetLocalDate).orElse(LocalDateTime.now());
+        int week = dateTime.getDayOfWeek().getValue();
+        String startTime = dateTime.minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+        String endTime =  dateTime.plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+
         return scheduleMapper.getScheduleApplyList(orgCode,deptId,startTime, endTime);
     }
 
