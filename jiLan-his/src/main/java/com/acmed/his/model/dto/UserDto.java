@@ -73,4 +73,7 @@ public class UserDto {
 
     @ApiModelProperty("医生职务")
     private String roleName;
+
+    @ApiModelProperty("年龄")
+    private Integer age;
 }

@@ -13,6 +13,7 @@ import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserQueryMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.IdCardUtil;
 import com.acmed.his.util.MD5Util;
 import com.acmed.his.util.PassWordUtil;
 import com.github.pagehelper.PageHelper;
@@ -117,6 +118,9 @@ public class UserManager {
                     Optional.ofNullable(deptMapper.selectByPrimaryKey(mo.getDept())).map(dept->dept.getDept()).orElse(null));
             user.setPassWd(MD5Util.encode("123456"));
             user.setRemoved("0");
+            if(StringUtils.isNotEmpty(mo.getDateOfBirth())){
+                user.setAge(IdCardUtil.idCardToAge("000000"+mo.getDateOfBirth().replace("-","")+"0000"));
+            }
             userMapper.insert(user);
         }else{
             user = userMapper.selectByPrimaryKey(mo.getId());
@@ -127,6 +131,9 @@ public class UserManager {
             BeanUtils.copyProperties(mo,user);
             user.setModifyAt(LocalDateTime.now().toString());
             user.setModifyBy(userInfo.getId().toString());
+            if(StringUtils.isNotEmpty(mo.getDateOfBirth())){
+                user.setAge(IdCardUtil.idCardToAge("000000"+mo.getDateOfBirth().replace("-","")+"0000"));
+            }
             userMapper.updateByPrimaryKey(user);
         }
 
