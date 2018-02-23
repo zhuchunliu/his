@@ -1,5 +1,6 @@
 package com.acmed.his.service;
 
+import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.DrugDictMapper;
 import com.acmed.his.dao.DrugMapper;
 import com.acmed.his.dao.ManufacturerMapper;
@@ -17,6 +18,7 @@ import com.acmed.his.util.PageResult;
 import com.acmed.his.util.PinYinUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +49,9 @@ public class DrugManager {
     @Autowired
     private CommonManager commonManager;
 
+    @Autowired
+    private BaseInfoManager baseInfoManager;
+
     /**
      * 添加药品
      * @param mo 药
@@ -61,6 +66,13 @@ public class DrugManager {
             drug.setModifyBy(userInfo.getId().toString());
             drug.setPinYin(Optional.ofNullable(drug.getName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setGoodsPinYin(Optional.ofNullable(drug.getGoodsName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
+            drug.setSpec(String.format("%s%s/%s*%s/%s",
+                    drug.getDose(),
+                    StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.DOSEUNIT.getCode(),drug.getDoseUnit()).getDicItemName(),
+                    StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.MINUNIT.getCode(),drug.getMinUnit()).getDicItemName(),
+                    drug.getConversion(),
+                    StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName()
+                    ));
             return drugMapper.updateByPrimaryKeySelective(drug);
         }else {
             Drug drug = new Drug();
@@ -68,12 +80,19 @@ public class DrugManager {
             drug.setOrgCode(userInfo.getOrgCode());
             String key = this.getCategory(drug.getCategory())+new java.text.DecimalFormat("000000").format(userInfo.getOrgCode());
             drug.setDrugCode(key+String.format("%06d",Integer.parseInt(commonManager.getNextVal(key))));
+            drug.setSpec(String.format("%s%s/%s*%s/%s",
+                    drug.getDose(),
+                    StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.DOSEUNIT.getCode(),drug.getDoseUnit()).getDicItemName(),
+                    StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.MINUNIT.getCode(),drug.getMinUnit()).getDicItemName(),
+                    drug.getConversion(),
+                    StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName()
+            ));
             drug.setPinYin(Optional.ofNullable(drug.getName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setGoodsPinYin(Optional.ofNullable(drug.getGoodsName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setCreateAt(date);
             drug.setCreateBy(date);
             drug.setRemoved("0");
-            drug.setPinYin(PinYinUtil.getPinYinHeadChar(drug.getName()));
+
             return drugMapper.insert(drug);
         }
 

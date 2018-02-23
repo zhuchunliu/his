@@ -28,8 +28,12 @@ public enum DicTypeEnum {
     DUTY("Duty","职称等级"),
     DIAGNOSIS_LEVEL("DiagnosisLevel","门诊类型"),
     REFUND_REASON("RefundReason","退款理由"),
-    DRUG_FREQUENCY("DrugFrequency","用药频率");
-
+    DRUG_FREQUENCY("DrugFrequency","用药频率"),
+    DRUG_FORM("DrugForm","剂型"),
+    UNIT("Unit","大单位"),
+    MINUNIT("MinUnit","小单位"),
+    DOSEUNIT("DoseUnit","剂量单位"),
+    USEAGE("Useage","药品用法");
     DicTypeEnum(String code,String name){
         this.code = code;
         this.name = name;

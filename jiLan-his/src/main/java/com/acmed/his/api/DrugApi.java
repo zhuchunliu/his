@@ -1,5 +1,6 @@
 package com.acmed.his.api;
 
+import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
@@ -9,6 +10,7 @@ import com.acmed.his.pojo.mo.DrugMo;
 import com.acmed.his.pojo.mo.DrugQueryMo;
 import com.acmed.his.pojo.vo.DrugDictVo;
 import com.acmed.his.pojo.vo.DrugVo;
+import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.DrugManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -44,6 +46,9 @@ public class DrugApi {
 
     @Autowired
     private ManufacturerMapper manufacturerMapper;
+
+    @Autowired
+    private BaseInfoManager baseInfoManager;
 
     @ApiOperation(value = "药品信息列表")
     @PostMapping("/list")
@@ -136,6 +141,14 @@ public class DrugApi {
         Drug drug = drugManager.getDrugById(id);
         DrugVo vo = new DrugVo();
         BeanUtils.copyProperties(drug,vo);
+        vo.setCategoryName(StringUtils.isEmpty(drug.getCategory())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory()).getDicItemName());
+        vo.setDrugFormName(StringUtils.isEmpty(drug.getDrugForm())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm()).getDicItemName());
+        vo.setUnitName(StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName());
+        vo.setMinUnitName(StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.MINUNIT.getCode(),drug.getMinUnit()).getDicItemName());
+        vo.setDoseUnitName(StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.DOSEUNIT.getCode(),drug.getDoseUnit()).getDicItemName());
+        vo.setUseageName(StringUtils.isEmpty(drug.getUseage())?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage()).getDicItemName());
+        vo.setFrequencyName(null != drug.getFrequency()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),drug.getFrequency().toString()).getDicItemName());
+
         vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
                 map(obj->obj.getName()).orElse(""));
         return ResponseUtil.setSuccessResult(vo);

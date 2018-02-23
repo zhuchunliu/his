@@ -3,15 +3,13 @@ package com.acmed.his.pojo.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * Created by Darren on 2017-12-28
+ * Created by Darren on 2018-02-23
  **/
 @Data
-public class DrugVo {
+public class DrugListVo {
 
     @Id
     @ApiModelProperty("药品id")
@@ -98,26 +96,6 @@ public class DrugVo {
     @ApiModelProperty("单次用量")
     private Double singleDose;
 
-    @ApiModelProperty("适应症状")
-    private String symptoms;
-
-    @ApiModelProperty("药品性状")
-    private String character;
-
-    @ApiModelProperty("不良反应")
-    private String reactions;
-
-    @ApiModelProperty("注意事项")
-    private String matters;
-
-    @ApiModelProperty("药品禁忌")
-    private String taboo;
-
-    @ApiModelProperty("条形码")
-    private String barcode;
-
-    @ApiModelProperty("原产地")
-    private String origin;
 
 
     @ApiModelProperty("进价")
@@ -128,6 +106,4 @@ public class DrugVo {
 
     @ApiModelProperty("库存数量")
     private Double num;
-
-
 }
