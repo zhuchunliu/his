@@ -48,4 +48,7 @@ public class Role {
 
     @ApiModelProperty("修改时间")
     private String modifyTime;
+
+    @ApiModelProperty("0没有隐藏  1隐藏")
+    private Integer hideFlag;
 }

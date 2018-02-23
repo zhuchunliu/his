@@ -41,7 +41,7 @@ public class RoleManager {
      */
     public List<Role> getRoleList(String isValid){
         Example example = new Example(Role.class);
-        Example.Criteria criteria = example.createCriteria().andEqualTo("removed","0");
+        Example.Criteria criteria = example.createCriteria().andEqualTo("removed","0").andEqualTo("hideflag","0");
         if(!StringUtils.isEmpty(isValid)){
             criteria.andEqualTo("isValid",isValid);
         }

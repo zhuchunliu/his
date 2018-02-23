@@ -8,7 +8,7 @@
         LEFT JOIN t_b_patient AS t2 ON t2.id = t1.patientid
         WHERE t1.orgcode = #{orgCode}
         <if test="@Ognl@isNotEmpty(vague)">
-            AND (t1.mobile like CONCAT(#{vague},'%') OR t1.patientname LIKE CONCAT(#{vague},'%') OR t1.inputcode LIKE CONCAT(#{vague},'%') OR t1.idcard LIKE CONCAT(#{vague},'%') )
+            AND (t1.mobile like CONCAT(#{vague},'%') OR t1.patientname LIKE CONCAT(#{vague},'%') OR t1.inputcode LIKE CONCAT(#{vague},'%') OR t1.idcard LIKE CONCAT('%',#{vague},'%') )
         </if>
         <if test="@Ognl@isNotEmpty(blackFlag)">
             AND t1.blackflag = #{blackFlag}
