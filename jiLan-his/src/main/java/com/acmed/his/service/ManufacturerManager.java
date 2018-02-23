@@ -100,7 +100,7 @@ public class ManufacturerManager {
         PageResult<Manufacturer> pageResult = new PageResult<>();
         Integer pageNum = pageBase.getPageNum();
         Integer pageSize = pageBase.getPageSize();
-        PageHelper.startPage(pageSize,pageNum);
+        PageHelper.startPage(pageNum,pageSize);
         List<Manufacturer> manufacturers = manufacturerMapper.selectAll();
         PageInfo<Manufacturer> manufacturerPageInfo = new PageInfo<>(manufacturers);
         pageResult.setPageNum(pageNum);
