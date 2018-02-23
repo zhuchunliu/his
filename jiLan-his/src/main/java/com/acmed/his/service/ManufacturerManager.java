@@ -6,6 +6,7 @@ import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -69,7 +70,10 @@ public class ManufacturerManager {
      */
     public PageResult<Manufacturer> getManufacturerLikeNameByPage(PageBase<String> pageBase){
         Example example = new Example(Manufacturer.class);
-        example.createCriteria().andLike("name","%"+pageBase.getParam()+"%");
+        String param = pageBase.getParam();
+        if (!StringUtils.isEmpty(param)){
+            example.createCriteria().andLike("name","%"+param+"%");
+        }
         PageResult<Manufacturer> pageResult = new PageResult<>();
         Integer pageNum = pageBase.getPageNum();
         Integer pageSize = pageBase.getPageSize();
