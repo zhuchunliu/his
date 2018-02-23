@@ -42,7 +42,7 @@ public class ManufacturerApi {
     }
 
     @ApiOperation(value = "根据名字模糊查询 分页")
-    @GetMapping("name")
+    @PostMapping("name")
     public ResponseResult<ResponseResult<PageResult<Manufacturer>>> getManufacturerByName(@RequestBody PageBase<String> pageBase){
         return ResponseUtil.setSuccessResult(manufacturerManager.getManufacturerLikeNameByPage(pageBase));
     }
