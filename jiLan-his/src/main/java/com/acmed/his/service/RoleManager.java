@@ -40,12 +40,13 @@ public class RoleManager {
      * @return
      */
     public List<Role> getRoleList(String isValid){
-        Example example = new Example(Role.class);
-        Example.Criteria criteria = example.createCriteria().andEqualTo("removed","0").andEqualTo("hideflag","0");
+        Role role = new Role();
         if(!StringUtils.isEmpty(isValid)){
-            criteria.andEqualTo("isValid",isValid);
+            role.setIsValid(isValid);
         }
-        return roleMapper.selectByExample(example);
+        role.setRemoved("0");
+        role.setHideFlag(0);
+        return roleMapper.select(role);
     }
 
     /**
