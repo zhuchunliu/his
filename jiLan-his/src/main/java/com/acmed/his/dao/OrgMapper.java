@@ -31,5 +31,5 @@ public interface OrgMapper extends TkMapper<Org> {
      * @param cityId
      * @return
      */
-    List<Org> getOrgListByCity(@Param("cityId") Integer cityId);
+    List<Org> getOrgListByCity(@Param("cityId") Integer cityId,@Param("orgName") String orgName);
 }

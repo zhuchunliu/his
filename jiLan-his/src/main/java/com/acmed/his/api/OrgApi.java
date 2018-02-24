@@ -75,9 +75,10 @@ public class OrgApi {
 
     @ApiOperation(value = "获取机构列表")
     @GetMapping("/list")
-    public ResponseResult<List<OrgVo>> getOrgList(@ApiParam("市区id null:获取所有的机构信息")@RequestParam(value = "city",required = false) Integer cityId){
+    public ResponseResult<List<OrgVo>> getOrgList(@ApiParam("市区id null:获取所有的机构信息")@RequestParam(value = "city",required = false) Integer cityId,
+                                                  @ApiParam("医院名称") @RequestParam(value="orgName",required = false) String orgName){
         List<OrgVo> list = new ArrayList<>();
-        orgManager.getOrgList(cityId).forEach((obj)->{
+        orgManager.getOrgList(cityId,orgName).forEach((obj)->{
 
             OrgVo orgMo = new OrgVo();
             BeanUtils.copyProperties(obj,orgMo);

@@ -17,5 +17,8 @@
       <if test="@Ognl@isNotEmpty(cityId)">
         and (province = #{cityId} or city = #{cityId})
       </if>
+        <if test="@Ognl@isNotEmpty(orgName)">
+            and orgname like CONCAT('%',#{orgName},'%')
+        </if>
     </select>
 </mapper>
