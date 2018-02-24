@@ -146,7 +146,7 @@ public class OrgApi {
     }
 
     @ApiOperation(value = "患者就诊过的机构列表")
-    @DeleteMapping("/orgPatientList")
+    @GetMapping("/orgPatientList")
     public ResponseResult<List<OrgPatientVo>> delRole(@AccessToken AccessInfo info){
         String patientId = info.getPatientId();
         PatientItem patientItem = new PatientItem();
