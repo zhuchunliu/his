@@ -24,6 +24,7 @@
         <if test="@Ognl@isNotEmpty(deptId) ">
             AND t1.dept = #{deptId}
         </if>
+        order by CONVERT(t1.username using gbk) ASC
     </select>
 
 
@@ -39,7 +40,7 @@
         <if test="@Ognl@isNotEmpty(deptId) ">
             AND t1.dept = #{deptId}
         </if>
-
+        ORDER BY CONVERT(t1.username using gbk) ASC
     </select>
 
 </mapper>

@@ -70,10 +70,11 @@ public class ScheduleApi {
     }
 
     @ApiOperation(value = "获取上周排班信息[复制上周用]")
-    @GetMapping("/previous")
-    public ResponseResult<ScheduleVo> getPreviousList(@ApiParam("人员主键集合，逗号间隔;不传查询所有用户的排班信息") @RequestParam(value = "userIds",required = false) String userIds,
-                                           @ApiParam("日期 默认为当前天") @RequestParam(value = "time",required = false) String time){
-        List<ScheduleDto> sourceList = scheduleManager.getPreviousList(userIds,time);
+    @GetMapping("/copy")
+    public ResponseResult<ScheduleVo> getPreviousList(@ApiParam("科室主键") @RequestParam(value = "deptId",required = false) Integer deptId,
+                                                      @ApiParam("挂号日期 默认当前周") @RequestParam(value = "date",required = false) String date,
+                                                      @AccessToken AccessInfo info){
+        List<ScheduleDto> sourceList = scheduleManager.getPreviousList(info.getUser(), date,deptId);
         List<ScheduleVo> list = new ArrayList<>();
         sourceList.forEach(obj->{
             ScheduleVo vo = new ScheduleVo();
