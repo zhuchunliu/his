@@ -5,6 +5,7 @@ import com.acmed.his.dao.OrgMapper;
 import com.acmed.his.model.Area;
 import com.acmed.his.model.Org;
 import com.acmed.his.pojo.mo.OrgMo;
+import com.acmed.his.pojo.vo.OrgVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -32,7 +33,7 @@ public class OrgManager {
      * 获取机构列表
      * @return
      */
-    public List<Org> getOrgList(Integer cityId,String orgName){
+    public List<OrgVo> getOrgList(Integer cityId, String orgName){
         return orgMapper.getOrgListByCity(cityId,orgName);
     }
 

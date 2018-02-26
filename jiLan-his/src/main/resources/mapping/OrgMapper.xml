@@ -12,8 +12,12 @@
         </if>
     </select>
 
-    <select id="getOrgListByCity" resultType="com.acmed.his.model.Org">
-        select * from t_p_s_org where removed = '0'
+    <select id="getOrgListByCity" resultType="com.acmed.his.pojo.vo.OrgVo">
+        select t1.*,IFNULL(t3.num,0) applyNum from t_p_s_org t1
+        LEFT JOIN
+        (
+        select count(1) num,t2.orgcode from t_b_apply t2 GROUP BY t2.orgcode
+        )as t3  on t3.orgcode = t1.orgcode
       <if test="@Ognl@isNotEmpty(cityId)">
         and (province = #{cityId} or city = #{cityId})
       </if>
