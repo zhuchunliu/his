@@ -18,11 +18,12 @@
         (
         select count(1) num,t2.orgcode from t_b_apply t2 GROUP BY t2.orgcode
         )as t3  on t3.orgcode = t1.orgcode
+        where t1.removed = '0'
       <if test="@Ognl@isNotEmpty(cityId)">
-        and (province = #{cityId} or city = #{cityId})
+        and (t1.province = #{cityId} or t1.city = #{cityId})
       </if>
         <if test="@Ognl@isNotEmpty(orgName)">
-            and orgname like CONCAT('%',#{orgName},'%')
+            and t1.orgname like CONCAT('%',#{orgName},'%')
         </if>
     </select>
 </mapper>
