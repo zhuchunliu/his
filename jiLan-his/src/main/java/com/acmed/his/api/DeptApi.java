@@ -49,10 +49,15 @@ public class DeptApi {
 
     @ApiOperation(value = "获取科室列表")
     @GetMapping("/list")
-    public ResponseResult<List<DeptVo>> getDeptList(@AccessToken AccessInfo info){
+    public ResponseResult<List<DeptVo>> getDeptList(@AccessToken AccessInfo info,@ApiParam("科室主键") @RequestParam("orgCode") Integer orgCode){
         List<DeptVo> list = new ArrayList<>();
-
-        deptManager.getDeptList(info.getUser().getOrgCode()).forEach(obj->{
+        Integer org = null;
+        if (orgCode == null){
+            org = info.getUser().getOrgCode();
+        }else {
+            org = orgCode;
+        }
+        deptManager.getDeptList(org).forEach(obj->{
             DeptVo deptVo = new DeptVo();
             if(!StringUtils.isEmpty(obj.getCreateBy())){
                 deptVo.setCreateUserName(Optional.ofNullable(userManager.getUserDetail(Integer.parseInt(obj.getCreateBy())))
