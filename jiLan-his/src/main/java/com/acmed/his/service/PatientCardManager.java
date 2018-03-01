@@ -41,7 +41,7 @@ public class PatientCardManager {
         patientCard.setCreateAt(null);
         patientCard.setCreateBy(null);
         patientCard.setModifyAt(LocalDateTime.now().toString());
-        return patientCardMapper.insert(patientCard);
+        return patientCardMapper.updateByPrimaryKeySelective(patientCard);
     }
 
     public List<PatientCard> getPatientCardList(PatientCard patientCard){

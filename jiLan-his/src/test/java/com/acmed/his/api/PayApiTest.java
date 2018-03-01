@@ -68,7 +68,7 @@ public class PayApiTest {
             Map<String,String> result = new HashMap<>();
             result.put("appId",map.get("appid"));
             result.put("timeStamp",WXPayUtil.getCurrentTimestamp()+"");
-            result.put("nonceStr", UUIDUtil.generate());
+            result.put("nonceStr", UUIDUtil.generate32());
             result.put("package","prepay_id="+map.get("prepay_id"));
             result.put("signType","MD5");
             String s2 = WXPayUtil.generateSignature(result, environment.getProperty("weixin.key"));

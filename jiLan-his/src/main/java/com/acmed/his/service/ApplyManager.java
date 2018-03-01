@@ -167,6 +167,8 @@ public class ApplyManager {
      * @return 0失败 参数
      */
     public int updateApply(Apply apply){
+        apply.setCreateAt(null);
+        apply.setCreateBy(null);
         apply.setModifyAt(LocalDateTime.now().toString());
         return applyMapper.updateByPrimaryKeySelective(apply);
     }
@@ -439,7 +441,7 @@ public class ApplyManager {
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_PARAM,"参数错误");
         }
         Apply apply = new Apply();
-        String applyId = UUIDUtil.generate();
+        String applyId = UUIDUtil.generate32();
         apply.setId(applyId);
         apply.setDoctorName(doctorName);
         apply.setDoctorId(doctorId);
@@ -568,7 +570,7 @@ public class ApplyManager {
 
 
     private int addApply(Apply apply){
-        apply.setId(Optional.ofNullable(apply.getId()).orElse(UUIDUtil.generate()));
+        apply.setId(Optional.ofNullable(apply.getId()).orElse(UUIDUtil.generate32()));
         apply.setCreateAt(LocalDateTime.now().toString());
         // 挂号单号在付款完成后生成
         //String formatVal = commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000");

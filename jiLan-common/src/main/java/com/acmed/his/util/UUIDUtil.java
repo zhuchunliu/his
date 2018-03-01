@@ -14,6 +14,10 @@ public class UUIDUtil
 	    return String.format("%s%s",StringUtils.replace(UUID.randomUUID().toString(), "-", ""),
                 RandomUtil.generateString(4));
   }
+
+  public static String generate32() {
+    return StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+  }
   
   public static void main(String[] args)
   {

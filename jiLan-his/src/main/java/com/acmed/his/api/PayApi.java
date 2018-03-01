@@ -101,7 +101,7 @@ public class PayApi {
             Map<String,String> result = new HashMap<>();
             result.put("appId",map.get("appid"));
             result.put("timeStamp",WXPayUtil.getCurrentTimestamp()+"");
-            result.put("nonceStr", UUIDUtil.generate());
+            result.put("nonceStr", UUIDUtil.generate32());
             result.put("package","prepay_id="+map.get("prepay_id"));
             result.put("signType","MD5");
             String s2 = WXPayUtil.generateSignature(result, environment.getProperty("weixin.key"));
@@ -213,7 +213,7 @@ public class PayApi {
             Map<String,String> result = new HashMap<>();
             result.put("appId",map.get("appid"));
             result.put("timeStamp",WXPayUtil.getCurrentTimestamp()+"");
-            result.put("nonceStr", UUIDUtil.generate());
+            result.put("nonceStr", UUIDUtil.generate32());
             result.put("package","prepay_id="+map.get("prepay_id"));
             result.put("signType","MD5");
             String s2 = WXPayUtil.generateSignature(result, environment.getProperty("weixin.key"));
@@ -263,7 +263,7 @@ public class PayApi {
                                 apply.setIsPaid("1");
                                 int i = applyManager.updateApply(apply);
                                 PayStatements payStatements = new PayStatements();
-                                payStatements.setId(UUIDUtil.generate());
+                                payStatements.setId(UUIDUtil.generate32());
                                 payStatements.setFeeType("2");
                                 payStatements.setOrgCode(applyById.getOrgCode());
                                 payStatements.setSource("1");

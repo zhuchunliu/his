@@ -85,7 +85,7 @@ public class PatientCardApi {
             PatientCard patientCard = new PatientCard();
             BeanUtils.copyProperties(patientCardMo,patientCard);
             patientCard.setModifyBy(info.getPatientId());
-            patientCardManager.add(patientCard);
+            patientCardManager.update(patientCard);
         }
         return ResponseUtil.setSuccessResult();
     }

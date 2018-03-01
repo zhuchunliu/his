@@ -330,7 +330,7 @@ public class PrescriptionManager {
         if(!StringUtils.isEmpty(mo.getApplyId())){
             apply = applyManager.getApplyById(mo.getApplyId());
         }else{//如果是新挂号单，则添加新挂号单
-            apply.setId(UUIDUtil.generate());
+            apply.setId(UUIDUtil.generate32());
             apply.setOrgCode(userInfo.getOrgCode());
             apply.setOrgName(userInfo.getOrgName());
             apply.setDept(userInfo.getDept());
