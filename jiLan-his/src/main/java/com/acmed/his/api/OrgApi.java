@@ -158,15 +158,17 @@ public class OrgApi {
             orgCodes.add(item.getOrgCode());
         }
         List<OrgPatientVo> orgPatientVoList = new ArrayList<>();
-        List<Org> orgList = orgManager.getOrgsByIdList(orgCodes);
-        for (Org org: orgList){
-            OrgPatientVo orgPatientVo = new OrgPatientVo();
-            orgPatientVo.setApplyNum(applyManager.getApplyNum(org.getOrgCode()));
-            orgPatientVo.setImgUrl(org.getImgUrl());
-            orgPatientVo.setOrgCode(org.getOrgCode());
-            orgPatientVo.setIntroduction(org.getIntroduction());
-            orgPatientVo.setOrgName(org.getOrgName());
-            orgPatientVoList.add(orgPatientVo);
+        if (orgCodes.size() != 0){
+            List<Org> orgList = orgManager.getOrgsByIdList(orgCodes);
+            for (Org org: orgList){
+                OrgPatientVo orgPatientVo = new OrgPatientVo();
+                orgPatientVo.setApplyNum(applyManager.getApplyNum(org.getOrgCode()));
+                orgPatientVo.setImgUrl(org.getImgUrl());
+                orgPatientVo.setOrgCode(org.getOrgCode());
+                orgPatientVo.setIntroduction(org.getIntroduction());
+                orgPatientVo.setOrgName(org.getOrgName());
+                orgPatientVoList.add(orgPatientVo);
+            }
         }
         return ResponseUtil.setSuccessResult(orgPatientVoList);
     }
