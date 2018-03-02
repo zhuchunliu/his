@@ -44,13 +44,13 @@ public class ManufacturerApi {
     }
 
     @ApiOperation(value = "根据名字模糊查询 分页")
-    @PostMapping("allByPage")
+    @PostMapping("listByPage")
     public ResponseResult<PageResult<Manufacturer>> getManufacturerByNameByPage(@RequestBody PageBase<String> pageBase){
         return ResponseUtil.setSuccessResult(manufacturerManager.getManufacturerLikeNameByPage(pageBase));
     }
 
     @ApiOperation(value = "根据名字模糊查询")
-    @GetMapping("all")
+    @GetMapping("list")
     public ResponseResult<List<Manufacturer>> getManufacturerByName(@ApiParam("药厂名字") @RequestParam(value = "name",required = false) String name){
         return ResponseUtil.setSuccessResult(manufacturerManager.getManufacturerLikeName(name));
     }
