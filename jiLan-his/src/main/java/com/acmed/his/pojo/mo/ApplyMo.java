@@ -17,7 +17,7 @@ public class ApplyMo {
     @ApiModelProperty("手机号")
     private String mobile;
 
-    @ApiModelProperty("身份证")
+    @ApiModelProperty("患者端必须是18位身份证    医生端可以是8位生日")
     private String idcard;
 
     @ApiModelProperty("社保卡")
