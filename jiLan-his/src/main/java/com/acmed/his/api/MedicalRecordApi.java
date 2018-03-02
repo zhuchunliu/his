@@ -12,6 +12,7 @@ import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.service.ApplyManager;
 import com.acmed.his.service.MedicalRecordManager;
 import com.acmed.his.service.PrescriptionManager;
+import com.acmed.his.service.UserManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
@@ -41,6 +42,9 @@ public class MedicalRecordApi {
 
     @Autowired
     private ApplyManager applyManager;
+
+    @Autowired
+    private UserManager userManager;
 
     @Autowired
     private PrescriptionManager prescriptionManager;
@@ -103,6 +107,9 @@ public class MedicalRecordApi {
         MedicalRecordDetailVo medicalRecordDetailVo = new MedicalRecordDetailVo();
         BeanUtils.copyProperties(medicalRecordById,medicalRecordDetailVo);
         medicalRecordDetailVo.setPrescriptionVoList(preByApply);
+        Integer doctorId = new Integer(medicalRecordById.getCreateBy());
+        String userName = userManager.getUserDetail(doctorId).getUserName();
+        medicalRecordDetailVo.setDoctorName(userName);
         return ResponseUtil.setSuccessResult(medicalRecordDetailVo);
     }
 
@@ -117,6 +124,9 @@ public class MedicalRecordApi {
         MedicalRecordDetailVo medicalRecordDetailVo = new MedicalRecordDetailVo();
         BeanUtils.copyProperties(medicalRecordByApplyId,medicalRecordDetailVo);
         medicalRecordDetailVo.setPrescriptionVoList(preByApply);
+        Integer doctorId = new Integer(medicalRecordByApplyId.getCreateBy());
+        String userName = userManager.getUserDetail(doctorId).getUserName();
+        medicalRecordDetailVo.setDoctorName(userName);
         return ResponseUtil.setSuccessResult(medicalRecordDetailVo);
     }
 }
