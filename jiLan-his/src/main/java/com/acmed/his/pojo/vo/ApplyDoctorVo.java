@@ -85,4 +85,7 @@ public class ApplyDoctorVo {
 
     @ApiModelProperty("家族史")
     private String familyHistory;
+
+    @ApiModelProperty("医生名字")
+    private String doctorName;
 }
