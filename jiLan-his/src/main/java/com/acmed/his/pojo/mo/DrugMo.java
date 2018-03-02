@@ -36,7 +36,7 @@ public class DrugMo {
     private String goodsName;
 
     @ApiModelProperty("生产厂家")
-    private Integer manufacturer;
+    private String manufacturer;
 
     @ApiModelProperty("单位（g/条）大单位 字典表:Unit")
     private String unit;
