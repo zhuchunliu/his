@@ -59,7 +59,9 @@ public class ManufacturerManager {
      */
     public List<Manufacturer> getManufacturerLikeName(String name){
         Example example = new Example(Manufacturer.class);
-        example.createCriteria().andLike("name","%"+name+"%");
+        if (!StringUtils.isEmpty(name)){
+            example.createCriteria().andLike("name","%"+name+"%");
+        }
         return manufacturerMapper.selectByExample(example);
     }
 
