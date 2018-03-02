@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * User
@@ -106,5 +105,8 @@ public class User implements Serializable{
 
     @ApiModelProperty("修改时间")
     private String modifyAt;
+
+    @ApiModelProperty("限号数量")
+    private Integer applyNum;
 
 }

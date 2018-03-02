@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -417,6 +418,14 @@ public class ApplyManager {
             fee = userDetail.getApplyfee();
             doctorName = userDetail.getUserName();
             createBy = patientId;
+
+            String now = LocalDate.now().toString();
+            String startTime = DateTimeUtil.parsetLocalDateStart(now).toString();
+            String  endTime = DateTimeUtil.parsetLocalDateEnd(now).toString();
+            List<ApplyDoctorDto> byPinyinOrNameOrClinicnoTiaojian = applyMapper.getByPinyinOrNameOrClinicnoTiaojian( orgCode,  dept,  startTime,  endTime,  null,  null,  null);
+            if (byPinyinOrNameOrClinicnoTiaojian.size()>=userDetail.getApplyNum()){
+                return ResponseUtil.setErrorMeg(StatusCode.ERROR_APPLY_NUM_OUT,"医生挂号达到上限");
+            }
         }else if (StringUtils.isEmpty(patientId) && userInfo != null){
             //医生挂号
             if (doctorId == null){

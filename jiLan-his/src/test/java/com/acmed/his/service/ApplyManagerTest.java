@@ -95,8 +95,8 @@ public class ApplyManagerTest {
             mo.setMobile("13288778877");
             mo.setIdcard("320586199910316655");
             mo.setSocialCard("fdd4445");
-            mo.setDoctorId(6);
-            mo.setAppointmentTime("2018-02-02");
+            mo.setDoctorId(2);
+            mo.setAppointmentTime("2018-03-02");
             mo.setRelation("家人");
             mo.setPatientCardId("376500dd108c4563ac091147488abbbfao5a");
             /*UserInfo userInfo = new UserInfo();
@@ -106,7 +106,7 @@ public class ApplyManagerTest {
             userInfo.setOrgCode(i);
             userInfo.setOrgName("北京大学第一医院");
             userInfo.setApplyfee(1.0);*/
-            applyManager.addApply(mo,"fe11af7e242249c087469c1dc8158b76DIfq",null);
+            System.err.println(applyManager.addApply(mo,"fe11af7e242249c087469c1dc8158b76DIfq",null).toString());
         }
     }
     @Test
