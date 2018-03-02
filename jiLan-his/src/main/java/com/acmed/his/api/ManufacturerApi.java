@@ -29,7 +29,7 @@ public class ManufacturerApi {
     @Autowired
     private ManufacturerManager manufacturerManager;
 
-    @ApiOperation(value = "添加")
+    @ApiOperation(value = "添加/编辑 存在id则编辑")
     @PostMapping("save")
     public ResponseResult saveManufacturer(@RequestBody Manufacturer manufacturer){
         manufacturerManager.saveManufacturer(manufacturer);
@@ -54,4 +54,6 @@ public class ManufacturerApi {
     public ResponseResult<List<Manufacturer>> getManufacturerByName(@ApiParam("药厂名字") @RequestParam(value = "name",required = false) String name){
         return ResponseUtil.setSuccessResult(manufacturerManager.getManufacturerLikeName(name));
     }
+
+
 }

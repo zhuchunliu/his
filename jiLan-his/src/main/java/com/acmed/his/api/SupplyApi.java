@@ -28,7 +28,7 @@ public class SupplyApi {
     @Autowired
     private SupplyManager supplyManager;
 
-    @ApiOperation(value = "添加")
+    @ApiOperation(value = "添加/编辑  存在id就是编辑")
     @PostMapping("save")
     public ResponseResult saveSupply(@RequestBody Supply supply){
         supplyManager.saveSupply(supply);
