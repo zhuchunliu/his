@@ -105,4 +105,18 @@ public class MedicalRecordApi {
         medicalRecordDetailVo.setPrescriptionVoList(preByApply);
         return ResponseUtil.setSuccessResult(medicalRecordDetailVo);
     }
+
+    @ApiOperation(value = "根据挂号单id查询病历详情")
+    @GetMapping("applyId")
+    public ResponseResult<MedicalRecordDetailVo> getByApplyId(@ApiParam("挂号单id") @RequestParam("applyId")  String applyId){
+        MedicalRecord medicalRecordByApplyId = medicalRecordManager.getMedicalRecordByApplyId(applyId);
+        if (medicalRecordByApplyId == null){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"病例不存在");
+        }
+        List<PrescriptionVo> preByApply = prescriptionManager.getPreByApplyId(medicalRecordByApplyId.getApplyId());
+        MedicalRecordDetailVo medicalRecordDetailVo = new MedicalRecordDetailVo();
+        BeanUtils.copyProperties(medicalRecordByApplyId,medicalRecordDetailVo);
+        medicalRecordDetailVo.setPrescriptionVoList(preByApply);
+        return ResponseUtil.setSuccessResult(medicalRecordDetailVo);
+    }
 }

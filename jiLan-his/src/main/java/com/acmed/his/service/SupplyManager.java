@@ -69,4 +69,13 @@ public class SupplyManager {
         pageResult.setTotal(supplyPageInfo.getTotal());
         return pageResult;
     }
+
+    /**
+     * 条件查询
+     * @param param
+     * @return
+     */
+    public List<Supply> getSupply(String param){
+        return supplyMapper.selectMohu(param);
+    }
 }

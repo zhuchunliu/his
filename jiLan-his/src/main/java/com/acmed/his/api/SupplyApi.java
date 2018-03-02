@@ -12,6 +12,8 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 /**
  * SupplyApi
@@ -40,8 +42,14 @@ public class SupplyApi {
     }
 
     @ApiOperation(value = "列表分页")
-    @PostMapping("list")
+    @PostMapping("listByPage")
     public ResponseResult<PageResult<Supply>> getAllSupplyByPage(@ApiParam("param 名字  短名 拼音都可以模糊搜索   不传就是全部查询")@RequestBody PageBase<String> pageBase){
         return ResponseUtil.setSuccessResult(supplyManager.getSupplyByPage(pageBase));
+    }
+
+    @ApiOperation(value = "列表分页")
+    @GetMapping("list")
+    public ResponseResult<List<Supply>> getAllSupply(@ApiParam("名字  短名 拼音都可以模糊搜索") @RequestParam(value = "param",required = false)String param){
+        return ResponseUtil.setSuccessResult(supplyManager.getSupply(param));
     }
 }
