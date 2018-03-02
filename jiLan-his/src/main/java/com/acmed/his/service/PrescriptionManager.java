@@ -90,24 +90,27 @@ public class PrescriptionManager {
 
     /**
      * 获取处方
-     * @param id
+     * @param applyId
      * @return
      */
-    public PreVo getPre(String id) {
+    public PreVo getPre(String applyId) {
+
+
+
         Example example = new Example(Charge.class);
-        example.createCriteria().andEqualTo("prescriptionId",id);
+        example.createCriteria().andEqualTo("applyId",applyId);
         example.orderBy("id").asc();
         List<Charge> chargeList = chargeMapper.selectByExample(example);
 
         example = new Example(Inspect.class);
-        example.createCriteria().andEqualTo("prescriptionId",id);
+        example.createCriteria().andEqualTo("applyId",applyId);
         example.orderBy("id").asc();
         List<Inspect> preInspectList = inspectMapper.selectByExample(example);
 
-        Prescription prescription = preMapper.selectByPrimaryKey(id);
+        Prescription prescription = preMapper.getPreByApply(applyId).get(0);
 
         example = new Example(PrescriptionItem.class);
-        example.createCriteria().andEqualTo("prescriptionId",id);
+        example.createCriteria().andEqualTo("applyId",applyId);
         example.orderBy("id").asc();
         List<PrescriptionItem> preItemList = preItemMapper.selectByExample(example);
 
@@ -215,7 +218,7 @@ public class PrescriptionManager {
                     BeanUtils.copyProperties(info,item,"id");
                     item.setId(UUIDUtil.generate());
                     item.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
-                    item.setCategory(drug.getCategory());
+                    item.setCategory(drug.getCategory().toString());
                     item.setPrescriptionId(prescription.getId());
                     item.setApplyId(apply.getId());
                     item.setDrugId(drug.getId());

@@ -13,4 +13,7 @@ public class DrugQueryMo {
 
     @ApiModelProperty("药品分类 参考字典表：DrugClassification")
     private String category;
+
+    @ApiModelProperty("是否有效 0:无；1：有")
+    private String isValid;
 }

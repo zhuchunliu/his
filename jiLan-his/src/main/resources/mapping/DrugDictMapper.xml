@@ -5,9 +5,10 @@
 
     <select id="getDrugDictList"  resultType="com.acmed.his.model.DrugDict">
         select * from t_b_drugdict dict where
-        NOT EXISTS (select * from t_b_drug where drugCode = dict.code and removed= '0' and orgCode = #{orgCode} )
+        NOT EXISTS (select * from t_b_drug where dictid = dict.id and removed= '0' and orgCode = #{orgCode} )
         <if test="@Ognl@isNotEmpty(name)">
-            and (specName like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%'))
+            and (name like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%')
+            or goodsname like concat('%',#{name},'%') or goodspinyin like concat('%',#{name},'%'))
         </if>
         <if test="@Ognl@isNotEmpty(category)">
             and category = #{category}
@@ -16,9 +17,10 @@
 
     <select id="getDrugDictTotal"  resultType="java.lang.Integer">
         select count(1) from t_b_drugdict dict where
-        NOT EXISTS (select * from t_b_drug where drugCode = dict.code and removed= '0' and orgCode = #{orgCode} )
+        NOT EXISTS (select * from t_b_drug where dictid = dict.id and removed= '0' and orgCode = #{orgCode} )
         <if test="@Ognl@isNotEmpty(name)">
-            and (specName like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%'))
+            and (name like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%')
+            or goodsname like concat('%',#{name},'%') or goodspinyin like concat('%',#{name},'%'))
         </if>
         <if test="@Ognl@isNotEmpty(category)">
             and category = #{category}

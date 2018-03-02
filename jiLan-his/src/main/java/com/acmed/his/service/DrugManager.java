@@ -3,34 +3,23 @@ package com.acmed.his.service;
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.DrugDictMapper;
 import com.acmed.his.dao.DrugMapper;
-import com.acmed.his.dao.ManufacturerMapper;
-import com.acmed.his.dao.SupplyMapper;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
-import com.acmed.his.model.Manufacturer;
-import com.acmed.his.model.Supply;
 import com.acmed.his.model.dto.DrugDto;
 import com.acmed.his.model.dto.DrugStockDto;
 import com.acmed.his.pojo.mo.DrugMo;
 import com.acmed.his.pojo.vo.UserInfo;
-import com.acmed.his.util.PageBase;
-import com.acmed.his.util.PageResult;
 import com.acmed.his.util.PinYinUtil;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import static java.awt.SystemColor.info;
 
 /**
  * DrugManager
@@ -78,7 +67,8 @@ public class DrugManager {
             Drug drug = new Drug();
             BeanUtils.copyProperties(mo,drug);
             drug.setOrgCode(userInfo.getOrgCode());
-            String key = this.getCategory(drug.getCategory())+new java.text.DecimalFormat("000000").format(userInfo.getOrgCode());
+            String categoryName = baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getDoseUnit()).getDicItemName();
+            String key = PinYinUtil.getPinYinHeadChar(categoryName)+new java.text.DecimalFormat("000000").format(userInfo.getOrgCode());
             drug.setDrugCode(key+String.format("%06d",Integer.parseInt(commonManager.getNextVal(key))));
             drug.setSpec(String.format("%s%s/%s*%s/%s",
                     drug.getDose(),
@@ -91,7 +81,7 @@ public class DrugManager {
             drug.setGoodsPinYin(Optional.ofNullable(drug.getGoodsName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setCreateAt(date);
             drug.setCreateBy(date);
-            drug.setRemoved("0");
+            drug.setIsValid("0");
 
             return drugMapper.insert(drug);
         }
@@ -117,10 +107,10 @@ public class DrugManager {
      * @param category
      * @return
      */
-    public List<DrugDto> getDrugList(Integer orgCode, String name, String category, Integer pageNum, Integer pageSize ) {
+    public List<DrugDto> getDrugList(Integer orgCode, String name, String category,String isValid, Integer pageNum, Integer pageSize ) {
 
         PageHelper.startPage(pageNum,pageSize);
-        return drugMapper.getDrugList(orgCode,name,category);
+        return drugMapper.getDrugList(orgCode,name,category,isValid);
 
     }
 
@@ -130,9 +120,9 @@ public class DrugManager {
      * @param category
      * @return
      */
-    public Integer getDrugTotal(Integer orgCode,String name, String category ) {
+    public Integer getDrugTotal(Integer orgCode,String name, String category,String isValid ) {
 
-        return drugMapper.getDrugTotal(orgCode,name,category);
+        return drugMapper.getDrugTotal(orgCode,name,category,isValid);
 
     }
 
@@ -146,6 +136,19 @@ public class DrugManager {
         drug.setModifyAt(LocalDateTime.now().toString());
         drug.setModifyBy(info.getId().toString());
         drug.setRemoved("1");
+        drugMapper.updateByPrimaryKey(drug);
+    }
+
+    /**
+     * 启用、禁用药品信息
+     * @param id
+     * @param info
+     */
+    public void switchDrug(Integer id, UserInfo info) {
+        Drug drug = drugMapper.selectByPrimaryKey(id);
+        drug.setModifyAt(LocalDateTime.now().toString());
+        drug.setModifyBy(info.getId().toString());
+        drug.setIsValid("1".equals(drug.getIsValid())?"0":"1");
         drugMapper.updateByPrimaryKey(drug);
     }
 
@@ -175,15 +178,17 @@ public class DrugManager {
     @Transactional
     public void saveDrugByDict(String[] codes,UserInfo info) {
         for(String code :codes){
-            DrugDict dict = drugDictMapper.selectByPrimaryKey(code);
+            DrugDict dict = drugDictMapper.selectByPrimaryKey(Integer.parseInt(code));
             Drug drug = new Drug();
-
+            BeanUtils.copyProperties(dict,drug,"id");
             drug.setOrgCode(info.getOrgCode());
-            String key = this.getCategory(dict.getCategory())+new java.text.DecimalFormat("000000").format(info.getOrgCode());
+            String categoryName = baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getDoseUnit()).getDicItemName();
+            String key = PinYinUtil.getPinYinHeadChar(categoryName)+new java.text.DecimalFormat("000000").format(info.getOrgCode());
             drug.setDrugCode(key+String.format("%06d",Integer.parseInt(commonManager.getNextVal(key))));
-            drug.setName(dict.getSpecName());
-            drug.setPinYin(dict.getPinYin());
-            drug.setCategory(dict.getCategory());
+            drug.setPinYin(PinYinUtil.getPinYinHeadChar(dict.getName()));
+            drug.setGoodsPinYin(PinYinUtil.getPinYinHeadChar(dict.getGoodsName()));
+            drug.setDictId(dict.getId());
+            drug.setIsValid("1");
             drug.setRemoved("0");
             drug.setCreateAt(LocalDateTime.now().toString());
             drug.setCreateBy(info.getId().toString());
@@ -221,31 +226,13 @@ public class DrugManager {
      */
     public void modifyPrice(Integer id, Double price, Double num, UserInfo user) {
         Drug drug = drugMapper.selectByPrimaryKey(id);
-        if(null != num) {
-            drug.setNum(num);
-        }
+//        if(null != num) {
+//            drug.setNum(num);
+//        }
         drug.setRetailPrice(price);
         drug.setModifyAt(LocalDateTime.now().toString());
         drug.setModifyBy(user.getId().toString());
         drugMapper.updateByPrimaryKey(drug);
     }
-
-
-    private String getCategory(String category){
-        switch (category){
-            case "0": // 西药
-                return "X";
-            case "1": // 中成药
-                return "ZC";
-            case "2": // 中药
-                return "Z";
-            case "3": // 血液制品
-                return "B";
-            case "4": // 诊断试剂
-                return "D";
-         }
-         return "O";
-    }
-
 
 }

@@ -371,7 +371,7 @@ public class DispensingManager {
                     drugMapper.updateByPrimaryKey(drug);//扣除药品库存
 
                     List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
-                    Double num = item.getNum();
+                    Integer num = item.getNum();
                     for (DrugStock drugStock : drugStockList) {
 
                         if (num == 0) {
@@ -391,7 +391,7 @@ public class DispensingManager {
                         itemStock.setNum(occupyNum);
                         itemStockList.add(itemStock);
 
-                        num = num - occupyNum;
+//                        num = num - occupyNum;
                     }
                 }
             }

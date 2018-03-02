@@ -24,6 +24,9 @@ public class Drug {
     @ApiModelProperty("药品id")
     private Integer id;
 
+    @ApiModelProperty("药品字典id")
+    private Integer dictId;
+
     @ApiModelProperty("药品编码")
     private String drugCode;
 
@@ -34,9 +37,9 @@ public class Drug {
     private Integer isEssential;
 
     @ApiModelProperty("药品分类 字典表：DrugClassification")
-    private String category;
+    private Integer category;
 
-    @ApiModelProperty("处方类型 0：中药，1：西药")
+    @ApiModelProperty("处方类型 字段表：PrescriptionType")
     private Integer prescriptionType;
 
     @ApiModelProperty("剂型，字典表：DrugForm")
@@ -91,7 +94,7 @@ public class Drug {
     private String symptoms;
 
     @ApiModelProperty("药品性状")
-    private String character;
+    private String characters;
 
     @ApiModelProperty("不良反应")
     private String reactions;
@@ -101,6 +104,10 @@ public class Drug {
 
     @ApiModelProperty("药品禁忌")
     private String taboo;
+
+    @ApiModelProperty("药品说明")
+    private String instructions;
+
 
     @ApiModelProperty("条形码")
     private String barcode;
@@ -113,16 +120,23 @@ public class Drug {
     @ApiModelProperty("进价")
     private Double bid;
 
-    @ApiModelProperty("零售价")
+    @ApiModelProperty("大单位零售价")
     private Double retailPrice;
 
-    @ApiModelProperty("库存数量")
-    private Double num;
+    @ApiModelProperty("小单位零售价")
+    private Double minRetailPrice;
 
-    @ApiModelProperty("供应商")
-    private Integer supply;
 
-    @ApiModelProperty("删除标识:0 未删除,1:删除")
+    @ApiModelProperty("大单位数量")
+    private Integer num;
+
+    @ApiModelProperty("小单位数量")
+    private Integer minNum;
+
+    @ApiModelProperty("是否有效 0:无；1：有")
+    private String isValid;
+
+    @ApiModelProperty("是否删除 0:无；1：有")
     private String removed;
 
     @ApiModelProperty("创建时间")
@@ -137,21 +151,5 @@ public class Drug {
     @ApiModelProperty("修改用户")
     private String modifyBy;
 
-
-
-    @ApiModelProperty("包装数量")
-    private Integer packNum;
-
-    @ApiModelProperty("药品类型 0:OTC药品; 1:处方药品")
-    private String classification;
-
-    @ApiModelProperty("包装单位")
-    private String packUnit;
-
-    @ApiModelProperty("加成率")
-    private Double markonpercent;
-
-    @ApiModelProperty("药品备注")
-    private String memo;
 
 }

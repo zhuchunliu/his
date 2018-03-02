@@ -3,13 +3,21 @@ package com.acmed.his.pojo.mo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 /**
  * Created by Darren on 2017-12-28
  **/
 @Data
 public class DrugMo {
+    @Id
     @ApiModelProperty("药品id")
     private Integer id;
+
+    @ApiModelProperty("药品字典id")
+    private Integer dictId;
 
     @ApiModelProperty("药品编码")
     private String drugCode;
@@ -23,7 +31,7 @@ public class DrugMo {
     @ApiModelProperty("药品分类 字典表：DrugClassification")
     private String category;
 
-    @ApiModelProperty("处方类型 0：中药，1：西药")
+    @ApiModelProperty("处方类型 字典表：PrescriptionType")
     private Integer prescriptionType;
 
     @ApiModelProperty("剂型，字典表：DrugForm")
@@ -32,11 +40,20 @@ public class DrugMo {
     @ApiModelProperty("药品名称")
     private String name;
 
+    @ApiModelProperty("药品名称拼音")
+    private String pinYin;
+
     @ApiModelProperty("商品名称")
     private String goodsName;
 
-    @ApiModelProperty("生产厂家")
+    @ApiModelProperty("商品名称拼音")
+    private String goodsPinYin;
+
+    @ApiModelProperty("生产厂家 对应生产商")
     private String manufacturer;
+
+    @ApiModelProperty("生产厂家 对应生产商")
+    private Integer manufacturerId;
 
     @ApiModelProperty("单位（g/条）大单位 字典表:Unit")
     private String unit;
@@ -53,6 +70,9 @@ public class DrugMo {
     @ApiModelProperty("剂量单位 字典表：DoseUnit")
     private String doseUnit;
 
+    @ApiModelProperty("药品规格")
+    private String spec;
+
     @ApiModelProperty("使用方法 字典表: Useage")
     private String useage;
 
@@ -66,7 +86,7 @@ public class DrugMo {
     private String symptoms;
 
     @ApiModelProperty("药品性状")
-    private String character;
+    private String characters;
 
     @ApiModelProperty("不良反应")
     private String reactions;
@@ -76,6 +96,9 @@ public class DrugMo {
 
     @ApiModelProperty("药品禁忌")
     private String taboo;
+
+    @ApiModelProperty("药品说明")
+    private String instructions;
 
     @ApiModelProperty("条形码")
     private String barcode;

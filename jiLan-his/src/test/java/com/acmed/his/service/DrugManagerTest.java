@@ -1,10 +1,15 @@
 package com.acmed.his.service;
 
 import com.acmed.his.HisApplication;
+import com.acmed.his.dao.DrugDictMapper;
 import com.acmed.his.model.Drug;
+import com.acmed.his.model.DrugDict;
 import com.acmed.his.model.Manufacturer;
 import com.acmed.his.model.Supply;
 import com.acmed.his.pojo.mo.DrugMo;
+import com.acmed.his.util.PinYinUtil;
+import io.swagger.annotations.ApiModelProperty;
+import net.sourceforge.pinyin4j.PinyinHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -33,25 +39,28 @@ public class DrugManagerTest {
     @Autowired
     private SupplyManager supplyManager;
 
+    @Autowired
+    private DrugDictMapper drugDictMapper;
+
     @Test
     public void addDrug() throws Exception {
         DrugMo drug = new DrugMo();
 //        drug.setDrugCode("123");
 //        drug.setOrgCode(1);
-        drug.setName("药药药");
-        drug.setSpec("瓶");
-        drug.setCategory("0");
-        drug.setClassification("0");
-        drug.setPackUnit("bao");
-        drug.setUnit("2");
-        drug.setPackNum(1);
-        drug.setDrugForm("计量");
-        drug.setManufacturer(1);
-        drug.setUseage("sdfdsf");
+//        drug.setName("药药药");
+//        drug.setSpec("瓶");
+//        drug.setCategory("0");
+//        drug.setClassification("0");
+//        drug.setPackUnit("bao");
+//        drug.setUnit("2");
+//        drug.setPackNum(1);
+//        drug.setDrugForm("计量");
+//        drug.setManufacturer(1);
+//        drug.setUseage("sdfdsf");
 //        drug.setBid(21.1);
 //        drug.setRetailPrice(23.0);
-        drug.setMarkonpercent(1.0);
-        drug.setMemo("备注");
+//        drug.setMarkonpercent(1.0);
+//        drug.setMemo("备注");
 //        drug.setCreateAt(LocalDateTime.now().toString());
 //        drug.setModifyAt(LocalDateTime.now().toString());
 //        drug.setCreateBy(1+"");
@@ -122,6 +131,22 @@ public class DrugManagerTest {
     @Test
     public void getAllSupply() throws Exception {
         supplyManager.getAllSupply();
+    }
+
+
+    @Test
+    public void setDrugDictName(){
+        List<DrugDict> list = drugDictMapper.selectAll();
+        for(DrugDict drugDict : list){
+            drugDict.setPinYin(PinYinUtil.getPinYinHeadChar(drugDict.getName()));
+            drugDict.setGoodsPinYin(PinYinUtil.getPinYinHeadChar(drugDict.getGoodsName()));
+            drugDictMapper.updateByPrimaryKey(drugDict);
+            System.err.println(drugDict.getId()+"====");
+        }
+    }
+
+    public static void main(String[] args) {
+        System.err.println(PinYinUtil.getPinYinHeadChar("注射用重组人Ⅱ型肿瘤坏死因子受体-抗体融合蛋白"));
     }
 
 }

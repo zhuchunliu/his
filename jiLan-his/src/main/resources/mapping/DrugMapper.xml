@@ -15,6 +15,9 @@
         <if test="@Ognl@isNotEmpty(category)">
             and t1.category = #{category}
         </if>
+        <if test="@Ognl@isNotEmpty(isValid)">
+            and t1.isValid = #{isValid}
+        </if>
     </select>
 
     <select id="getDrugTotal"  resultType="java.lang.Integer">
@@ -24,7 +27,10 @@
             t1.goodsname like concat('%',#{name},'%') or t1.goodspinyin like concat('%',#{name},'%') )
         </if>
         <if test="@Ognl@isNotEmpty(category)">
-            and category = #{category}
+            and t1.category = #{category}
+        </if>
+        <if test="@Ognl@isNotEmpty(isValid)">
+            and t1.isValid = #{isValid}
         </if>
 
     </select>

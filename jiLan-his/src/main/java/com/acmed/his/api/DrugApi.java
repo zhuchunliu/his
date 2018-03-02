@@ -9,6 +9,7 @@ import com.acmed.his.model.dto.DrugStockDto;
 import com.acmed.his.pojo.mo.DrugMo;
 import com.acmed.his.pojo.mo.DrugQueryMo;
 import com.acmed.his.pojo.vo.DrugDictVo;
+import com.acmed.his.pojo.vo.DrugListVo;
 import com.acmed.his.pojo.vo.DrugVo;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.DrugManager;
@@ -52,20 +53,29 @@ public class DrugApi {
 
     @ApiOperation(value = "药品信息列表")
     @PostMapping("/list")
-    public ResponseResult<PageResult<DrugVo>> getDrugList(@RequestBody(required = false) PageBase<DrugQueryMo> pageBase,
-                                                          @AccessToken AccessInfo info){
+    public ResponseResult<PageResult<DrugListVo>> getDrugList(@RequestBody(required = false) PageBase<DrugQueryMo> pageBase,
+                                                              @AccessToken AccessInfo info){
         List<DrugDto> list = drugManager.getDrugList(info.getUser().getOrgCode(),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getIsValid).orElse(null),
                 pageBase.getPageNum(), pageBase.getPageSize());
         int total = drugManager.getDrugTotal(info.getUser().getOrgCode(),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
-                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null));
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getIsValid).orElse(null));
 
         List<DrugVo> voList = Lists.newArrayList();
-        list.forEach(obj->{
+        list.forEach(drug->{
             DrugVo vo = new DrugVo();
-            BeanUtils.copyProperties(obj,vo);
+            BeanUtils.copyProperties(drug,vo);
+            vo.setCategoryName(StringUtils.isEmpty(drug.getCategory())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory()).getDicItemName());
+            vo.setDrugFormName(StringUtils.isEmpty(drug.getDrugForm())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm()).getDicItemName());
+            vo.setUnitName(StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName());
+            vo.setUseageName(StringUtils.isEmpty(drug.getUseage())?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage()).getDicItemName());
+
+            vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
+                    map(obj->obj.getName()).orElse(""));
             voList.add(vo);
         });
 
@@ -108,9 +118,20 @@ public class DrugApi {
 
     @ApiOperation(value = "删除")
     @DeleteMapping("/del")
-    public ResponseResult delDrug(@ApiParam("药品主键")@RequestParam(value = "id",required = true) Integer id,
+    public ResponseResult delDrug(@ApiParam("药品主键")@RequestParam(value = "id") Integer id,
                                   @AccessToken AccessInfo info){
         drugManager.delDrug(id,info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "启用、禁用药品信息")
+    @PostMapping("/switch")
+    public ResponseResult swithDrug(@ApiParam("{\"id\":\"\"} id：药品主键") @RequestBody String param,
+                                  @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+            return ResponseUtil.setParamEmptyError("id");
+        }
+        drugManager.switchDrug(JSONObject.parseObject(param).getInteger("id"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
@@ -141,18 +162,19 @@ public class DrugApi {
         Drug drug = drugManager.getDrugById(id);
         DrugVo vo = new DrugVo();
         BeanUtils.copyProperties(drug,vo);
-        vo.setCategoryName(StringUtils.isEmpty(drug.getCategory())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory()).getDicItemName());
+        vo.setCategoryName(null!=drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
         vo.setDrugFormName(StringUtils.isEmpty(drug.getDrugForm())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm()).getDicItemName());
         vo.setUnitName(StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName());
         vo.setMinUnitName(StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.MINUNIT.getCode(),drug.getMinUnit()).getDicItemName());
         vo.setDoseUnitName(StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.DOSEUNIT.getCode(),drug.getDoseUnit()).getDicItemName());
         vo.setUseageName(StringUtils.isEmpty(drug.getUseage())?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage()).getDicItemName());
-        vo.setFrequencyName(null != drug.getFrequency()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),drug.getFrequency().toString()).getDicItemName());
+        vo.setFrequencyName(null == drug.getFrequency()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),drug.getFrequency().toString()).getDicItemName());
 
         vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
                 map(obj->obj.getName()).orElse(""));
         return ResponseUtil.setSuccessResult(vo);
     }
+
 
     @ApiOperation(value = "库存查询")
     @PostMapping("/stock")

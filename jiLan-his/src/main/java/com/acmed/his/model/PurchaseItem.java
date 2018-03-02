@@ -27,7 +27,7 @@ public class PurchaseItem {
     private String purchaseId;
 
     @ApiModelProperty("采购数量")
-    private Double num;
+    private Integer num;
 
     @ApiModelProperty("采购单位")
     private String unit;

@@ -35,23 +35,32 @@ public class DrugDict {
     @ApiModelProperty("商品名称拼音")
     private String goodsPinYin;
 
-    @ApiModelProperty("药品分类 0:西药；1：中成药；2：中药；3：血液制品")
-    private String category;
+    @ApiModelProperty("药品分类名称 ")
+    private String categoryName;
 
-    @ApiModelProperty("剂型，字典表：DrugForm")
-    private String drugForm;
+    @ApiModelProperty("药品分类 字典表：DrugClassification")
+    private Integer category;
+
+    @ApiModelProperty("剂型")
+    private String drugFormName;
+
+    @ApiModelProperty("剂型 字典表：DrugForm")
+    private Integer drugform;
+
+    @ApiModelProperty("生产厂家名称")
+    private String manufacturerName;
 
     @ApiModelProperty("生产厂家 对应生产商")
-    private String manufacturer;
-
-    @ApiModelProperty("生产厂家 对应生产商")
-    private Integer manufacturerId;
+    private Integer manufacturer;
 
     @ApiModelProperty("准字号")
     private String approvalNumber;
 
-    @ApiModelProperty("单位（g/条）大单位 字典表:Unit")
-    private String unit;
+    @ApiModelProperty("单位（g/条）大单位 ")
+    private String unitName;
+
+    @ApiModelProperty("单位主键 字典表:Unit")
+    private Integer unit;
 
     @ApiModelProperty("药品规格")
     private String spec;

@@ -138,12 +138,12 @@ public class PurchaseManager {
             List<Drug> drugList = drugMapper.selectByExample(drugExample);
             Drug drug = drugList.get(0);
             if(null != drug.getNum()){
-                Double num = drug.getNum();
+                Integer num = drug.getNum();
                 drug.setNum(num + item.getNum());
                 drug.setBid((num * drug.getBid() + item.getNum() * item.getBid())/drug.getNum());
                 drug.setRetailPrice((num * drug.getRetailPrice() + item.getNum() * item.getRetailPrice())/drug.getNum());
             }else{
-                drug.setNum(Double.parseDouble(item.getNum().toString()));
+                drug.setNum(Integer.parseInt(item.getNum().toString()));
                 drug.setBid(item.getBid());
                 drug.setRetailPrice(item.getRetailPrice());
             }
@@ -167,7 +167,7 @@ public class PurchaseManager {
                 stock.setExpiryDate(item.getExpiryDate());
                 stock.setBatchNumber(item.getBatchNumber());
                 stock.setSupply(purchase.getSupplierId());
-                stock.setNum(item.getNum());
+//                stock.setNum(item.getNum());
                 stock.setLockNum(0d);
                 stock.setRemoved("0");
                 stock.setCreateAt(LocalDateTime.now().toString());

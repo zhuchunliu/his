@@ -29,8 +29,11 @@ public class DrugVo {
     @ApiModelProperty("药品分类名称")
     private String categoryName;
 
-    @ApiModelProperty("处方类型 0：中药，1：西药")
+    @ApiModelProperty("处方类型 字典表：PrescriptionType")
     private Integer prescriptionType;
+
+    @ApiModelProperty("处方类型")
+    private String prescriptionTypeName;
 
     @ApiModelProperty("剂型，字典表：DrugForm")
     private String drugForm;
@@ -102,7 +105,7 @@ public class DrugVo {
     private String symptoms;
 
     @ApiModelProperty("药品性状")
-    private String character;
+    private String characters;
 
     @ApiModelProperty("不良反应")
     private String reactions;
@@ -113,21 +116,14 @@ public class DrugVo {
     @ApiModelProperty("药品禁忌")
     private String taboo;
 
+    @ApiModelProperty("药品说明")
+    private String instructions;
+
     @ApiModelProperty("条形码")
     private String barcode;
 
     @ApiModelProperty("原产地")
     private String origin;
-
-
-    @ApiModelProperty("进价")
-    private Double bid;
-
-    @ApiModelProperty("零售价")
-    private Double retailPrice;
-
-    @ApiModelProperty("库存数量")
-    private Double num;
 
 
 }

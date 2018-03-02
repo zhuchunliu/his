@@ -230,9 +230,9 @@ public class TemplateApi {
                 if(null != drug){
                     vo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
                     vo.setFee(drug.getRetailPrice());
-                    vo.setPackUnit(drug.getPackUnit());
+//                    vo.setPackUnit(drug.getPackUnit());
                     vo.setUnit(drug.getUnit());
-                    vo.setCategory(drug.getCategory());
+//                    vo.setCategory(drug.getCategory());
                 }
                 if(!StringUtils.isEmpty(obj.getFrequency())){
                     vo.setFrequencyName(Optional.ofNullable(baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),obj.getFrequency())).map(item->item.getDicItemName()).orElse(null));

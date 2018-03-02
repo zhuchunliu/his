@@ -7,7 +7,7 @@ public enum DicTypeEnum {
 
     USER_CATEGORY("UserCategory","用户类型"),
     ORG_CATEGORY("OrgCategory","机构类型"),
-    DRUG_CLASSIFICATION("DrugClassification","药品类型"),
+    DRUG_CLASSIFICATION("DrugClassification","药品分类"),
     FEE_ITEM("FeeItem","诊疗项目类型"),
     CHARGE_CATEGORY("ChargeCategory","附加费用类型"),
     INSPECT_CATEGORY("InspectCategory","检查单类型"),
@@ -22,7 +22,6 @@ public enum DicTypeEnum {
     PACK_UNIT("PackUnit","包装单位"),
     PAYMENT_METHOD("PaymentMethod","付费方式"),
     ROUTE_OF_DRUG("RouteOfDrug","用药类型"),
-    DOSAGE_FORM("DosageForm","剂型"),
     ORG_LEVEL("OrgLevel","机构等级"),
     SCHEDULE("Schedule","排班类型"),
     DUTY("Duty","职称等级"),
@@ -33,7 +32,8 @@ public enum DicTypeEnum {
     UNIT("Unit","大单位"),
     MINUNIT("MinUnit","小单位"),
     DOSEUNIT("DoseUnit","剂量单位"),
-    USEAGE("Useage","药品用法");
+    USEAGE("Useage","药品用法"),
+    PRESCRIPTION_TYPE("PrescriptionType","处方类型");
     DicTypeEnum(String code,String name){
         this.code = code;
         this.name = name;
