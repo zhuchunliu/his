@@ -4,6 +4,7 @@ import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
 import com.acmed.his.pojo.mo.PreMo;
+import com.acmed.his.pojo.vo.PreDrugVo;
 import com.acmed.his.pojo.vo.PreVo;
 import com.acmed.his.pojo.vo.PrescriptionVo;
 import com.acmed.his.pojo.vo.UserInfo;
@@ -127,6 +128,56 @@ public class PrescriptionManager {
             dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
         });
         return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord,dicItemName);
+    }
+
+
+    /**
+     * 获取药品处方
+     * @param applyId
+     * @return
+     */
+    public List<PreDrugVo> getPreDrug(String applyId) {
+
+
+        Example example = new Example(PrescriptionItem.class);
+        example.createCriteria().andEqualTo("applyId",applyId);
+        example.orderBy("id").asc();
+        List<PrescriptionItem> preItemList = preItemMapper.selectByExample(example);
+
+        if(null != preItemList && 0 != preItemList.size()){
+
+            Map<String,List<PreDrugVo.PreDrugChild>> map = Maps.newHashMap();
+
+            List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FREQUENCY.getCode());
+            Map<String,String> dicItemName = Maps.newHashMap();
+            dicItemList.forEach(obj->{
+                dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+            });
+
+            preItemList.forEach(obj->{
+                PreDrugVo.PreDrugChild item = new PreDrugVo.PreDrugChild();
+                BeanUtils.copyProperties(obj,item);
+                if(!StringUtils.isEmpty(item.getFrequency())){
+                    item.setFrequencyName(dicItemName.get(item.getFrequency()));
+                }
+                if(!map.containsKey(obj.getGroupNum())){
+                    List<PreDrugVo.PreDrugChild> list = Lists.newArrayList();
+                    list.add(item);
+                    map.put(obj.getGroupNum(),list);
+                }else{
+                    map.get(obj.getGroupNum()).add(item);
+                }
+            });
+
+            List<PreDrugVo> voList = Lists.newArrayList();
+            for(String key : map.keySet()){
+                PreDrugVo vo = new PreDrugVo();
+                vo.setItemChildList(map.get(key));
+                voList.add(vo);
+            }
+            return voList;
+        }
+        return null;
     }
 
 

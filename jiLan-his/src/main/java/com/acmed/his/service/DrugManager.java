@@ -6,7 +6,6 @@ import com.acmed.his.dao.DrugMapper;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
 import com.acmed.his.model.dto.DrugDto;
-import com.acmed.his.model.dto.DrugStockDto;
 import com.acmed.his.pojo.mo.DrugMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.PinYinUtil;
@@ -57,8 +56,8 @@ public class DrugManager {
             drug.setGoodsPinYin(Optional.ofNullable(drug.getGoodsName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setSpec(String.format("%s%s/%s*%s/%s",
                     drug.getDose(),
-                    StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.DOSEUNIT.getCode(),drug.getDoseUnit()).getDicItemName(),
-                    StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.MINUNIT.getCode(),drug.getMinUnit()).getDicItemName(),
+                    StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit()).getDicItemName(),
+                    StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit()).getDicItemName(),
                     drug.getConversion(),
                     StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName()
                     ));
@@ -72,8 +71,8 @@ public class DrugManager {
             drug.setDrugCode(key+String.format("%06d",Integer.parseInt(commonManager.getNextVal(key))));
             drug.setSpec(String.format("%s%s/%s*%s/%s",
                     drug.getDose(),
-                    StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.DOSEUNIT.getCode(),drug.getDoseUnit()).getDicItemName(),
-                    StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.MINUNIT.getCode(),drug.getMinUnit()).getDicItemName(),
+                    StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit()).getDicItemName(),
+                    StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit()).getDicItemName(),
                     drug.getConversion(),
                     StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName()
             ));
@@ -197,42 +196,6 @@ public class DrugManager {
 
     }
 
-    /**
-     * 库存列表
-     * @param name
-     * @param info
-     */
-    public List<DrugStockDto> getStockList(Integer pageNum , Integer pageSize, String name, UserInfo info) {
-        PageHelper.startPage(pageNum,pageSize);
-        return drugMapper.getStockList(name,info.getOrgCode());
-    }
 
-    /**
-     * 库存数据
-     * @param name
-     * @param user
-     * @return
-     */
-    public Integer getStockTotal(String name, UserInfo user) {
-        return drugMapper.getStockTotal(name,user.getOrgCode());
-    }
-
-    /**
-     * 调整价格
-     * @param id
-     * @param price
-     * @param num
-     * @param user
-     */
-    public void modifyPrice(Integer id, Double price, Double num, UserInfo user) {
-        Drug drug = drugMapper.selectByPrimaryKey(id);
-//        if(null != num) {
-//            drug.setNum(num);
-//        }
-        drug.setRetailPrice(price);
-        drug.setModifyAt(LocalDateTime.now().toString());
-        drug.setModifyBy(user.getId().toString());
-        drugMapper.updateByPrimaryKey(drug);
-    }
 
 }

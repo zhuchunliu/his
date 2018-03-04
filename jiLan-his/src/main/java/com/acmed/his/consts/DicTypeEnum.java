@@ -29,9 +29,7 @@ public enum DicTypeEnum {
     REFUND_REASON("RefundReason","退款理由"),
     DRUG_FREQUENCY("DrugFrequency","用药频率"),
     DRUG_FORM("DrugForm","剂型"),
-    UNIT("Unit","大单位"),
-    MINUNIT("MinUnit","小单位"),
-    DOSEUNIT("DoseUnit","剂量单位"),
+    UNIT("Unit","单位"),
     USEAGE("Useage","药品用法"),
     PRESCRIPTION_TYPE("PrescriptionType","处方类型");
     DicTypeEnum(String code,String name){

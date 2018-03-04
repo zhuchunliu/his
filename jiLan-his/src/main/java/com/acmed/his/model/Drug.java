@@ -69,13 +69,13 @@ public class Drug {
     @ApiModelProperty("换算量")
     private Integer conversion;
 
-    @ApiModelProperty("小单位 字典表： MinUnit")
+    @ApiModelProperty("小单位 字典表： Unit")
     private String minUnit;
 
     @ApiModelProperty("剂量")
     private Double dose;
 
-    @ApiModelProperty("剂量单位 字典表：DoseUnit")
+    @ApiModelProperty("剂量单位 字典表：Unit")
     private String doseUnit;
 
     @ApiModelProperty("药品规格")
@@ -125,6 +125,9 @@ public class Drug {
 
     @ApiModelProperty("小单位零售价")
     private Double minRetailPrice;
+
+    @ApiModelProperty("小单位零售价对应单位  1：小单位minUnit，2：剂量单位doseUnit")
+    private Integer minRetailUnit;
 
 
     @ApiModelProperty("大单位数量")

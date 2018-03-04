@@ -165,8 +165,8 @@ public class DrugApi {
         vo.setCategoryName(null!=drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
         vo.setDrugFormName(StringUtils.isEmpty(drug.getDrugForm())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm()).getDicItemName());
         vo.setUnitName(StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName());
-        vo.setMinUnitName(StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.MINUNIT.getCode(),drug.getMinUnit()).getDicItemName());
-        vo.setDoseUnitName(StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.DOSEUNIT.getCode(),drug.getDoseUnit()).getDicItemName());
+        vo.setMinUnitName(StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit()).getDicItemName());
+        vo.setDoseUnitName(StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit()).getDicItemName());
         vo.setUseageName(StringUtils.isEmpty(drug.getUseage())?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage()).getDicItemName());
         vo.setFrequencyName(null == drug.getFrequency()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),drug.getFrequency().toString()).getDicItemName());
 
@@ -176,36 +176,5 @@ public class DrugApi {
     }
 
 
-    @ApiOperation(value = "库存查询")
-    @PostMapping("/stock")
-    public ResponseResult<PageResult<DrugStockDto>> stock(@RequestBody(required = false) PageBase<String> page,
-                                              @AccessToken AccessInfo info){
-        List<DrugStockDto> list = drugManager.getStockList(page.getPageNum(),page.getPageSize(),page.getParam(),info.getUser());
-        Integer total = drugManager.getStockTotal(page.getParam(),info.getUser());
-        PageResult result = new PageResult();
-        result.setData(list);
-        result.setTotal((long)total);
-        return ResponseUtil.setSuccessResult(result);
-    }
 
-    @ApiOperation(value = "调价/调整库存")
-    @PostMapping("/stock/modify")
-    public ResponseResult modifyPrice(@ApiParam("{\"id\":\"\",\"price\":\"\",\"num\":\"\"}") @RequestBody String param,
-                                      @AccessToken AccessInfo info){
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
-        }
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("price")){
-            return ResponseUtil.setParamEmptyError("price");
-        }
-        Double num = null;
-        if(!org.apache.commons.lang3.StringUtils.isEmpty(param) && null != JSONObject.parseObject(param).get("num")){
-            num = JSONObject.parseObject(param).getDouble("num");
-        }
-        drugManager.modifyPrice(JSONObject.parseObject(param).getInteger("id"),
-                JSONObject.parseObject(param).getDouble("price"),
-                num,
-                info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
 }

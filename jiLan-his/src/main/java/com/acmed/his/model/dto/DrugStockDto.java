@@ -27,6 +27,12 @@ public class DrugStockDto {
     @ApiModelProperty("计价单位")
     private String unit;
 
+    @ApiModelProperty("小单位 字典表： MinUnit")
+    private String minUnit;
+
+    @ApiModelProperty("剂量单位 字典表：DoseUnit")
+    private String doseUnit;
+
     @ApiModelProperty("生产厂家")
     private String manufacturerName;
 
@@ -34,15 +40,22 @@ public class DrugStockDto {
     private Double num;
 
     @ApiModelProperty("批发价")
-    private Double bid;
+    private String bid;
 
-    @ApiModelProperty("处方价")
+    @ApiModelProperty("处方价,大单位")
     private Double retailPrice;
 
-    @ApiModelProperty("批发额")
-    private Double bidFee;
+    @ApiModelProperty("处方价,大单位")
+    private String retailPriceName;
 
-    @ApiModelProperty("处方额")
-    private Double retailFee;
+    @ApiModelProperty("小单位零售价")
+    private Double minRetailPrice;
+
+    @ApiModelProperty("小单位零售价")
+    private String minRetailPriceName;
+
+    @ApiModelProperty("小单位零售价对应单位  1：小单位minUnit，2：剂量单位doseUnit")
+    private Integer minRetailUnit;
+
 
 }

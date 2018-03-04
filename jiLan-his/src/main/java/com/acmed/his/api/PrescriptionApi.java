@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.pojo.mo.PreMo;
+import com.acmed.his.pojo.vo.PreDrugVo;
 import com.acmed.his.pojo.vo.PreTitleVo;
 import com.acmed.his.pojo.vo.PreVo;
 import com.acmed.his.service.PrescriptionManager;
@@ -65,9 +66,16 @@ public class PrescriptionApi {
     }
 
 
+    @ApiOperation(value = "获取药品处方")
+    @GetMapping("/drug")
+    public ResponseResult<PreDrugVo> getPreDrug(@ApiParam("挂号单主键") @RequestParam("applyId") String applyId){
+        return ResponseUtil.setSuccessResult(preManager.getPreDrug(applyId));
+    }
 
 
-    @ApiOperation(value = "根据挂号id获取处方列表")
+
+
+    @ApiOperation(value = "根据挂号id获取处方列表",hidden = true)
     @PostMapping("/list")
     public ResponseResult<PreTitleVo> getPreByApply(@ApiParam("挂号主键") @RequestParam("applyId") String applyId){
         List<PreTitleVo> list = new ArrayList<>();

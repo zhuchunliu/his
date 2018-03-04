@@ -68,7 +68,7 @@ public class DrugVo {
     @ApiModelProperty("换算量")
     private Integer conversion;
 
-    @ApiModelProperty("小单位 字典表： MinUnit")
+    @ApiModelProperty("小单位 字典表： Unit")
     private String minUnit;
 
     @ApiModelProperty("小单位名称")
@@ -77,7 +77,7 @@ public class DrugVo {
     @ApiModelProperty("剂量")
     private Double dose;
 
-    @ApiModelProperty("剂量单位 字典表：DoseUnit")
+    @ApiModelProperty("剂量单位 字典表：Unit")
     private String doseUnit;
 
     @ApiModelProperty("剂量单位名称")
