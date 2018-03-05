@@ -154,4 +154,11 @@ public class PatientApi {
         patientManager.update(patient);
         return ResponseUtil.setSuccessResult();
     }
+
+    @ApiOperation("自己个人信息")
+    @GetMapping(value = "/selfinfo")
+    public ResponseResult<PatientInfoVo> selfinfo(@AccessToken AccessInfo info){
+
+        return ResponseUtil.setSuccessResult(info.getPatient());
+    }
 }
