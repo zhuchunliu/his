@@ -40,8 +40,8 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("二级单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
     private String minOrDoseUnitName;
 
-    @ApiModelProperty("剂量")
-    private Double dose;
+    @ApiModelProperty("单次剂量")
+    private Double singleDose;
 
     @ApiModelProperty("剂量单位名称")
     private String doseUnitName;

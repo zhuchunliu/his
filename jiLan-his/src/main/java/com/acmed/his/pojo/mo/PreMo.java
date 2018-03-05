@@ -47,8 +47,8 @@ public class  PreMo {
 
     @Data
     public static class ItemMo{
-        @ApiModelProperty("药品code")
-        private String drugCode;
+        @ApiModelProperty("药品id")
+        private Integer drugId;
 
         @ApiModelProperty("途径")
         private String way;

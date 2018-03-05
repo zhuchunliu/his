@@ -42,11 +42,7 @@ public class PrescriptionApi {
                 return ResponseUtil.setParamEmptyError("患者姓名不能为空!");
             }
 
-            if (null == mo.getPatient() || StringUtils.isEmpty(mo.getPatient().getIdCard())) {
-                return ResponseUtil.setParamEmptyError("患者身份证号不能为空!");
-            }
-
-            if (mo.getPatient().getIdCard().length() == 8){
+            if (StringUtils.isNotEmpty(mo.getPatient().getIdCard()) && mo.getPatient().getIdCard().length() == 8){
                 // 表示传的是生日
                 String orgCode = "0000000"+info.getUser().getOrgCode();
                 long l = System.currentTimeMillis();

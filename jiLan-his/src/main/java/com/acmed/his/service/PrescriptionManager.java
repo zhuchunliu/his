@@ -259,7 +259,7 @@ public class PrescriptionManager {
             Double childPrice = 0.0d;
             if(null != pre.getItemList()) {
                 for (PreMo.ItemMo info : pre.getItemList()) {
-                    Drug drug = drugMapper.getByDrugCode(info.getDrugCode());
+                    Drug drug = drugMapper.selectByPrimaryKey(info.getDrugId());
                     if(null == drug){
                         continue;
                     }

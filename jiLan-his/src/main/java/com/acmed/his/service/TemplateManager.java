@@ -291,10 +291,6 @@ public class TemplateManager {
                 PrescriptionTplItem item = new PrescriptionTplItem();
                 BeanUtils.copyProperties(obj, item);
                 item.setTplId(mo.getTplId());
-                Drug drug =drugMapper.selectByPrimaryKey(obj.getDrugId());
-                if(null != drug){
-                    item.setDrugCode(drug.getDrugCode());
-                }
                 prescriptionTplItemMapper.insert(item);
             });
         }

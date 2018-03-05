@@ -29,9 +29,6 @@ public class PrescriptionTplItem {
     @ApiModelProperty("用药id")
     private Integer drugId;
 
-    @ApiModelProperty("药品编码")
-    private String drugCode;
-
     @ApiModelProperty("单位数量")
     private Integer num;
 
