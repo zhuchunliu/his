@@ -235,13 +235,14 @@ public class TemplateApi {
                 vo.setDrugId(drug.getId());
                 vo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
                 vo.setCategoryName(null==drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
+                vo.setSpec(drug.getSpec());
                 vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(manu->manufacturerMapper.selectByPrimaryKey(manu)).
                         filter(manu->manu!=null).map(manu->manu.getName()).orElse(""));
                 vo.setFrequencyName(Optional.ofNullable(baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),obj.getFrequency())).map(item->item.getDicItemName()).orElse(null));
 
                 vo.setUnitName(null == drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
                 if(null != drug.getMinPriceUnitType()) {
-                    vo.setMinOrDoseUnit(1 == drug.getMinPriceUnitType() ? baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getMinUnit().toString()).getDicItemName() :
+                    vo.setMinOrDoseUnitName(1 == drug.getMinPriceUnitType() ? baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getMinUnit().toString()).getDicItemName() :
                             baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getDoseUnit().toString()).getDicItemName());
                 }
                 vo.setDoseUnitName(org.apache.commons.lang3.StringUtils.isEmpty(drug.getDoseUnit().toString())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());

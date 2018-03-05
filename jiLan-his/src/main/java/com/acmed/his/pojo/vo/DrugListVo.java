@@ -42,7 +42,24 @@ public class DrugListVo {
     @ApiModelProperty("药品规格")
     private String spec;
 
-    @ApiModelProperty("是否有效 0:无；1：有")
-    private String isValid;
+    @ApiModelProperty("单位名称")
+    private String unitName;
 
+    @ApiModelProperty("小单位名称")
+    private String minUnitName;
+
+    @ApiModelProperty("剂量单位名称")
+    private String doseUnitName;
+
+    @ApiModelProperty("进价")
+    private Double bid;
+
+    @ApiModelProperty("一级零售价")
+    private Double retailPrice;
+
+    @ApiModelProperty("二级零售价")
+    private Double minRetailPrice;
+
+    @ApiModelProperty("二级零售价对应单位  1：小单位minUnitName，2：剂量单位doseUnitName")
+    private Integer minPriceUnitType;
 }

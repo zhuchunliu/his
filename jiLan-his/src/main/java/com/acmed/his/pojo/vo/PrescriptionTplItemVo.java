@@ -19,6 +19,9 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("药品分类名称")
     private String categoryName;
 
+    @ApiModelProperty("药品规格")
+    private String spec;
+
     @ApiModelProperty("单位数量")
     private Integer num;
 
@@ -31,11 +34,11 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("频率,用药频率名称")
     private String frequencyName;
 
-    @ApiModelProperty("大单位名称")
+    @ApiModelProperty("一级单位名称")
     private String unitName;
 
-    @ApiModelProperty("小单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
-    private String minOrDoseUnit;
+    @ApiModelProperty("二级单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
+    private String minOrDoseUnitName;
 
     @ApiModelProperty("剂量")
     private Double dose;

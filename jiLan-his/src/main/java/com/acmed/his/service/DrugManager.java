@@ -179,7 +179,7 @@ public class DrugManager {
             Drug drug = new Drug();
             BeanUtils.copyProperties(dict,drug,"id");
             drug.setOrgCode(info.getOrgCode());
-            String categoryName = baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getDoseUnit().toString()).getDicItemName();
+            String categoryName = baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName();
             String key = PinYinUtil.getPinYinHeadChar(categoryName)+new java.text.DecimalFormat("000000").format(info.getOrgCode());
             drug.setDrugCode(key+String.format("%06d",Integer.parseInt(commonManager.getNextVal(key))));
             drug.setPinYin(PinYinUtil.getPinYinHeadChar(dict.getName()));

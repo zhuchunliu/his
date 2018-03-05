@@ -1,7 +1,12 @@
 package com.acmed.his.pojo.vo;
 
+import com.acmed.his.consts.DicTypeEnum;
+import com.acmed.his.dao.DrugMapper;
+import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.*;
+import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.util.DateTimeUtil;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +41,7 @@ public class PreVo {
 
     public PreVo(Prescription prescription, List<Inspect> preInspectist,
                  List<Charge> preChargeList, List<PrescriptionItem> preItemList, Patient patientInfo, MedicalRecord medicalRecord,
-                 Map<String,String> dicItemName) {
+                 ManufacturerMapper manufacturerMapper, BaseInfoManager baseInfoManager, DrugMapper drugMapper) {
         if(null == prescription){
             return;
         }
@@ -49,6 +54,17 @@ public class PreVo {
         BeanUtils.copyProperties(medicalRecord,record);
 
 
+        List<DicItem> frequencyItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FREQUENCY.getCode());
+        Map<String,String> frequencyItemName = Maps.newHashMap();
+        frequencyItemList.forEach(obj->{
+            frequencyItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+        });
+
+        List<DicItem> unitItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+        Map<String,String> unitItemName = Maps.newHashMap();
+        unitItemList.forEach(obj->{
+            unitItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+        });
 
         Map<String,PrescriptVo> map = new TreeMap<>();
 
@@ -57,10 +73,23 @@ public class PreVo {
             preItemList.forEach(obj->{
                 PreVo.ItemVo item = new PreVo.ItemVo();
                 BeanUtils.copyProperties(obj,item);
-                item.setTotalFee(Optional.ofNullable(item.getNum()).orElse(0)*Optional.ofNullable(item.getFee()).orElse(0d));
-                if(!StringUtils.isEmpty(item.getFrequency())){
-                    item.setFrequencyName(dicItemName.get(item.getFrequency()));
+                item.setTotalFee(Optional.ofNullable(obj.getNum()).orElse(0)*Optional.ofNullable(obj.getRetailPrice()).orElse(0d));
+                if(!StringUtils.isEmpty(item.getFrequency().toString())){
+                    item.setFrequencyName(frequencyItemName.get(item.getFrequency()));
                 }
+                Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+                if(null != drug) {
+                    item.setDoseUnitName(Optional.ofNullable(drug.getDoseUnit()).map(unit->unitItemName.get(unit)).orElse(""));
+                    item.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
+                            map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
+                    item.setUnitName(Optional.ofNullable(drug.getUnit()).map(unit->unitItemName.get(unit)).orElse(""));
+                    item.setMinOrDoseUnitName(1 == drug.getMinPriceUnitType() ? unitItemName.get(drug.getMinUnit()) :
+                            unitItemName.get(drug.getDoseUnit()) );
+
+                    item.setRetailPrice(drug.getRetailPrice());
+                    item.setMinRetailPrice(drug.getMinRetailPrice());
+                }
+
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo("1",item,null,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -194,6 +223,9 @@ public class PreVo {
         @ApiModelProperty("用药名称")
         private String drugName;
 
+        @ApiModelProperty("生产厂家名称")
+        private String manufacturerName;
+
         @ApiModelProperty("途径")
         private String way;
 
@@ -201,16 +233,31 @@ public class PreVo {
         private Integer num;
 
         @ApiModelProperty("频率")
-        private String frequency;
+        private Integer frequency;
 
         @ApiModelProperty("频率")
         private String frequencyName;
 
         @ApiModelProperty("单次剂量")
-        private Integer dose;
+        private Double singleDose;
 
-        @ApiModelProperty("单价")
-        private Double fee;
+        @ApiModelProperty("剂量单位名称")
+        private String doseUnitName;
+
+        @ApiModelProperty("一级单位名称")
+        private String unitName;
+
+        @ApiModelProperty("二级单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
+        private String minOrDoseUnitName;
+
+        @ApiModelProperty("一单位零售价")
+        private Double retailPrice;
+
+        @ApiModelProperty("二级单位零售价")
+        private Double minRetailPrice;
+
+        @ApiModelProperty("单位类型 1：一级计价单位，2：二级计价单位")
+        private Integer unitType;
 
         @ApiModelProperty("备注")
         private String memo;

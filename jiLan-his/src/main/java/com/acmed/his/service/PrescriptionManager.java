@@ -79,6 +79,9 @@ public class PrescriptionManager {
     @Autowired
     private BaseInfoManager baseInfoManager;
 
+    @Autowired
+    private ManufacturerMapper manufacturerMapper;
+
 
     /**
      * 根据挂号单查找处方列表
@@ -122,12 +125,8 @@ public class PrescriptionManager {
         MedicalRecord medicalRecord = Optional.ofNullable(recordMapper.selectByExample(example)).
                 filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(new MedicalRecord());
 
-        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FREQUENCY.getCode());
-        Map<String,String> dicItemName = Maps.newHashMap();
-        dicItemList.forEach(obj->{
-            dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
-        });
-        return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord,dicItemName);
+
+        return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord,manufacturerMapper,baseInfoManager,drugMapper);
     }
 
 
@@ -275,9 +274,21 @@ public class PrescriptionManager {
                     item.setDrugId(drug.getId());
                     item.setDrugCode(drug.getDrugCode());
                     item.setPayStatus(0);
-                    item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d));//存当前进价
-                    item.setRetailPrice(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//存当前零售价
-                    item.setFee(item.getNum() * item.getRetailPrice());//总价：单价*数量
+                    if(info.getUnitType() == 1) {
+                        item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d));//存当前进价
+                        item.setRetailPrice(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//存当前零售价
+                        item.setFee(item.getNum() * item.getRetailPrice());//总价：单价*数量
+                    }else{
+                        if(drug.getMinPriceUnitType() == 1) {
+                            item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d) / drug.getConversion());//存当前进价
+                            item.setRetailPrice(Optional.ofNullable(drug.getMinRetailPrice()).orElse(0d));
+                            item.setFee(item.getNum() * item.getRetailPrice());//总价：单价*数量
+                        }else{
+                            item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d) / drug.getConversion()/drug.getDose());//存当前进价
+                            item.setRetailPrice(Optional.ofNullable(drug.getMinRetailPrice()).orElse(0d));
+                            item.setFee(item.getNum() * item.getRetailPrice());//总价：单价*数量
+                        }
+                    }
                     item.setGroupNum(String.valueOf(i+1));
                     item.setRequirement(pre.getRequirement());
                     item.setRemark(pre.getRemark());
@@ -466,7 +477,7 @@ public class PrescriptionManager {
             preItemList.forEach(obj->{
                 PreVo.ItemVo item = new PreVo().new ItemVo();
                 BeanUtils.copyProperties(obj,item);
-                item.setTotalFee(Optional.ofNullable(item.getNum()).orElse(0)*Optional.ofNullable(item.getFee()).orElse(0d));
+                item.setTotalFee(Optional.ofNullable(obj.getNum()).orElse(0)*Optional.ofNullable(obj.getRetailPrice()).orElse(0d));
 
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptionVo("1",item,null,null));

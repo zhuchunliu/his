@@ -45,6 +45,9 @@ public class PrescriptionItem {
     @ApiModelProperty("数量")
     private Integer num;
 
+    @ApiModelProperty("单位类型 1：一级计价单位，2：二级计价单位")
+    private Integer unitType;
+
     @ApiModelProperty("进价")
     private Double bid;
 
@@ -52,10 +55,10 @@ public class PrescriptionItem {
     private Double retailPrice;
 
     @ApiModelProperty("频率 字典表：DrugFrequency")
-    private String frequency;
+    private Integer frequency;
 
     @ApiModelProperty("单次剂量")
-    private Integer dose;
+    private Double singleDose;
 
     @ApiModelProperty("费用")
     private Double fee;
