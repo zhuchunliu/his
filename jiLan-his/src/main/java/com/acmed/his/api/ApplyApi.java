@@ -126,7 +126,7 @@ public class ApplyApi {
                                                                                                 @ApiParam("科室id 0表示全部  传表示指定 不传表示自己所在科室") @RequestParam(value = "dept" ,required = false)Integer dept,
                                                                                                 @ApiParam("开始时间 如2018-01-02 不传表示今天") @RequestParam(value = "startTime" ,required = false)String startTime,
                                                                                                 @ApiParam("结束时间 如2018-01-02 不传表示今天") @RequestParam(value = "endTime" ,required = false)String endTime,
-                                                                                                @ApiParam("状态 0:未就诊;1:已就诊,2:已取消") @RequestParam(value = "status" ,required = false)String status,
+                                                                                                @ApiParam("状态 0:未就诊;1:已就诊,2:已取消;3,就诊中") @RequestParam(value = "status" ,required = false)String status,
                                                                                                 @ApiParam("姓名。拼音。挂号单号全模糊查询") @RequestParam(value = "param" ,required = false)String param,
                                                                                                 @ApiParam("是否已付费 0:否; 1:是") @RequestParam(value = "isPaid" ,required = false)String isPaid,
                                                                                                 @ApiParam("页码") @RequestParam(value = "pageNum" )Integer pageNum,
