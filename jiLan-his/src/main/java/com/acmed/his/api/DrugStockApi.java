@@ -35,7 +35,6 @@ public class DrugStockApi {
     @Autowired
     private DrugStockManager drugStockManager;
 
-
     @Autowired
     private BaseInfoManager baseInfoManager;
 
@@ -53,8 +52,8 @@ public class DrugStockApi {
         List<DrugStockDto> list = drugStockManager.getStockList(page.getPageNum(),page.getPageSize(),page.getParam(),info.getUser());
         for(DrugStockDto dto:list){
             dto.setRetailPriceName(dto.getRetailPrice()+"元/"+dicItemName.get(dto.getUnit()));
-            if(null != dto.getMinRetailUnit() && null != dto.getMinRetailPrice()){
-                dto.setMinRetailPriceName(dto.getMinRetailPrice()+"元/"+(1==dto.getMinRetailUnit()?dicItemName.get(dto.getMinUnit()):dicItemName.get(dto.getDoseUnit())));
+            if(null != dto.getMinPriceUnitType() && null != dto.getMinRetailPrice()){
+                dto.setMinRetailPriceName(dto.getMinRetailPrice()+"元/"+(1==dto.getMinPriceUnitType()?dicItemName.get(dto.getMinUnit()):dicItemName.get(dto.getDoseUnit())));
             }
         }
         Integer total = drugStockManager.getStockTotal(page.getParam(),info.getUser());

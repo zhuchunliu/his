@@ -60,9 +60,6 @@ public class Drug {
     @ApiModelProperty("生产厂家 对应生产商")
     private String manufacturer;
 
-    @ApiModelProperty("生产厂家 对应生产商")
-    private Integer manufacturerId;
-
     @ApiModelProperty("单位（g/条）大单位 字典表:Unit")
     private String unit;
 
@@ -127,7 +124,7 @@ public class Drug {
     private Double minRetailPrice;
 
     @ApiModelProperty("小单位零售价对应单位  1：小单位minUnit，2：剂量单位doseUnit")
-    private Integer minRetailUnit;
+    private Integer minPriceUnitType;
 
 
     @ApiModelProperty("大单位数量")

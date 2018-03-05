@@ -41,7 +41,7 @@
         t1.unit,t1.minunit,t1.doseunit,
         t2.name as manufacturerName,
         t1.num, t1.bid, t1.retailprice as retailPrice,
-        t1.minretailprice as minRetailPrice , t1.minretailunit as minRetailUnit
+        t1.minretailprice as minRetailPrice , t1.minpriceunittype as minPriceUnitType
         FROM t_b_drug t1
         LEFT JOIN t_b_manufacturer t2 on t1.manufacturer = t2.id
         where t1.orgcode = #{orgCode}

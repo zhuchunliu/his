@@ -49,7 +49,7 @@ public class DrugStockManager {
         Drug drug = drugMapper.selectByPrimaryKey(drugStockPrice.getId());
         drug.setRetailPrice(drugStockPrice.getRetailPrice());
         drug.setMinRetailPrice(drugStockPrice.getMinRetailPrice());
-        drug.setMinRetailUnit(drugStockPrice.getMinRetailUnit());
+        drug.setMinPriceUnitType(drugStockPrice.getMinPriceUnitType());
         drug.setModifyAt(LocalDateTime.now().toString());
         drug.setModifyBy(user.getId().toString());
         drugMapper.updateByPrimaryKey(drug);

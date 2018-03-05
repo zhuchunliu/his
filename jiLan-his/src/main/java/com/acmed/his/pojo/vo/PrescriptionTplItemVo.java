@@ -2,6 +2,7 @@ package com.acmed.his.pojo.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by Darren on 2018-01-23
@@ -15,17 +16,14 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("药品名称")
     private String drugName;
 
-    @ApiModelProperty("药品分类 0:西药；1：中成药；2：中药；3：血液制品；4：诊断试剂")
-    private String category;
+    @ApiModelProperty("药品分类名称")
+    private String categoryName;
 
-    @ApiModelProperty("单价")
-    private Double fee;
-
-    @ApiModelProperty("数量")
+    @ApiModelProperty("单位数量")
     private Integer num;
 
-    @ApiModelProperty("单次剂量")
-    private Integer dose;
+    @ApiModelProperty("生产厂家名称")
+    private String manufacturerName;
 
     @ApiModelProperty("频率,用药频率 字典表：DrugFrequency")
     private String frequency;
@@ -33,11 +31,20 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("频率,用药频率名称")
     private String frequencyName;
 
-    @ApiModelProperty("包装单位")
-    private String packUnit;
+    @ApiModelProperty("大单位名称")
+    private String unitName;
 
-    @ApiModelProperty("计价单位")
-    private String unit;
+    @ApiModelProperty("小单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
+    private String minOrDoseUnit;
+
+    @ApiModelProperty("剂量")
+    private Double dose;
+
+    @ApiModelProperty("剂量单位名称")
+    private String doseUnitName;
+
+    @ApiModelProperty("单位类型 1：一级计价单位，2：二级计价单位")
+    private Integer unitType;
 
     @ApiModelProperty("备注")
     private String memo;

@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.InspectTplMapper;
+import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.dao.PrescriptionTplItemMapper;
 import com.acmed.his.dao.PrescriptionTplMapper;
 import com.acmed.his.model.*;
@@ -45,9 +46,6 @@ public class TemplateApi {
     private TemplateManager templateManager;
 
     @Autowired
-    private BaseInfoManager baseInfoManager;
-
-    @Autowired
     private DrugManager drugManager;
 
     @Autowired
@@ -61,6 +59,12 @@ public class TemplateApi {
 
     @Autowired
     private FeeItemManager feeItemManager;
+
+    @Autowired
+    private ManufacturerMapper manufacturerMapper;
+
+    @Autowired
+    private BaseInfoManager baseInfoManager;
 
     @ApiOperation(value = "新增/编辑 诊断模板")
     @PostMapping("/diagnosis/save")
@@ -227,16 +231,17 @@ public class TemplateApi {
                 PrescriptionTplItemVo vo = new PrescriptionTplItemVo();
                 BeanUtils.copyProperties(obj,vo);
                 Drug drug = drugManager.getDrugById(obj.getDrugId());
-                if(null != drug){
-                    vo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
-                    vo.setFee(drug.getRetailPrice());
-//                    vo.setPackUnit(drug.getPackUnit());
-                    vo.setUnit(drug.getUnit());
-//                    vo.setCategory(drug.getCategory());
-                }
-                if(!StringUtils.isEmpty(obj.getFrequency())){
-                    vo.setFrequencyName(Optional.ofNullable(baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),obj.getFrequency())).map(item->item.getDicItemName()).orElse(null));
-                }
+                BeanUtils.copyProperties(drug,vo);
+                vo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
+                vo.setCategoryName(null!=drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
+                vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(manu->manufacturerMapper.selectByPrimaryKey(manu)).
+                        map(manu->manu.getName()).orElse(""));
+
+                vo.setUnitName(org.apache.commons.lang3.StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName());
+                vo.setMinOrDoseUnit(1==drug.getMinPriceUnitType()?baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit()).getDicItemName():
+                        baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit()).getDicItemName());
+                vo.setDoseUnitName(org.apache.commons.lang3.StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit()).getDicItemName());
+                vo.setFrequencyName(Optional.ofNullable(baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),obj.getFrequency())).map(item->item.getDicItemName()).orElse(null));
                 list.add(vo);
 
             });

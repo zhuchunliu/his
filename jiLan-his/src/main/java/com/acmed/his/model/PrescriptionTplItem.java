@@ -32,8 +32,11 @@ public class PrescriptionTplItem {
     @ApiModelProperty("药品编码")
     private String drugCode;
 
-    @ApiModelProperty("数量")
+    @ApiModelProperty("单位数量")
     private Integer num;
+
+    @ApiModelProperty("单位类型 1：一级计价单位，2：二级计价单位")
+    private Integer unitType;
 
     @ApiModelProperty("单次剂量")
     private Integer dose;
