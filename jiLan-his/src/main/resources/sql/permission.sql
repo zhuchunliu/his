@@ -32,6 +32,10 @@ insert into t_p_s_permission(percode,pername,sn,pid) select 'mbwh','模板维护
 insert into t_p_s_permission(percode,pername,sn,pid) select 'fygl','费用管理',4, id from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'zdbwh','字典表维护',5, id from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'zsxx','诊所信息',6, id from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'qxgl','权限管理',7, id from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'scsgl','生产商管理',8, id from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'gysgl','供应商管理',9, id from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'jggl','机构管理',10, id from t_p_s_permission where percode = 'xtsz' ;
 
 
 
@@ -184,3 +188,13 @@ insert into t_p_s_permission(pername,url,pid) select '编辑字典','/dicItem/sa
 
 -- 诊所信息
 insert into t_p_s_permission(pername,url,pid) select '新增/编辑 机构信息','/org/save',id from t_p_s_permission where percode = 'zsxx';
+
+-- 生产商管理
+insert into t_p_s_permission(pername,url,pid) select '添加/编辑 ','/manufacturer/save',id from t_p_s_permission where percode = 'scsgl';
+
+-- 供应商管理
+insert into t_p_s_permission(pername,url,pid) select '添加/编辑 ','/supply/save',id from t_p_s_permission where percode = 'gysgl';
+
+-- 机构管理
+insert into t_p_s_permission(pername,url,pid) select '添加/编辑 ','/org/save',id from t_p_s_permission where percode = 'jggl';
+insert into t_p_s_permission(pername,url,pid) select '删除 ','/org/del',id from t_p_s_permission where percode = 'jggl';

@@ -39,13 +39,14 @@ public class RoleManager {
      * 获取角色列表
      * @return
      */
-    public List<Role> getRoleList(String isValid){
+    public List<Role> getRoleList(String isValid,Integer orgCode){
         Role role = new Role();
         if(!StringUtils.isEmpty(isValid)){
             role.setIsValid(isValid);
         }
         role.setRemoved("0");
         role.setHideFlag(0);
+        role.setOrgCode(orgCode);
         return roleMapper.select(role);
     }
 
@@ -62,6 +63,7 @@ public class RoleManager {
             role.setRemoved("0");
             role.setCreateTime(LocalDateTime.now().toString());
             role.setOperatorUserId(userInfo.getId().toString());
+            role.setOrgCode(userInfo.getOrgCode());
             roleMapper.insert(role);
         }else{
             role = roleMapper.selectByPrimaryKey(mo.getId());
@@ -110,9 +112,9 @@ public class RoleManager {
      * 获取权限禁用数据
      * @return
      */
-    public Integer getDisableNum() {
+    public Integer getDisableNum(Integer orgCode) {
         Example example = new Example(Role.class);
-        example.createCriteria().andEqualTo("removed","0").andEqualTo("isValid","0");
+        example.createCriteria().andEqualTo("removed","0").andEqualTo("isValid","0").andEqualTo("orgCode",orgCode);
         return roleMapper.selectCountByExample(example);
 
     }
@@ -126,5 +128,14 @@ public class RoleManager {
         return permissionMapper.getPermissionByRole(rid);
     }
 
-
+    @Transactional
+    public Role add(Role role){
+        role.setHideFlag(0);
+        role.setRemoved("0");
+        role.setIsValid("1");
+        role.setCreateTime(LocalDateTime.now().toString());
+        role.setModifyTime(null);
+        roleMapper.insert(role);
+        return role;
+    }
 }

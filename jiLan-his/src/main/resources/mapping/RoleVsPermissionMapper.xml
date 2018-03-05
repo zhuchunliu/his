@@ -11,4 +11,10 @@
         and id not in (select pid from t_p_s_role_vs_permission where rid = #{rid})
 
     </insert>
+
+    <insert id="init">
+        insert into t_p_s_role_vs_permission(pid,rid)
+        select id,#{rid}
+        from t_p_s_permission t1 where pid in (select id from t_p_s_permission where pid is null AND hideflag = 0 )
+    </insert>
 </mapper>

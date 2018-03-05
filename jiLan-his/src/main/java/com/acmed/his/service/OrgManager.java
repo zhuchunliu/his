@@ -2,15 +2,20 @@ package com.acmed.his.service;
 
 import com.acmed.his.dao.AreaMapper;
 import com.acmed.his.dao.OrgMapper;
-import com.acmed.his.model.Area;
-import com.acmed.his.model.Org;
+import com.acmed.his.dao.RoleVsPermissionMapper;
+import com.acmed.his.dao.UserVsRoleMapper;
+import com.acmed.his.model.*;
 import com.acmed.his.pojo.mo.OrgMo;
+import com.acmed.his.pojo.mo.RoleMo;
+import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.vo.OrgVo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.PinYinUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
@@ -28,6 +33,21 @@ public class OrgManager {
 
     @Autowired
     private AreaMapper areaMapper;
+
+    @Autowired
+    private UserManager userManager;
+
+    @Autowired
+    private RoleManager roleManager;
+
+    @Autowired
+    private PermissionManager permissionManager;
+
+    @Autowired
+    private UserVsRoleMapper userVsRoleMapper;
+
+    @Autowired
+    private RoleVsPermissionMapper  roleVsPermissionMapper;
 
     /**
      * 获取机构列表
@@ -49,8 +69,8 @@ public class OrgManager {
      * 新增、编辑机构
      * @param mo
      */
+    @Transactional
     public void saveOrg(OrgMo mo, UserInfo userInfo){
-
         if(null == mo.getOrgCode()){
             Org org = new Org();
             BeanUtils.copyProperties(mo,org);
@@ -59,6 +79,23 @@ public class OrgManager {
             org.setCreateAt(LocalDateTime.now().toString());
             org.setCreateBy(userInfo.getId().toString());
             orgMapper.insert(org);
+            // 添加用户
+            UserMo userMo = new UserMo();
+            userMo.setMobile(mo.getMobile());
+            userMo.setLoginName(PinYinUtil.getPinYinHeadChar(mo.getOrgName()));
+            userMo.setOrgCode(org.getOrgCode());
+            User save = userManager.save(userMo, userInfo);
+            // 给用户设置管理员权限
+            Role roleMo = new Role();
+            roleMo.setRoleName("机构管理员");
+            roleMo.setRoleCode("orgAdmin"+org.getOrgCode());
+            Role add = roleManager.add(roleMo);
+
+            UserVsRole userVsRole = new UserVsRole();
+            userVsRole.setUid(save.getId());
+            userVsRole.setRid(add.getId());
+            userVsRoleMapper.insert(userVsRole);
+            roleVsPermissionMapper.init(add.getId());
         }else{
             Org org = orgMapper.selectByPrimaryKey(mo.getOrgCode());
             BeanUtils.copyProperties(mo,org);

@@ -51,4 +51,7 @@ public class Role {
 
     @ApiModelProperty("0没有隐藏  1隐藏")
     private Integer hideFlag;
+
+    @ApiModelProperty("机构id")
+    private Integer orgCode;
 }

@@ -12,4 +12,6 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface RoleVsPermissionMapper extends TkMapper<RoleVsPermission> {
     void addRolePermission(@Param("rid") Integer rid,@Param("pids") String[] pid);
+
+    void init(@Param("rid") Integer rid);
 }

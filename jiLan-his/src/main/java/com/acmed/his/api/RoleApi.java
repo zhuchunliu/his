@@ -47,10 +47,11 @@ public class RoleApi {
 
     @ApiOperation(value = "获取角色列表")
     @GetMapping("/list")
-    public ResponseResult<List<RoleMo>> getRoleList(@ApiParam("是否有效 0:无；1：有")@RequestParam(value = "idValid",required = false) String isValid){
+    public ResponseResult<List<RoleMo>> getRoleList(@ApiParam("是否有效 0:无；1：有")@RequestParam(value = "idValid",required = false) String isValid,
+                                                    @AccessToken AccessInfo info){
         List<RoleMo> list = new ArrayList<>();
 
-        roleManager.getRoleList(isValid).forEach(obj->{
+        roleManager.getRoleList(isValid,info.getUser().getOrgCode()).forEach(obj->{
             RoleMo roleMo = new RoleMo();
             BeanUtils.copyProperties(obj,roleMo);
             list.add(roleMo);
@@ -89,7 +90,7 @@ public class RoleApi {
     @ApiOperation(value = "角色禁用数")
     @GetMapping("/disable/num")
     public ResponseResult getDisableNum(@AccessToken AccessInfo info){
-        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",roleManager.getDisableNum()));
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",roleManager.getDisableNum(info.getUser().getOrgCode())));
     }
 
 

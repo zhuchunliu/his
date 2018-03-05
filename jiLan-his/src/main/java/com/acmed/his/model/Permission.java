@@ -52,6 +52,9 @@ public class Permission {
     @ApiModelProperty("创建时间")
     private String createTime;
 
+    @ApiModelProperty("隐藏标记  0未隐藏   1隐藏")
+    private Integer hideFlag;
+
     @ApiModelProperty("修改时间")
     private String modifyTime;
 }

@@ -107,4 +107,7 @@ public class PermissionManager {
     public List<Permission> getPermissionByUserId(Integer uid) {
         return permissionMapper.getPermissionByUserId(uid);
     }
+    public List<Permission> getBasePermission(){
+        return permissionMapper.getBasePermission();
+    }
 }

@@ -85,7 +85,7 @@ public class UserManagerApi {
         vo.setDutyName(Optional.ofNullable(vo.getDuty()).
                 map(obj->baseInfoManager.getDicItem(DicTypeEnum.DUTY.getCode(),obj).getDicItemName()).orElse(null));
 
-        List<Role> roleList = roleManager.getRoleList("1");
+        List<Role> roleList = roleManager.getRoleList("1",info.getUser().getOrgCode());
         List<Integer> checkedRoleIdList = Lists.newArrayList();
         roleMapper.getRoleByUser(id).forEach(obj->{
             checkedRoleIdList.add(obj.getId());
