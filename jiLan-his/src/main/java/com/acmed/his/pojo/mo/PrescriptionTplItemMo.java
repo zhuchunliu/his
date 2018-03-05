@@ -30,7 +30,7 @@ public class PrescriptionTplItemMo {
         private Integer unitType;
 
         @ApiModelProperty("单次剂量")
-        private Integer dose;
+        private Double singleDose;
 
         @ApiModelProperty("频率,用药频率")
         private String frequency;
