@@ -372,7 +372,7 @@ public class AccompanyingOrderApi {
     }
 
     @ApiOperation(value = "接受邀请")
-    @RequestMapping("accessInvitation")
+    @GetMapping("accessInvitation")
     public ResponseResult accessInvitation(@AccessToken AccessInfo info,@RequestParam("invitationCode")String invitationCode){
         String patientId = info.getPatientId();
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();

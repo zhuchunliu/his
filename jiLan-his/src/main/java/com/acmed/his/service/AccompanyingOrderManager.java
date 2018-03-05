@@ -3,7 +3,9 @@ package com.acmed.his.service;
 import com.acmed.his.dao.AccompanyingOrderMapper;
 import com.acmed.his.model.AccompanyingOrder;
 import com.acmed.his.model.dto.AccompanyingOrderCountDto;
+import com.acmed.his.model.dto.AccompanyingOrderMo;
 import com.acmed.his.util.WaterCodeUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +61,10 @@ public class AccompanyingOrderManager {
      * @return List<AccompanyingOrder>
      */
     public List<AccompanyingOrder> selectByAccompanyingOrder(AccompanyingOrder accompanyingOrder,String orderBy){
-        return accompanyingOrderMapper.selectByAccompanyingOrder(accompanyingOrder,orderBy);
+        AccompanyingOrderMo bean = new AccompanyingOrderMo();
+        BeanUtils.copyProperties(accompanyingOrder,bean);
+        bean.setOrderBy(orderBy);
+        return accompanyingOrderMapper.selectByAccompanyingOrder(bean);
     }
 
     /**

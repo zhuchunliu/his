@@ -2,6 +2,7 @@ package com.acmed.his.dao;
 
 import com.acmed.his.model.AccompanyingOrder;
 import com.acmed.his.model.dto.AccompanyingOrderCountDto;
+import com.acmed.his.model.dto.AccompanyingOrderMo;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,11 +18,9 @@ public interface AccompanyingOrderMapper extends TkMapper<AccompanyingOrder> {
 
     /**
      * 条件
-     * @param accompanyingOrder
-     * @param orderBy 如 createat,status DESC
      * @return
      */
-    List<AccompanyingOrder> selectByAccompanyingOrder(AccompanyingOrder accompanyingOrder,@Param("orderBy") String orderBy);
+    List<AccompanyingOrder> selectByAccompanyingOrder(AccompanyingOrderMo accompanyingOrderMo);
 
     List<AccompanyingOrderCountDto> selectCountNumGroupByOrgCode(@Param("status") Integer status);
 }
