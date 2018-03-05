@@ -10,6 +10,7 @@ import com.acmed.his.pojo.mo.PatientMo;
 import com.acmed.his.pojo.mo.PatientMobileUpMo;
 import com.acmed.his.pojo.mo.WxRegistPatientMo;
 import com.acmed.his.pojo.vo.PatientInfoVo;
+import com.acmed.his.pojo.vo.PatientVoP;
 import com.acmed.his.service.PatientManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -157,8 +158,10 @@ public class PatientApi {
 
     @ApiOperation("自己个人信息")
     @GetMapping(value = "/selfinfo")
-    public ResponseResult<PatientInfoVo> selfinfo(@AccessToken AccessInfo info){
-
-        return ResponseUtil.setSuccessResult(info.getPatient());
+    public ResponseResult<PatientVoP> selfinfo(@AccessToken AccessInfo info){
+        Patient patientById = patientManager.getPatientById(info.getPatientId());
+        PatientVoP patientVoP = new PatientVoP();
+        BeanUtils.copyProperties(patientById,patientVoP);
+        return ResponseUtil.setSuccessResult(patientVoP);
     }
 }
