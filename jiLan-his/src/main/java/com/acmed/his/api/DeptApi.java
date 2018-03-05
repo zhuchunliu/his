@@ -49,7 +49,7 @@ public class DeptApi {
 
     @ApiOperation(value = "获取科室列表")
     @GetMapping("/list")
-    public ResponseResult<List<DeptVo>> getDeptList(@AccessToken AccessInfo info,@ApiParam("科室主键") @RequestParam("orgCode") Integer orgCode){
+    public ResponseResult<List<DeptVo>> getDeptList(@AccessToken AccessInfo info,@ApiParam("科室主键") @RequestParam(value = "orgCode",required = false) Integer orgCode){
         List<DeptVo> list = new ArrayList<>();
         Integer org = null;
         if (orgCode == null){
