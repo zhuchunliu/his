@@ -24,7 +24,7 @@ public class DrugVo {
     private Integer isEssential;
 
     @ApiModelProperty("药品分类 字典表：DrugClassification")
-    private String category;
+    private Integer category;
 
     @ApiModelProperty("药品分类名称")
     private String categoryName;
@@ -36,7 +36,7 @@ public class DrugVo {
     private String prescriptionTypeName;
 
     @ApiModelProperty("剂型，字典表：DrugForm")
-    private String drugForm;
+    private Integer drugForm;
 
     @ApiModelProperty("剂型名称")
     private String drugFormName;
@@ -54,7 +54,7 @@ public class DrugVo {
     private String manufacturerName;
 
     @ApiModelProperty("单位（g/条）大单位 字典表:Unit")
-    private String unit;
+    private Integer unit;
 
     @ApiModelProperty("单位名称")
     private String unitName;
@@ -63,7 +63,7 @@ public class DrugVo {
     private Integer conversion;
 
     @ApiModelProperty("小单位 字典表： Unit")
-    private String minUnit;
+    private Integer minUnit;
 
     @ApiModelProperty("小单位名称")
     private String minUnitName;
@@ -72,7 +72,7 @@ public class DrugVo {
     private Double dose;
 
     @ApiModelProperty("剂量单位 字典表：Unit")
-    private String doseUnit;
+    private Integer doseUnit;
 
     @ApiModelProperty("剂量单位名称")
     private String doseUnitName;
@@ -81,7 +81,7 @@ public class DrugVo {
     private String spec;
 
     @ApiModelProperty("使用方法 字典表: Useage")
-    private String useage;
+    private Integer useage;
 
     @ApiModelProperty("使用方法名称")
     private String useageName;
@@ -118,6 +118,18 @@ public class DrugVo {
 
     @ApiModelProperty("原产地")
     private String origin;
+
+    @ApiModelProperty("进价")
+    private Double bid;
+
+    @ApiModelProperty("大单位零售价")
+    private Double retailPrice;
+
+    @ApiModelProperty("小单位零售价")
+    private Double minRetailPrice;
+
+    @ApiModelProperty("小单位零售价对应单位  1：小单位minUnit，2：剂量单位doseUnit")
+    private Integer minPriceUnitType;
 
 
 }

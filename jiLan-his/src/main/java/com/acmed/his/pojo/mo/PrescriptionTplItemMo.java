@@ -20,8 +20,8 @@ public class PrescriptionTplItemMo {
     @Data
     public static class ItemMo {
 
-        @ApiModelProperty("药品编码")
-        private String drugCode;
+        @ApiModelProperty("药品id")
+        private Integer drugId;
 
         @ApiModelProperty("数量")
         private Integer num;

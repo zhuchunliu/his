@@ -4,8 +4,6 @@ import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
-import com.acmed.his.model.dto.DrugDto;
-import com.acmed.his.model.dto.DrugStockDto;
 import com.acmed.his.pojo.mo.DrugMo;
 import com.acmed.his.pojo.mo.DrugQueryMo;
 import com.acmed.his.pojo.vo.DrugDictVo;
@@ -55,7 +53,7 @@ public class DrugApi {
     @PostMapping("/list")
     public ResponseResult<PageResult<DrugListVo>> getDrugList(@RequestBody(required = false) PageBase<DrugQueryMo> pageBase,
                                                               @AccessToken AccessInfo info){
-        List<DrugDto> list = drugManager.getDrugList(info.getUser().getOrgCode(),
+        List<Drug> list = drugManager.getDrugList(info.getUser().getOrgCode(),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getIsValid).orElse(null),
@@ -69,10 +67,10 @@ public class DrugApi {
         list.forEach(drug->{
             DrugVo vo = new DrugVo();
             BeanUtils.copyProperties(drug,vo);
-            vo.setCategoryName(StringUtils.isEmpty(drug.getCategory())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory()).getDicItemName());
-            vo.setDrugFormName(StringUtils.isEmpty(drug.getDrugForm())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm()).getDicItemName());
-            vo.setUnitName(StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName());
-            vo.setUseageName(StringUtils.isEmpty(drug.getUseage())?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage()).getDicItemName());
+            vo.setCategoryName(null == drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
+            vo.setDrugFormName(null == drug.getDrugForm()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm().toString()).getDicItemName());
+            vo.setUnitName(null == drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
+            vo.setUseageName(null == drug.getUseage()?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage().toString()).getDicItemName());
 
             vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
                     map(obj->obj.getName()).orElse(""));
@@ -162,12 +160,12 @@ public class DrugApi {
         Drug drug = drugManager.getDrugById(id);
         DrugVo vo = new DrugVo();
         BeanUtils.copyProperties(drug,vo);
-        vo.setCategoryName(null!=drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
-        vo.setDrugFormName(StringUtils.isEmpty(drug.getDrugForm())?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm()).getDicItemName());
-        vo.setUnitName(StringUtils.isEmpty(drug.getUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit()).getDicItemName());
-        vo.setMinUnitName(StringUtils.isEmpty(drug.getMinUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit()).getDicItemName());
-        vo.setDoseUnitName(StringUtils.isEmpty(drug.getDoseUnit())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit()).getDicItemName());
-        vo.setUseageName(StringUtils.isEmpty(drug.getUseage())?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage()).getDicItemName());
+        vo.setCategoryName(null==drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
+        vo.setDrugFormName(null==drug.getDrugForm()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm().toString()).getDicItemName());
+        vo.setUnitName(null==drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
+        vo.setMinUnitName(null==drug.getMinUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit().toString()).getDicItemName());
+        vo.setDoseUnitName(null==drug.getDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
+        vo.setUseageName(null==drug.getUseage()?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage().toString()).getDicItemName());
         vo.setFrequencyName(null == drug.getFrequency()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),drug.getFrequency().toString()).getDicItemName());
 
         vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).

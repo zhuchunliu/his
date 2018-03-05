@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Data
 public class PrescriptionTplItemVo {
 
-    @ApiModelProperty("药品编码")
-    private String drugCode;
+    @ApiModelProperty("药品id")
+    private Integer drugId;
 
     @ApiModelProperty("药品名称")
     private String drugName;

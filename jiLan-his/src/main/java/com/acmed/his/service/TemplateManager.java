@@ -291,10 +291,9 @@ public class TemplateManager {
                 PrescriptionTplItem item = new PrescriptionTplItem();
                 BeanUtils.copyProperties(obj, item);
                 item.setTplId(mo.getTplId());
-                Drug drug = Optional.ofNullable(obj.getDrugCode()).
-                        map(code -> drugMapper.getByDrugCode(code)).orElse(null);
+                Drug drug =drugMapper.selectByPrimaryKey(obj.getDrugId());
                 if(null != drug){
-                    item.setDrugId(drug.getId());
+                    item.setDrugCode(drug.getDrugCode());
                 }
                 prescriptionTplItemMapper.insert(item);
             });

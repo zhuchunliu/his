@@ -43,7 +43,7 @@ public class Drug {
     private Integer prescriptionType;
 
     @ApiModelProperty("剂型，字典表：DrugForm")
-    private String drugForm;
+    private Integer drugForm;
 
     @ApiModelProperty("药品名称")
     private String name;
@@ -58,28 +58,28 @@ public class Drug {
     private String goodsPinYin;
 
     @ApiModelProperty("生产厂家 对应生产商")
-    private String manufacturer;
+    private Integer manufacturer;
 
     @ApiModelProperty("单位（g/条）大单位 字典表:Unit")
-    private String unit;
+    private Integer unit;
 
     @ApiModelProperty("换算量")
     private Integer conversion;
 
     @ApiModelProperty("小单位 字典表： Unit")
-    private String minUnit;
+    private Integer minUnit;
 
     @ApiModelProperty("剂量")
     private Double dose;
 
     @ApiModelProperty("剂量单位 字典表：Unit")
-    private String doseUnit;
+    private Integer doseUnit;
 
     @ApiModelProperty("药品规格")
     private String spec;
 
     @ApiModelProperty("使用方法 字典表: Useage")
-    private String useage;
+    private Integer useage;
 
     @ApiModelProperty("频率 字典表：DrugFrequency")
     private Integer frequency;
