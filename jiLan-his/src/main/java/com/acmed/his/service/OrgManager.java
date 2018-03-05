@@ -89,6 +89,8 @@ public class OrgManager {
             Role roleMo = new Role();
             roleMo.setRoleName("机构管理员");
             roleMo.setRoleCode("orgAdmin"+org.getOrgCode());
+            roleMo.setOrgCode(org.getOrgCode());
+            roleMo.setOperatorUserId(userInfo.getId().toString());
             Role add = roleManager.add(roleMo);
 
             UserVsRole userVsRole = new UserVsRole();
