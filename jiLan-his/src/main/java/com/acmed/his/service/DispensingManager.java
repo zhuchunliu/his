@@ -376,7 +376,7 @@ public class DispensingManager {
                         drug.setNum(drug.getNum() - item.getNum());
                         drugMapper.updateByPrimaryKey(drug);//扣除药品库存
 
-                        List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
+                        List<DrugStock> drugStockList = drugStockMapper.getByDrugId(drug.getId());
                         Integer num = item.getNum();
                         for (DrugStock drugStock : drugStockList) {
 
@@ -405,14 +405,14 @@ public class DispensingManager {
                         drug.setMinNum(total % drug.getConversion());
                         drugMapper.updateByPrimaryKey(drug);//扣除药品库存
 
-                        List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
-                        Integer num = item.getNum()*drug.getConversion();
+                        List<DrugStock> drugStockList = drugStockMapper.getByDrugId(drug.getId());
+                        Integer num = item.getNum();
                         for (DrugStock drugStock : drugStockList) {
 
                             if (num == 0) {
                                 break;
                             }
-                            int totalNum = drugStock.getNum() * drug.getConversion() + drug.getMinNum();
+                            int totalNum = drugStock.getNum() * drug.getConversion() + drugStock.getMinNum();
                             int occupyNum = totalNum < num ? totalNum : num;
                             drugStock.setNum((totalNum - occupyNum) / drug.getConversion());
                             drugStock.setMinNum((totalNum - occupyNum - drug.getNum()*drug.getConversion()) % drug.getConversion());
@@ -432,20 +432,20 @@ public class DispensingManager {
                             num = num - occupyNum;
                         }
                     } else {//剂量单位扣库存
-                        Double total = drug.getNum() * drug.getConversion() * drug.getDose() + drug.getMinNum() * drug.getDose() + drug.getDose() - item.getNum();
+                        Double total = drug.getNum() * drug.getConversion() * drug.getDose() + drug.getMinNum() * drug.getDose() + drug.getDoseNum() - item.getNum();
                         drug.setNum((int) Math.floor(total / (drug.getConversion() * drug.getDose())));
                         drug.setMinNum((int) Math.floor((total - drug.getNum() * drug.getConversion() * drug.getDose()) / drug.getDose()));
                         drug.setDoseNum(total - drug.getNum() * drug.getConversion() * drug.getDose() - drug.getMinNum() * drug.getDose());
                         drugMapper.updateByPrimaryKey(drug);//扣除药品库存
 
-                        List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
+                        List<DrugStock> drugStockList = drugStockMapper.getByDrugId(drug.getId());
                         Double num = (double) item.getNum();
                         for (DrugStock drugStock : drugStockList) {
 
                             if (num == 0) {
                                 break;
                             }
-                            Double totalNum = drugStock.getNum() * drug.getConversion() * drug.getDose() + drug.getMinNum() * drug.getDose() + drug.getDose();
+                            Double totalNum = drugStock.getNum() * drug.getConversion() * drug.getDose() + drugStock.getMinNum() * drug.getDose() + drugStock.getDoseNum();
                             Double occupyNum = totalNum < num ? totalNum : num;
                             drugStock.setNum((int) Math.floor((totalNum - occupyNum) / (drug.getConversion() * drug.getDose())));
                             drugStock.setMinNum((int) Math.floor((totalNum - occupyNum - drug.getNum() * drug.getConversion() * drug.getDose()) / drug.getDose()));

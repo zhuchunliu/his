@@ -10,5 +10,5 @@ import java.util.List;
  * Created by Darren on 2018-01-16
  **/
 public interface DrugStockMapper extends TkMapper<DrugStock>{
-    List<DrugStock> getByDrugCode(@Param("drugCode") String drugCode);
+    List<DrugStock> getByDrugId(@Param("drugId") Integer drugId);
 }

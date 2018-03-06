@@ -169,6 +169,8 @@ public class PurchaseManager {
                 stock.setBatchNumber(item.getBatchNumber());
                 stock.setSupply(purchase.getSupplierId());
                 stock.setNum(item.getNum());
+                stock.setMinNum(0);
+                stock.setDoseNum(0d);
                 stock.setRemoved("0");
                 stock.setCreateAt(LocalDateTime.now().toString());
                 stock.setCreateBy(info.getId().toString());
@@ -181,6 +183,17 @@ public class PurchaseManager {
             }
         });
 
+    }
+
+    @Transactional
+    public void reject(String purchaseId,UserInfo info){
+        Purchase purchase = purchaseMapper.selectByPrimaryKey(purchaseId);
+        purchase.setStatus(1);
+        purchase.setModifyAt(LocalDateTime.now().toString());
+        purchase.setModifyBy(info.getId().toString());
+        purchaseMapper.updateByPrimaryKey(purchase);
+
+        this.updateStock(purchaseId,info);
     }
 
     /**

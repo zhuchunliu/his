@@ -106,7 +106,7 @@ public class PreVo {
             preInspectist.forEach((obj)->{
                 PreVo.InspectVo inspect = new PreVo.InspectVo();
                 BeanUtils.copyProperties(obj,inspect);
-                inspect.setCategroyName(baseInfoManager.getDicItem(DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory()).getDicItemName());
+                inspect.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory()).getDicItemName());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo("2",null,inspect,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -122,7 +122,7 @@ public class PreVo {
             preChargeList.forEach((obj)->{
                 PreVo.ChargeVo charge = new PreVo.ChargeVo();
                 BeanUtils.copyProperties(obj,charge);
-                charge.setCategroyName(baseInfoManager.getDicItem(DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory()).getDicItemName());
+                charge.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory()).getDicItemName());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo(null,null,null,charge,
                             obj.getRequirement(),obj.getRemark()));
@@ -188,7 +188,7 @@ public class PreVo {
         private String category;
 
         @ApiModelProperty("检查类型名称")
-        private String categroyName;
+        private String categoryName;
 
         @ApiModelProperty("病情摘要")
         private String summary;
@@ -213,7 +213,7 @@ public class PreVo {
         private String category;
 
         @ApiModelProperty("检查类型名称")
-        private String categroyName;
+        private String categoryName;
 
         @ApiModelProperty("费用")
         private Double fee;

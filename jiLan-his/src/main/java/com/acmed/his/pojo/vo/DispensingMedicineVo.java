@@ -2,16 +2,19 @@ package com.acmed.his.pojo.vo;
 
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.DrugMapper;
+import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.*;
 import com.acmed.his.service.BaseInfoManager;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2018-01-22
@@ -35,7 +38,8 @@ public class DispensingMedicineVo {
 
     public DispensingMedicineVo(Prescription prescription, List<PrescriptionItem> itemList,
                                 Map<String, List<PrescriptionItemStock>> stockMap,
-                                BaseInfoManager baseInfoManager, DrugMapper drugMapper) {
+                                BaseInfoManager baseInfoManager, DrugMapper drugMapper,
+                                ManufacturerMapper manufacturerMapper) {
         this.prescriptionNo = prescription.getPrescriptionNo();
 
         Map<String,List<PrescriptionItem>> itemMap = Maps.newHashMap();
@@ -53,6 +57,12 @@ public class DispensingMedicineVo {
             unitItemName.put(obj.getDicItemCode(),obj.getDicItemName());
         });
 
+        List<DicItem> frequencyItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FREQUENCY.getCode());
+        Map<String,String> frequencyItemName = Maps.newHashMap();
+        frequencyItemList.forEach(obj->{
+            frequencyItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+        });
+
 
 
         for(String groupNum : itemMap.keySet()){
@@ -67,14 +77,21 @@ public class DispensingMedicineVo {
                     BeanUtils.copyProperties(item,medicalDetail);
                     Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                     if(null != stock.getNum() && 0 != stock.getNum()){
-                        medicalDetail.setNumName(stock.getNum()+unitItemName.get(drug.getUnit()));
+                        medicalDetail.setPrice(drug.getRetailPrice());
+                        medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getNum()+unitItemName.get(drug.getUnit().toString()));
                     }
                     if(null != stock.getMinNum() && 0 != stock.getMinNum()){
-                        medicalDetail.setNumName(stock.getMinNum()+unitItemName.get(drug.getMinUnit()));
+                        medicalDetail.setPrice(drug.getMinRetailPrice());
+                        medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getMinNum()+unitItemName.get(drug.getMinUnit().toString()));
                     }
                     if(null != stock.getDoseNum() && 0 != stock.getDoseNum()){
-                        medicalDetail.setNumName(stock.getDoseNum()+unitItemName.get(drug.getDoseUnit()));
+                        medicalDetail.setPrice(drug.getMinRetailPrice());
+                        medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+
+                                (0==stock.getDoseNum()*10%1? String.valueOf((int)Math.floor(stock.getDoseNum())):String.valueOf(stock.getDoseNum()))+unitItemName.get(drug.getDoseUnit().toString()));
                     }
+                    medicalDetail.setManufacturerName(manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
+                    medicalDetail.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
+                    medicalDetail.setDoseUnitName(unitItemName.get(drug.getDoseUnit().toString()));
                     childList.add(medicalDetail);
                 });
             }
@@ -94,16 +111,22 @@ public class DispensingMedicineVo {
         private String drugName;
 
         @ApiModelProperty("零售价")
-        private Double retailPrice;
+        private Double price;
 
         @ApiModelProperty("大单位数量")
         private String numName;
 
+        @ApiModelProperty("生产厂家名称")
+        private String manufacturerName;
+
         @ApiModelProperty("频率")
-        private Integer frequency;
+        private String frequencyName;
 
         @ApiModelProperty("单次剂量")
-        private Integer dose;
+        private Double singleDose;
+
+        @ApiModelProperty("剂量单位")
+        private String doseUnitName;
 
         @ApiModelProperty("有效期")
         private String expiryDate;
@@ -119,6 +142,4 @@ public class DispensingMedicineVo {
 
 
     }
-
-
 }

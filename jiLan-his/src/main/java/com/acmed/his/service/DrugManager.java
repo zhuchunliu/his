@@ -76,6 +76,9 @@ public class DrugManager {
             ));
             drug.setPinYin(Optional.ofNullable(drug.getName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setGoodsPinYin(Optional.ofNullable(drug.getGoodsName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
+            drug.setNum(0);
+            drug.setMinNum(0);
+            drug.setMinNum(0);
             drug.setCreateAt(date);
             drug.setCreateBy(date);
             drug.setIsValid("0");

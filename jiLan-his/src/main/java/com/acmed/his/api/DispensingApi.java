@@ -70,8 +70,11 @@ public class DispensingApi {
     @Autowired
     private PayRefuseMapper payRefuseMapper;
 
-    @ApiModelProperty
+    @Autowired
     private DrugMapper drugMapper;
+
+    @Autowired
+    private ManufacturerMapper manufacturerMapper;
 
 
     @ApiOperation(value = "收支概况")
@@ -228,7 +231,7 @@ public class DispensingApi {
 
 
 
-        return ResponseUtil.setSuccessResult(new DispensingMedicineVo(prescription,itemList,map,baseInfoManager,drugMapper));
+        return ResponseUtil.setSuccessResult(new DispensingMedicineVo(prescription,itemList,map,baseInfoManager,drugMapper,manufacturerMapper));
     }
 
 

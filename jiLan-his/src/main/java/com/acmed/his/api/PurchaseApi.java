@@ -79,7 +79,7 @@ public class PurchaseApi {
     @ApiOperation(value = "入库审核列表")
     @GetMapping("/purchase/audit/list")
     public ResponseResult<PurchaseDto> auditList(@ApiParam("采购单号") @RequestParam(value = "purchaseNo",required = false) String purchaseNo,
-                                    @ApiParam("审核状态 0:未审核,1:已审核") @RequestParam(value = "userId",required = false) Integer status,
+                                    @ApiParam("审核状态 0:未审核,1:已审核") @RequestParam(value = "status",required = false) Integer status,
                                     @ApiParam("供应商") @RequestParam(value = "supplierId",required = false) Integer supplierId,
                                     @ApiParam("采购开始时间") @RequestParam(value = "startTime",required = false) String startTime,
                                     @ApiParam("采购结束时间") @RequestParam(value = "endTime",required = false) String endTime,
@@ -119,6 +119,14 @@ public class PurchaseApi {
     public ResponseResult audit(@ApiParam("{\"id\":\"\"}") @RequestBody String param,
                                 @AccessToken AccessInfo info){
         purchaseManager.audit(JSONObject.parseObject(param).get("id").toString(),info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "驳回")
+    @PostMapping("/purchase/reject")
+    public ResponseResult reject(@ApiParam("{\"id\":\"\"}") @RequestBody String param,
+                                @AccessToken AccessInfo info){
+        purchaseManager.reject(JSONObject.parseObject(param).get("id").toString(),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
