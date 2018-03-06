@@ -16,6 +16,9 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("药品名称")
     private String drugName;
 
+    @ApiModelProperty("药品分类 字典表：DrugClassification")
+    private Integer category;
+
     @ApiModelProperty("药品分类名称")
     private String categoryName;
 

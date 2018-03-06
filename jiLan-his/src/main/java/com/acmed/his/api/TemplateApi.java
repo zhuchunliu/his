@@ -234,6 +234,7 @@ public class TemplateApi {
                 BeanUtils.copyProperties(obj,vo);
                 vo.setDrugId(drug.getId());
                 vo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
+                vo.setCategory(drug.getCategory());
                 vo.setCategoryName(null==drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
                 vo.setSpec(drug.getSpec());
                 vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(manu->manufacturerMapper.selectByPrimaryKey(manu)).
