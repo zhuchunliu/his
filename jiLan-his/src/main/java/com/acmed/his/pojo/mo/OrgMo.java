@@ -19,10 +19,10 @@ public class OrgMo {
     @ApiModelProperty("机构管理员")
     private String manager;
 
-    @ApiModelProperty("机构类型")
+    @ApiModelProperty("机构类型 字典表：OrgCategory")
     private String category;
 
-    @ApiModelProperty("医疗机构类别：三级甲等,三级乙等.....")
+    @ApiModelProperty("医疗机构类别：三级甲等,三级乙等.....字典表：OrgLevel")
     private String level;
 
     @ApiModelProperty("联系人")
