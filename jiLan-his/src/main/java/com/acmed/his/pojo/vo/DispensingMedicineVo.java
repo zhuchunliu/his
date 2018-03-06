@@ -1,8 +1,9 @@
 package com.acmed.his.pojo.vo;
 
-import com.acmed.his.model.Prescription;
-import com.acmed.his.model.PrescriptionItem;
-import com.acmed.his.model.PrescriptionItemStock;
+import com.acmed.his.consts.DicTypeEnum;
+import com.acmed.his.dao.DrugMapper;
+import com.acmed.his.model.*;
+import com.acmed.his.service.BaseInfoManager;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.ApiModelProperty;
@@ -33,7 +34,8 @@ public class DispensingMedicineVo {
     private List<List<MedicalDetail>> detailList = Lists.newArrayList();
 
     public DispensingMedicineVo(Prescription prescription, List<PrescriptionItem> itemList,
-                                Map<String, List<PrescriptionItemStock>> stockMap) {
+                                Map<String, List<PrescriptionItemStock>> stockMap,
+                                BaseInfoManager baseInfoManager, DrugMapper drugMapper) {
         this.prescriptionNo = prescription.getPrescriptionNo();
 
         Map<String,List<PrescriptionItem>> itemMap = Maps.newHashMap();
@@ -44,6 +46,13 @@ public class DispensingMedicineVo {
                 itemMap.put(item.getGroupNum(),Lists.newArrayList(item));
             }
         }
+
+        List<DicItem> unitItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+        Map<String,String> unitItemName = Maps.newHashMap();
+        unitItemList.forEach(obj->{
+            unitItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+        });
+
 
 
         for(String groupNum : itemMap.keySet()){
@@ -56,6 +65,16 @@ public class DispensingMedicineVo {
                     MedicalDetail medicalDetail = new MedicalDetail();
                     BeanUtils.copyProperties(stock,medicalDetail);
                     BeanUtils.copyProperties(item,medicalDetail);
+                    Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
+                    if(null != stock.getNum() && 0 != stock.getNum()){
+                        medicalDetail.setNumName(stock.getNum()+unitItemName.get(drug.getUnit()));
+                    }
+                    if(null != stock.getMinNum() && 0 != stock.getMinNum()){
+                        medicalDetail.setNumName(stock.getMinNum()+unitItemName.get(drug.getMinUnit()));
+                    }
+                    if(null != stock.getDoseNum() && 0 != stock.getDoseNum()){
+                        medicalDetail.setNumName(stock.getDoseNum()+unitItemName.get(drug.getDoseUnit()));
+                    }
                     childList.add(medicalDetail);
                 });
             }
@@ -77,8 +96,8 @@ public class DispensingMedicineVo {
         @ApiModelProperty("零售价")
         private Double retailPrice;
 
-        @ApiModelProperty("数量")
-        private Double num;
+        @ApiModelProperty("大单位数量")
+        private String numName;
 
         @ApiModelProperty("频率")
         private Integer frequency;

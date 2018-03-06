@@ -25,8 +25,8 @@ public class PrescriptionItemStock {
     @ApiModelProperty("处方id")
     private String prescriptionId;
 
-    @ApiModelProperty("药品code")
-    private String drugcode;
+    @ApiModelProperty("药品id")
+    private Integer drugId;
 
     @ApiModelProperty("挂号单号")
     private String applyId;

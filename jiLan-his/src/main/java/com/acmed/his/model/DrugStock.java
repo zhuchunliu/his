@@ -21,8 +21,8 @@ public class DrugStock {
     @ApiModelProperty("药品库存id")
     private Integer id;
 
-    @ApiModelProperty("药品code")
-    private String drugCode;
+    @ApiModelProperty("药品id")
+    private Integer drugId;
 
     @ApiModelProperty("机构编码")
     private Integer orgCode;

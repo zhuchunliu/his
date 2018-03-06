@@ -20,8 +20,8 @@ public class PurchaseItem {
     @ApiModelProperty("id")
     private String id;
 
-    @ApiModelProperty("药品编码")
-    private String drugCode;
+    @ApiModelProperty("药品id")
+    private Integer drugId;
 
     @ApiModelProperty("批次库存ID")
     private String purchaseId;

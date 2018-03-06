@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +69,9 @@ public class DispensingApi {
 
     @Autowired
     private PayRefuseMapper payRefuseMapper;
+
+    @ApiModelProperty
+    private DrugMapper drugMapper;
 
 
     @ApiOperation(value = "收支概况")
@@ -224,7 +228,7 @@ public class DispensingApi {
 
 
 
-        return ResponseUtil.setSuccessResult(new DispensingMedicineVo(prescription,itemList,map));
+        return ResponseUtil.setSuccessResult(new DispensingMedicineVo(prescription,itemList,map,baseInfoManager,drugMapper));
     }
 
 

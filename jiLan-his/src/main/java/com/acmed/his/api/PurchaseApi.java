@@ -98,7 +98,7 @@ public class PurchaseApi {
         List<PurchaseVo.PurchaseVoDetail> detailList = Lists.newArrayList();
         list.forEach(obj->{
             PurchaseVo.PurchaseVoDetail detail = new PurchaseVo.PurchaseVoDetail();
-            Drug drug = drugMapper.getByDrugCode(obj.getDrugCode());
+            Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
             detail.setName(drug.getName());
             detail.setGoodsName(drug.getGoodsName());
             detail.setSpec(drug.getSpec());

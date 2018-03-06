@@ -130,7 +130,7 @@ public class PurchaseManager {
         list.forEach(item->{
 
             Example drugExample = new Example(Drug.class);
-            drugExample.createCriteria().andEqualTo("drugCode",item.getDrugCode()).
+            drugExample.createCriteria().andEqualTo("id",item.getDrugId()).
                     andEqualTo("orgCode",info.getOrgCode()).
                     andEqualTo("removed","0");
 
@@ -155,7 +155,7 @@ public class PurchaseManager {
 
             //更新库存信息
             Example stockExample = new Example(DrugStock.class);
-            stockExample.createCriteria().andEqualTo("drugCode",drug.getDrugCode()).
+            stockExample.createCriteria().andEqualTo("drugId",item.getDrugId()).
                     andEqualTo("batchNumber",item.getBatchNumber()).
                     andEqualTo("expiryDate",item.getExpiryDate());
 
@@ -164,7 +164,7 @@ public class PurchaseManager {
             if(null == stock){
                 stock = new DrugStock();
                 stock.setOrgCode(drug.getOrgCode());
-                stock.setDrugCode(drug.getDrugCode());
+                stock.setDrugId(drug.getId());
                 stock.setExpiryDate(item.getExpiryDate());
                 stock.setBatchNumber(item.getBatchNumber());
                 stock.setSupply(purchase.getSupplierId());

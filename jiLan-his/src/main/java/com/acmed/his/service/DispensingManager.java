@@ -390,7 +390,7 @@ public class DispensingManager {
                             PrescriptionItemStock itemStock = new PrescriptionItemStock();
                             itemStock.setPrescriptionId(item.getPrescriptionId());
                             itemStock.setItemId(item.getId());
-                            itemStock.setDrugcode(item.getDrugCode());
+                            itemStock.setDrugId(item.getDrugId());
                             itemStock.setApplyId(item.getApplyId());
                             itemStock.setBatchNumber(drugStock.getBatchNumber());
                             itemStock.setExpiryDate(drugStock.getExpiryDate());
@@ -406,7 +406,7 @@ public class DispensingManager {
                         drugMapper.updateByPrimaryKey(drug);//扣除药品库存
 
                         List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
-                        Integer num = item.getNum();
+                        Integer num = item.getNum()*drug.getConversion();
                         for (DrugStock drugStock : drugStockList) {
 
                             if (num == 0) {
@@ -415,13 +415,13 @@ public class DispensingManager {
                             int totalNum = drugStock.getNum() * drug.getConversion() + drug.getMinNum();
                             int occupyNum = totalNum < num ? totalNum : num;
                             drugStock.setNum((totalNum - occupyNum) / drug.getConversion());
-                            drugStock.setMinNum((totalNum - occupyNum) % drug.getConversion());
+                            drugStock.setMinNum((totalNum - occupyNum - drug.getNum()*drug.getConversion()) % drug.getConversion());
                             drugStockMapper.updateByPrimaryKey(drugStock);
 
                             PrescriptionItemStock itemStock = new PrescriptionItemStock();
                             itemStock.setPrescriptionId(item.getPrescriptionId());
                             itemStock.setItemId(item.getId());
-                            itemStock.setDrugcode(item.getDrugCode());
+                            itemStock.setDrugId(item.getDrugId());
                             itemStock.setApplyId(item.getApplyId());
                             itemStock.setBatchNumber(drugStock.getBatchNumber());
                             itemStock.setExpiryDate(drugStock.getExpiryDate());
@@ -455,7 +455,7 @@ public class DispensingManager {
                             PrescriptionItemStock itemStock = new PrescriptionItemStock();
                             itemStock.setPrescriptionId(item.getPrescriptionId());
                             itemStock.setItemId(item.getId());
-                            itemStock.setDrugcode(item.getDrugCode());
+                            itemStock.setDrugId(item.getDrugId());
                             itemStock.setApplyId(item.getApplyId());
                             itemStock.setBatchNumber(drugStock.getBatchNumber());
                             itemStock.setExpiryDate(drugStock.getExpiryDate());
