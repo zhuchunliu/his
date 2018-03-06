@@ -40,8 +40,14 @@ public class PrescriptionItemStock {
     @ApiModelProperty("入库批号")
     private String batchNumber;
 
-    @ApiModelProperty("库存数量")
-    private Double num;
+    @ApiModelProperty("大单位数量")
+    private Integer num;
+
+    @ApiModelProperty("小单位数量")
+    private Integer minNum;
+
+    @ApiModelProperty("剂量单位库存数量")
+    private Double doseNum;
 
 
 }

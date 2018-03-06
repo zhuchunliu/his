@@ -33,11 +33,14 @@ public class DrugStock {
     @ApiModelProperty("入库批号")
     private String batchNumber;
 
-    @ApiModelProperty("库存数量")
-    private Double num;
+    @ApiModelProperty("大单位库存数量")
+    private Integer num;
 
-    @ApiModelProperty("锁定的库存数量")
-    private Double lockNum;
+    @ApiModelProperty("小单位库存数量")
+    private Integer minNum;
+
+    @ApiModelProperty("剂量单位库存数量")
+    private Double doseNum;
 
     @ApiModelProperty("供应商")
     private Integer supply;

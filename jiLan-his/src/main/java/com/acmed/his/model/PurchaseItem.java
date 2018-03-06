@@ -29,9 +29,6 @@ public class PurchaseItem {
     @ApiModelProperty("采购数量")
     private Integer num;
 
-    @ApiModelProperty("采购单位")
-    private String unit;
-
     @ApiModelProperty("进价")
     private Double bid;
 

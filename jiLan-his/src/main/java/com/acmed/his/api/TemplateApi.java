@@ -289,4 +289,11 @@ public class TemplateApi {
         boolean flag = templateManager.savInspectTpl(mo);
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方模板失败");
     }
+
+    public static void main(String[] args) {
+        double i = 10.5d;
+        int j = 3;
+        System.err.println((int)Math.floor(10.1d));
+        System.err.println((int)i/j+"  "+i%j);
+    }
 }

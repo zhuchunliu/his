@@ -212,6 +212,8 @@ public class PrescriptionManager {
             }
             apply = applyMapper.selectByPrimaryKey(mo.getApplyId());
         }
+        apply.setStatus("1");
+        applyMapper.updateByPrimaryKey(apply);
 
         //step3:处理就诊信息
         this.handleMedicalRecord(mo,apply,userInfo);

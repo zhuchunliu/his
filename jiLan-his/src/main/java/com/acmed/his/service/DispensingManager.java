@@ -10,7 +10,6 @@ import com.acmed.his.pojo.vo.UserInfo;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import tk.mybatis.mapper.entity.Example;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -184,14 +182,14 @@ public class DispensingManager {
         preMapper.updateByPrimaryKey(prescription);
 
         //扣除库存
-        example = new Example(PrescriptionItem.class);
-        example.createCriteria().andEqualTo("applyId",applyId);
-        List<PrescriptionItem> list = preItemMapper.selectByExample(example);
-        list.forEach(obj->{
-            Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
-            drug.setNum(drug.getNum()-obj.getNum());
-            drugMapper.updateByPrimaryKey(drug);
-        });
+//        example = new Example(PrescriptionItem.class);
+//        example.createCriteria().andEqualTo("applyId",applyId);
+//        List<PrescriptionItem> list = preItemMapper.selectByExample(example);
+//        list.forEach(obj->{
+//            Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+//            drug.setNum(drug.getNum()-obj.getNum());
+//            drugMapper.updateByPrimaryKey(drug);
+//        });
     }
 
     /**
@@ -349,12 +347,13 @@ public class DispensingManager {
     @Transactional
     public void lockStock(String applyId,UserInfo info) {
         Example stockExample = new Example(PrescriptionItemStock.class);
-        stockExample.createCriteria().andEqualTo("applyId",applyId);
+        stockExample.createCriteria().andEqualTo("applyId", applyId);
         int count = itemStockMapper.selectCountByExample(stockExample);
-        if(0 != count){//已经锁定了库存，则不再占用库存
+        if (0 != count) {//已经锁定了库存，则不再占用库存
             return;
         }
-
+        Apply apply = applyMapper.selectByPrimaryKey(applyId);
+        apply.setStatus("4");
         synchronized ("org_" + info.getOrgCode()) {
             Example example = new Example(PrescriptionItem.class);
             example.createCriteria().andEqualTo("applyId", applyId).andEqualTo("payStatus", 1);
@@ -364,38 +363,113 @@ public class DispensingManager {
 
             for (PrescriptionItem item : itemList) {
                 Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
-                if (drug.getNum() < item.getNum()) {
+                //判断库存是否满足：大单位,小单位，剂量单位
+                if ((1 == item.getUnitType()) && drug.getNum() < item.getNum()) {
+                    throw new BaseException(StatusCode.FAIL, Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()) + "库存不足");
+                } else if (2 == item.getUnitType() && 1 == drug.getMinPriceUnitType() && (drug.getNum() * drug.getConversion() + drug.getMinNum()) < item.getNum()) {
+                    throw new BaseException(StatusCode.FAIL, Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()) + "库存不足");
+                } else if (2 == item.getUnitType() && 2 == drug.getMinPriceUnitType() &&
+                        (drug.getNum() * drug.getConversion() * drug.getDose() + drug.getMinNum() * drug.getDose() + drug.getDose()) < item.getNum()) {
                     throw new BaseException(StatusCode.FAIL, Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()) + "库存不足");
                 } else {
-                    drug.setNum(drug.getNum()-item.getNum());
-                    drugMapper.updateByPrimaryKey(drug);//扣除药品库存
+                    if (1 == item.getUnitType()) {
+                        drug.setNum(drug.getNum() - item.getNum());
+                        drugMapper.updateByPrimaryKey(drug);//扣除药品库存
 
-                    List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
-                    Integer num = item.getNum();
-                    for (DrugStock drugStock : drugStockList) {
+                        List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
+                        Integer num = item.getNum();
+                        for (DrugStock drugStock : drugStockList) {
 
-                        if (num == 0) {
-                            break;
+                            if (num == 0) {
+                                break;
+                            }
+                            int occupyNum = drugStock.getNum() < num ? drugStock.getNum() : num;
+                            drugStock.setNum(drugStock.getNum() - occupyNum);
+                            drugStockMapper.updateByPrimaryKey(drugStock);
+
+                            PrescriptionItemStock itemStock = new PrescriptionItemStock();
+                            itemStock.setPrescriptionId(item.getPrescriptionId());
+                            itemStock.setItemId(item.getId());
+                            itemStock.setDrugcode(item.getDrugCode());
+                            itemStock.setApplyId(item.getApplyId());
+                            itemStock.setBatchNumber(drugStock.getBatchNumber());
+                            itemStock.setExpiryDate(drugStock.getExpiryDate());
+                            itemStock.setNum(occupyNum);
+                            itemStockList.add(itemStock);
+
+                            num = num - occupyNum;
                         }
-                        Double occupyNum = drugStock.getNum() < num ? drugStock.getNum() : num;
-                        drugStock.setNum(drugStock.getNum() - occupyNum);
-                        drugStockMapper.updateByPrimaryKey(drugStock);
+                    } else if (1 == drug.getMinPriceUnitType()) {//小单位扣库存
+                        int total = drug.getNum() * drug.getConversion() + drug.getMinNum() - item.getNum();
+                        drug.setNum(total / drug.getConversion());
+                        drug.setMinNum(total % drug.getConversion());
+                        drugMapper.updateByPrimaryKey(drug);//扣除药品库存
 
-                        PrescriptionItemStock itemStock = new PrescriptionItemStock();
-                        itemStock.setPrescriptionId(item.getPrescriptionId());
-                        itemStock.setItemId(item.getId());
-                        itemStock.setDrugcode(item.getDrugCode());
-                        itemStock.setApplyId(item.getApplyId());
-                        itemStock.setBatchNumber(drugStock.getBatchNumber());
-                        itemStock.setExpiryDate(drugStock.getExpiryDate());
-                        itemStock.setNum(occupyNum);
-                        itemStockList.add(itemStock);
+                        List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
+                        Integer num = item.getNum();
+                        for (DrugStock drugStock : drugStockList) {
 
-//                        num = num - occupyNum;
+                            if (num == 0) {
+                                break;
+                            }
+                            int totalNum = drugStock.getNum() * drug.getConversion() + drug.getMinNum();
+                            int occupyNum = totalNum < num ? totalNum : num;
+                            drugStock.setNum((totalNum - occupyNum) / drug.getConversion());
+                            drugStock.setMinNum((totalNum - occupyNum) % drug.getConversion());
+                            drugStockMapper.updateByPrimaryKey(drugStock);
+
+                            PrescriptionItemStock itemStock = new PrescriptionItemStock();
+                            itemStock.setPrescriptionId(item.getPrescriptionId());
+                            itemStock.setItemId(item.getId());
+                            itemStock.setDrugcode(item.getDrugCode());
+                            itemStock.setApplyId(item.getApplyId());
+                            itemStock.setBatchNumber(drugStock.getBatchNumber());
+                            itemStock.setExpiryDate(drugStock.getExpiryDate());
+                            itemStock.setNum(occupyNum / drug.getConversion());
+                            itemStock.setMinNum(occupyNum % drug.getConversion());
+                            itemStockList.add(itemStock);
+
+                            num = num - occupyNum;
+                        }
+                    } else {//剂量单位扣库存
+                        Double total = drug.getNum() * drug.getConversion() * drug.getDose() + drug.getMinNum() * drug.getDose() + drug.getDose() - item.getNum();
+                        drug.setNum((int) Math.floor(total / (drug.getConversion() * drug.getDose())));
+                        drug.setMinNum((int) Math.floor((total - drug.getNum() * drug.getConversion() * drug.getDose()) / drug.getDose()));
+                        drug.setDoseNum(total - drug.getNum() * drug.getConversion() * drug.getDose() - drug.getMinNum() * drug.getDose());
+                        drugMapper.updateByPrimaryKey(drug);//扣除药品库存
+
+                        List<DrugStock> drugStockList = drugStockMapper.getByDrugCode(drug.getDrugCode());
+                        Double num = (double) item.getNum();
+                        for (DrugStock drugStock : drugStockList) {
+
+                            if (num == 0) {
+                                break;
+                            }
+                            Double totalNum = drugStock.getNum() * drug.getConversion() * drug.getDose() + drug.getMinNum() * drug.getDose() + drug.getDose();
+                            Double occupyNum = totalNum < num ? totalNum : num;
+                            drugStock.setNum((int) Math.floor((totalNum - occupyNum) / (drug.getConversion() * drug.getDose())));
+                            drugStock.setMinNum((int) Math.floor((totalNum - occupyNum - drug.getNum() * drug.getConversion() * drug.getDose()) / drug.getDose()));
+                            drugStock.setDoseNum(totalNum - occupyNum - drug.getNum() * drug.getConversion() * drug.getDose() - drug.getMinNum() * drug.getDose());
+                            drugStockMapper.updateByPrimaryKey(drugStock);
+
+                            PrescriptionItemStock itemStock = new PrescriptionItemStock();
+                            itemStock.setPrescriptionId(item.getPrescriptionId());
+                            itemStock.setItemId(item.getId());
+                            itemStock.setDrugcode(item.getDrugCode());
+                            itemStock.setApplyId(item.getApplyId());
+                            itemStock.setBatchNumber(drugStock.getBatchNumber());
+                            itemStock.setExpiryDate(drugStock.getExpiryDate());
+                            itemStock.setNum((int) Math.floor(occupyNum / (drug.getConversion() * drug.getDose())));
+                            itemStock.setMinNum((int) Math.floor((occupyNum - itemStock.getNum() * drug.getConversion() * drug.getDose()) / drug.getDose()));
+                            itemStock.setDoseNum(occupyNum - itemStock.getNum() * drug.getConversion() * drug.getDose() - itemStock.getMinNum() * drug.getDose());
+                            itemStockList.add(itemStock);
+
+                            num = num - occupyNum;
+                        }
                     }
                 }
+                itemStockMapper.insertList(itemStockList);
             }
-            itemStockMapper.insertList(itemStockList);
         }
     }
 

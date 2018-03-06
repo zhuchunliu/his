@@ -133,6 +133,9 @@ public class Drug {
     @ApiModelProperty("小单位数量")
     private Integer minNum;
 
+    @ApiModelProperty("剂量单位库存数量")
+    private Double doseNum;
+
     @ApiModelProperty("是否有效 0:无；1：有")
     private String isValid;
 

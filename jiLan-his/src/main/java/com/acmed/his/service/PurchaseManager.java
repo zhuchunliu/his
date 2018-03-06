@@ -140,10 +140,11 @@ public class PurchaseManager {
             if(null != drug.getNum()){
                 Integer num = drug.getNum();
                 drug.setNum(num + item.getNum());
-                drug.setBid((num * drug.getBid() + item.getNum() * item.getBid())/drug.getNum());
-                drug.setRetailPrice((num * drug.getRetailPrice() + item.getNum() * item.getRetailPrice())/drug.getNum());
+                drug.setBid(drug.getBid());
+//                drug.setRetailPrice((num * drug.getRetailPrice() + item.getNum() * item.getRetailPrice())/drug.getNum());
+                drug.setRetailPrice(drug.getRetailPrice());
             }else{
-                drug.setNum(Integer.parseInt(item.getNum().toString()));
+                drug.setNum(item.getNum());
                 drug.setBid(item.getBid());
                 drug.setRetailPrice(item.getRetailPrice());
             }
@@ -168,7 +169,6 @@ public class PurchaseManager {
                 stock.setBatchNumber(item.getBatchNumber());
                 stock.setSupply(purchase.getSupplierId());
 //                stock.setNum(item.getNum());
-                stock.setLockNum(0d);
                 stock.setRemoved("0");
                 stock.setCreateAt(LocalDateTime.now().toString());
                 stock.setCreateBy(info.getId().toString());
