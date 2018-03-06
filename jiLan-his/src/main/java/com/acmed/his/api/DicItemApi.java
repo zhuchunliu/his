@@ -74,6 +74,8 @@ public class DicItemApi {
             dicItem.setDicTypeCode(null);
             dicItem.setRemoved(null);
             dicItem.setDicItemName(dicItemUpMo.getDicItemName());
+            dicItem.setStartTime(dicItemUpMo.getStartTime());
+            dicItem.setEndTime(dicItemUpMo.getEndTime());
             baseInfoManager.updateDicItem(dicItem);
         }
         return ResponseUtil.setSuccessResult();

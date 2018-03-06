@@ -36,4 +36,10 @@ public class DicItem {
 
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;
+
+    @ApiModelProperty("开始时间")
+    private String startTime;
+
+    @ApiModelProperty("结束时间")
+    private String endTime;
 }

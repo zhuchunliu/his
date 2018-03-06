@@ -148,7 +148,10 @@ public class BaseInfoManager {
             dicItem.setDicTypeCode(null);
             return dicItemMapper.updateByPrimaryKeySelective(dicItem);
         }else {
-            return 0;
+            dicItem.setDicItemName(null);
+            dicItem.setDicItemCode(null);
+            dicItem.setDicTypeCode(null);
+            return dicItemMapper.updateByPrimaryKeySelective(dicItem);
         }
     }
 
@@ -173,6 +176,8 @@ public class BaseInfoManager {
             vo.setDicTypeCode(dicTypeCode);
             vo.setDicItemCode(dicItemCode);
             vo.setDicItemName(dicItemName);
+            vo.setStartTime(d.getStartTime());
+            vo.setEndTime(d.getEndTime());
             for (DicType dt : dicTypes){
                 String dicTypeCode1 = dt.getDicTypeCode();
                 String dicTypeName = dt.getDicTypeName();

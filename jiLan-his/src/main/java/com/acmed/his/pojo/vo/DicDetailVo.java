@@ -21,4 +21,10 @@ public class DicDetailVo {
     private String dicTypeName;
     @ApiModelProperty("产品编码")
     private String productCode;
+
+    @ApiModelProperty("开始时间")
+    private String startTime;
+
+    @ApiModelProperty("结束时间")
+    private String endTime;
 }
