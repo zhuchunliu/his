@@ -135,7 +135,7 @@ public class PurchaseApi {
 
 
     @ApiOperation(value = "批次库存查询")
-    @PostMapping("/batch")
+    @PostMapping("/purchase/batch")
     public ResponseResult<PageResult<PurchaseStockDto>> batch(@RequestBody(required = false) PageBase<String> page,
                                                   @AccessToken AccessInfo info){
         List<PurchaseStockDto> list = purchaseManager.getBatchList(page.getPageNum(),page.getPageSize(),page.getParam(),info.getUser());

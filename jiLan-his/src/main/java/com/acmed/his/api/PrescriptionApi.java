@@ -1,10 +1,12 @@
 package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.pojo.mo.PreMo;
 import com.acmed.his.pojo.vo.PreDrugVo;
 import com.acmed.his.pojo.vo.PreTitleVo;
 import com.acmed.his.pojo.vo.PreVo;
+import com.acmed.his.service.FeeItemManager;
 import com.acmed.his.service.PrescriptionManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2017-11-22

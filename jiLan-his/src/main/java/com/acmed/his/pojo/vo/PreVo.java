@@ -5,6 +5,7 @@ import com.acmed.his.dao.DrugMapper;
 import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.*;
 import com.acmed.his.service.BaseInfoManager;
+import com.acmed.his.service.FeeItemManager;
 import com.acmed.his.util.DateTimeUtil;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,7 +42,7 @@ public class PreVo {
 
     public PreVo(Prescription prescription, List<Inspect> preInspectist,
                  List<Charge> preChargeList, List<PrescriptionItem> preItemList, Patient patientInfo, MedicalRecord medicalRecord,
-                 ManufacturerMapper manufacturerMapper, BaseInfoManager baseInfoManager, DrugMapper drugMapper) {
+                 ManufacturerMapper manufacturerMapper, BaseInfoManager baseInfoManager, DrugMapper drugMapper, FeeItemManager feeItemManager) {
         if(null == prescription){
             return;
         }
@@ -105,7 +106,7 @@ public class PreVo {
             preInspectist.forEach((obj)->{
                 PreVo.InspectVo inspect = new PreVo.InspectVo();
                 BeanUtils.copyProperties(obj,inspect);
-
+                inspect.setCategroyName(baseInfoManager.getDicItem(DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory()).getDicItemName());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo("2",null,inspect,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -121,7 +122,7 @@ public class PreVo {
             preChargeList.forEach((obj)->{
                 PreVo.ChargeVo charge = new PreVo.ChargeVo();
                 BeanUtils.copyProperties(obj,charge);
-
+                charge.setCategroyName(baseInfoManager.getDicItem(DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory()).getDicItemName());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo(null,null,null,charge,
                             obj.getRequirement(),obj.getRemark()));
@@ -186,6 +187,9 @@ public class PreVo {
         @ApiModelProperty("检查类型")
         private String category;
 
+        @ApiModelProperty("检查类型名称")
+        private String categroyName;
+
         @ApiModelProperty("病情摘要")
         private String summary;
 
@@ -207,6 +211,9 @@ public class PreVo {
     public class ChargeVo{
         @ApiModelProperty("费用类型")
         private String category;
+
+        @ApiModelProperty("检查类型名称")
+        private String categroyName;
 
         @ApiModelProperty("费用")
         private Double fee;

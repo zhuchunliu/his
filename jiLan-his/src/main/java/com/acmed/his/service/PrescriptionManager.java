@@ -126,7 +126,7 @@ public class PrescriptionManager {
                 filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(new MedicalRecord());
 
 
-        return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord,manufacturerMapper,baseInfoManager,drugMapper);
+        return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
     }
 
 
