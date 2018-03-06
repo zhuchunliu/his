@@ -247,6 +247,9 @@ public class TemplateApi {
                             baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getDoseUnit().toString()).getDicItemName());
                 }
                 vo.setDoseUnitName(org.apache.commons.lang3.StringUtils.isEmpty(drug.getDoseUnit().toString())?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
+                vo.setRetailPrice(drug.getRetailPrice());
+                vo.setMinRetailPrice(drug.getMinRetailPrice());
+                vo.setUnitType(drug.getMinPriceUnitType());
                 list.add(vo);
 
             });

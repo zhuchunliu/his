@@ -55,4 +55,10 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("备注")
     private String memo;
 
+    @ApiModelProperty("一级单位零售价")
+    private Double retailPrice;
+
+    @ApiModelProperty("二级单位零售价")
+    private Double minRetailPrice;
+
 }
