@@ -35,5 +35,10 @@
         LEFT JOIN (
 	      SELECT * FROM t_p_s_dicitem WHERE dictypecode = 'OrgLevel'
         )as t3 ON t3.dicitemcode = t1.`level`
+        <trim prefixOverrides="and" prefix="where">
+            <if test="@Ognl@isNotEmpty(param)">
+                and t1.orgname like CONCAT('%',#{param},'%')
+            </if>
+        </trim>
     </select>
 </mapper>

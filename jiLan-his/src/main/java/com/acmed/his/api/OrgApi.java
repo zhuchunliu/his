@@ -173,9 +173,9 @@ public class OrgApi {
     }
 
 
-    @ApiOperation(value = "获取机构列表分頁")
+    @ApiOperation(value = "获取机构列表分頁  param 可以是机构名称")
     @PostMapping("/listbyPage")
-    public ResponseResult<PageResult<OrgDto>> getOrgList(@RequestBody PageBase pageBase){
+    public ResponseResult<PageResult<OrgDto>> getOrgList(@RequestBody PageBase<String> pageBase){
         PageResult<OrgDto> orgDtoByPage = orgManager.getOrgDtoByPage(pageBase);
         return ResponseUtil.setSuccessResult(orgDtoByPage);
     }

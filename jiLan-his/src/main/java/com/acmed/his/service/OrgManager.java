@@ -191,12 +191,12 @@ public class OrgManager {
         return orgMapper.selectByExample(example);
     }
 
-    public PageResult<OrgDto> getOrgDtoByPage(PageBase pageBase) {
+    public PageResult<OrgDto> getOrgDtoByPage(PageBase<String> pageBase) {
         PageResult<OrgDto> result = new PageResult<>();
         result.setPageNum(pageBase.getPageNum());
         result.setPageSize(pageBase.getPageSize());
         PageHelper.startPage(pageBase.getPageNum(),pageBase.getPageSize());
-        List<OrgDto> orgDtoList = orgMapper.getOrgDtoList();
+        List<OrgDto> orgDtoList = orgMapper.getOrgDtoList(pageBase.getParam());
         PageInfo<OrgDto> supplyPageInfo = new PageInfo<>(orgDtoList);
         result.setTotal(supplyPageInfo.getTotal());
         result.setData(orgDtoList);
