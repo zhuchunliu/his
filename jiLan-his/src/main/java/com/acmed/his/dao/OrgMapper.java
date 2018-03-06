@@ -1,6 +1,7 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.Org;
+import com.acmed.his.model.dto.OrgDto;
 import com.acmed.his.pojo.vo.OrgVo;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
@@ -33,4 +34,5 @@ public interface OrgMapper extends TkMapper<Org> {
      * @return
      */
     List<OrgVo> getOrgListByCity(@Param("cityId") Integer cityId, @Param("orgName") String orgName);
+    List<OrgDto> getOrgDtoList();
 }

@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.model.Dept;
 import com.acmed.his.model.Org;
 import com.acmed.his.model.PatientItem;
+import com.acmed.his.model.dto.OrgDto;
 import com.acmed.his.pojo.mo.OrgMo;
 import com.acmed.his.pojo.vo.OrgPatientVo;
 import com.acmed.his.pojo.vo.OrgVo;
@@ -12,9 +13,7 @@ import com.acmed.his.service.OrgManager;
 import com.acmed.his.service.PatientItemManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.util.LngLatUtil;
-import com.acmed.his.util.ResponseResult;
-import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.util.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -173,4 +172,11 @@ public class OrgApi {
         return ResponseUtil.setSuccessResult(orgPatientVoList);
     }
 
+
+    @ApiOperation(value = "获取机构列表分頁")
+    @PostMapping("/listbyPage")
+    public ResponseResult<PageResult<OrgDto>> getOrgList(@RequestBody PageBase pageBase){
+        PageResult<OrgDto> orgDtoByPage = orgManager.getOrgDtoByPage(pageBase);
+        return ResponseUtil.setSuccessResult(orgDtoByPage);
+    }
 }

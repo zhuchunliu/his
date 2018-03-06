@@ -5,12 +5,17 @@ import com.acmed.his.dao.OrgMapper;
 import com.acmed.his.dao.RoleVsPermissionMapper;
 import com.acmed.his.dao.UserVsRoleMapper;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.OrgDto;
 import com.acmed.his.pojo.mo.OrgMo;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.vo.OrgVo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.PageBase;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.PinYinUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,5 +189,17 @@ public class OrgManager {
         Example example = new Example(Org.class);
         example.createCriteria().andIn("orgCode",orgCodeList);
         return orgMapper.selectByExample(example);
+    }
+
+    public PageResult<OrgDto> getOrgDtoByPage(PageBase pageBase) {
+        PageResult<OrgDto> result = new PageResult<>();
+        result.setPageNum(pageBase.getPageNum());
+        result.setPageSize(pageBase.getPageSize());
+        PageHelper.startPage(pageBase.getPageNum(),pageBase.getPageSize());
+        List<OrgDto> orgDtoList = orgMapper.getOrgDtoList();
+        PageInfo<OrgDto> supplyPageInfo = new PageInfo<>(orgDtoList);
+        result.setTotal(supplyPageInfo.getTotal());
+        result.setData(orgDtoList);
+        return result;
     }
 }

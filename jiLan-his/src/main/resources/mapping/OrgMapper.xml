@@ -26,4 +26,14 @@
             and t1.orgname like CONCAT('%',#{orgName},'%')
         </if>
     </select>
+
+    <select id="getOrgDtoList" resultType="com.acmed.his.model.dto.OrgDto">
+        SELECT t1.*,t2.dicitemname categorystr ,t3.dicitemname levelstr FROM t_p_s_org t1
+        LEFT JOIN (
+	      SELECT * FROM t_p_s_dicitem WHERE dictypecode = 'OrgCategory'
+        )as t2 ON t2.dicitemcode = t1.category
+        LEFT JOIN (
+	      SELECT * FROM t_p_s_dicitem WHERE dictypecode = 'OrgLevel'
+        )as t3 ON t3.dicitemcode = t1.`level`
+    </select>
 </mapper>
