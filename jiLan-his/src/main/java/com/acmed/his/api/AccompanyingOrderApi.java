@@ -395,7 +395,7 @@ public class AccompanyingOrderApi {
     /**
      * 取消预约
      */
-    @ResponseBody
+    @ApiOperation(value = "取消预约")
     @GetMapping("cancelReservation")
     public ResponseResult cancelReservation(@RequestParam("orderCode") String orderCode,@AccessToken AccessInfo info){
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
@@ -412,7 +412,7 @@ public class AccompanyingOrderApi {
      * @param orderCode
      * @return
      */
-    @ResponseBody
+    @ApiOperation(value = "取消订单")
     @GetMapping("cancelOrder")
     public ResponseResult cancelOrder(@RequestParam("orderCode") String orderCode,@AccessToken AccessInfo info){
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
@@ -428,7 +428,7 @@ public class AccompanyingOrderApi {
      * @param appraiseAccompanyingOrderModel 参数
      * @return resultBody
      */
-    @ResponseBody
+    @ApiOperation(value = "评价订单")
     @PostMapping("appraiseAccompanyingOrder")
     public ResponseResult appraiseAccompanyingOrder(@AccessToken AccessInfo info,@RequestBody AppraiseAccompanyingOrderModel appraiseAccompanyingOrderModel){
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
