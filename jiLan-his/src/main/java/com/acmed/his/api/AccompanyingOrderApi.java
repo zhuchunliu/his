@@ -4,6 +4,7 @@ import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.*;
 import com.acmed.his.pojo.mo.AddAccompanyingOrderConfirmationModel;
 import com.acmed.his.pojo.mo.AddAccompanyingOrderModel;
+import com.acmed.his.pojo.mo.AppraiseAccompanyingOrderModel;
 import com.acmed.his.pojo.vo.AccompanyingOrderPatientVo;
 import com.acmed.his.pojo.vo.SuppliersOrderVo;
 import com.acmed.his.service.*;
@@ -23,8 +24,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -385,6 +389,54 @@ public class AccompanyingOrderApi {
             accompanyingInvitation.setInvitationCode(invitationCode);
             accompanyingInvitationManager.addAccompanyingInvitation(accompanyingInvitation);
         }
+        return ResponseUtil.setSuccessResult();
+    }
+
+    /**
+     * 取消预约
+     */
+    @ResponseBody
+    @GetMapping("cancelReservation")
+    public ResponseResult cancelReservation(@RequestParam("orderCode") String orderCode,@AccessToken AccessInfo info){
+        AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
+        accompanyingOrder.setStatus(7);
+        accompanyingOrder.setOrderCode(orderCode);
+        accompanyingOrder.setModifyBy(info.getPatientId());
+        accompanyingOrderManager.update(accompanyingOrder);
+        return ResponseUtil.setSuccessResult();
+    }
+
+
+    /**
+     * 取消订单
+     * @param orderCode
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("cancelOrder")
+    public ResponseResult cancelOrder(@RequestParam("orderCode") String orderCode,@AccessToken AccessInfo info){
+        AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
+        accompanyingOrder.setStatus(5);
+        accompanyingOrder.setOrderCode(orderCode);
+        accompanyingOrder.setModifyBy(info.getPatientId());
+        accompanyingOrderManager.update(accompanyingOrder);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    /**
+     * 评价订单
+     * @param appraiseAccompanyingOrderModel 参数
+     * @return resultBody
+     */
+    @ResponseBody
+    @PostMapping("appraiseAccompanyingOrder")
+    public ResponseResult appraiseAccompanyingOrder(@AccessToken AccessInfo info,@RequestBody AppraiseAccompanyingOrderModel appraiseAccompanyingOrderModel){
+        AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
+        accompanyingOrder.setStatus(10);
+        accompanyingOrder.setOrderCode(appraiseAccompanyingOrderModel.getOrderCode());
+        accompanyingOrder.setModifyBy(info.getPatientId());
+        accompanyingOrder.setPoint(accompanyingOrder.getPoint());
+        accompanyingOrderManager.update(accompanyingOrder);
         return ResponseUtil.setSuccessResult();
     }
 }
