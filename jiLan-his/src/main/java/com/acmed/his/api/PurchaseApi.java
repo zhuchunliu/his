@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.DrugMapper;
+import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.dao.PurchaseItemMapper;
 import com.acmed.his.dao.PurchaseMapper;
 import com.acmed.his.model.Drug;
@@ -56,6 +57,9 @@ public class PurchaseApi {
     @Autowired
     private DrugMapper drugMapper;
 
+    @Autowired
+    private ManufacturerMapper manufacturerMapper;
+
     @ApiOperation(value = "采购入库")
     @PostMapping("/purchase/save")
     public ResponseResult save(@RequestBody PurchaseMo mo,
@@ -102,6 +106,7 @@ public class PurchaseApi {
             detail.setName(drug.getName());
             detail.setGoodsName(drug.getGoodsName());
             detail.setSpec(drug.getSpec());
+            detail.setManufacturerName(null == drug.getManufacturer()?"":manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
             BeanUtils.copyProperties(obj,detail);
             detailList.add(detail);
         });

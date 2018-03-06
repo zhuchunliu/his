@@ -168,7 +168,7 @@ public class PurchaseManager {
                 stock.setExpiryDate(item.getExpiryDate());
                 stock.setBatchNumber(item.getBatchNumber());
                 stock.setSupply(purchase.getSupplierId());
-//                stock.setNum(item.getNum());
+                stock.setNum(item.getNum());
                 stock.setRemoved("0");
                 stock.setCreateAt(LocalDateTime.now().toString());
                 stock.setCreateBy(info.getId().toString());

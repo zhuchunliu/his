@@ -52,6 +52,9 @@ public class PurchaseVo {
         @ApiModelProperty("商品名称")
         private String goodsName;
 
+        @ApiModelProperty("生产厂家名称")
+        private String manufacturerName;
+
         @ApiModelProperty("药品规格")
         private String spec;
 

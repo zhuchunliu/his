@@ -431,7 +431,13 @@ public class PrescriptionManager {
        BeanUtils.copyProperties(mo.getRecord(),medicalRecord,"id");
        BeanUtils.copyProperties(apply,medicalRecord,"id");
        medicalRecord.setApplyId(apply.getId());
-       recordManager.saveMedicalRecord(medicalRecord);
+       if(StringUtils.isEmpty(medicalRecord.getId())){
+           medicalRecord.setId(UUIDUtil.generate());
+           recordMapper.insert(medicalRecord);
+       }else{
+           recordMapper.updateByPrimaryKey(medicalRecord);
+       }
+
     }
 
     /**
