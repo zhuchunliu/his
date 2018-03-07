@@ -15,9 +15,13 @@ import com.acmed.his.util.ResponseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PatientItemApi
@@ -39,7 +43,22 @@ public class PatientItemApi {
         if (orgCode == null){
             pageBase.getParam().setOrgCode(info.getUser().getOrgCode());
         }
-        return ResponseUtil.setSuccessResult(patientItemManager.getPatientBlacklistByPage(pageBase));
+        PageResult<PatientItemDto> patientBlacklistByPage = patientItemManager.getPatientBlacklistByPage(pageBase);
+        List<PatientItemDto> data = patientBlacklistByPage.getData();
+        if (data.size()!=0){
+            List<PatientItemDto> list = new ArrayList<>();
+            for (PatientItemDto item :data){
+                String idCard = item.getIdCard();
+                if (StringUtils.isNotEmpty(idCard)){
+                    if (StringUtils.equals("00",idCard.substring(0,2))){
+                        item.setIdCard(idCard.substring(6,14));
+                    }
+                }
+                list.add(item);
+            }
+            patientBlacklistByPage.setData(list);
+        }
+        return ResponseUtil.setSuccessResult(patientBlacklistByPage);
     }
 
 
