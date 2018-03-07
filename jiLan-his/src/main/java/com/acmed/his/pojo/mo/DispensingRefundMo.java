@@ -32,5 +32,10 @@ public class DispensingRefundMo {
 
         @ApiModelProperty("类型：1:药，2：检查，3：附加")
         private Integer type;
+
+        public RefundMo(String id ,Integer type){
+            this.id = id;
+            this.type = type;
+        }
     }
 }

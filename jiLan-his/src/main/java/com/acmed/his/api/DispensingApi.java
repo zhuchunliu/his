@@ -5,6 +5,7 @@ import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.mo.DispensQueryMo;
+import com.acmed.his.pojo.mo.DispensingRefundApplyMo;
 import com.acmed.his.pojo.mo.DispensingRefundMo;
 import com.acmed.his.pojo.vo.*;
 import com.acmed.his.service.BaseInfoManager;
@@ -154,10 +155,27 @@ public class DispensingApi {
     }
 
 
-    @ApiOperation(value = "退款")
-    @PostMapping("/refund")
+    @ApiOperation(value = "退款",hidden = true)
+//    @PostMapping("/refund")
     public ResponseResult refund(@RequestBody DispensingRefundMo mo,
                                  @AccessToken AccessInfo info){
+        Prescription prescription = preMapper.getPreByApply(mo.getApplyId()).get(0);
+        if("0".equals(prescription.getIsPaid())){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"尚未付款，无法退款！");
+        }
+        if("1".equals(prescription.getIsDispensing())){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"已经发药，无法退款！");
+        }
+        dispensingManager.refund(mo,info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "退款")
+    @PostMapping("/refund")
+    public ResponseResult refund(@RequestBody DispensingRefundApplyMo mo,
+                                 @AccessToken AccessInfo info){
+
+
         Prescription prescription = preMapper.getPreByApply(mo.getApplyId()).get(0);
         if("0".equals(prescription.getIsPaid())){
             return ResponseUtil.setErrorMeg(StatusCode.FAIL,"尚未付款，无法退款！");

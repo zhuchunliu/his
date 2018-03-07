@@ -5,11 +5,13 @@ import com.acmed.his.dao.*;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.DispensingDto;
+import com.acmed.his.pojo.mo.DispensingRefundApplyMo;
 import com.acmed.his.pojo.mo.DispensingRefundMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,6 +201,33 @@ public class DispensingManager {
      */
     public List<PrescriptionFee> getPreFeeList(String applyId) {
         return feeMapper.getByApplyId(applyId);
+    }
+
+
+    @Transactional
+    public void refund(DispensingRefundApplyMo mo , UserInfo userInfo) {
+        DispensingRefundMo refundMo = new DispensingRefundMo();
+        BeanUtils.copyProperties(mo,refundMo);
+        List<DispensingRefundMo.RefundMo> refundMoList = Lists.newArrayList();
+
+        Example example = new Example(PrescriptionItem.class);
+        example.createCriteria().andEqualTo("applyId",mo.getApplyId()).andEqualTo("payStatus",1);
+        List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
+
+        itemList.forEach(obj->refundMoList.add(new DispensingRefundMo.RefundMo(obj.getId(),1)));
+
+        example = new Example(Inspect.class);
+        example.createCriteria().andEqualTo("applyId",mo.getApplyId()).andEqualTo("payStatus",1);
+        List<Inspect> inspectList = inspectMapper.selectByExample(example);
+        inspectList.forEach(obj->refundMoList.add(new DispensingRefundMo.RefundMo(obj.getId(),2)));
+
+        example = new Example(Charge.class);
+        example.createCriteria().andEqualTo("applyId",mo.getApplyId()).andEqualTo("payStatus",1);
+        List<Charge> chargeList = chargeMapper.selectByExample(example);
+        chargeList.forEach(obj->refundMoList.add(new DispensingRefundMo.RefundMo(obj.getId(),3)));
+
+        refundMo.setMoList(refundMoList);
+        this.refund(refundMo,userInfo);
     }
 
     @Transactional
