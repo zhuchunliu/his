@@ -1,18 +1,13 @@
 package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
-import com.acmed.his.model.Apply;
-import com.acmed.his.model.Patient;
-import com.acmed.his.model.PatientItem;
-import com.acmed.his.model.PayStatements;
+import com.acmed.his.model.*;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
 import com.acmed.his.pojo.vo.ApplyPatientVo;
 import com.acmed.his.pojo.vo.ApplyVo;
-import com.acmed.his.service.ApplyManager;
-import com.acmed.his.service.PatientItemManager;
-import com.acmed.his.service.PayManager;
+import com.acmed.his.service.*;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.PageBase;
@@ -51,6 +46,12 @@ public class ApplyApi {
 
     @Autowired
     private PatientItemManager patientItemManager;
+
+    @Autowired
+    private PatientCardManager patientCardManager;
+
+    @Autowired
+    private PatientManager patientManager;
 
     @ApiOperation(value = "患者添加挂号信息")
     @PostMapping("addByPatient")
@@ -191,10 +192,51 @@ public class ApplyApi {
     }
     @ApiOperation(value = "自己的挂号列表  ")
     @PostMapping("selfapplys")
-    public ResponseResult getselfapplylist(@AccessToken AccessInfo info, @RequestBody PageBase pageBase){
+    public ResponseResult<PageResult<ApplyPatientVo>> getselfapplylist(@AccessToken AccessInfo info, @RequestBody PageBase pageBase){
         String patientId = info.getPatientId();
         Apply apply = new Apply();
         apply.setCreateBy(patientId);
+        PageBase<Apply> applyPageBase = new PageBase<>();
+        Integer pageNum = pageBase.getPageNum();
+        applyPageBase.setPageNum(pageNum);
+        Integer pageSize = pageBase.getPageSize();
+        applyPageBase.setPageSize(pageSize);
+        applyPageBase.setParam(apply);
+        PageResult<Apply> applysByPage = applyManager.getApplysByPage(applyPageBase);
+        Long total = applysByPage.getTotal();
+        PageResult<ApplyPatientVo> result = new PageResult<>();
+        result.setTotal(total);
+        result.setPageNum(pageNum);
+        result.setPageSize(pageSize);
+        List<ApplyPatientVo> list = new ArrayList<>();
+        List<Apply> data = applysByPage.getData();
+        if (data.size()!=0){
+            for (Apply apply1 : data){
+                ApplyPatientVo applyPatientVo = new ApplyPatientVo();
+                BeanUtils.copyProperties(apply1,applyPatientVo);
+                list.add(applyPatientVo);
+            }
+        }
+        result.setData(list);
+        return ResponseUtil.setSuccessResult(result);
+    }
+
+    @ApiOperation(value = "根据就诊卡id查询别人的挂号列表")
+    @PostMapping("applysByPatientCardId")
+    public ResponseResult<PageResult<ApplyPatientVo>> applysByPatientCardId(@AccessToken AccessInfo info, @RequestBody PageBase<String> pageBase){
+        String param = pageBase.getParam();
+        PatientCard patientCard = patientCardManager.patientCardDetail(param);
+        if (patientCard == null){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"纠正人不存在");
+        }
+        String idCard = patientCard.getIdCard();
+        Patient patientByIdCard = patientManager.getPatientByIdCard(idCard);
+        if (patientByIdCard == null){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"患者不存在");
+        }
+        Apply apply = new Apply();
+        apply.setPatientId(patientByIdCard.getId());
+        apply.setCreateBy(info.getPatientId());
         PageBase<Apply> applyPageBase = new PageBase<>();
         Integer pageNum = pageBase.getPageNum();
         applyPageBase.setPageNum(pageNum);
