@@ -166,33 +166,22 @@ public class PatientApi {
         Patient patientById = patientManager.getPatientById(info.getPatientId());
         PatientVoP patientVoP = new PatientVoP();
         BeanUtils.copyProperties(patientById,patientVoP);
-        patientVoP.setNickName(EmojiUtil.emojiRecovery(patientById.getNickName()));
+        if (StringUtils.isNotEmpty(patientById.getNickName())){
+            patientVoP.setNickName(EmojiUtil.emojiRecovery(patientById.getNickName()));
+        }
         return ResponseUtil.setSuccessResult(patientVoP);
     }
 
-    @ApiOperation("自己更新基础信息")
-    @PostMapping(value = "/updateMobile")
-    public ResponseResult updateMobile(@RequestBody PatientMobileUpMo param,
-                                         @AccessToken AccessInfo info){
-        Patient patient = new Patient();
-        BeanUtils.copyProperties(param,patient);
-        patient.setId(info.getPatientId());
-        patient.setModifyBy(info.getPatientId());
-        patientManager.update(patient);
-        return ResponseUtil.setSuccessResult();
-    }
 
     @ApiOperation("获取验证码")
     @GetMapping(value = "/getCode")
-    public ResponseResult changeMobile(@AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(info.getPatient().getMobile())){
-            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"尚未预留手机号，无法推送验证码");
-        }
+    public ResponseResult changeMobile(@AccessToken AccessInfo info,@ApiParam("手机号") @RequestParam(value = "mobile" )String mobile){
+
         String key = String.format(RedisKeyConstants.PATIENT_CODE,info.getPatientId());
         String code = Optional.ofNullable(redisTemplate.opsForValue().get(key)).map(obj->obj.toString()).
                 orElse(RandomUtil.generateNumber(6));
 
-        SmsUtil.sendSms(info.getUser().getMobile(),1,new String[]{code,"5"});
+        SmsUtil.sendSms(mobile,1,new String[]{code,"5"});
         redisTemplate.opsForValue().set(key,code);
         redisTemplate.expire(key,5, TimeUnit.MINUTES);
         return ResponseUtil.setSuccessResult();
