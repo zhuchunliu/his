@@ -56,7 +56,8 @@ public class ScheduleApplyVo {
         @ApiModelProperty("已经挂号数量")
         private Integer occupyNum;
 
-
+        @ApiModelProperty("挂号日期")
+        private String appointmentTime;
 
 
     }
