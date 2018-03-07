@@ -48,6 +48,9 @@ public class PrescriptionItem {
     @ApiModelProperty("单位类型 1：一级计价单位，2：二级计价单位")
     private Integer unitType;
 
+    @ApiModelProperty("开处方时候：二级单位零售价对应单位  1：小单位minUnit，2：剂量单位doseUnit【防止后面修改药品二级单位】")
+    private Integer minPriceUnitType;
+
     @ApiModelProperty("进价")
     private Double bid;
 

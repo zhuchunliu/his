@@ -23,29 +23,29 @@ public class PreDrugVo {
         @ApiModelProperty("用药名称")
         private String drugName;
 
+        @ApiModelProperty("生产厂家名称")
+        private String manufacturerName;
+
         @ApiModelProperty("途径")
         private String way;
 
-        @ApiModelProperty("数量")
-        private Integer num;
-
-        @ApiModelProperty("频率")
-        private String frequency;
+        @ApiModelProperty("大单位数量")
+        private String numName;
 
         @ApiModelProperty("频率")
         private String frequencyName;
 
         @ApiModelProperty("单次剂量")
-        private Integer dose;
+        private Double singleDose;
 
-        @ApiModelProperty("单价")
-        private Double fee;
+        @ApiModelProperty("剂量单位名称")
+        private String doseUnitName;
 
         @ApiModelProperty("备注")
         private String memo;
 
-        @ApiModelProperty("药品编码")
-        private String drugCode;
+        @ApiModelProperty("总价")
+        private Double totalFee;
 
     }
 }

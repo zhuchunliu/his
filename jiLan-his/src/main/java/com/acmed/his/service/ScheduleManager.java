@@ -177,8 +177,8 @@ public class ScheduleManager {
         }else{
             LocalDateTime dateTime = DateTimeUtil.parsetLocalDateTime(date);
             int week = dateTime.getDayOfWeek().getValue();
-            startTime = LocalDateTime.now().minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
-            endTime = LocalDateTime.now().plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+            startTime = dateTime.minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+            endTime = dateTime.plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
         }
 
         return scheduleMapper.getScheduleApplyList(orgCode,deptId,startTime, endTime);
@@ -191,9 +191,6 @@ public class ScheduleManager {
         String startTime = LocalDateTime.now().minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
         String endTime =  LocalDateTime.now().plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
 
-        String dd = LocalDateTime.now().minusDays(week-7).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
-        System.err.println(week+" "+startTime+" "+endTime+"  "+dd);
-        System.err.println(LocalDate.now().minusDays(week-6).isEqual(LocalDate.now()));
     }
 
 

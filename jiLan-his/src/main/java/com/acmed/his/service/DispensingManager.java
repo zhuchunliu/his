@@ -359,9 +359,8 @@ public class DispensingManager {
             example.createCriteria().andEqualTo("applyId", applyId).andEqualTo("payStatus", 1);
             List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
 
-            List<PrescriptionItemStock> itemStockList = Lists.newArrayList();
-
             for (PrescriptionItem item : itemList) {
+                List<PrescriptionItemStock> itemStockList = Lists.newArrayList();
                 Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                 //判断库存是否满足：大单位,小单位，剂量单位
                 if ((1 == item.getUnitType()) && drug.getNum() < item.getNum()) {

@@ -143,22 +143,48 @@ public class PrescriptionManager {
         example.orderBy("id").asc();
         List<PrescriptionItem> preItemList = preItemMapper.selectByExample(example);
 
+
+
         if(null != preItemList && 0 != preItemList.size()){
 
             Map<String,List<PreDrugVo.PreDrugChild>> map = Maps.newHashMap();
 
-            List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FREQUENCY.getCode());
-            Map<String,String> dicItemName = Maps.newHashMap();
-            dicItemList.forEach(obj->{
-                dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+            List<DicItem> frequencyItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FREQUENCY.getCode());
+            Map<String,String> frequencyItemName = Maps.newHashMap();
+            frequencyItemList.forEach(obj->{
+                frequencyItemName.put(obj.getDicItemCode(),obj.getDicItemName());
             });
 
-            preItemList.forEach(obj->{
-                PreDrugVo.PreDrugChild item = new PreDrugVo.PreDrugChild();
+            List<DicItem> unitItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+            Map<String,String> unitItemName = Maps.newHashMap();
+            unitItemList.forEach(obj->{
+                unitItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+            });
+
+            preItemList.forEach(obj-> {
+            PreDrugVo.PreDrugChild item = new PreDrugVo.PreDrugChild();
                 BeanUtils.copyProperties(obj,item);
-                if(!StringUtils.isEmpty(item.getFrequency())){
-                    item.setFrequencyName(dicItemName.get(item.getFrequency()));
+                item.setTotalFee(Optional.ofNullable(obj.getNum()).orElse(0) * Optional.ofNullable(obj.getRetailPrice()).orElse(0d));
+                if (null != obj.getFrequency()) {
+                    item.setFrequencyName(frequencyItemName.get(obj.getFrequency().toString()));
                 }
+                Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+                if (null != drug) {
+                    item.setDoseUnitName(Optional.ofNullable(drug.getDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
+                    item.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
+                            map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
+
+                    if(null != obj.getNum() && 0 != obj.getNum()){
+                        if(1 == obj.getUnitType()) {
+                            item.setNumName(obj.getNum() + unitItemName.get(drug.getUnit().toString()));
+                        }else if(1 == obj.getMinPriceUnitType()){
+                            item.setNumName(obj.getNum()+unitItemName.get(drug.getMinUnit().toString()));
+                        }else{
+                            item.setNumName(obj.getNum()+unitItemName.get(drug.getDoseUnit().toString()));
+                        }
+                    }
+                }
+
                 if(!map.containsKey(obj.getGroupNum())){
                     List<PreDrugVo.PreDrugChild> list = Lists.newArrayList();
                     list.add(item);
@@ -275,6 +301,7 @@ public class PrescriptionManager {
                     item.setApplyId(apply.getId());
                     item.setDrugId(drug.getId());
                     item.setDrugCode(drug.getDrugCode());
+                    item.setMinPriceUnitType(drug.getMinPriceUnitType());
                     item.setPayStatus(0);
                     if(info.getUnitType() == 1) {
                         item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d));//存当前进价
