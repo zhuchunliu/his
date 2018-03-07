@@ -226,30 +226,34 @@ public class ApplyApi {
     public ResponseResult<PageResult<ApplyPatientVo>> applysByPatientCardId(@AccessToken AccessInfo info, @RequestBody PageBase<String> pageBase){
         String param = pageBase.getParam();
         PatientCard patientCard = patientCardManager.patientCardDetail(param);
+        PageResult<ApplyPatientVo> result = new PageResult<>();
+        Integer pageNum = pageBase.getPageNum();
+        Integer pageSize = pageBase.getPageSize();
+        List<ApplyPatientVo> list = new ArrayList<>();
         if (patientCard == null){
-            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"纠正人不存在");
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"就诊人不存在");
         }
         String idCard = patientCard.getIdCard();
         Patient patientByIdCard = patientManager.getPatientByIdCard(idCard);
         if (patientByIdCard == null){
-            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"患者不存在");
+            result.setTotal(0L);
+            result.setPageNum(pageNum);
+            result.setPageSize(pageSize);
+            result.setData(list);
+            return ResponseUtil.setSuccessResult(result);
         }
         Apply apply = new Apply();
         apply.setPatientId(patientByIdCard.getId());
         apply.setCreateBy(info.getPatientId());
         PageBase<Apply> applyPageBase = new PageBase<>();
-        Integer pageNum = pageBase.getPageNum();
         applyPageBase.setPageNum(pageNum);
-        Integer pageSize = pageBase.getPageSize();
         applyPageBase.setPageSize(pageSize);
         applyPageBase.setParam(apply);
         PageResult<Apply> applysByPage = applyManager.getApplysByPage(applyPageBase);
         Long total = applysByPage.getTotal();
-        PageResult<ApplyPatientVo> result = new PageResult<>();
         result.setTotal(total);
         result.setPageNum(pageNum);
         result.setPageSize(pageSize);
-        List<ApplyPatientVo> list = new ArrayList<>();
         List<Apply> data = applysByPage.getData();
         if (data.size()!=0){
             for (Apply apply1 : data){
