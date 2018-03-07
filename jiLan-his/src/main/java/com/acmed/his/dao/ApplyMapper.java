@@ -49,6 +49,13 @@ public interface ApplyMapper extends TkMapper<Apply>{
     Integer getApplyNum(@Param("orgCode") Integer orgCode);
 
     /**
+     * 获取医生的就诊量
+     * @param userId
+     */
+    Integer getDoctorApplyNum(@Param("userId") Integer userId,@Param("startTime") String startTime,
+                              @Param("endTime") String endTime);
+
+    /**
      * 查询机构总的初诊和复诊数
      * @param orgCode 机构码
      * @return ChuZhenFuZhenCountDto

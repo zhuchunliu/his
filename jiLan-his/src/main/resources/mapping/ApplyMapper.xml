@@ -99,6 +99,21 @@
         select count(1) from t_b_apply where orgcode = #{orgCode}
     </select>
 
+    <select id="getDoctorApplyNum" resultType="java.lang.Integer">
+        select count(1) from t_b_apply t1
+        <where>
+            <if test="@Ognl@isNotEmpty(userId)">
+                and t1.doctorid = #{userId}
+            </if>
+            <if test="@Ognl@isNotEmpty(startTime)">
+                <![CDATA[ AND t1.appointmenttime >= #{startTime} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(endTime)">
+                <![CDATA[  AND t1.appointmenttime <= #{endTime} ]]>
+            </if>
+        </where>
+    </select>
+
     <select id="chuZhenAndFuZhenTongJi" resultType="com.acmed.his.model.dto.ChuZhenFuZhenCountDto">
         SELECT COUNT(t1.id) chuZhen,COUNT(t2.id) fuZhen ,(COUNT(t1.id) +   COUNT(t2.id) ) as total  FROM t_b_apply t1
         LEFT JOIN t_b_apply AS t2 ON t2.orgcode = t1.orgcode

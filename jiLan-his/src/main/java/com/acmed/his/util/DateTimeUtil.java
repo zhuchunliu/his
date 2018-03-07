@@ -43,7 +43,7 @@ public class DateTimeUtil {
         return Date.from(LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    public static LocalDateTime parsetLocalDate(String date){
+    public static LocalDateTime parsetLocalDateTime(String date){
         if(10 == date.length()) {
             date+=" 00:00:00";
         }
@@ -52,6 +52,14 @@ public class DateTimeUtil {
         }
         return LocalDateTime.parse(date,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
+
+    public static LocalDate parsetLocalDate(String date){
+        if(date.length() == 19){
+            date = date.substring(0,10);
+        }
+        return LocalDate.parse(date);
+    }
+
 
     public static LocalDateTime parsetLocalDateStart(String date){
         if(10 == date.length()) {
@@ -102,7 +110,7 @@ public class DateTimeUtil {
         System.err.println(DateTimeUtil.getAge("1987-12-19"));
         System.err.println(DateTimeUtil.getAge("1987-12-18 10:10:10"));
         System.err.println(DateTimeUtil.getAge("1987-12-20 10:10:10"));
-        System.err.println(DateTimeUtil.parsetDate("1987-12-20 10:10:10"));
+        System.err.println(DateTimeUtil.parsetLocalDate("1987-12-20 10:10:10"));
         System.err.println(DateTimeUtil.parsetDate("1987-12-20"));
     }
 }

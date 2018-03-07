@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.acmed.his.util.DateTimeUtil.parsetLocalDate;
+import static com.acmed.his.util.DateTimeUtil.parsetLocalDateTime;
 
 /**
  * Created by Darren on 2018-01-08
@@ -100,8 +100,8 @@ public class ReportInspectApi {
                 dayMap.put(obj.get("date").toString(),obj.get("fee"));
             });
 
-            LocalDateTime startDate = parsetLocalDate(startTime);
-            LocalDateTime endDate = parsetLocalDate(endTime);
+            LocalDateTime startDate = parsetLocalDateTime(startTime);
+            LocalDateTime endDate = parsetLocalDateTime(endTime);
             List<InspectDayVo.DayFee> dayFeeList = Lists.newArrayList();
 
             while (true) {

@@ -1,6 +1,8 @@
 package com.acmed.his.api;
 
 import com.acmed.his.consts.DicTypeEnum;
+import com.acmed.his.dao.ApplyMapper;
+import com.acmed.his.model.DicItem;
 import com.acmed.his.model.dto.ScheduleApplyDto;
 import com.acmed.his.model.dto.ScheduleDto;
 import com.acmed.his.pojo.mo.ScheduleMo;
@@ -8,6 +10,7 @@ import com.acmed.his.pojo.vo.ScheduleApplyVo;
 import com.acmed.his.pojo.vo.ScheduleVo;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.ScheduleManager;
+import com.acmed.his.service.UserManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.DateTimeUtil;
@@ -23,7 +26,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +48,12 @@ public class ScheduleApi {
 
     @Autowired
     private BaseInfoManager baseInfoManager;
+
+    @Autowired
+    private UserManager userManager;
+
+    @Autowired
+    private ApplyMapper applyMapper;
 
     @ApiOperation(value = "设置排班信息")
     @PostMapping("/save")
@@ -91,14 +102,19 @@ public class ScheduleApi {
                                                 @ApiParam("挂号日期 默认当前周") @RequestParam(value = "date",required = false) String date,
                                                 @ApiParam("科室主键") @RequestParam(value = "deptId",required = false) Integer deptId,
                                                 @AccessToken AccessInfo info){
+
         if(orgCode == null){
             orgCode = info.getUser().getOrgCode();
         }
+
+        LocalDate startDate = Optional.ofNullable(date).map(DateTimeUtil::parsetLocalDate).orElse(LocalDate.now());
+        LocalDate endDate = Optional.ofNullable(date).map(DateTimeUtil::parsetLocalDate).orElse(LocalDate.now().plusDays(6));
+
         List<ScheduleApplyDto> sourceList = scheduleManager.getScheduleApplyList(orgCode,deptId,date);
 
-        Map<String,String> scheduleMap = Maps.newHashMap();
+        Map<String,DicItem> scheduleMap = Maps.newHashMap();
         baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.SCHEDULE.getCode()).forEach(obj->
-            scheduleMap.put(obj.getDicItemCode(),obj.getDicItemName()));
+            scheduleMap.put(obj.getDicItemCode(),obj));
 
         Map<String,String> dutyMap = Maps.newHashMap();
         baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DUTY.getCode()).forEach(obj->
@@ -108,22 +124,21 @@ public class ScheduleApi {
         baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DIAGNOSIS_LEVEL.getCode()).forEach(obj->
                 diagnosisMap.put(obj.getDicItemCode(),obj.getDicItemName()));
 
-        LocalDateTime dateTime = Optional.ofNullable(date).map(DateTimeUtil::parsetLocalDate).orElse(LocalDateTime.now());
-        if(LocalDateTime.now().isBefore(dateTime.minusDays(dateTime.getDayOfWeek().getValue()-1))){
-            dateTime = dateTime.minusDays(dateTime.getDayOfWeek().getValue()-1);
-        }
 
         List<ScheduleApplyVo> list = Lists.newArrayList();
         String[] weekarr = new String[]{"一","二","三","四","五","六","日"};
-        for(int index =dateTime.getDayOfWeek().getValue() - 1 ; index < 7 ; index++){
+        for(LocalDate child = startDate;!child.isAfter(endDate);child=child.plusDays(1)){
             ScheduleApplyVo vo = new ScheduleApplyVo();
-            vo.setWeek("周"+weekarr[index]);
-            vo.setDate(dateTime.plusDays(index+1-dateTime.getDayOfWeek().getValue()).format(DateTimeFormatter.ofPattern("MM/dd")));
+            vo.setWeek("周"+weekarr[child.getDayOfWeek().getValue()-1]);
+            vo.setDate(child.format(DateTimeFormatter.ofPattern("MM/dd")));
             List<ScheduleApplyVo.ScheduleApplyDetail> detailList = Lists.newArrayList();
             for(ScheduleApplyDto dto : sourceList){
-
+                if(DateTimeUtil.parsetLocalDate(dto.getStartTime()).isAfter(child)
+                        || DateTimeUtil.parsetLocalDate(dto.getEndTime()).isBefore(child)){
+                    continue;
+                }
                 String schedule = null;
-                switch (index+1){
+                switch (child.getDayOfWeek().getValue()){
                     case 1: schedule = dto.getMonday();break;
                     case 2: schedule = dto.getTuesday();break;
                     case 3: schedule = dto.getWednesday();break;
@@ -135,11 +150,19 @@ public class ScheduleApi {
                 if(StringUtils.isEmpty(schedule)){
                     continue;
                 }
+                if(child.isEqual(LocalDate.now())  //同一天，按照时间过滤
+                        && StringUtils.isNotEmpty(scheduleMap.get(schedule).getEndTime())
+                        && !scheduleMap.get(schedule).getEndTime().equals("00:00:00")
+                        && !LocalTime.parse(scheduleMap.get(schedule).getEndTime()).isAfter(LocalTime.now())){
+                    continue;
+                }
                 ScheduleApplyVo.ScheduleApplyDetail detail = new ScheduleApplyVo().new ScheduleApplyDetail();
                 BeanUtils.copyProperties(dto,detail);
                 detail.setDiagnosLevelName(Optional.ofNullable(dto.getDiagnosLevel()).map(val->diagnosisMap.get(val)).orElse(null));
                 detail.setDutyName(Optional.ofNullable(dto.getDuty()).map(val->dutyMap.get(val)).orElse(null));
-                detail.setSchedule(scheduleMap.get(schedule));
+                detail.setSchedule(scheduleMap.get(schedule).getDicItemName());
+                detail.setApplyNum(userManager.getUserDetail(dto.getUserid()).getApplyNum());
+                detail.setOccupyNum(applyMapper.getDoctorApplyNum(dto.getUserid(),DateTimeUtil.getBeginDate(child.toString()),DateTimeUtil.getEndDate(child.toString())));
                 detailList.add(detail);
             }
 

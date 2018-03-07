@@ -50,6 +50,12 @@ public class ScheduleApplyVo {
         @ApiModelProperty("简介")
         private String introduction;
 
+        @ApiModelProperty("限号数量")
+        private Integer applyNum;
+
+        @ApiModelProperty("已经挂号数量")
+        private Integer occupyNum;
+
 
 
 

@@ -1,10 +1,7 @@
 package com.acmed.his.service;
 
 import com.acmed.his.dao.ScheduleMapper;
-import com.acmed.his.dao.UserMapper;
-import com.acmed.his.model.Prescription;
 import com.acmed.his.model.Schedule;
-import com.acmed.his.model.User;
 import com.acmed.his.model.dto.ScheduleApplyDto;
 import com.acmed.his.model.dto.ScheduleDto;
 import com.acmed.his.pojo.mo.ScheduleMo;
@@ -12,12 +9,10 @@ import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.DateTimeUtil;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -102,7 +97,7 @@ public class ScheduleManager {
      */
     public List<ScheduleDto> getScheduleList(Integer orgCode ,Integer deptId, Integer userId, String time) {
 
-        LocalDateTime date = Optional.ofNullable(time).map(obj->DateTimeUtil.parsetLocalDate(obj)).orElse(LocalDateTime.now());
+        LocalDateTime date = Optional.ofNullable(time).map(obj->DateTimeUtil.parsetLocalDateTime(obj)).orElse(LocalDateTime.now());
         int week = date.getDayOfWeek().getValue();
         String  startTime= date.minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
         String endTime = date.plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
@@ -117,7 +112,7 @@ public class ScheduleManager {
      * @return
      */
     public List<ScheduleDto> getPreviousList(UserInfo userInfo,String date,Integer deptId) {
-        LocalDateTime dateTime = Optional.ofNullable(date).map(DateTimeUtil::parsetLocalDate).orElse(LocalDateTime.now());
+        LocalDateTime dateTime = Optional.ofNullable(date).map(DateTimeUtil::parsetLocalDateTime).orElse(LocalDateTime.now());
         int week = dateTime.getDayOfWeek().getValue();
         String preStartTime = dateTime.minusDays(week+7-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
         String preEndTime =  dateTime.minusDays(week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
@@ -169,10 +164,22 @@ public class ScheduleManager {
      * @return
      */
     public List<ScheduleApplyDto> getScheduleApplyList(Integer orgCode, Integer deptId,String date) {
-        LocalDateTime dateTime = Optional.ofNullable(date).map(DateTimeUtil::parsetLocalDate).orElse(LocalDateTime.now());
-        int week = dateTime.getDayOfWeek().getValue();
-        String startTime = dateTime.minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
-        String endTime =  dateTime.plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+        String startTime = null ,endTime = null;
+        if(StringUtils.isEmpty(date)) {
+            LocalDateTime dateTime = LocalDateTime.now();
+            int week = LocalDateTime.now().getDayOfWeek().getValue();
+            startTime = LocalDateTime.now().minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+            if(1==week) {
+                endTime = dateTime.plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+            }else{//跨周
+                endTime = dateTime.plusDays(14-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+            }
+        }else{
+            LocalDateTime dateTime = DateTimeUtil.parsetLocalDateTime(date);
+            int week = dateTime.getDayOfWeek().getValue();
+            startTime = LocalDateTime.now().minusDays(week-1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+            endTime = LocalDateTime.now().plusDays(7-week).format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59"));
+        }
 
         return scheduleMapper.getScheduleApplyList(orgCode,deptId,startTime, endTime);
     }
