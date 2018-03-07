@@ -18,6 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -97,8 +98,10 @@ public class UserApi {
 
     @ApiOperation("获取验证码")
     @GetMapping(value = "/getCode")
-    public ResponseResult changeMobile(@AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(info.getUser().getMobile())){
+    public ResponseResult changeMobile(@AccessToken AccessInfo info,
+                                       @Param("接受验证码的手机号") @RequestParam(value = "mobile",required = false) String mobile){
+        mobile = Optional.ofNullable(mobile).orElse(info.getUser().getMobile());
+        if(StringUtils.isEmpty(mobile)){
             return ResponseUtil.setErrorMeg(StatusCode.FAIL,"尚未预留手机号，无法推送验证码");
         }
         String key = String.format(RedisKeyConstants.USER_CODE,info.getUserId());
