@@ -14,10 +14,7 @@ import com.acmed.his.pojo.vo.PatientVoP;
 import com.acmed.his.service.PatientManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.util.MD5Util;
-import com.acmed.his.util.PageResult;
-import com.acmed.his.util.ResponseResult;
-import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.util.*;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -162,6 +159,7 @@ public class PatientApi {
         Patient patientById = patientManager.getPatientById(info.getPatientId());
         PatientVoP patientVoP = new PatientVoP();
         BeanUtils.copyProperties(patientById,patientVoP);
+        patientVoP.setNickName(EmojiUtil.emojiRecovery(patientById.getNickName()));
         return ResponseUtil.setSuccessResult(patientVoP);
     }
 }

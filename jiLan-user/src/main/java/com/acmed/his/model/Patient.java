@@ -71,4 +71,10 @@ public class Patient {
 
     @ApiModelProperty("修改用户")
     private String modifyBy;
+
+    @ApiModelProperty("修改用户")
+    private String nickName;
+
+    @ApiModelProperty("头像")
+    private String avatar;
 }

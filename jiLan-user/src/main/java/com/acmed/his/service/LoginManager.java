@@ -8,6 +8,7 @@ import com.acmed.his.dao.UserMapper;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.User;
 import com.acmed.his.pojo.RequestToken;
+import com.acmed.his.pojo.mo.WxUserInfo;
 import com.acmed.his.util.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class LoginManager {
 
     @Autowired
     private PatientManager patientManager;
+
+    @Autowired
+    private WxManager wxManager;
 
 
     /**
@@ -88,9 +92,12 @@ public class LoginManager {
         example.createCriteria().andEqualTo("openid",openid);
         Patient patient = Optional.ofNullable(patientMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
         if(null == patient){//都没有数据的时候，则手动创建一条患者信息
+            WxUserInfo wxUserInfo = wxManager.wxUserInfo(openid);
             patient = new Patient();
             patient.setId(UUIDUtil.generate());
             patient.setOpenid(openid);
+            patient.setNickName(wxUserInfo.getNickName());
+            patient.setGender(wxUserInfo.getSex());
             patient.setCreateAt(LocalDateTime.now().toString());
             patientMapper.insert(patient);
             patient = patientManager.getPatientByOpenid(openid);
