@@ -46,7 +46,7 @@ public class DrugStockVo {
     private String numName;
 
     @ApiModelProperty("批发价")
-    private String bid;
+    private Double bid;
 
     @ApiModelProperty("一级处方价")
     private Double retailPrice;
