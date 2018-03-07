@@ -1,5 +1,6 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Patient;
@@ -22,11 +23,15 @@ import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * PatientApi
@@ -40,7 +45,9 @@ import java.util.List;
 public class PatientApi {
     @Autowired
     private PatientManager patientManager;
-
+    @Autowired
+    @Qualifier(value="stringRedisTemplate")
+    private RedisTemplate redisTemplate;
     /**
      * 第三方添加患者信息
      * @param patient 患者信息
@@ -161,5 +168,59 @@ public class PatientApi {
         BeanUtils.copyProperties(patientById,patientVoP);
         patientVoP.setNickName(EmojiUtil.emojiRecovery(patientById.getNickName()));
         return ResponseUtil.setSuccessResult(patientVoP);
+    }
+
+    @ApiOperation("自己更新基础信息")
+    @PostMapping(value = "/updateMobile")
+    public ResponseResult updateMobile(@RequestBody PatientMobileUpMo param,
+                                         @AccessToken AccessInfo info){
+        Patient patient = new Patient();
+        BeanUtils.copyProperties(param,patient);
+        patient.setId(info.getPatientId());
+        patient.setModifyBy(info.getPatientId());
+        patientManager.update(patient);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation("获取验证码")
+    @GetMapping(value = "/getCode")
+    public ResponseResult changeMobile(@AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(info.getPatient().getMobile())){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"尚未预留手机号，无法推送验证码");
+        }
+        String key = String.format(RedisKeyConstants.PATIENT_CODE,info.getPatientId());
+        String code = Optional.ofNullable(redisTemplate.opsForValue().get(key)).map(obj->obj.toString()).
+                orElse(RandomUtil.generateNumber(6));
+
+        SmsUtil.sendSms(info.getUser().getMobile(),1,new String[]{code,"5"});
+        redisTemplate.opsForValue().set(key,code);
+        redisTemplate.expire(key,5, TimeUnit.MINUTES);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation("修改手机号")
+    @PostMapping(value = "/mobile")
+    public ResponseResult changeMobile(@ApiParam("{\"mobile\":\"\",\"code\":\"\"},mobile：手机号码、code：验证码")  @RequestBody String param,
+                                       @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("mobile")){
+            return ResponseUtil.setParamEmptyError("mobile");
+        }
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("code")){
+            return ResponseUtil.setParamEmptyError("code");
+        }
+        String code = Optional.ofNullable(redisTemplate.opsForValue().get(String.format(RedisKeyConstants.PATIENT_CODE,info.getPatientId()))).
+                map(obj->obj.toString()).orElse(null);
+        if(StringUtils.isEmpty(code)){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"验证码已过期，请重新获取");
+        }
+        if(!code.equals(JSONObject.parseObject(param).get("code"))){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"验证码错误，请重新填写");
+        }
+        Patient patient = new Patient();
+        patient.setMobile(JSONObject.parseObject(param).get("mobile").toString());
+        patient.setId(info.getPatientId());
+        patient.setModifyBy(info.getPatientId());
+        patientManager.update(patient);
+        return ResponseUtil.setSuccessResult();
     }
 }

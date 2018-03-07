@@ -28,4 +28,10 @@ public class PatientMobileUpMo {
 
     @ApiModelProperty("头像")
     private String avatar;
+
+    @ApiModelProperty("真实姓名")
+    private String realName;
+
+    @ApiModelProperty("身份证")
+    private String idCard;
 }
