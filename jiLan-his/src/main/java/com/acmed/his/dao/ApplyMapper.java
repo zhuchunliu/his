@@ -2,6 +2,7 @@ package com.acmed.his.dao;
 
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.dto.ApplyDoctorDto;
+import com.acmed.his.model.dto.ApplyDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.util.TkMapper;
@@ -61,4 +62,6 @@ public interface ApplyMapper extends TkMapper<Apply>{
      * @return ChuZhenFuZhenCountDto
      */
     ChuZhenFuZhenCountDto chuZhenAndFuZhenTongJi(@Param("orgCode") Integer orgCode);
+
+    List<ApplyDto> selectApplys(Apply param);
 }

@@ -4,6 +4,7 @@ import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.ApplyMapper;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.ApplyDoctorDto;
+import com.acmed.his.model.dto.ApplyDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
@@ -562,13 +563,18 @@ public class ApplyManager {
         return applyMapper.select(apply);
     }
 
-    public PageResult<Apply> getApplysByPage(PageBase<Apply> pageBase){
+    /**
+     * TODO 目前只筛选 createBy  patientId
+     * @param pageBase
+     * @return
+     */
+    public PageResult<ApplyDto> getApplysByPage(PageBase<Apply> pageBase){
         Integer pageNum = pageBase.getPageNum();
         Integer pageSize = pageBase.getPageSize();
-        PageResult<Apply> result = new PageResult<>();
+        PageResult<ApplyDto> result = new PageResult<>();
         PageHelper.startPage(pageNum,pageSize);
-        List<Apply> select = applyMapper.select(pageBase.getParam());
-        PageInfo<Apply> applyPageInfo = new PageInfo<>(select);
+        List<ApplyDto> select = applyMapper.selectApplys(pageBase.getParam());
+        PageInfo<ApplyDto> applyPageInfo = new PageInfo<>(select);
         result.setTotal(applyPageInfo.getTotal());
         result.setData(select);
         result.setPageNum(pageNum);

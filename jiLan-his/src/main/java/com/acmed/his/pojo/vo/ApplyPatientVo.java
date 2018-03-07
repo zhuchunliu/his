@@ -46,4 +46,7 @@ public class ApplyPatientVo {
 
     @ApiModelProperty("是否是初诊   0不是初诊   1  是初诊")
     private Integer isFirst;
+
+    @ApiModelProperty("医生头像")
+    private String avatar;
 }

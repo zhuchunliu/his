@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.ApplyDto;
 import com.acmed.his.model.dto.ChuZhenFuZhenCountDto;
 import com.acmed.his.pojo.mo.ApplyMo;
 import com.acmed.his.pojo.vo.ApplyDoctorVo;
@@ -202,14 +203,14 @@ public class ApplyApi {
         Integer pageSize = pageBase.getPageSize();
         applyPageBase.setPageSize(pageSize);
         applyPageBase.setParam(apply);
-        PageResult<Apply> applysByPage = applyManager.getApplysByPage(applyPageBase);
+        PageResult<ApplyDto> applysByPage = applyManager.getApplysByPage(applyPageBase);
         Long total = applysByPage.getTotal();
         PageResult<ApplyPatientVo> result = new PageResult<>();
         result.setTotal(total);
         result.setPageNum(pageNum);
         result.setPageSize(pageSize);
         List<ApplyPatientVo> list = new ArrayList<>();
-        List<Apply> data = applysByPage.getData();
+        List<ApplyDto> data = applysByPage.getData();
         if (data.size()!=0){
             for (Apply apply1 : data){
                 ApplyPatientVo applyPatientVo = new ApplyPatientVo();
@@ -249,12 +250,12 @@ public class ApplyApi {
         applyPageBase.setPageNum(pageNum);
         applyPageBase.setPageSize(pageSize);
         applyPageBase.setParam(apply);
-        PageResult<Apply> applysByPage = applyManager.getApplysByPage(applyPageBase);
+        PageResult<ApplyDto> applysByPage = applyManager.getApplysByPage(applyPageBase);
         Long total = applysByPage.getTotal();
         result.setTotal(total);
         result.setPageNum(pageNum);
         result.setPageSize(pageSize);
-        List<Apply> data = applysByPage.getData();
+        List<ApplyDto> data = applysByPage.getData();
         if (data.size()!=0){
             for (Apply apply1 : data){
                 ApplyPatientVo applyPatientVo = new ApplyPatientVo();

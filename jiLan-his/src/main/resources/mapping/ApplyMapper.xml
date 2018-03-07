@@ -119,4 +119,17 @@
         LEFT JOIN t_b_apply AS t2 ON t2.orgcode = t1.orgcode
         WHERE t1.orgcode = #{orgCode} AND t1.isfirst = 1 AND t2.isfirst = 0 AND t1.ispaid = 1 AND t2.ispaid = 1
     </select>
+
+    <select id="selectApplys" resultType="com.acmed.his.model.dto.ApplyDto">
+        SELECT t1.*,t2.avatar FROM t_b_apply t1
+        LEFT JOIN t_p_s_user t2 ON t1.doctorid = t2.id
+        <where>
+            <if test="@Ognl@isNotEmpty(patientId)">
+                and t1.patientid = #{patientId}
+            </if>
+            <if test="@Ognl@isNotEmpty(createBy)">
+                and t1.createby = #{createBy}
+            </if>
+        </where>
+    </select>
 </mapper>
