@@ -1,7 +1,6 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.Drug;
-import com.acmed.his.model.dto.DrugStockDto;
 import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,7 +16,7 @@ public interface DrugMapper extends TkMapper<Drug>{
     Integer getDrugTotal(@Param("orgCode") Integer orgCode, @Param("name") String name,
                          @Param("category") String category,  @Param("isValid") String isValid);
 
-    List<DrugStockDto> getStockList(@Param("name") String name, @Param("orgCode") Integer orgCode);
+    List<Drug> getStockList(@Param("name") String name, @Param("orgCode") Integer orgCode);
 
     Integer getStockTotal(@Param("name") String name, @Param("orgCode") Integer orgCode);
 

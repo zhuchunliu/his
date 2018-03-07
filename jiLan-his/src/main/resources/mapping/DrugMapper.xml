@@ -36,16 +36,11 @@
     </select>
 
 
-    <select id="getStockList" resultType="com.acmed.his.model.dto.DrugStockDto">
-        select t1.id, t1.drugcode, t1.name, t1.goodsname, t1.spec,
-        t1.unit,t1.minunit,t1.doseunit,
-        t2.name as manufacturerName,
-        t1.num, t1.bid, t1.retailprice as retailPrice,
-        t1.minretailprice as minRetailPrice , t1.minpriceunittype as minPriceUnitType
+    <select id="getStockList" resultType="com.acmed.his.model.Drug">
+        select t1.*
         FROM t_b_drug t1
-        LEFT JOIN t_b_manufacturer t2 on t1.manufacturer = t2.id
         where t1.orgcode = #{orgCode}
-        and t1.removed = '0' and t1.num is not null and t1.num != 0
+        and t1.removed = '0' -- and t1.num is not null and t1.num != 0
         <if test="@Ognl@isNotEmpty(name) ">
             and (
                 t1.name like concat('%', #{name} , '%') OR
@@ -61,7 +56,7 @@
         select count(1)
         FROM t_b_drug t1
         where t1.orgcode = #{orgCode}
-        and t1.removed = '0' and t1.num is not null and t1.num != 0
+        and t1.removed = '0' -- and t1.num is not null and t1.num != 0
         <if test="@Ognl@isNotEmpty(name) ">
             and (
                 t1.name like concat('%', #{name} , '%') OR

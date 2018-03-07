@@ -1,19 +1,16 @@
-package com.acmed.his.model.dto;
+package com.acmed.his.pojo.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * Created by Darren on 2018-01-04
+ * Created by Darren on 2018-03-07
  **/
 @Data
-public class DrugStockDto {
+public class DrugStockVo {
 
     @ApiModelProperty("药品id")
     private Integer id;
-
-    @ApiModelProperty("药品编码")
-    private String drugCode;
 
     @ApiModelProperty("名称")
     private String name;
@@ -24,20 +21,29 @@ public class DrugStockDto {
     @ApiModelProperty("药品规格")
     private String spec;
 
-    @ApiModelProperty(value = "计价单位",hidden = true)
-    private String unit;
+    @ApiModelProperty(value = "计价单位")
+    private Integer unit;
 
-    @ApiModelProperty(value = "小单位 字典表： MinUnit",hidden = true)
-    private String minUnit;
+    @ApiModelProperty("单位名称")
+    private String unitName;
 
-    @ApiModelProperty(value = "剂量单位 字典表：DoseUnit",hidden = true)
-    private String doseUnit;
+    @ApiModelProperty(value = "小单位 字典表： MinUnit")
+    private Integer minUnit;
+
+    @ApiModelProperty("小单位名称")
+    private String minUnitName;
+
+    @ApiModelProperty(value = "剂量单位 字典表：DoseUnit")
+    private Integer doseUnit;
+
+    @ApiModelProperty("剂量单位名称")
+    private String doseUnitName;
 
     @ApiModelProperty("生产厂家")
     private String manufacturerName;
 
     @ApiModelProperty("库存数量")
-    private Double num;
+    private String numName;
 
     @ApiModelProperty("批发价")
     private String bid;
@@ -56,6 +62,5 @@ public class DrugStockDto {
 
     @ApiModelProperty("二级处方价对应单位  1：小单位minUnit，2：剂量单位doseUnit")
     private Integer minPriceUnitType;
-
 
 }

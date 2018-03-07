@@ -2,7 +2,6 @@ package com.acmed.his.service;
 
 import com.acmed.his.dao.DrugMapper;
 import com.acmed.his.model.Drug;
-import com.acmed.his.model.dto.DrugStockDto;
 import com.acmed.his.pojo.mo.DrugStockPrice;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.github.pagehelper.PageHelper;
@@ -26,7 +25,7 @@ public class DrugStockManager {
      * @param name
      * @param info
      */
-    public List<DrugStockDto> getStockList(Integer pageNum , Integer pageSize, String name, UserInfo info) {
+    public List<Drug> getStockList(Integer pageNum , Integer pageSize, String name, UserInfo info) {
         PageHelper.startPage(pageNum,pageSize);
         return drugMapper.getStockList(name,info.getOrgCode());
     }
