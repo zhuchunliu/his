@@ -383,6 +383,14 @@ public class DispensingManager {
         }
         Apply apply = applyMapper.selectByPrimaryKey(applyId);
         apply.setStatus("4");
+        applyMapper.updateByPrimaryKey(apply);
+
+        Prescription prescription = preMapper.getPreByApply(applyId).get(0);
+        prescription.setIsDispensing("1");
+        prescription.setModifyAt(LocalDateTime.now().toString());
+        prescription.setModifyBy(info.getId().toString());
+        preMapper.updateByPrimaryKey(prescription);
+
         synchronized ("org_" + info.getOrgCode()) {
             Example example = new Example(PrescriptionItem.class);
             example.createCriteria().andEqualTo("applyId", applyId).andEqualTo("payStatus", 1);

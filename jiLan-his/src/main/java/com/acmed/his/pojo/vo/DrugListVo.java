@@ -42,6 +42,9 @@ public class DrugListVo {
     @ApiModelProperty("药品规格")
     private String spec;
 
+    @ApiModelProperty("使用方法名称")
+    private String useageName;
+
     @ApiModelProperty("单位名称")
     private String unitName;
 
@@ -62,4 +65,7 @@ public class DrugListVo {
 
     @ApiModelProperty("二级零售价对应单位  1：小单位minUnitName，2：剂量单位doseUnitName")
     private Integer minPriceUnitType;
+
+    @ApiModelProperty("库存数量")
+    private String numName;
 }

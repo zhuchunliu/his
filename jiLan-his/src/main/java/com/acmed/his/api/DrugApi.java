@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.ManufacturerMapper;
+import com.acmed.his.model.DicItem;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
 import com.acmed.his.pojo.mo.DrugMo;
@@ -19,6 +20,7 @@ import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -63,9 +66,15 @@ public class DrugApi {
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getIsValid).orElse(null));
 
-        List<DrugVo> voList = Lists.newArrayList();
+        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+        Map<String,String> dicItemName = Maps.newHashMap();
+        dicItemList.forEach(obj->{
+            dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+        });
+
+        List<DrugListVo> voList = Lists.newArrayList();
         list.forEach(drug->{
-            DrugVo vo = new DrugVo();
+            DrugListVo vo = new DrugListVo();
             BeanUtils.copyProperties(drug,vo);
             vo.setCategoryName(null == drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
             vo.setDrugFormName(null == drug.getDrugForm()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm().toString()).getDicItemName());
@@ -76,6 +85,17 @@ public class DrugApi {
 
             vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
                     map(obj->obj.getName()).orElse(""));
+
+            if(null != drug.getNum() && 0 != drug.getNum()){
+                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+drug.getNum()+dicItemName.get(drug.getUnit().toString()));
+            }
+            if(null != drug.getMinNum() && 0 != drug.getMinNum()){
+                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+drug.getMinNum()+dicItemName.get(drug.getMinUnit().toString()));
+            }
+            if(null != drug.getDoseNum() && 0 != drug.getDoseNum()){
+                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+
+                        (0==drug.getDoseNum()*10%1? String.valueOf((int)Math.floor(drug.getDoseNum())):String.valueOf(drug.getDoseNum()))+dicItemName.get(drug.getDoseUnit().toString()));
+            }
             voList.add(vo);
         });
 
