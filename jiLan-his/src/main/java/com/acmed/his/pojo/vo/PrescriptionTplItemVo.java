@@ -32,13 +32,19 @@ public class PrescriptionTplItemVo {
     private String manufacturerName;
 
     @ApiModelProperty("频率,用药频率 字典表：DrugFrequency")
-    private String frequency;
+    private Integer frequency;
 
     @ApiModelProperty("频率,用药频率名称")
     private String frequencyName;
 
     @ApiModelProperty("一级单位名称")
     private String unitName;
+
+    @ApiModelProperty("小单位名称")
+    private String minUnitName;
+
+    @ApiModelProperty("二级零售价对应单位  1：小单位minUnit，2：剂量单位doseUnit")
+    private Integer minPriceUnitType;
 
     @ApiModelProperty("二级单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
     private String minOrDoseUnitName;

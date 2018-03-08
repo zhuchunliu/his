@@ -39,7 +39,7 @@ public class PrescriptionTplItem {
     private Double singleDose;
 
     @ApiModelProperty("频率,用药频率  字典表：DrugFrequency")
-    private String frequency;
+    private Integer frequency;
 
     @ApiModelProperty("备注")
     private String memo;

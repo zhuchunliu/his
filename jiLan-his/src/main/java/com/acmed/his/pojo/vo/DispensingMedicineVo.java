@@ -94,7 +94,7 @@ public class DispensingMedicineVo {
                     }
                     medicalDetail.setManufacturerName(manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
                     medicalDetail.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
-                    medicalDetail.setDoseUnitName(unitItemName.get(drug.getDoseUnit().toString()));
+                    medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
                     childList.add(medicalDetail);
                 });
             }
