@@ -71,5 +71,5 @@ public class OrgMo {
     private String telephone;
 
     @ApiModelProperty("医院账号")
-    private String account;
+    private String loginName;
 }

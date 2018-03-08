@@ -87,7 +87,7 @@ public class OrgManager {
             // 添加用户
             UserMo userMo = new UserMo();
             userMo.setMobile(mo.getMobile());
-            userMo.setLoginName(mo.getAccount());
+            userMo.setLoginName(mo.getLoginName());
             userMo.setOrgCode(org.getOrgCode());
             User save = userManager.save(userMo, userInfo);
             // 给用户设置管理员权限
