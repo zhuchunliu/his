@@ -382,7 +382,7 @@ public class DispensingManager {
             return;
         }
         Apply apply = applyMapper.selectByPrimaryKey(applyId);
-        apply.setStatus("4");
+        apply.setStatus("1");
         applyMapper.updateByPrimaryKey(apply);
 
         Prescription prescription = preMapper.getPreByApply(applyId).get(0);
