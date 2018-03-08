@@ -1,12 +1,11 @@
 package com.acmed.his.pojo.vo;
 
 import com.acmed.his.consts.DicTypeEnum;
-import com.acmed.his.model.Charge;
-import com.acmed.his.model.Inspect;
-import com.acmed.his.model.Prescription;
-import com.acmed.his.model.PrescriptionItem;
+import com.acmed.his.dao.DrugMapper;
+import com.acmed.his.model.*;
 import com.acmed.his.service.BaseInfoManager;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -34,16 +33,33 @@ public class DispensingRefundVo {
 
     public DispensingRefundVo(Prescription prescription,
                               List<PrescriptionItem> itemList, List<Inspect> inspectList, List<Charge> chargeList,
-                              BaseInfoManager baseInfoManager){
+                              BaseInfoManager baseInfoManager, DrugMapper drugMapper){
 
         this.prescriptionNo = prescription.getPrescriptionNo();
         this.totalFee = prescription.getFee();
+
+        List<DicItem> unitItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+        Map<String,String> unitItemName = Maps.newHashMap();
+        unitItemList.forEach(obj->{
+            unitItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+        });
 
         Map<String,DisPrescriptVo> map = new TreeMap<>();
 
         if(null != itemList && 0 != itemList.size()){
             itemList.forEach(obj->{
                 DispensingRefundVo.DisItemVo item = new DispensingRefundVo.DisItemVo();
+                Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+                if(1 == obj.getUnitType()){
+                    item.setUnit(null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString()));
+                }else{
+                    if(1 == obj.getMinPriceUnitType()){
+                        item.setUnit(null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString()));
+                    }else{
+                        item.setUnit(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+                    }
+                }
+
                 BeanUtils.copyProperties(obj,item);
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new DisPrescriptVo(item,null,null

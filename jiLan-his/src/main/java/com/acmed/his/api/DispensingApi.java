@@ -211,7 +211,7 @@ public class DispensingApi {
         List<Charge> chargeList = chargeMapper.selectByExample(example);
 
 
-        return ResponseUtil.setSuccessResult(new DispensingRefundVo(prescription,itemList,inspectList,chargeList,baseInfoManager));
+        return ResponseUtil.setSuccessResult(new DispensingRefundVo(prescription,itemList,inspectList,chargeList,baseInfoManager,drugMapper));
     }
 
 

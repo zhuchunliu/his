@@ -84,8 +84,9 @@ public class PreVo {
                     item.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
                             map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
                     item.setUnitName(Optional.ofNullable(drug.getUnit()).map(unit->unitItemName.get(unit.toString())).orElse(""));
-                    item.setMinOrDoseUnitName(1 == drug.getMinPriceUnitType() ? unitItemName.get(drug.getMinUnit().toString()) :
-                            unitItemName.get(drug.getDoseUnit().toString()) );
+                    item.setMinOrDoseUnitName(1 == drug.getMinPriceUnitType() ?
+                            (null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())) :
+                            (null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())) );
 
                     item.setRetailPrice(drug.getRetailPrice());
                     item.setMinRetailPrice(drug.getMinRetailPrice());

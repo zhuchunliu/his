@@ -78,16 +78,19 @@ public class DispensingMedicineVo {
                     Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                     if(null != stock.getNum() && 0 != stock.getNum()){
                         medicalDetail.setPrice(drug.getRetailPrice());
-                        medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getNum()+unitItemName.get(drug.getUnit().toString()));
+                        medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getNum()+
+                                (null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString())));
                     }
                     if(null != stock.getMinNum() && 0 != stock.getMinNum()){
                         medicalDetail.setPrice(drug.getMinRetailPrice());
-                        medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getMinNum()+unitItemName.get(drug.getMinUnit().toString()));
+                        medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getMinNum()+
+                                (null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
                     }
                     if(null != stock.getDoseNum() && 0 != stock.getDoseNum()){
                         medicalDetail.setPrice(drug.getMinRetailPrice());
                         medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+
-                                (0==stock.getDoseNum()*10%1? String.valueOf((int)Math.floor(stock.getDoseNum())):String.valueOf(stock.getDoseNum()))+unitItemName.get(drug.getDoseUnit().toString()));
+                                (0==stock.getDoseNum()*10%1? String.valueOf((int)Math.floor(stock.getDoseNum())):String.valueOf(stock.getDoseNum()))+
+                                (null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
                     }
                     medicalDetail.setManufacturerName(manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
                     medicalDetail.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
