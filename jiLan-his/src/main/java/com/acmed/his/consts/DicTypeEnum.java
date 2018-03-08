@@ -31,7 +31,7 @@ public enum DicTypeEnum {
     DRUG_FORM("DrugForm","剂型"),
     UNIT("Unit","单位"),
     USEAGE("Useage","药品用法"),
-    PRESCRIPTION_TYPE("PrescriptionType","处方类型");
+    PRESCRIPTION_TYPE("Prescription","处方类型");
     DicTypeEnum(String code,String name){
         this.code = code;
         this.name = name;

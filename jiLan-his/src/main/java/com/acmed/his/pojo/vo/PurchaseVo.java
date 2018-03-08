@@ -43,8 +43,8 @@ public class PurchaseVo {
         @ApiModelProperty("主键 null：新增;not null：编辑")
         private String id;
 
-        @ApiModelProperty("药品编码")
-        private String drugCode;
+        @ApiModelProperty("药品id")
+        private Integer drugId;
 
         @ApiModelProperty("药品名称")
         private String name;
@@ -59,10 +59,13 @@ public class PurchaseVo {
         private String spec;
 
         @ApiModelProperty("采购数量")
-        private Double num;
+        private Integer num;
 
         @ApiModelProperty("采购单位")
-        private String unit;
+        private Integer unit;
+
+        @ApiModelProperty("采购单位名称")
+        private String unitName;
 
         @ApiModelProperty("进价")
         private Double bid;

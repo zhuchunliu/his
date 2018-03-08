@@ -81,7 +81,7 @@ public class DrugManager {
             drug.setMinNum(0);
             drug.setCreateAt(date);
             drug.setCreateBy(date);
-            drug.setIsValid("0");
+            drug.setIsValid(1);
             drug.setRemoved("0");
             return drugMapper.insert(drug);
         }
@@ -148,7 +148,7 @@ public class DrugManager {
         Drug drug = drugMapper.selectByPrimaryKey(id);
         drug.setModifyAt(LocalDateTime.now().toString());
         drug.setModifyBy(info.getId().toString());
-        drug.setIsValid("1".equals(drug.getIsValid())?"0":"1");
+        drug.setIsValid(1 == drug.getIsValid()?0:1);
         drugMapper.updateByPrimaryKey(drug);
     }
 
@@ -188,7 +188,7 @@ public class DrugManager {
             drug.setPinYin(PinYinUtil.getPinYinHeadChar(dict.getName()));
             drug.setGoodsPinYin(PinYinUtil.getPinYinHeadChar(dict.getGoodsName()));
             drug.setDictId(dict.getId());
-            drug.setIsValid("1");
+            drug.setIsValid(1);
             drug.setRemoved("0");
             drug.setCreateAt(LocalDateTime.now().toString());
             drug.setCreateBy(info.getId().toString());

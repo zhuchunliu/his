@@ -1,6 +1,7 @@
 package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.DrugMapper;
 import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.dao.PurchaseItemMapper;
@@ -12,6 +13,7 @@ import com.acmed.his.model.dto.PurchaseDto;
 import com.acmed.his.model.dto.PurchaseStockDto;
 import com.acmed.his.pojo.mo.PurchaseMo;
 import com.acmed.his.pojo.vo.PurchaseVo;
+import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.PurchaseManager;
 import com.acmed.his.service.SupplyManager;
 import com.acmed.his.support.AccessInfo;
@@ -60,6 +62,9 @@ public class PurchaseApi {
     @Autowired
     private ManufacturerMapper manufacturerMapper;
 
+    @Autowired
+    private BaseInfoManager baseInfoManager;
+
     @ApiOperation(value = "采购入库")
     @PostMapping("/purchase/save")
     public ResponseResult save(@RequestBody PurchaseMo mo,
@@ -102,12 +107,15 @@ public class PurchaseApi {
         List<PurchaseVo.PurchaseVoDetail> detailList = Lists.newArrayList();
         list.forEach(obj->{
             PurchaseVo.PurchaseVoDetail detail = new PurchaseVo.PurchaseVoDetail();
+            BeanUtils.copyProperties(obj,detail);
             Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
             detail.setName(drug.getName());
             detail.setGoodsName(drug.getGoodsName());
             detail.setSpec(drug.getSpec());
+            detail.setUnit(drug.getUnit());
+            detail.setUnitName(null == drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
             detail.setManufacturerName(null == drug.getManufacturer()?"":manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
-            BeanUtils.copyProperties(obj,detail);
+
             detailList.add(detail);
         });
         vo.setDetailList(detailList);

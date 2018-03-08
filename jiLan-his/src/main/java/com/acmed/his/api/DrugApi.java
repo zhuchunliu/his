@@ -82,7 +82,7 @@ public class DrugApi {
             vo.setMinUnitName(null==drug.getMinUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit().toString()).getDicItemName());
             vo.setDoseUnitName(null==drug.getDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
             vo.setUseageName(null == drug.getUseage()?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage().toString()).getDicItemName());
-
+            vo.setPrescriptionTypeName(null == drug.getPrescriptionType()?"":baseInfoManager.getDicItem(DicTypeEnum.PRESCRIPTION_TYPE.getCode(),drug.getPrescriptionType().toString()).getDicItemName());
             vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
                     map(obj->obj.getName()).orElse(""));
 

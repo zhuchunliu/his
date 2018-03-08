@@ -140,9 +140,9 @@ public class PurchaseManager {
             if(null != drug.getNum()){
                 Integer num = drug.getNum();
                 drug.setNum(num + item.getNum());
-                drug.setBid(drug.getBid());
+                drug.setBid(item.getBid());
 //                drug.setRetailPrice((num * drug.getRetailPrice() + item.getNum() * item.getRetailPrice())/drug.getNum());
-                drug.setRetailPrice(drug.getRetailPrice());
+                drug.setRetailPrice(item.getRetailPrice());
             }else{
                 drug.setNum(item.getNum());
                 drug.setBid(item.getBid());

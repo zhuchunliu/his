@@ -137,7 +137,7 @@ public class Drug {
     private Double doseNum;
 
     @ApiModelProperty("是否有效 0:无；1：有")
-    private String isValid;
+    private Integer isValid;
 
     @ApiModelProperty("是否删除 0:无；1：有")
     private String removed;

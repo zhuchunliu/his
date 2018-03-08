@@ -68,4 +68,7 @@ public class DrugListVo {
 
     @ApiModelProperty("库存数量")
     private String numName;
+
+    @ApiModelProperty("是否有效 0:无；1：有")
+    private Integer isValid;
 }
