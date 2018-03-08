@@ -152,6 +152,16 @@ public class ApplyApi {
             endTime = LocalDate.now().toString();
         }
         PageResult<ApplyDoctorVo> byPinyinOrNameOrClinicnoTiaojianByPage = applyManager.getByPinyinOrNameOrClinicnoTiaojianByPage(orgCode, dept, startTime, endTime, status, param, isPaid, pageNum, pageSize);
+        List<ApplyDoctorVo> data = byPinyinOrNameOrClinicnoTiaojianByPage.getData();
+        if (data.size()!=0){
+            List<ApplyDoctorVo> list = new ArrayList<>();
+            for (ApplyDoctorVo item : data){
+                String appointmentTime = item.getAppointmentTime();
+                item.setAppointmentTime(appointmentTime.substring(0,10));
+                list.add(item);
+            }
+            byPinyinOrNameOrClinicnoTiaojianByPage.setData(list);
+        }
         return ResponseUtil.setSuccessResult(byPinyinOrNameOrClinicnoTiaojianByPage);
     }
     @ApiOperation(value = "现金退挂号费")
