@@ -28,13 +28,14 @@
     </select>
 
     <select id="getOrgDtoList" resultType="com.acmed.his.model.dto.OrgDto">
-        SELECT t1.*,t2.dicitemname categorystr ,t3.dicitemname levelstr FROM t_p_s_org t1
+        SELECT t1.*,t2.dicitemname categorystr ,t3.dicitemname levelstr,t4.loginname FROM t_p_s_org t1
         LEFT JOIN (
 	      SELECT * FROM t_p_s_dicitem WHERE dictypecode = 'OrgCategory'
         )as t2 ON t2.dicitemcode = t1.category
         LEFT JOIN (
 	      SELECT * FROM t_p_s_dicitem WHERE dictypecode = 'OrgLevel'
         )as t3 ON t3.dicitemcode = t1.`level`
+        LEFT JOIN t_p_s_user t4 ON t4.id = t1.manager
         <trim prefixOverrides="and" prefix="where">
             <if test="@Ognl@isNotEmpty(param)">
                 and t1.orgname like CONCAT('%',#{param},'%')

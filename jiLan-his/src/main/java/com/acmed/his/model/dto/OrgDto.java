@@ -16,4 +16,6 @@ public class OrgDto extends Org{
     private String levelStr;
     @ApiModelProperty("类型")
     private String categoryStr;
+    @ApiModelProperty("登录名")
+    private String loginName;
 }

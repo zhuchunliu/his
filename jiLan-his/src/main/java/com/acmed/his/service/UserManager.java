@@ -83,7 +83,6 @@ public class UserManager {
 
         //如果前端没有设置机构信息，则为当前设置用户同一机构【老板加人】；前端设置机构【管理员后台加老板用户操作】
         mo.setOrgCode(Optional.ofNullable(mo.getOrgCode()).orElse(userInfo.getOrgCode()));
-        mo.setDept(Optional.ofNullable(mo.getDept()).orElse(userInfo.getDept()));
 
         if(!StringUtils.isEmpty(mo.getLoginName()) ) { //验证手机号，用户名是否已经存在
             Example example = new Example(User.class);
@@ -114,7 +113,7 @@ public class UserManager {
             user.setCreateBy(userInfo.getId().toString());
             user.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
                     Optional.ofNullable(orgMapper.selectByPrimaryKey(mo.getOrgCode())).map(org->org.getOrgName()).orElse(null));
-            user.setDeptName(null == mo.getDept()?userInfo.getDeptName():
+            user.setDeptName(null == mo.getDept()?null:
                     Optional.ofNullable(deptMapper.selectByPrimaryKey(mo.getDept())).map(dept->dept.getDept()).orElse(null));
             user.setPassWd(MD5Util.encode("123456"));
             user.setRemoved("0");
@@ -126,7 +125,7 @@ public class UserManager {
             user = userMapper.selectByPrimaryKey(mo.getId());
             user.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
                     Optional.ofNullable(orgMapper.selectByPrimaryKey(mo.getOrgCode())).map(org->org.getOrgName()).orElse(null));
-            user.setDeptName(null == mo.getDept()?userInfo.getDeptName():
+            user.setDeptName(null == mo.getDept()?null:
                     Optional.ofNullable(deptMapper.selectByPrimaryKey(mo.getDept())).map(dept->dept.getDept()).orElse(null));
             BeanUtils.copyProperties(mo,user);
             user.setModifyAt(LocalDateTime.now().toString());

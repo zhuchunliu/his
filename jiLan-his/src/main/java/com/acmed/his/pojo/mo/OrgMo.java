@@ -69,4 +69,7 @@ public class OrgMo {
 
     @ApiModelProperty("诊所联系电话")
     private String telephone;
+
+    @ApiModelProperty("医院账号")
+    private String account;
 }

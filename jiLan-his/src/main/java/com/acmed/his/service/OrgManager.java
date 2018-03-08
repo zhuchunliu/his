@@ -87,7 +87,7 @@ public class OrgManager {
             // 添加用户
             UserMo userMo = new UserMo();
             userMo.setMobile(mo.getMobile());
-            userMo.setLoginName(PinYinUtil.getPinYinHeadChar(mo.getOrgName()));
+            userMo.setLoginName(mo.getAccount());
             userMo.setOrgCode(org.getOrgCode());
             User save = userManager.save(userMo, userInfo);
             // 给用户设置管理员权限
@@ -97,7 +97,8 @@ public class OrgManager {
             roleMo.setOrgCode(org.getOrgCode());
             roleMo.setOperatorUserId(userInfo.getId().toString());
             Role add = roleManager.add(roleMo);
-
+            org.setManager(save.getId().toString());
+            orgMapper.updateByPrimaryKeySelective(org);
             UserVsRole userVsRole = new UserVsRole();
             userVsRole.setUid(save.getId());
             userVsRole.setRid(add.getId());

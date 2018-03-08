@@ -30,10 +30,10 @@ public class UserManagerTest {
     public void save(){
         UserMo userMo = new UserMo();
         userMo.setUserName("wangwu");
-        userManager.save(userMo,new UserInfo(),true);
+        userManager.save(userMo,new UserInfo());
 
         userMo.setUserName("zhaoliu");
-        userManager.save(userMo,new UserInfo(),true);
+        userManager.save(userMo,new UserInfo());
     }
 
     @Test
