@@ -53,7 +53,7 @@ public class UserManagerApi {
     @PostMapping("/save")
     public ResponseResult saveUser(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody UserMo userMo,
                                    @AccessToken AccessInfo info){
-        userManager.save(userMo,info.getUser(),false);
+        userManager.save(userMo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
