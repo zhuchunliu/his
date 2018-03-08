@@ -89,7 +89,7 @@ public class OrgManager {
             userMo.setMobile(mo.getMobile());
             userMo.setLoginName(PinYinUtil.getPinYinHeadChar(mo.getOrgName()));
             userMo.setOrgCode(org.getOrgCode());
-            User save = userManager.save(userMo, userInfo);
+            User save = userManager.save(userMo, userInfo,true);
             // 给用户设置管理员权限
             Role roleMo = new Role();
             roleMo.setRoleName("机构管理员");

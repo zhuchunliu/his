@@ -79,7 +79,7 @@ public class UserManager {
             @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
     })
     @Transactional
-    public User save(UserMo mo, UserInfo userInfo){
+    public User save(UserMo mo, UserInfo userInfo,Boolean orgSource){
 
         //如果前端没有设置机构信息，则为当前设置用户同一机构【老板加人】；前端设置机构【管理员后台加老板用户操作】
         mo.setOrgCode(Optional.ofNullable(mo.getOrgCode()).orElse(userInfo.getOrgCode()));
@@ -91,7 +91,7 @@ public class UserManager {
             Integer id = Optional.ofNullable(userMapper.selectByExample(example)).
                     filter(obj->0!=obj.size()).map(obj->obj.get(0)).map(obj->obj.getId()).orElse(null);
             if((null != id && null == mo.getId())  || (null != id && id != mo.getId())){
-                throw new BaseException(StatusCode.FAIL,"登录名不能重复");
+                throw new BaseException(StatusCode.FAIL,orgSource?"医院名不能重复":"登录名不能重复");
             }
         }
 
