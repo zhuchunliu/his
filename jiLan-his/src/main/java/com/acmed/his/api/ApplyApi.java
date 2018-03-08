@@ -141,6 +141,9 @@ public class ApplyApi {
         }
         if (dept == null){
             dept = info.getUser().getDept();
+            if (dept==null){
+                dept = 0;
+            }
         }
         if (dept == 0){
             dept = null;
