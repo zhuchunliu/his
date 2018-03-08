@@ -64,13 +64,13 @@ public class RoleManager {
             role.setCreateTime(LocalDateTime.now().toString());
             role.setOperatorUserId(userInfo.getId().toString());
             role.setOrgCode(userInfo.getOrgCode());
-            roleMapper.insert(role);
+            roleMapper.insertSelective(role);
         }else{
             role = roleMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,role);
             role.setModifyTime(LocalDateTime.now().toString());
             role.setOperatorUserId(userInfo.getId().toString());
-            roleMapper.updateByPrimaryKey(role);
+            roleMapper.updateByPrimaryKeySelective(role);
         }
 
         Example example = new Example(RoleVsPermission.class);
