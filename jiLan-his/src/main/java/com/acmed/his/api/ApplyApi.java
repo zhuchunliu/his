@@ -79,7 +79,7 @@ public class ApplyApi {
             String orgCode = "0000000"+info.getUser().getOrgCode();
             long l = System.currentTimeMillis();
             String s = l + "";
-            mo.setIdcard(orgCode.substring(orgCode.length()-6)+dateOfBirth+s.substring(s.length()-4));
+            mo.setIdcard(orgCode.substring(orgCode.length()-6)+dateOfBirth.replace("-","")+s.substring(s.length()-4));
         }
         return applyManager.addApply(mo,null,info.getUser());
     }
