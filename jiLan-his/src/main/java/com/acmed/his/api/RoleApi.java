@@ -1,7 +1,9 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.PermissionMapper;
 import com.acmed.his.model.Permission;
+import com.acmed.his.model.Role;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.vo.RoleVsPermissionVo;
 import com.acmed.his.service.RoleManager;
@@ -15,6 +17,7 @@ import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,8 +86,12 @@ public class RoleApi {
         if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
             return ResponseUtil.setParamEmptyError("id");
         }
-        roleManager.switchRole(JSONObject.parseObject(param).getInteger("id"),info.getUser());
-        return ResponseUtil.setSuccessResult();
+        Role id = roleManager.getRoleDetail(JSONObject.parseObject(param).getInteger("id"));
+        if (!StringUtils.equals("orgAdmin"+info.getUser().getOrgCode(),id.getRoleCode())){
+            roleManager.switchRole(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+            return ResponseUtil.setSuccessResult();
+        }
+        return ResponseUtil.setErrorMeg(StatusCode.FAIL,"不能禁用机构管理员角色");
     }
 
     @ApiOperation(value = "角色禁用数")
