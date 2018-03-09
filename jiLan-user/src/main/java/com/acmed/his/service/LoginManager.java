@@ -194,6 +194,9 @@ public class LoginManager {
         if (null == user || null == user.getId()) {
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_AUTH, "当前登录用户信息获取失败");
         }
+        if("0".equals(user.getStatus())){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_AUTH, "当前用户已被禁用，请联系管理员");
+        }
         passwd = MD5Util.encode(passwd);
         //redis中验证码或者数据库密码一致，即认证通过
         String validCode = Optional.ofNullable(redisTemplate.opsForValue().get(loginName)).map(Object::toString)
