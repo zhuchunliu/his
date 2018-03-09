@@ -1,6 +1,5 @@
 package com.acmed.his.service;
 
-import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.DeptMapper;
 import com.acmed.his.exceptions.BaseException;
@@ -24,6 +23,9 @@ public class DeptManager {
 
     @Autowired
     private DeptMapper deptMapper;
+
+    @Autowired
+    private UserManager userManager;
 
     /**
      * 根据机构获取科室列表
@@ -58,7 +60,6 @@ public class DeptManager {
         if(null != list && 0 != list.size() &&  (null == mo.getId() || list.get(0).getId() != mo.getId())){
             throw new BaseException(StatusCode.FAIL,"科室名称不能重复!");
         }
-
         if(null == mo.getId()){
             Dept dept = new Dept();
             BeanUtils.copyProperties(mo,dept);
@@ -73,6 +74,9 @@ public class DeptManager {
             dept.setModifyBy(userInfo.getId().toString());
             dept.setModifyAt(LocalDateTime.now().toString());
             deptMapper.updateByPrimaryKey(dept);
+            if (StringUtils.isNotEmpty(mo.getDept())){
+                userManager.updateUserDept(mo.getId(),mo.getDept());
+            }
         }
     }
 

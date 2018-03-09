@@ -78,4 +78,11 @@
             and t1.orgcode = #{orgCode}
         </if>
     </select>
+    <update id="updateUserDept">
+        UPDATE t_p_s_org SET deptname = #{deptName}  WHERE dept = #{deptId}
+    </update>
+
+    <update id="updateUserOrg">
+        UPDATE t_p_s_org SET orgname = #{orgName}  WHERE orgcode = #{orgCode}
+    </update>
 </mapper>

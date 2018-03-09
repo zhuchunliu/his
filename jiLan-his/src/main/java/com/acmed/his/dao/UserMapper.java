@@ -26,4 +26,8 @@ public interface UserMapper extends TkMapper<User> {
     Integer getUserTotal(@Param("deptId") Integer deptId, @Param("mobile") String mobile,
                      @Param("userName") String userName, @Param("status") String status,
                          @Param("orgCode") Integer orgCode);
+
+    // 修改指定科室id下用户的科室名
+    int updateUserDept(@Param("deptId") Integer deptId,@Param("deptName")String deptName);
+    int updateUserOrg(@Param("orgCode") Integer orgCode,@Param("orgName")String orgName);
 }

@@ -247,5 +247,12 @@ public class UserManager {
     }
 
 
+    public int updateUserDept(Integer deptId,String deptName){
+        return userMapper.updateUserDept(deptId,deptName);
+    }
+
+    public int updateUserOrg(Integer orgCode,String orgName){
+        return userMapper.updateUserOrg(orgCode,orgName);
+    }
 
 }

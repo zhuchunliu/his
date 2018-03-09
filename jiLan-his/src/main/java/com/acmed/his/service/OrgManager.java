@@ -111,6 +111,9 @@ public class OrgManager {
             org.setModifyAt(LocalDateTime.now().toString());
             org.setModifyBy(userInfo.getId().toString());
             orgMapper.updateByPrimaryKey(org);
+            if (StringUtils.isNotEmpty(mo.getOrgName())){
+                userManager.updateUserOrg(mo.getOrgCode(),mo.getOrgName());
+            }
         }
     }
 
