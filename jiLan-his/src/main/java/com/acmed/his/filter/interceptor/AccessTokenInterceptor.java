@@ -4,7 +4,9 @@ import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.exceptions.BaseException;
+import com.acmed.his.model.User;
 import com.acmed.his.pojo.RequestToken;
+import com.acmed.his.service.UserManager;
 import com.acmed.his.support.APIScanner;
 import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.ResponseResult;
@@ -32,9 +34,11 @@ import java.util.concurrent.TimeUnit;
 public class AccessTokenInterceptor implements HandlerInterceptor {
 
     private RedisTemplate redisTemplate;
+    private UserManager userManager;
 
     public AccessTokenInterceptor(ApplicationContext applicationContext) {
         this.redisTemplate = applicationContext.getBean("stringRedisTemplate",RedisTemplate.class);
+        this.userManager = applicationContext.getBean(UserManager.class);
     }
 
     private static final ImmutableSet<String> ignore;
@@ -71,6 +75,10 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
         }
 
         if(loginId.startsWith("USER_PAD")) {//刷新token有效期
+            User user = userManager.getUserDetail(Integer.parseInt(loginId.substring("USER_PAD".length())));
+            if(StringUtils.isNotEmpty(user.getStatus()) && "0".equals(user.getStatus())){
+                throw new BaseException(StatusCode.ERROR_FORBIDDEN,"当前用户已被禁用，请联系管理员");
+            }
             redisTemplate.expire(String.format(RedisKeyConstants.USERKEY_PRE, loginId), CommonConstants.LOGININFO_EXPIRE_SECONDS, TimeUnit.SECONDS);
         }
         request.setAttribute("loginId",loginId);
