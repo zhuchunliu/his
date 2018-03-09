@@ -37,6 +37,7 @@
         )as t3 ON t3.dicitemcode = t1.`level`
         LEFT JOIN t_p_s_user t4 ON t4.id = t1.manager
         <trim prefixOverrides="and" prefix="where">
+            AND t1.removed = '0'
             <if test="@Ognl@isNotEmpty(param)">
                 and t1.orgname like CONCAT('%',#{param},'%')
             </if>
