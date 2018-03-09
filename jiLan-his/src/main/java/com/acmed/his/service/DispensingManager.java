@@ -81,6 +81,9 @@ public class DispensingManager {
 
         Apply apply = applyMapper.selectByPrimaryKey(applyId);
 
+        apply.setStatus("1");
+        applyMapper.updateByPrimaryKey(apply);
+
         Example example = new Example(Prescription.class);
         example.createCriteria().andEqualTo("applyId",applyId);
         Prescription prescription= preMapper.selectByExample(example).get(0);
@@ -233,6 +236,9 @@ public class DispensingManager {
     @Transactional
     public void refund(DispensingRefundMo mo , UserInfo userInfo) {
         Apply apply = applyMapper.selectByPrimaryKey(mo.getApplyId());
+        apply.setStatus("3");
+        applyMapper.updateByPrimaryKey(apply);
+
         Map<String,Double> groupFeeMap = Maps.newHashMap();
         for(DispensingRefundMo.RefundMo refundMo : mo.getMoList()){
 

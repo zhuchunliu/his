@@ -253,6 +253,38 @@ public class DispensingApi {
     }
 
 
+    @ApiOperation(value = "收费发药详情")
+    @GetMapping("/detail")
+    public ResponseResult<DispensingDetailVo> getDetail(@ApiParam("挂号主键") @RequestParam("applyId") String applyId,
+                                                                  @AccessToken AccessInfo info){
+
+        dispensingManager.lockStock(applyId,info.getUser());//锁定库存
+
+        Prescription prescription = preMapper.getPreByApply(applyId).get(0);
+
+        Example example = new Example(PrescriptionItem.class);
+        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
+
+        example = new Example(Inspect.class);
+        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        List<Inspect> inspectList = inspectMapper.selectByExample(example);
+
+        example = new Example(Charge.class);
+        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        List<Charge> chargeList = chargeMapper.selectByExample(example);
+
+        Map<String,List<PrescriptionItemStock>> map = Maps.newHashMap();
+        itemList.forEach(obj->{
+            Example stockExample = new Example(PrescriptionItemStock.class);
+            stockExample.createCriteria().andEqualTo("itemId",obj.getId());
+            map.put(obj.getId(),preItemStockMapper.selectByExample(stockExample));
+        });
+
+
+
+        return ResponseUtil.setSuccessResult(new DispensingDetailVo(prescription,itemList,inspectList,chargeList,map,baseInfoManager,drugMapper,manufacturerMapper));
+    }
 
 
 
