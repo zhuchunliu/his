@@ -120,7 +120,7 @@ public class UserManager {
             if(StringUtils.isNotEmpty(mo.getDateOfBirth())){
                 user.setAge(IdCardUtil.idCardToAge("000000"+mo.getDateOfBirth().replace("-","")+"0000"));
             }
-            userMapper.insert(user);
+            userMapper.insertSelective(user);
         }else{
             user = userMapper.selectByPrimaryKey(mo.getId());
             user.setOrgName(null == mo.getOrgCode()?userInfo.getOrgName():
@@ -133,7 +133,7 @@ public class UserManager {
             if(StringUtils.isNotEmpty(mo.getDateOfBirth())){
                 user.setAge(IdCardUtil.idCardToAge("000000"+mo.getDateOfBirth().replace("-","")+"0000"));
             }
-            userMapper.updateByPrimaryKey(user);
+            userMapper.updateByPrimaryKeySelective(user);
         }
 
         Example example = new Example(UserVsRole.class);
