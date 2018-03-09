@@ -143,6 +143,9 @@ public class ApplyApi {
                                                                                                 @ApiParam("每页记录数") @RequestParam(value = "pageSize" )Integer pageSize){
         if (orgCode == null){
             orgCode = info.getUser().getOrgCode();
+            if (orgCode == null){
+                orgCode = -1;
+            }
         }
         if (orgCode == 0){
             orgCode = null;
