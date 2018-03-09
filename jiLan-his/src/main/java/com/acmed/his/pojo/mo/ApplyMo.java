@@ -23,6 +23,9 @@ public class ApplyMo {
     @ApiModelProperty("社保卡")
     private String socialCard;
 
+    @ApiModelProperty("出生日期")
+    private String dateOfBirth;
+
     @ApiModelProperty("医生id 必填")
     private Integer doctorId;
 
