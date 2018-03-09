@@ -86,7 +86,7 @@ public class UserManager {
 
         if(!StringUtils.isEmpty(mo.getLoginName()) ) { //验证手机号，用户名是否已经存在
             Example example = new Example(User.class);
-            example.createCriteria().andEqualTo("loginName",mo.getLoginName());
+            example.createCriteria().orEqualTo("loginName",mo.getLoginName()).orEqualTo("mobile",mo.getLoginName());
             Integer id = Optional.ofNullable(userMapper.selectByExample(example)).
                     filter(obj->0!=obj.size()).map(obj->obj.get(0)).map(obj->obj.getId()).orElse(null);
             if((null != id && null == mo.getId())  || (null != id && id != mo.getId())){
@@ -96,7 +96,7 @@ public class UserManager {
 
         if(!StringUtils.isEmpty(mo.getMobile())){
             Example example = new Example(User.class);
-            example.createCriteria().andEqualTo("mobile",mo.getMobile());
+            example.createCriteria().orEqualTo("mobile",mo.getMobile()).orEqualTo("loginName",mo.getMobile());
             Integer id = Optional.ofNullable(userMapper.selectByExample(example)).
                     filter(obj->0!=obj.size()).map(obj->obj.get(0)).map(obj->obj.getId()).orElse(null);
             if((null != id && null == mo.getId())  || (null != id && id != mo.getId())){
@@ -115,7 +115,7 @@ public class UserManager {
                     Optional.ofNullable(orgMapper.selectByPrimaryKey(mo.getOrgCode())).map(org->org.getOrgName()).orElse(null));
             user.setDeptName(null == mo.getDept()?null:
                     Optional.ofNullable(deptMapper.selectByPrimaryKey(mo.getDept())).map(dept->dept.getDept()).orElse(null));
-            user.setPassWd(MD5Util.encode("123456"));
+            user.setPassWd(MD5Util.encode("000000"));
             user.setRemoved("0");
             if(StringUtils.isNotEmpty(mo.getDateOfBirth())){
                 user.setAge(IdCardUtil.idCardToAge("000000"+mo.getDateOfBirth().replace("-","")+"0000"));
