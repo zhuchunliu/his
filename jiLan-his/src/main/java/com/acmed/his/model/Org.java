@@ -62,7 +62,7 @@ public class Org {
     @ApiModelProperty("县")
     private String country;
 
-    @ApiModelProperty("状态：0启用,1停止")
+    @ApiModelProperty("状态：0禁用,1启用")
     private String status;
 
     @ApiModelProperty("经度")

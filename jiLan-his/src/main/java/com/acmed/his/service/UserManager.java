@@ -137,7 +137,7 @@ public class UserManager {
         }
 
         Example example = new Example(UserVsRole.class);
-        example.createCriteria().andEqualTo("rid",user.getId());
+        example.createCriteria().andEqualTo("uid",user.getId());
         userVsRoleMapper.deleteByExample(example);
         if(StringUtils.isNotEmpty(mo.getRoleIds())) {
             userVsRoleMapper.addUserRole(user.getId(), mo.getRoleIds().split(","));

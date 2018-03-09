@@ -14,6 +14,7 @@ import com.acmed.his.service.PatientItemManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.*;
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -115,6 +116,17 @@ public class OrgApi {
         });
 
         return ResponseUtil.setSuccessResult(list);
+    }
+
+    @ApiOperation(value = "禁用/启用 诊断模板")
+    @PostMapping("/switch")
+    public ResponseResult switchOrg(@ApiParam("{\"id\":\"\"} id：机构主键") @RequestBody String param,
+                                             @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+            return ResponseUtil.setParamEmptyError("id");
+        }
+        orgManager.switchOrg(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+        return ResponseUtil.setSuccessResult();
     }
 
 

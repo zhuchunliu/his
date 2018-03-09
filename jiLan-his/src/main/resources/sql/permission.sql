@@ -146,7 +146,7 @@ insert into t_p_s_permission(pername,url,pid) select '诊所预约统计','/repo
 
 
 -- 医生管理
-insert into t_p_s_permission(pername,url,pid) select '新增/编辑 用户信息','/doctor/save',id from t_p_s_permission where percode = 'ysgl';
+-- insert into t_p_s_permission(pername,url,pid) select '新增/编辑 用户信息','/doctor/save',id from t_p_s_permission where percode = 'ysgl';
 insert into t_p_s_permission(pername,url,pid) select '获取用户列表','/doctor/list',id from t_p_s_permission where percode = 'ysgl';
 insert into t_p_s_permission(pername,url,pid) select '删除用户信息','/doctor/del',id from t_p_s_permission where percode = 'ysgl';
 insert into t_p_s_permission(pername,url,pid) select '禁用、启用 用户','/doctor/switch',id from t_p_s_permission where percode = 'ysgl';

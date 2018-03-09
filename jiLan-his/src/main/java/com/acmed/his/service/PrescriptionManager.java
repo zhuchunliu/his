@@ -273,6 +273,7 @@ public class PrescriptionManager {
             prescription.setCreateBy(userInfo.getId().toString());
             preMapper.insert(prescription);
         }else{
+            prescription.setIsPaid("0");
             prescription.setModifyAt(LocalDateTime.now().toString());
             prescription.setModifyBy(userInfo.getId().toString());
             preItemMapper.delByPreId(prescription.getId());

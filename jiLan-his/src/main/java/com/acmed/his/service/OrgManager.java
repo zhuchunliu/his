@@ -203,4 +203,12 @@ public class OrgManager {
         result.setData(orgDtoList);
         return result;
     }
+
+    public void switchOrg(Integer id, UserInfo user) {
+        Org org = orgMapper.selectByPrimaryKey(id);
+        org.setStatus(org.getStatus().equals("1")?"0":"1");
+        org.setModifyAt(LocalDateTime.now().toString());
+        org.setModifyBy(user.getId().toString());
+        orgMapper.updateByPrimaryKey(org);
+    }
 }
