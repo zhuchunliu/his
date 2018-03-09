@@ -22,7 +22,7 @@ public class DispensingDetailVo {
     private String prescriptionNo;
 
     @ApiModelProperty("费用合计")
-    private Double totalFee;
+    private Double totalFee = 0d;
 
 
     private List<DispensingInfoVo> infoVoList;
@@ -83,17 +83,17 @@ public class DispensingDetailVo {
                 BeanUtils.copyProperties(item,medicalDetail);
                 Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                 if(null != stock.getNum() && 0 != stock.getNum()){
-                    medicalDetail.setPrice(drug.getRetailPrice());
+                    medicalDetail.setPrice(drug.getRetailPrice()*stock.getNum());
                     medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getNum()+
                             (null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString())));
                 }
                 if(null != stock.getMinNum() && 0 != stock.getMinNum()){
-                    medicalDetail.setPrice(drug.getMinRetailPrice());
+                    medicalDetail.setPrice(drug.getMinRetailPrice()*stock.getMinNum());
                     medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getMinNum()+
                             (null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
                 }
                 if(null != stock.getDoseNum() && 0 != stock.getDoseNum()){
-                    medicalDetail.setPrice(drug.getMinRetailPrice());
+                    medicalDetail.setPrice(drug.getMinRetailPrice()*stock.getDoseNum());
                     medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+
                             (0==stock.getDoseNum()*10%1? String.valueOf((int)Math.floor(stock.getDoseNum())):String.valueOf(stock.getDoseNum()))+
                             (null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
@@ -101,7 +101,7 @@ public class DispensingDetailVo {
                 medicalDetail.setManufacturerName(manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
                 medicalDetail.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
                 medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
-
+                this.totalFee += medicalDetail.getPrice();
                 if(!map.containsKey(item.getGroupNum())){
                     map.put(item.getGroupNum(),new DispensingInfoVo(medicalDetail,null,null
                             ,item.getRequirement(),item.getRemark()));
@@ -117,6 +117,7 @@ public class DispensingDetailVo {
                 InspectInfoVo inspect = new InspectInfoVo();
                 BeanUtils.copyProperties(obj,inspect);
                 inspect.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.INSPECT_CATEGORY.getCode(),obj.getCategory()).getDicItemName());
+                this.totalFee += inspect.getFee();
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new DispensingInfoVo(null,inspect,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -131,6 +132,7 @@ public class DispensingDetailVo {
             chargeList.forEach((obj)->{
                 ChargeInfoVo charge = new ChargeInfoVo();
                 BeanUtils.copyProperties(obj,charge);
+                this.totalFee += charge.getFee();
                 charge.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.CHARGE_CATEGORY.getCode(),obj.getCategory()).getDicItemName());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new DispensingInfoVo(null,null,charge,

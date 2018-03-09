@@ -26,7 +26,7 @@ public class DispensingMedicineVo {
     private String prescriptionNo;
 
     @ApiModelProperty("费用合计")
-    private Double totalFee;
+    private Double totalFee = 0d;
 
 
     public DispensingMedicineVo(){
@@ -77,17 +77,17 @@ public class DispensingMedicineVo {
                     BeanUtils.copyProperties(item,medicalDetail);
                     Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                     if(null != stock.getNum() && 0 != stock.getNum()){
-                        medicalDetail.setPrice(drug.getRetailPrice());
+                        medicalDetail.setPrice(drug.getRetailPrice()*stock.getNum());
                         medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getNum()+
                                 (null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString())));
                     }
                     if(null != stock.getMinNum() && 0 != stock.getMinNum()){
-                        medicalDetail.setPrice(drug.getMinRetailPrice());
+                        medicalDetail.setPrice(drug.getMinRetailPrice()*stock.getMinNum());
                         medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getMinNum()+
                                 (null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
                     }
                     if(null != stock.getDoseNum() && 0 != stock.getDoseNum()){
-                        medicalDetail.setPrice(drug.getMinRetailPrice());
+                        medicalDetail.setPrice(drug.getMinRetailPrice()*stock.getDoseNum());
                         medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+
                                 (0==stock.getDoseNum()*10%1? String.valueOf((int)Math.floor(stock.getDoseNum())):String.valueOf(stock.getDoseNum()))+
                                 (null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
@@ -95,6 +95,7 @@ public class DispensingMedicineVo {
                     medicalDetail.setManufacturerName(manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
                     medicalDetail.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
                     medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+                    this.totalFee += medicalDetail.getPrice();
                     childList.add(medicalDetail);
                 });
             }

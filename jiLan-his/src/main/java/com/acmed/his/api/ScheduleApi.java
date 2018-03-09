@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.ApplyMapper;
 import com.acmed.his.model.DicItem;
+import com.acmed.his.model.User;
 import com.acmed.his.model.dto.ScheduleApplyDto;
 import com.acmed.his.model.dto.ScheduleDto;
 import com.acmed.his.pojo.mo.ScheduleMo;
@@ -128,6 +129,9 @@ public class ScheduleApi {
         List<ScheduleApplyVo> list = Lists.newArrayList();
         String[] weekarr = new String[]{"一","二","三","四","五","六","日"};
         for(LocalDate child = startDate;!child.isAfter(endDate);child=child.plusDays(1)){
+
+
+
             ScheduleApplyVo vo = new ScheduleApplyVo();
             vo.setWeek("周"+weekarr[child.getDayOfWeek().getValue()-1]);
             vo.setDate(child.format(DateTimeFormatter.ofPattern("MM/dd")));
@@ -137,6 +141,12 @@ public class ScheduleApi {
                         || DateTimeUtil.parsetLocalDate(dto.getEndTime()).isBefore(child)){
                     continue;
                 }
+
+                User user = userManager.getUserDetail(dto.getUserid());//过滤禁用医生
+                if(!StringUtils.isNotEmpty(user.getStatus()) && "0".equals(user.getStatus())){
+                    continue;
+                }
+
                 String schedule = null;
                 switch (child.getDayOfWeek().getValue()){
                     case 1: schedule = dto.getMonday();break;
@@ -161,7 +171,7 @@ public class ScheduleApi {
                 detail.setDiagnosLevelName(Optional.ofNullable(dto.getDiagnosLevel()).map(val->diagnosisMap.get(val)).orElse(null));
                 detail.setDutyName(Optional.ofNullable(dto.getDuty()).map(val->dutyMap.get(val)).orElse(null));
                 detail.setSchedule(scheduleMap.get(schedule).getDicItemName());
-                detail.setApplyNum(userManager.getUserDetail(dto.getUserid()).getApplyNum());
+                detail.setApplyNum(user.getApplyNum());
                 detail.setOccupyNum(applyMapper.getDoctorApplyNum(dto.getUserid(),DateTimeUtil.getBeginDate(child.toString()),DateTimeUtil.getEndDate(child.toString())));
                 detail.setAppointmentTime(child.toString());
                 detailList.add(detail);
