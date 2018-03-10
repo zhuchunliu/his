@@ -440,7 +440,10 @@ public class PrescriptionManager {
             apply.setPatientName(patientItem.getPatientName());
             apply.setPinYin(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
             apply.setGender(patient.getGender());
-            apply.setAge(Optional.ofNullable(patient.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+            apply.setAge(Optional.ofNullable(patient.getIdCard()).map(DateTimeUtil::getAge).orElse(null));
+            if(null == apply.getAge()){
+                apply.setAge(Optional.ofNullable(patient.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+            }
             apply.setStatus("1");
             apply.setIsPaid("0");
             apply.setIsFirst(0);

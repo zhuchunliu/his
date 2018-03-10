@@ -79,7 +79,7 @@
         </if>
     </select>
     <update id="updateUserDept">
-        UPDATE t_p_s_org SET deptname = #{deptName}  WHERE dept = #{deptId}
+        UPDATE t_p_s_user SET deptname = #{deptName}  WHERE dept = #{deptId}
     </update>
 
     <update id="updateUserOrg">

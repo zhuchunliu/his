@@ -55,7 +55,7 @@ public class DeptManager {
 
         Example example = new Example(Dept.class);
         example.createCriteria().andEqualTo("orgCode",userInfo.getOrgCode()).andEqualTo("dept",mo.getDept()).
-                orEqualTo("removed","0");
+                andEqualTo("removed","0");
         List<Dept> list = deptMapper.selectByExample(example);
         if(null != list && 0 != list.size() &&  (null == mo.getId() || list.get(0).getId() != mo.getId())){
             throw new BaseException(StatusCode.FAIL,"科室名称不能重复!");

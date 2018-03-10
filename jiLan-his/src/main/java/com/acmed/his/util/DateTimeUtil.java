@@ -22,11 +22,21 @@ public class DateTimeUtil {
      * @return
      */
     public static Integer getAge(String birth){
+        if(StringUtils.isEmpty(birth)){
+            return null;
+        }
+        birth = birth.replace("-","");
         if(StringUtils.isEmpty(birth)) return null;
-        birth = 10 == birth.length()?birth:birth.substring(0,10);
+        if(birth.length() == 18){
+            birth = birth.substring(6,14);
+        }
+        if(birth.contains(":")){
+            birth = 10 == birth.length()?birth:birth.substring(0,8);
+        }
+
 
         LocalDate now = LocalDate.now();
-        LocalDate birthDate = LocalDate.parse(birth,DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate birthDate = LocalDate.parse(birth,DateTimeFormatter.ofPattern("yyyyMMdd"));
         int age = now.getYear()-birthDate.getYear();
         if(birthDate.getMonthValue() < now.getMonthValue()) return age-1;
         if(birthDate.getDayOfMonth() < now.getDayOfMonth()) return age-1;
@@ -108,9 +118,11 @@ public class DateTimeUtil {
 
     public static void main(String[] args) {
         System.err.println(DateTimeUtil.getAge("1987-12-19"));
+        System.err.println(DateTimeUtil.getAge("19871219"));
+        System.err.println(DateTimeUtil.getAge("000000198712195552"));
         System.err.println(DateTimeUtil.getAge("1987-12-18 10:10:10"));
         System.err.println(DateTimeUtil.getAge("1987-12-20 10:10:10"));
-        System.err.println(DateTimeUtil.parsetLocalDate("1987-12-20 10:10:10"));
-        System.err.println(DateTimeUtil.parsetDate("1987-12-20"));
+//        System.err.println(DateTimeUtil.parsetLocalDate("1987-12-20 10:10:10"));
+//        System.err.println(DateTimeUtil.parsetDate("1987-12-20"));
     }
 }
