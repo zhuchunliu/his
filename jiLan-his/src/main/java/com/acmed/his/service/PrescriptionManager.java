@@ -392,14 +392,16 @@ public class PrescriptionManager {
      * @return
      */
     private Patient handlePatient(PreMo mo,UserInfo userInfo){
-        Patient patient = patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
+        Patient patient = Optional.ofNullable(mo.getPatient().getIdCard()).
+                map(idcard->patientManager.getPatientByIdCard(idcard)).orElse(null);
         if(null == patient){
             patient = new Patient();
             BeanUtils.copyProperties(mo.getPatient(),patient);
             patient = patientManager.add(patient);
         }
 
-        PatientItem patientItem = patientItemManager.getPatientByIdCard(mo.getPatient().getIdCard(),userInfo.getOrgCode());
+        PatientItem patientItem = Optional.ofNullable(mo.getPatient().getIdCard()).
+                map(idcard->patientItemManager.getPatientByIdCard(idcard,userInfo.getOrgCode())).orElse(null);
         if(null == patientItem){
             patientItem = new PatientItem();
             BeanUtils.copyProperties(mo.getPatient(),patientItem);

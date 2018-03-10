@@ -110,6 +110,9 @@ public class  PreMo {
         @ApiModelProperty("身份证")
         private String idCard;
 
+        @ApiModelProperty("出生日期")
+        private String dateOfBirth;
+
         @ApiModelProperty("社保卡")
         private String socialCard;
 
