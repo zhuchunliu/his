@@ -195,7 +195,7 @@ public class LoginManager {
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_AUTH, "当前登录用户信息获取失败");
         }
         if("0".equals(user.getStatus())){
-            return ResponseUtil.setErrorMeg(StatusCode.ERROR_AUTH, "当前用户已被禁用，请联系管理员");
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_FORBIDDEN, "当前用户已被禁用，请联系管理员");
         }
         passwd = MD5Util.encode(passwd);
         //redis中验证码或者数据库密码一致，即认证通过
