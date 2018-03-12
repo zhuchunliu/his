@@ -1,6 +1,7 @@
 package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.model.User;
 import com.acmed.his.pojo.mo.DeptMo;
 import com.acmed.his.pojo.vo.DeptVo;
 import com.acmed.his.service.DeptManager;
@@ -81,6 +82,12 @@ public class DeptApi {
     @DeleteMapping("/del")
     public ResponseResult delDept(@ApiParam("科室主键") @RequestParam("id") Integer id,
                                   @AccessToken AccessInfo info){
+        User user = new User();
+        user.setDept(id);
+        List<User> byUser = userManager.getByUser(user);
+        if (byUser.size()!=0){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"该科室下还存在医生，请把医生科室修改后在删除科室");
+        }
         deptManager.delDept(id,info.getUser());
         return ResponseUtil.setSuccessResult();
     }

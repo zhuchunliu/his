@@ -1,5 +1,6 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.RoleMapper;
 import com.acmed.his.model.Role;
@@ -22,6 +23,7 @@ import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -116,6 +118,10 @@ public class UserManagerApi {
                                      @AccessToken AccessInfo info){
         if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
             return ResponseUtil.setParamEmptyError("id");
+        }
+        String id = JSONObject.parseObject(param).get("id").toString();
+        if(StringUtils.equals(info.getUserId().toString(),id)){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"不能禁用自己的账号");
         }
         userManager.switchUser(JSONObject.parseObject(param).getInteger("id"),info.getUser());
         return ResponseUtil.setSuccessResult();
