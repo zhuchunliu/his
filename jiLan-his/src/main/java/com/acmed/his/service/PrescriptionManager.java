@@ -392,8 +392,8 @@ public class PrescriptionManager {
      * @return
      */
     private Patient handlePatient(PreMo mo,UserInfo userInfo){
-        Patient patient = Optional.ofNullable(mo.getPatient().getIdCard()).
-                map(idcard->patientManager.getPatientByIdCard(idcard)).orElse(null);
+        Patient patient = StringUtils.isEmpty(mo.getPatient().getIdCard())?null:
+                patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
         if(null == patient){
             patient = new Patient();
             BeanUtils.copyProperties(mo.getPatient(),patient);
