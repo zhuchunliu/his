@@ -60,6 +60,14 @@ public class DispensingRefundVo {
                     }
                 }
 
+                if(1 == obj.getUnitType()) {
+                    item.setNumName(obj.getNum() + (null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString())));
+                }else if(1 == obj.getMinPriceUnitType()){
+                    item.setNumName(obj.getNum()+(null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
+                }else{
+                    item.setNumName(obj.getNum()+(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+                }
+
                 BeanUtils.copyProperties(obj,item);
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new DisPrescriptVo(item,null,null
@@ -203,7 +211,7 @@ public class DispensingRefundVo {
         private String spec;
 
         @ApiModelProperty("数量")
-        private Double num;
+        private String numName;
 
         @ApiModelProperty("计价单位")
         private String unit;

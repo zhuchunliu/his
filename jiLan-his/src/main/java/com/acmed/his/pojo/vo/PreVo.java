@@ -89,6 +89,8 @@ public class PreVo {
                                 (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())) :
                                 (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
                     }
+                    item.setMinUnitName(null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString()));
+                    item.setMinPriceUnitType(drug.getMinPriceUnitType());
                     item.setRetailPrice(drug.getRetailPrice());
                     item.setMinRetailPrice(drug.getMinRetailPrice());
                 }
@@ -256,8 +258,14 @@ public class PreVo {
         @ApiModelProperty("一级单位名称")
         private String unitName;
 
+        @ApiModelProperty("小单位名称")
+        private String minUnitName;
+
         @ApiModelProperty("二级单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
         private String minOrDoseUnitName;
+
+        @ApiModelProperty("二级零售价对应单位  1：小单位minUnit，2：剂量单位doseUnit")
+        private Integer minPriceUnitType;
 
         @ApiModelProperty("一单位零售价")
         private Double retailPrice;
