@@ -239,7 +239,7 @@ public class AccompanyingOrderApi {
         int update = accompanyingOrderManager.update(accompanyingOrder);
         if (update == 1){
             BigDecimal totalBalance = accompanyingOrderManager.getByOrderCode(orderCode).getTotalBalance();
-            String fee = totalBalance.multiply(new BigDecimal(100)).toString();
+            String fee = totalBalance.multiply(new BigDecimal(100)).intValue()+"";
             Map<String, String> refund = wxManager.refund(orderCode, fee, "退款", fee);
             String returnCode = refund.get("return_code");
             if (StringUtils.equals("SUCCESS",returnCode)){

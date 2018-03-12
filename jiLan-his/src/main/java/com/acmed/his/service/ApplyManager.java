@@ -299,7 +299,7 @@ public class ApplyManager {
                         if (byPayStatements.size()!=0){
                             PayStatements payStatements1 = byPayStatements.get(0);
                             if (payStatements1.getFeeType().equals("1")){
-                                String refunffee = new BigDecimal(apply.getFee()).multiply(new BigDecimal(100)).toString();
+                                String refunffee = new BigDecimal(apply.getFee()).multiply(new BigDecimal(100)).intValue()+"";
                                 Map<String, String> refund = null;
                                 try {
                                     refund = wxManager.refund(payStatements1.getId(), refunffee, "退款", refunffee);
