@@ -10,3 +10,10 @@ insert into t_p_s_role(rolecode,rolename,removed,isvalid) values('qtry','其他�
 insert into t_p_s_role_vs_permission(pid,rid)
 select id,(select id from t_p_s_role where rolecode = 'admin' )
  from t_p_s_permission t1 where pid in (select id from t_p_s_permission where pid is  null)
+
+
+
+-- 传角色id 可以初始化成机构管理员
+insert into t_p_s_role_vs_permission(pid,rid)
+        select id,#{rid}
+        from t_p_s_permission t1 where pid in (select id from t_p_s_permission where pid is null) AND hideflag = 0
