@@ -65,7 +65,7 @@ public class DispensingRefundVo {
                 }else if(1 == obj.getMinPriceUnitType()){
                     item.setNumName(obj.getNum()+(null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
                 }else{
-                    item.setNumName(obj.getNum()+(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+                    item.setNumName(obj.getNum()+(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
                 }
 
                 BeanUtils.copyProperties(obj,item);
