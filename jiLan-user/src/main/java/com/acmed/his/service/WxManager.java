@@ -2,6 +2,7 @@ package com.acmed.his.service;
 
 
 import com.acmed.his.constants.RedisKeyConstants;
+import com.acmed.his.model.OpenIdAndAccessToken;
 import com.acmed.his.pojo.mo.WxUserInfo;
 import com.acmed.his.util.EmojiUtil;
 import com.acmed.his.util.RandomUtil;
@@ -43,13 +44,18 @@ public class WxManager {
      * @param code code
      * @return openid
      */
-    public String getOpenid(String code) throws Exception{
+    public OpenIdAndAccessToken getOpenid(String code) throws Exception{
         String url =  String.format("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code",
                 environment.getProperty("weixin.appid"),environment.getProperty("weixin.secret"),code);
         String info = new RestTemplate().getForObject(url, String.class);
         JSONObject json = JSONObject.parseObject(info);
         logger.info("微信获取openid: "+json.toJSONString());
-        return json.getString("openid");
+        String access_token = json.getString("access_token");
+        String openid = json.getString("openid");
+        OpenIdAndAccessToken openIdAndAccessToken = new OpenIdAndAccessToken();
+        openIdAndAccessToken.setOpenId(openid);
+        openIdAndAccessToken.setAccessToken(access_token);
+        return openIdAndAccessToken;
     }
 
     /**
@@ -73,9 +79,9 @@ public class WxManager {
     }
 
 
-    public WxUserInfo wxUserInfo(String openid) {
-        String url = String.format("https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN",
-                getBaseAccessToken(), openid);
+    public WxUserInfo wxUserInfo(String openid,String accessToken) {
+        String url = String.format("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN",
+                accessToken, openid);
         String info = new RestTemplate().getForObject(url, String.class);
         JSONObject json = JSONObject.parseObject(info);
         WxUserInfo wxUserInfo = new WxUserInfo();

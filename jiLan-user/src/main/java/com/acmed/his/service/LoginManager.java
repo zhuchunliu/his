@@ -5,6 +5,7 @@ import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.dao.UserMapper;
+import com.acmed.his.model.OpenIdAndAccessToken;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.User;
 import com.acmed.his.pojo.RequestToken;
@@ -75,32 +76,32 @@ public class LoginManager {
     /**
      * 根据openid获取token
      *
-     * @param openid
+     * @param openIdAndAccessToken
      * @return
      */
-    public RequestToken getTokenByOpenid(String openid) {
+    public RequestToken getTokenByOpenid(OpenIdAndAccessToken openIdAndAccessToken) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String ip = IPUtil.getIpAddr(request);
 
         Example example = new Example(User.class);
-        example.createCriteria().andEqualTo("openid",openid);
+        example.createCriteria().andEqualTo("openid",openIdAndAccessToken.getOpenId());
         User user = Optional.ofNullable(userMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
 
         String loginid = Optional.ofNullable(user).map(obj->String.format(RedisKeyConstants.USER_WEIXIN,user.getId())).orElse(null);
 
         new Example(Patient.class);
-        example.createCriteria().andEqualTo("openid",openid);
+        example.createCriteria().andEqualTo("openid",openIdAndAccessToken.getOpenId());
         Patient patient = Optional.ofNullable(patientMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
         if(null == patient){//都没有数据的时候，则手动创建一条患者信息
-            WxUserInfo wxUserInfo = wxManager.wxUserInfo(openid);
+            WxUserInfo wxUserInfo = wxManager.wxUserInfo(openIdAndAccessToken.getOpenId(),openIdAndAccessToken.getAccessToken());
             patient = new Patient();
             patient.setId(UUIDUtil.generate());
-            patient.setOpenid(openid);
+            patient.setOpenid(openIdAndAccessToken.getOpenId());
             patient.setNickName(wxUserInfo.getNickName());
             patient.setGender(wxUserInfo.getSex());
             patient.setCreateAt(LocalDateTime.now().toString());
             patientMapper.insert(patient);
-            patient = patientManager.getPatientByOpenid(openid);
+            patient = patientManager.getPatientByOpenid(openIdAndAccessToken.getOpenId());
         }
 
         if(null == loginid){

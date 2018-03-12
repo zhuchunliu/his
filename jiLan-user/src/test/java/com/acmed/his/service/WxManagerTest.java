@@ -27,7 +27,7 @@ public class WxManagerTest {
 
     @Test
     public void getBaseAccessToken() {
-        System.err.println(wxManager.wxUserInfo("oTAaixA9X74whvto1wK4H-zn9wAY"));
+
         //"7_3DbbsbCAZNzxFUcsjtj2kv-zehJpykrjnkDjWt68jbDCEAnekELHJmeRuL81SL8ODqNkE7nZC53uzzGdCm52HUfbI1JRDyUwyWYzQjmZ3PusZBDasygszlW0mXEFP1hNEydTNy5g4wZQiovoJRCgAFAVDO";
     }
 }

@@ -32,11 +32,27 @@ public class LoginManagerTest {
 
     @Test
     public void getTokenByOpenid() {
-        try {
-            RequestToken requestToken = loginManager.getTokenByOpenid("123456-2");
-            System.err.print(requestToken);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+    }
+
+    @Test
+    public void userlogin1() {
+    }
+
+    @Test
+    public void getTokenByOpenid1() {
+
+    }
+
+    @Test
+    public void getToken() {
+    }
+
+    @Test
+    public void tokenRefresh() {
+    }
+
+    @Test
+    public void logout() {
     }
 }

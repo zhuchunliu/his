@@ -103,6 +103,11 @@ public class PayApiTest {
         System.err.println(map);
     }
 
+    @Test
+    public void orderquery2() throws Exception {
+        System.err.println(environment.getProperty("weixin.url"));
+    }
+
 
 
 }

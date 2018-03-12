@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.model.OpenIdAndAccessToken;
 import com.acmed.his.pojo.RequestToken;
 import com.acmed.his.pojo.mo.UserLoginMo;
 import com.acmed.his.pojo.vo.UserInfo;
@@ -60,17 +61,17 @@ public class LoginController {
     @GetMapping(value = "/code")
     public ResponseResult<RequestToken> openid(
             @ApiParam(value = "code") @RequestParam("code") String code){
-        String openid = null;
+        OpenIdAndAccessToken openIdAndAccessToken = null;
         try {
-            openid = wxManager.getOpenid(code);
+            openIdAndAccessToken = wxManager.getOpenid(code);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
         }
-        if(null == openid || StringUtils.isEmpty(openid)){
+        if(null == openIdAndAccessToken){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
         }
-        RequestToken requestToken =  loginManager.getTokenByOpenid(openid);
+        RequestToken requestToken =  loginManager.getTokenByOpenid(openIdAndAccessToken);
         return ResponseUtil.setSuccessResult(requestToken);
     }
 
