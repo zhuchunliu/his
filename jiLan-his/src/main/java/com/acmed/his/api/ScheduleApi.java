@@ -174,6 +174,7 @@ public class ScheduleApi {
                 detail.setApplyNum(user.getApplyNum());
                 detail.setOccupyNum(applyMapper.getDoctorApplyNum(dto.getUserid(),DateTimeUtil.getBeginDate(child.toString()),DateTimeUtil.getEndDate(child.toString())));
                 detail.setAppointmentTime(child.toString());
+                detail.setDeptName(user.getDeptName());
                 detailList.add(detail);
             }
 

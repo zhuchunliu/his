@@ -41,6 +41,9 @@ public class ScheduleApplyVo {
         @ApiModelProperty("门诊级别")
         private String diagnosLevelName;
 
+        @ApiModelProperty("科室名称")
+        private String deptName;
+
         @ApiModelProperty("挂号费")
         private Double applyFee;
 
