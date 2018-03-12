@@ -414,13 +414,35 @@ public class AccompanyingOrderApi {
      */
     @ApiOperation(value = "取消订单")
     @GetMapping("cancelOrder")
-    public ResponseResult cancelOrder(@RequestParam("orderCode") String orderCode,@AccessToken AccessInfo info){
+    @Transactional
+    public ResponseResult cancelOrder(@RequestParam("orderCode") String orderCode,@AccessToken AccessInfo info) throws Exception {
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setStatus(5);
         accompanyingOrder.setOrderCode(orderCode);
         accompanyingOrder.setModifyBy(info.getPatientId());
-        accompanyingOrderManager.update(accompanyingOrder);
-        return ResponseUtil.setSuccessResult();
+        int update = accompanyingOrderManager.update(accompanyingOrder);
+        if (update == 1){
+            BigDecimal totalBalance = accompanyingOrderManager.getByOrderCode(orderCode).getTotalBalance();
+            String fee = totalBalance.multiply(new BigDecimal(100)).intValue()+"";
+            Map<String, String> refund = wxManager.refund(orderCode, fee, "退款", fee);
+            String returnCode = refund.get("return_code");
+            if (StringUtils.equals("SUCCESS",returnCode)){
+                // 退款成功
+                //商户退款单号
+                String outRefundNo = refund.get("out_refund_no");
+                // 微信退款单号
+                String refundId = refund.get("refund_id");
+                AccompanyingOrder param = new AccompanyingOrder();
+                param.setOrderCode(orderCode);
+                param.setOtherReturnOrderCode(refundId);
+                param.setReturnOrderCode(outRefundNo);
+                accompanyingOrderManager.update(param);
+                return ResponseUtil.setSuccessResult();
+            }else {
+                return ResponseUtil.setErrorMeg(StatusCode.ERROR_REFUND_ERR,"取消订单失败");
+            }
+        }
+        return ResponseUtil.setErrorMeg(StatusCode.ERROR_REFUND_ERR,"取消订单失败");
     }
 
     /**

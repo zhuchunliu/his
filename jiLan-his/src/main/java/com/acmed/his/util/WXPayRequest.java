@@ -102,9 +102,13 @@ public class WXPayRequest {
      */
     public static String postXmlWithKey(String url, String xml, String mchId) throws Exception {
 
-        String certPath = "src/main/resources/apiclient_cert.p12";
+/*        String certPath = "src/main/resources/apiclient_cert.p12";
         File file = new File(certPath);
-        InputStream certStream = new FileInputStream(file);
+        InputStream certStream = new FileInputStream(file);*/
+
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        InputStream certStream = classloader.getResourceAsStream("apiclient_cert.p12");
+
         //URL urlP = new URL("http://qn.medlion.cc/wxpay_medlion.p12");
         //URLConnection urlConnection = urlP.openConnection();
         //urlConnection.setDoInput(true);
