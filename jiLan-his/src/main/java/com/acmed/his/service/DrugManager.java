@@ -64,7 +64,7 @@ public class DrugManager {
             Drug drug = new Drug();
             BeanUtils.copyProperties(mo,drug);
             drug.setOrgCode(userInfo.getOrgCode());
-            String categoryName = baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getDoseUnit().toString()).getDicItemName();
+            String categoryName = baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName();
             String key = PinYinUtil.getPinYinHeadChar(categoryName)+new java.text.DecimalFormat("000000").format(userInfo.getOrgCode());
             drug.setDrugCode(key+String.format("%06d",Integer.parseInt(commonManager.getNextVal(key))));
             drug.setSpec(String.format("%s%s/%s*%s/%s",
