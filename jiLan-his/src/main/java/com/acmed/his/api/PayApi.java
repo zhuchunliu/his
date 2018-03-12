@@ -116,7 +116,7 @@ public class PayApi {
     }
 
     @ApiOperation("就医北上广回调")
-    @RequestMapping("BSGCallBack")
+    @PostMapping("BSGCallBack")
     @WithoutToken
     @Transactional
     public void BSGCallBack(HttpServletRequest req, HttpServletResponse resp){
@@ -230,7 +230,7 @@ public class PayApi {
 
 
     @ApiOperation("挂号回调")
-    @RequestMapping("applyCallBack")
+    @PostMapping("applyCallBack")
     @WithoutToken
     @Transactional
     public void applyCallBack(HttpServletRequest req, HttpServletResponse resp){
