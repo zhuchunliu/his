@@ -188,7 +188,7 @@ public class DrugManager {
             drug.setPinYin(PinYinUtil.getPinYinHeadChar(dict.getName()));
             drug.setGoodsPinYin(PinYinUtil.getPinYinHeadChar(dict.getGoodsName()));
             drug.setDictId(dict.getId());
-            drug.setIsValid(1);
+            drug.setIsValid(0);
             drug.setRemoved("0");
             drug.setCreateAt(LocalDateTime.now().toString());
             drug.setCreateBy(info.getId().toString());
