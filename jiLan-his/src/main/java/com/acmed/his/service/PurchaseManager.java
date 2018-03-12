@@ -59,7 +59,7 @@ public class PurchaseManager {
         BeanUtils.copyProperties(mo,purchase);
         purchase.setOrgCode(info.getOrgCode());
         purchase.setRemoved("0");
-        if(1 == mo.getStatus()){
+        if(2 == mo.getStatus()){//直接入库
             purchase.setAuditUserId(info.getId());
             purchase.setAuditDate(LocalDateTime.now().toString());
         }
@@ -99,7 +99,7 @@ public class PurchaseManager {
             purchaseItemMapper.delItemNotInIds(itemIds, purchase.getId());
         }
 
-        if(1 == purchase.getStatus()){//直接审核通过
+        if(2 == purchase.getStatus()){//直接审核通过
             this.updateStock(purchase.getId(),info);
         }
     }
@@ -240,6 +240,5 @@ public class PurchaseManager {
     public Integer getBatchTotal(String name, UserInfo user) {
         return purchaseItemMapper.getBatchTotal(name,user.getOrgCode());
     }
-
 
 }

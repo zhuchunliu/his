@@ -22,7 +22,7 @@
             join t_p_s_role_vs_permission rp on role.id = rp.rid
             join t_p_s_permission per on rp.pid = per.id
             where ur.uid = #{uid} and role.removed = '0' and role.isvalid = '1'
-        ) and  url = #{path};
+        ) and  (url = #{path} or perCode = #{path});
 
 
     </select>

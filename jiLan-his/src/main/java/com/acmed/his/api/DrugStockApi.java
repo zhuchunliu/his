@@ -43,9 +43,10 @@ public class DrugStockApi {
     @Autowired
     private BaseInfoManager baseInfoManager;
 
-
     @Autowired
     private ManufacturerMapper manufacturerMapper;
+
+    
 
     @ApiOperation(value = "库存查询")
     @PostMapping("/list")
@@ -68,8 +69,10 @@ public class DrugStockApi {
             vo.setUnitName(dicItemName.get(drug.getUnit().toString()));
             vo.setMinUnitName(null == drug.getMinUnit()?"":dicItemName.get(drug.getMinUnit().toString()));
             vo.setDoseUnitName(null == drug.getDoseUnit()?"":dicItemName.get(drug.getDoseUnit().toString()));
-            vo.setRetailPriceName(drug.getRetailPrice()+"元"+
-                    (null == drug.getUnit()?"":"/"+dicItemName.get(drug.getUnit().toString())));
+            if(null != drug.getRetailPrice()) {
+                vo.setRetailPriceName(drug.getRetailPrice() + "元" +
+                        (null == drug.getUnit() ? "" : "/" + dicItemName.get(drug.getUnit().toString())));
+            }
             if(null != drug.getMinPriceUnitType() && null != drug.getMinRetailPrice()){
                 vo.setMinRetailPriceName(drug.getMinRetailPrice()+"元"+
                         (1==drug.getMinPriceUnitType()?

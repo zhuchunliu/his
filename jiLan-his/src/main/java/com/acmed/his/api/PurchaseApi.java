@@ -14,6 +14,7 @@ import com.acmed.his.model.dto.PurchaseStockDto;
 import com.acmed.his.pojo.mo.PurchaseMo;
 import com.acmed.his.pojo.vo.PurchaseVo;
 import com.acmed.his.service.BaseInfoManager;
+import com.acmed.his.service.PermissionManager;
 import com.acmed.his.service.PurchaseManager;
 import com.acmed.his.service.SupplyManager;
 import com.acmed.his.support.AccessInfo;
@@ -23,6 +24,7 @@ import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -65,6 +67,9 @@ public class PurchaseApi {
     @Autowired
     private BaseInfoManager baseInfoManager;
 
+    @Autowired
+    private PermissionManager permissionManager;
+
     @ApiOperation(value = "采购入库")
     @PostMapping("/purchase/save")
     public ResponseResult save(@RequestBody PurchaseMo mo,
@@ -80,15 +85,25 @@ public class PurchaseApi {
     }
 
 
+    @ApiOperation(value = "查看审核权利")
+    @PostMapping("/purchase/permission")
+    public ResponseResult getPermission(@AccessToken AccessInfo info){
+
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("hasPermission",
+                permissionManager.hasPermission(info.getUser().getId().toString(),"rksh")));
+    }
+
+
 
     @ApiOperation(value = "入库审核列表")
-    @GetMapping("/purchase/audit/list")
+    @PostMapping("/purchase/audit/list")
     public ResponseResult<PurchaseDto> auditList(@ApiParam("采购单号") @RequestParam(value = "purchaseNo",required = false) String purchaseNo,
-                                    @ApiParam("审核状态 0:未审核,1:已审核") @RequestParam(value = "status",required = false) Integer status,
+                                    @ApiParam("审核状态 0未审核, 1：待审核, 2已审核 , 3:已驳回") @RequestParam(value = "status",required = false) Integer status,
                                     @ApiParam("供应商") @RequestParam(value = "supplierId",required = false) Integer supplierId,
                                     @ApiParam("采购开始时间") @RequestParam(value = "startTime",required = false) String startTime,
                                     @ApiParam("采购结束时间") @RequestParam(value = "endTime",required = false) String endTime,
                                     @AccessToken AccessInfo info){
+
         List<PurchaseDto> list = purchaseManager.getAuditList(purchaseNo,status,supplierId,startTime,endTime,info.getUser());
         return ResponseUtil.setSuccessResult(list);
     }
