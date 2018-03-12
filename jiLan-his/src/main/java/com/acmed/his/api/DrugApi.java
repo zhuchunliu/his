@@ -96,6 +96,7 @@ public class DrugApi {
                 vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+
                         (0==drug.getDoseNum()*10%1? String.valueOf((int)Math.floor(drug.getDoseNum())):String.valueOf(drug.getDoseNum()))+dicItemName.get(drug.getDoseUnit().toString()));
             }
+            vo.setNeedSupplement(null == drug.getConversion()?1:0);
             voList.add(vo);
         });
 

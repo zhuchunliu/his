@@ -71,4 +71,7 @@ public class DrugListVo {
 
     @ApiModelProperty("是否有效 0:无；1：有")
     private Integer isValid;
+
+    @ApiModelProperty("是否需要补充完善 0:不需要，1：需要")
+    private Integer needSupplement;
 }
