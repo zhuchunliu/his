@@ -68,7 +68,7 @@ public class LoginController {
             e.printStackTrace();
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
         }
-        if(null == openIdAndAccessToken){
+        if(null == openIdAndAccessToken.getOpenId() || null == openIdAndAccessToken.getAccessToken()){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
         }
         RequestToken requestToken =  loginManager.getTokenByOpenid(openIdAndAccessToken);

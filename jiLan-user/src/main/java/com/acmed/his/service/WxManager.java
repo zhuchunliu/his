@@ -49,9 +49,11 @@ public class WxManager {
                 environment.getProperty("weixin.appid"),environment.getProperty("weixin.secret"),code);
         String info = new RestTemplate().getForObject(url, String.class);
         JSONObject json = JSONObject.parseObject(info);
-        logger.info("微信获取openid: "+json.toJSONString());
         String access_token = json.getString("access_token");
         String openid = json.getString("openid");
+        if (StringUtils.isEmpty(access_token) || StringUtils.isEmpty(openid)){
+            logger.error("微信获取openid异常: "+json.toJSONString());
+        }
         OpenIdAndAccessToken openIdAndAccessToken = new OpenIdAndAccessToken();
         openIdAndAccessToken.setOpenId(openid);
         openIdAndAccessToken.setAccessToken(access_token);
