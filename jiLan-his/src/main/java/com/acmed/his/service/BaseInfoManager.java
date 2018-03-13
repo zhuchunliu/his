@@ -132,7 +132,7 @@ public class BaseInfoManager {
         if (select.size() == 0){
             dicItem.setRemoved("0");
             dicItem.setDicItemCode(commonManager.getNextVal(dicItem.getDicTypeCode()));
-            return dicItemMapper.insert(dicItem);
+            return dicItemMapper.insertSelective(dicItem);
         }else {
             // 如果字典存在 就改成未删除
             DicItem dicItem1 = select.get(0);
@@ -151,11 +151,24 @@ public class BaseInfoManager {
             dicItem.setDicTypeCode(null);
             return dicItemMapper.updateByPrimaryKeySelective(dicItem);
         }else {
-            dicItem.setDicItemName(null);
-            dicItem.setDicItemCode(null);
-            dicItem.setDicTypeCode(null);
+            DicItem dicItem1 = select.get(0);
+            dicItem1.setDicItemName(null);
+            dicItem1.setDicItemCode(null);
+            dicItem1.setDicTypeCode(null);
+            if (StringUtils.equals("1",dicItem1.getRemoved())){
+                dicItem.setRemoved("0");
+            }
             if (StringUtils.isEmpty(dicItem.getStartTime()) && StringUtils.isEmpty(dicItem.getEndTime()) && StringUtils.isEmpty(dicItem.getRemoved())){
                 return 0;
+            }
+            if (StringUtils.isNotEmpty(dicItem.getStartTime())){
+                dicItem1.setStartTime(dicItem.getStartTime());
+            }
+            if (StringUtils.isNotEmpty(dicItem.getEndTime())){
+                dicItem1.setEndTime(dicItem.getEndTime());
+            }
+            if (StringUtils.isNotEmpty(dicItem.getRemoved())){
+                dicItem1.setRemoved(dicItem.getRemoved());
             }
             return dicItemMapper.updateByPrimaryKeySelective(dicItem);
         }

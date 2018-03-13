@@ -72,7 +72,6 @@ public class DicItemApi {
         DicItem dicItem = baseInfoManager.getDicItem(dicItemUpMo.getDicTypeCode(), dicItemUpMo.getDicItemCode());
         if (dicItem != null){
             dicItem.setDicItemCode(null);
-            dicItem.setDicTypeCode(null);
             dicItem.setRemoved(null);
             dicItem.setDicItemName(dicItemUpMo.getDicItemName());
             dicItem.setStartTime(dicItemUpMo.getStartTime());
