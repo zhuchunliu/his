@@ -10,26 +10,65 @@
         LEFT JOIN t_p_s_user t2 on t1.userid = t2.id
         LEFT JOIN t_p_s_user t3 on t1.audituserid = t3.id
         LEFT JOIN t_b_supply t4 on t1.supplierid = t4.id
-        where t1.orgcode = #{orgCode}
+        where t1.orgcode = #{userInfo.orgCode}
         and t1.removed = '0'
-        <if test="@Ognl@isNotEmpty(purchaseNo) ">
-            and t1.purchaseno like concat('%', #{purchaseNo} , '%')
+        <if test="@Ognl@isNotEmpty(mo.purchaseNo) ">
+            and t1.purchaseno like concat('%', #{mo.purchaseNo} , '%')
         </if>
-        <if test="@Ognl@isNotEmpty(status) ">
-            and t1.status = #{status}
+        <if test="@Ognl@isNotEmpty(mo.status) ">
+            and t1.status = #{mo.status}
         </if>
-        <if test="@Ognl@isNotEmpty(supplierId) ">
-            and t1.supplierid = #{supplierId}
+        <if test="@Ognl@isNotEmpty(mo.supplierId) ">
+            and t1.supplierid = #{mo.supplierId}
         </if>
-        <if test="@Ognl@isNotEmpty(startTime) ">
+        <if test="@Ognl@isNotEmpty(mo.startTime) ">
             <![CDATA[
-              and t1.date >= #{startTime}
+              and t1.date >= #{mo.startTime}
             ]]>
         </if>
-        <if test="@Ognl@isNotEmpty(endTime) ">
+        <if test="@Ognl@isNotEmpty(mo.endTime) ">
             <![CDATA[
-              and t1.date <= #{endTime}
+              and t1.date <= #{mo.endTime}
             ]]>
+        </if>
+        <if test="!hasPermission">
+            and t1.userid = #{userInfo.id}
+        </if>
+        <if test="hasPermission">
+            and (t1.userid = #{userInfo.id} or t1.status = 1)
+        </if>
+        order by field(t1.status ,0,1,3,2) , t1.modifyat DESC
+    </select>
+
+    <select id="getAuditTotal" resultType="java.lang.Integer">
+        select count(1)
+        from t_b_purchase t1
+        where t1.orgcode = #{userInfo.orgCode}
+        and t1.removed = '0'
+        <if test="@Ognl@isNotEmpty(mo.purchaseNo) ">
+            and t1.purchaseno like concat('%', #{mo.purchaseNo} , '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(mo.status) ">
+            and t1.status = #{mo.status}
+        </if>
+        <if test="@Ognl@isNotEmpty(mo.supplierId) ">
+            and t1.supplierid = #{mo.supplierId}
+        </if>
+        <if test="@Ognl@isNotEmpty(mo.startTime) ">
+            <![CDATA[
+              and t1.date >= #{mo.startTime}
+            ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(mo.endTime) ">
+            <![CDATA[
+              and t1.date <= #{mo.endTime}
+            ]]>
+        </if>
+        <if test="!hasPermission">
+            and t1.userid = #{userInfo.id}
+        </if>
+        <if test="hasPermission">
+            and (t1.userid = #{userInfo.id} or t1.status = 1)
         </if>
     </select>
 

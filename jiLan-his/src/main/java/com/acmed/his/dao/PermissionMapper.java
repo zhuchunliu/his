@@ -17,6 +17,8 @@ public interface PermissionMapper extends TkMapper<Permission> {
 
     Integer hasPermission(@Param("uid") String uid, @Param("path") String path);
 
+    Integer hasMenu(@Param("uid") String uid, @Param("perCode") String perCode);
+
     List<Permission> getBasePermission();
 
     List<Permission> getPermissionByPid(@Param("pid") Integer pid);

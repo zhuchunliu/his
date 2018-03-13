@@ -11,6 +11,7 @@ import com.acmed.his.model.PurchaseItem;
 import com.acmed.his.model.dto.PurchaseDto;
 import com.acmed.his.model.dto.PurchaseStockDto;
 import com.acmed.his.pojo.mo.PurchaseMo;
+import com.acmed.his.pojo.mo.PurchaseQueryMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.UUIDUtil;
 import com.github.pagehelper.PageHelper;
@@ -43,6 +44,9 @@ public class PurchaseManager {
 
     @Autowired
     private DrugStockMapper drugStockMapper;
+
+    @Autowired
+    private PermissionManager permissionManager;
 
     /**
      * 采购入库
@@ -112,7 +116,7 @@ public class PurchaseManager {
     @Transactional
     public void audit(String purchaseId,UserInfo info){
         Purchase purchase = purchaseMapper.selectByPrimaryKey(purchaseId);
-        purchase.setStatus(1);
+        purchase.setStatus(2);
         purchase.setModifyAt(LocalDateTime.now().toString());
         purchase.setModifyBy(info.getId().toString());
         purchaseMapper.updateByPrimaryKey(purchase);
@@ -188,7 +192,7 @@ public class PurchaseManager {
     @Transactional
     public void reject(String purchaseId,UserInfo info){
         Purchase purchase = purchaseMapper.selectByPrimaryKey(purchaseId);
-        purchase.setStatus(1);
+        purchase.setStatus(3);
         purchase.setModifyAt(LocalDateTime.now().toString());
         purchase.setModifyBy(info.getId().toString());
         purchaseMapper.updateByPrimaryKey(purchase);
@@ -196,18 +200,30 @@ public class PurchaseManager {
         this.updateStock(purchaseId,info);
     }
 
+    @Transactional
+    public void submit(String purchaseId,UserInfo info){
+        Purchase purchase = purchaseMapper.selectByPrimaryKey(purchaseId);
+        purchase.setStatus(1);
+        purchase.setModifyAt(LocalDateTime.now().toString());
+        purchase.setModifyBy(info.getId().toString());
+        purchaseMapper.updateByPrimaryKey(purchase);
+        this.updateStock(purchaseId,info);
+    }
+
     /**
      * 获取审核列表
-     * @param purchaseNo
-     * @param status
-     * @param supplierId
-     * @param startTime
-     * @param endTime
      * @param user
      * @return
      */
-    public List<PurchaseDto> getAuditList(String purchaseNo, Integer status, Integer supplierId, String startTime, String endTime, UserInfo user) {
-        return purchaseMapper.getAuditList(user.getOrgCode(),purchaseNo,status,supplierId,startTime,endTime);
+    public List<PurchaseDto> getAuditList(PurchaseQueryMo mo, UserInfo user,Integer pageNum, Integer pageSize) {
+        Boolean hasPermission = permissionManager.hasMenu(user.getId().toString(),"rksh");
+        PageHelper.startPage(pageNum,pageSize);
+        return purchaseMapper.getAuditList(user,mo,hasPermission);
+    }
+
+    public Integer getAuditTotal(PurchaseQueryMo mo, UserInfo user) {
+        Boolean hasPermission = permissionManager.hasMenu(user.getId().toString(),"rksh");
+        return purchaseMapper.getAuditTotal(user,mo,hasPermission);
     }
 
     /**

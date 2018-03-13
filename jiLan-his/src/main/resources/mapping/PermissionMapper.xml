@@ -22,10 +22,19 @@
             join t_p_s_role_vs_permission rp on role.id = rp.rid
             join t_p_s_permission per on rp.pid = per.id
             where ur.uid = #{uid} and role.removed = '0' and role.isvalid = '1'
-        ) and  (url = #{path} or perCode = #{path});
-
+        ) and  url = #{path}
 
     </select>
+
+    <select id="hasMenu" resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM t_p_s_user_vs_role ur
+		JOIN t_p_s_role role ON ur.rid = role.id
+		JOIN t_p_s_role_vs_permission rp ON role.id = rp.rid
+		JOIN t_p_s_permission per ON rp.pid = per.id
+		WHERE ur.uid = #{uid} AND role.removed = '0' AND role.isvalid = '1'
+		AND perCode = #{perCode}
+</select>
 
     <select id="getBasePermission" resultType="com.acmed.his.model.Permission">
       select * from t_p_s_permission where pid is null AND hideflag = 0 order by sn asc
