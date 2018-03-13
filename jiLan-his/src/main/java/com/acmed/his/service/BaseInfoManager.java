@@ -154,6 +154,9 @@ public class BaseInfoManager {
             dicItem.setDicItemName(null);
             dicItem.setDicItemCode(null);
             dicItem.setDicTypeCode(null);
+            if (StringUtils.isEmpty(dicItem.getStartTime()) && StringUtils.isEmpty(dicItem.getEndTime()) && StringUtils.isEmpty(dicItem.getRemoved())){
+                return 0;
+            }
             return dicItemMapper.updateByPrimaryKeySelective(dicItem);
         }
     }

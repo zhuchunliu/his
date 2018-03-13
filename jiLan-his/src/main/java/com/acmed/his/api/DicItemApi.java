@@ -1,5 +1,6 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.pojo.mo.DicItemMo;
 import com.acmed.his.pojo.mo.DicItemRemoveMo;
@@ -76,8 +77,16 @@ public class DicItemApi {
             dicItem.setDicItemName(dicItemUpMo.getDicItemName());
             dicItem.setStartTime(dicItemUpMo.getStartTime());
             dicItem.setEndTime(dicItemUpMo.getEndTime());
-            baseInfoManager.updateDicItem(dicItem);
+            int i = baseInfoManager.updateDicItem(dicItem);
+            if (i==0){
+                return ResponseUtil.setErrorMeg(StatusCode.FAIL,"已存在相同的字典名");
+            }else {
+                return ResponseUtil.setSuccessResult();
+            }
+        }else {
+            // 不存在
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"参数错误");
         }
-        return ResponseUtil.setSuccessResult();
+
     }
 }
