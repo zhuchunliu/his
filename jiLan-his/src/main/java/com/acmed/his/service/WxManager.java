@@ -1,5 +1,8 @@
 package com.acmed.his.service;
 
+import com.acmed.his.constants.RedisKeyConstants;
+import com.acmed.his.constants.StatusCode;
+import com.acmed.his.pojo.vo.WxConfig;
 import com.acmed.his.util.*;
 import com.alibaba.fastjson.JSONObject;
 import com.soecode.wxtools.api.IService;
@@ -7,16 +10,20 @@ import com.soecode.wxtools.api.WxService;
 import com.soecode.wxtools.bean.WxJsapiConfig;
 import com.soecode.wxtools.bean.result.WxOAuth2AccessTokenResult;
 import com.soecode.wxtools.exception.WxErrorException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.security.DigestException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * WxManager
@@ -36,30 +43,10 @@ public class WxManager {
     @Autowired
     private Environment environment;
 
-    /**
-     * 获取jssdk
-     * @param url 参数
-     * @return ResponseResult
-     */
-    public ResponseResult getJsSDk(String url){
-        List<String> jsApiList = new ArrayList<>();
-        //需要用到哪些JS SDK API 就设置哪些
-        jsApiList.add("onMenuShareTimeline");
-        jsApiList.add("onMenuShareAppMessage");
-        jsApiList.add("onMenuShareQQ");
-        jsApiList.add("onMenuShareWeibo");
-        jsApiList.add("onMenuShareQZone");
-        jsApiList.add("closeWindow");
-        jsApiList.add("scanQRCode");
-        try {
-            //把config返回到前端进行js调用即可。
-            WxJsapiConfig config = wxService.createJsapiConfig(url, jsApiList);
-            return ResponseUtil.setSuccessResult();
-        } catch (WxErrorException e) {
-            logger.error(e.toString()+"获取jssdk失败");
-            return ResponseUtil.setSuccessResult();
-        }
-    }
+    @Autowired
+    @Qualifier(value="stringRedisTemplate")
+    private RedisTemplate redisTemplate;
+
 
     /**
      * 获取opendid
@@ -74,19 +61,100 @@ public class WxManager {
 
 
     /**
-     * 获取opendid
-     * @param code code
-     * @return openid
-     * @throws WxErrorException 异常
+     * 获取基础token
+     * @return
      */
-    public String getOpenid(String code) throws Exception{
-        String url =  String.format("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code",
-                environment.getProperty("weixin.appid"),environment.getProperty("weixin.secret"),code);
+    public String getBaseAccessToken(){
+        String code = Optional.ofNullable(redisTemplate.opsForValue().get(RedisKeyConstants.WX_BASE_ACCESS_TOKEN)).map(obj->obj.toString()).
+                orElse(null);
+        if (StringUtils.isNotEmpty(code)){
+            return code;
+        }
+        String url =  String.format("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s",
+                environment.getProperty("weixin.appid"),environment.getProperty("weixin.secret"));
         String info = new RestTemplate().getForObject(url, String.class);
         JSONObject json = JSONObject.parseObject(info);
-
-        return json.getString("openid");
+        String accessToken = json.getString("access_token");
+        redisTemplate.opsForValue().set(RedisKeyConstants.WX_BASE_ACCESS_TOKEN,accessToken);
+        redisTemplate.expire(RedisKeyConstants.WX_BASE_ACCESS_TOKEN,100, TimeUnit.MINUTES);
+        return accessToken;
     }
+
+
+    public String getJsapiTicket(){
+        String jsapiTicket = Optional.ofNullable(redisTemplate.opsForValue().get("jsapi_ticket")).map(obj->obj.toString()).
+                orElse(null);
+        if (StringUtils.isNotEmpty(jsapiTicket)){
+            return jsapiTicket;
+        }
+        String url =  String.format("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi",
+                this.getBaseAccessToken());
+        String info = new RestTemplate().getForObject(url, String.class);
+        JSONObject json = JSONObject.parseObject(info);
+        String ticket = json.getString("ticket");
+        redisTemplate.opsForValue().set("jsapi_ticket",ticket);
+        redisTemplate.expire("jsapi_ticket",100, TimeUnit.MINUTES);
+        return ticket;
+    }
+
+
+    public WxConfig getJssdk(String url){
+        String noncestr = UUIDUtil.generate32();
+        String jsapi_ticket = this.getJsapiTicket();
+        String timestamp = System.currentTimeMillis()+"";
+        String[] arr = {"noncestr=" + noncestr, "jsapi_ticket=" + jsapi_ticket, "timestamp=" + timestamp, "url=" + url};
+        Arrays.sort(arr);
+        StringBuffer sb = new StringBuffer();
+
+        for(int i = 0; i < arr.length; ++i) {
+            String a = arr[i];
+            sb.append(a + "&");
+        }
+        String string1 = sb.toString().substring(0, sb.length() - 1);
+
+        String signature = null;
+
+        try {
+            //指定sha1算法
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            digest.update(string1.getBytes());
+            //获取字节数组
+            byte messageDigest[] = digest.digest();
+            // Create Hex String
+            StringBuffer hexString = new StringBuffer();
+            // 字节数组转换为 十六进制 数
+            for (int i = 0; i < messageDigest.length; i++) {
+                String shaHex = Integer.toHexString(messageDigest[i] & 0xFF);
+                if (shaHex.length() < 2) {
+                    hexString.append(0);
+                }
+                hexString.append(shaHex);
+            }
+            signature = hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            throw new RuntimeException("签名错误！");
+        }
+
+
+        WxConfig wxConfig = new WxConfig();
+        wxConfig.setNonceStr(noncestr);
+        wxConfig.setSignature(signature);
+        wxConfig.setTimestamp(timestamp);
+        wxConfig.setAppId(environment.getProperty("weixin.appid"));
+        return wxConfig;
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 /*    字段名	变量名	必填	类型	示例值	描述
