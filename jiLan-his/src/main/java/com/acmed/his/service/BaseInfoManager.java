@@ -134,7 +134,10 @@ public class BaseInfoManager {
             dicItem.setDicItemCode(commonManager.getNextVal(dicItem.getDicTypeCode()));
             return dicItemMapper.insert(dicItem);
         }else {
-            return 0;
+            // 如果字典存在 就改成未删除
+            DicItem dicItem1 = select.get(0);
+            dicItem1.setRemoved("0");
+            return dicItemMapper.updateByPrimaryKeySelective(dicItem1);
         }
     }
 
