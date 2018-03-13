@@ -1,6 +1,8 @@
 package com.acmed.his.service;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.SupplyMapper;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Supply;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
@@ -30,6 +32,12 @@ public class SupplyManager {
         Integer id = supply.getId();
         supply.setPinYin(PinYinUtil.getPinYinHeadChar(supply.getSupplyerName()));
         if (id==null){
+            Supply param = new Supply();
+            param.setSupplyerName(supply.getSupplyerName());
+            List<Supply> select = supplyMapper.select(param);
+            if (select.size()!=0){
+                throw new BaseException(StatusCode.FAIL,supply.getSupplyerName()+"已经存在，请勿重复添加");
+            }
             return supplyMapper.insert(supply);
         }else {
             return supplyMapper.updateByPrimaryKeySelective(supply);
