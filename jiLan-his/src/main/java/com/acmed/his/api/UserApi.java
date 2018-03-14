@@ -155,10 +155,10 @@ public class UserApi {
         Set<MenuVo> set = new LinkedHashSet<MenuVo>();
         source.forEach(obj->{
             set.add(new MenuVo(obj));
-            if(obj.getPerCode().equals("cgrk")){
+            if(StringUtils.isNotEmpty(obj.getPerCode()) && obj.getPerCode().equals("cgrk")){
                 set.add(new MenuVo("入库审核","rksh"));
             }
-            if(obj.getPerCode().equals("kcpd")){
+            if(StringUtils.isNotEmpty(obj.getPerCode()) && obj.getPerCode().equals("kcpd")){
                 set.add(new MenuVo("盘点审核","pdsh"));
             }
         });

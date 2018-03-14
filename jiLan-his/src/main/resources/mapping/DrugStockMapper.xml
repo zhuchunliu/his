@@ -9,4 +9,93 @@
         order by expiryDate ASC
     </select>
 
+    <select id = "isNeedWarn" resultType="java.lang.Integer">
+        <![CDATA[
+            select count(1) from (
+                select id from t_b_drug where
+                (safetynum is not null  or num < safetynum) and orgcode = #{orgCode}
+                UNION ALL
+                SELECT id from t_b_drug where id IN
+                  (select drugid from t_b_drug_stock where expirydate is not null and expirydate < #{expiryDate})
+                  and orgcode = #{orgCode}
+            )t1
+        ]]>
+    </select>
+
+    <select id = "getWarnList" resultType="com.acmed.his.model.dto.DrugWarnDto">
+            select *  from (
+                <![CDATA[
+                select drug.id,drug.name, drug.pinyin ,drug.goodsname,drug.goodspinyin, drug.manufacturer , drug.spec,
+                drug.num ,drug.minnum,drug.dosenum,drug.unit,drug.minunit,drug.doseunit,drug.safetynum,
+                1 as warntype,0 as expirenum ,0 as expireminnum ,0  as expiredosenum from t_b_drug drug where
+                (drug.safetynum is not null  or drug.num < drug.safetynum)  and drug.orgcode = #{orgCode}
+                ]]>
+                <if test="@Ognl@isNotEmpty(name) ">
+                    and (
+                    drug.name like concat('%', #{name} , '%') OR
+                    drug.pinYin like concat('%', #{name} , '%') OR
+                    drug.goodsName like concat('%', #{name} , '%') OR
+                    drug.goodsPinYin like concat('%', #{name} , '%')
+                    )
+                 </if>
+
+                UNION ALL
+
+                <![CDATA[
+                SELECT drug.id,drug.name, drug.pinyin ,drug.goodsname,drug.goodspinyin,drug.manufacturer , drug.spec,
+                drug.num ,drug.minnum,drug.dosenum,drug.unit,drug.minunit,drug.doseunit,drug.safetynum,
+                2 as warntype,sum(stock.num) as expirenum , sum(stock.minnum) as expireminnum , sum(stock.dosenum) as expiredosenum
+                from t_b_drug drug
+                JOIN (select * from t_b_drug_stock where expirydate is not null and expirydate < #{expiryDate})stock
+                on drug.id = stock.drugid
+                WHERE  drug.orgcode = #{orgCode}
+                ]]>
+                <if test="@Ognl@isNotEmpty(name) ">
+                    and (
+                    drug.name like concat('%', #{name} , '%') OR
+                    drug.pinYin like concat('%', #{name} , '%') OR
+                    drug.goodsName like concat('%', #{name} , '%') OR
+                    drug.goodsPinYin like concat('%', #{name} , '%')
+                    )
+                </if>
+                GROUP BY drug.id
+            )t1 order by t1.pinyin asc
+
+    </select>
+
+
+    <select id = "getWarnTotal" resultType="java.lang.Integer">
+
+            select count(1) from (
+                <![CDATA[
+                select id from t_b_drug drug where
+                (safetynum is not null  or num < safetynum) and orgcode = #{orgCode}
+                ]]>
+                <if test="@Ognl@isNotEmpty(name) ">
+                    and (
+                    drug.name like concat('%', #{name} , '%') OR
+                    drug.pinYin like concat('%', #{name} , '%') OR
+                    drug.goodsName like concat('%', #{name} , '%') OR
+                    drug.goodsPinYin like concat('%', #{name} , '%')
+                    )
+                </if>
+                UNION ALL
+
+                <![CDATA[
+                SELECT id from t_b_drug drug where id IN
+                  (select drugid from t_b_drug_stock where expirydate is not null and expirydate < #{expiryDate})
+                  and orgcode = #{orgCode}
+                ]]>
+                <if test="@Ognl@isNotEmpty(name) ">
+                    and (
+                    drug.name like concat('%', #{name} , '%') OR
+                    drug.pinYin like concat('%', #{name} , '%') OR
+                    drug.goodsName like concat('%', #{name} , '%') OR
+                    drug.goodsPinYin like concat('%', #{name} , '%')
+                    )
+                </if>
+            )t1
+
+    </select>
+
 </mapper>

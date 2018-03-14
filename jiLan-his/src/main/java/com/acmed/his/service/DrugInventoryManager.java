@@ -227,6 +227,13 @@ public class DrugInventoryManager {
             DrugInventoryVo.DrugInventoryItemVo itemVo = new DrugInventoryVo.DrugInventoryItemVo();
             BeanUtils.copyProperties(item,itemVo);
 
+            DrugStock stock = drugStockMapper.selectByPrimaryKey(item.getStockId());
+            itemVo.setActualNum(stock.getNum());
+            itemVo.setActualMinNum(stock.getMinNum());
+            itemVo.setActualDoseNum(stock.getDoseNum());
+            itemVo.setBatchNumber(stock.getBatchNumber());
+            itemVo.setExpiryDate(stock.getExpiryDate());
+
             if(map.containsKey(item.getDrugId())){
                 map.get(item.getDrugId()).add(itemVo);
             }else{
@@ -282,6 +289,10 @@ public class DrugInventoryManager {
             for(DrugStock stock:drugStockMapper.getByDrugId(drugId)){
                 DrugStockInventoryVo.DrugStockInventoryItemVo itemVo = new DrugStockInventoryVo.DrugStockInventoryItemVo();
                 BeanUtils.copyProperties(stock,itemVo);
+                itemVo.setActualNum(stock.getNum());
+                itemVo.setActualMinNum(stock.getMinNum());
+                itemVo.setActualDoseNum(stock.getDoseNum());
+                itemVo.setStockId(stock.getId());
                 itemList.add(itemVo);
             }
             vo.setDetailList(itemList);
