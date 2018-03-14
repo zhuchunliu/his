@@ -37,11 +37,11 @@
 </select>
 
     <select id="getBasePermission" resultType="com.acmed.his.model.Permission">
-      select * from t_p_s_permission where pid is null AND hideflag = 0 order by sn asc
+      select * from t_p_s_permission where pid is null order by sn asc
     </select>
 
     <select id="getPermissionByPid" resultType="com.acmed.his.model.Permission">
-        select * from t_p_s_permission where pid = #{pid} order by sn asc
+        select * from t_p_s_permission where pid = #{pid} AND hideflag = 0 order by sn asc
     </select>
 
     <select id="getNeedFilterPermissionList" resultType="com.acmed.his.model.Permission">

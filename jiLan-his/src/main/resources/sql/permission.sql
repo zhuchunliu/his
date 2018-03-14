@@ -18,7 +18,9 @@ insert into t_p_s_permission(percode,pername,sn,pid) select 'ypxxwh','药品信�
 insert into t_p_s_permission(percode,pername,sn,pid) select 'gyswh','供应商维护',2, id from t_p_s_permission where percode = 'ypjxc' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'cgrk','采购入库',3, id from t_p_s_permission where percode = 'ypjxc' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'rksh','入库审核',4, id from t_p_s_permission where percode = 'ypjxc' ;
-insert into t_p_s_permission(percode,pername,sn,pid) select 'kccx','库存查询',5, id from t_p_s_permission where percode = 'ypjxc' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'kcpd','库存盘点',5, id from t_p_s_permission where percode = 'ypjxc' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'pdsh','盘点审核',6, id from t_p_s_permission where percode = 'ypjxc' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'kccx','库存查询',7, id from t_p_s_permission where percode = 'ypjxc' ;
 
 insert into t_p_s_permission(percode,pername,sn,pid) select 'zssztj','诊所收支统计',1, id from t_p_s_permission where percode = 'sjtj' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'ypxstj','药品销售统计',2, id from t_p_s_permission where percode = 'sjtj' ;
@@ -30,12 +32,12 @@ insert into t_p_s_permission(percode,pername,sn,pid) select 'ysgl','医生管理
 insert into t_p_s_permission(percode,pername,sn,pid) select 'ksgl','科室管理',2, id from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'mbwh','模板维护',3, id from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'fygl','费用管理',4, id from t_p_s_permission where percode = 'xtsz' ;
-insert into t_p_s_permission(percode,pername,sn,pid) select 'zdbwh','字典表维护',5, id from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'zdbwh','字典表维护',5, id,1 from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'zsxx','诊所信息',6, id from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'qxgl','权限管理',7, id from t_p_s_permission where percode = 'xtsz' ;
-insert into t_p_s_permission(percode,pername,sn,pid) select 'scsgl','生产商管理',8, id from t_p_s_permission where percode = 'xtsz' ;
-insert into t_p_s_permission(percode,pername,sn,pid) select 'gysgl','供应商管理',9, id from t_p_s_permission where percode = 'xtsz' ;
-insert into t_p_s_permission(percode,pername,sn,pid) select 'jggl','机构管理',10, id from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'scsgl','生产商管理',8, id,1 from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'gysgl','供应商管理',9, id,1 from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'jggl','机构管理',10, id,1 from t_p_s_permission where percode = 'xtsz' ;
 
 
 

@@ -1,9 +1,11 @@
 package com.acmed.his.service;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.DrugMapper;
 import com.acmed.his.dao.DrugStockMapper;
 import com.acmed.his.dao.PurchaseItemMapper;
 import com.acmed.his.dao.PurchaseMapper;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugStock;
 import com.acmed.his.model.Purchase;
@@ -115,13 +117,18 @@ public class PurchaseManager {
      */
     @Transactional
     public void audit(String purchaseId,UserInfo info){
-        Purchase purchase = purchaseMapper.selectByPrimaryKey(purchaseId);
-        purchase.setStatus(2);
-        purchase.setModifyAt(LocalDateTime.now().toString());
-        purchase.setModifyBy(info.getId().toString());
-        purchaseMapper.updateByPrimaryKey(purchase);
+        synchronized (purchaseId) {
+            Purchase purchase = purchaseMapper.selectByPrimaryKey(purchaseId);
+            if (purchase.getStatus() == 2) {
+                throw new BaseException(StatusCode.FAIL, "禁止重复审核");
+            }
+            purchase.setStatus(2);
+            purchase.setModifyAt(LocalDateTime.now().toString());
+            purchase.setModifyBy(info.getId().toString());
+            purchaseMapper.updateByPrimaryKey(purchase);
 
-        this.updateStock(purchaseId,info);
+            this.updateStock(purchaseId, info);
+        }
     }
 
     private void updateStock(String purchaseId,UserInfo info){
@@ -196,8 +203,6 @@ public class PurchaseManager {
         purchase.setModifyAt(LocalDateTime.now().toString());
         purchase.setModifyBy(info.getId().toString());
         purchaseMapper.updateByPrimaryKey(purchase);
-
-        this.updateStock(purchaseId,info);
     }
 
     @Transactional
@@ -207,7 +212,6 @@ public class PurchaseManager {
         purchase.setModifyAt(LocalDateTime.now().toString());
         purchase.setModifyBy(info.getId().toString());
         purchaseMapper.updateByPrimaryKey(purchase);
-        this.updateStock(purchaseId,info);
     }
 
     /**

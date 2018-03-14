@@ -4,52 +4,40 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * Created by Darren on 2018-01-03
+ * Created by Darren on 2018-03-13
  **/
 @Data
-@Table(name = "t_b_purchase")
+@Table(name = "t_b_drug_inventory")
 @NameStyle
-public class Purchase {
-
+public class DrugInventory {
     @Id
-    @ApiModelProperty("id")
+    @ApiModelProperty("库存盘点id")
     private String id;
+
+    @ApiModelProperty("盘点批号")
+    private String inventoryNo;
 
     @ApiModelProperty("所属机构")
     private Integer orgCode;
 
-    @ApiModelProperty("供应商")
-    private Integer supplierId;
-
-    @ApiModelProperty("采购编号")
-    private String purchaseNo;
-
-    @ApiModelProperty("采购员")
+    @ApiModelProperty("提交人id")
     private Integer userId;
-
-    @ApiModelProperty("采购批发总额")
-    private Double bidFee;
-
-    @ApiModelProperty("采购处方总额")
-    private Double retailFee;
 
     @ApiModelProperty("制单日期")
     private String date;
-
-    @ApiModelProperty("审核标记；0未提交, 1：待审核, 2已审核 , 3:已驳回")
-    private Integer status;
 
     @ApiModelProperty("审核人员")
     private Integer auditUserId;
 
     @ApiModelProperty("审核日期")
     private String auditDate;
+
+    @ApiModelProperty("审核标记；0未提交, 1：待审核, 2已审核 , 3:已驳回")
+    private Integer status;
 
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;
@@ -60,11 +48,9 @@ public class Purchase {
     @ApiModelProperty("修改时间")
     private String modifyAt;
 
-    @ApiModelProperty("创建人")
+    @ApiModelProperty("创建用户")
     private String createBy;
 
-    @ApiModelProperty("修改人")
+    @ApiModelProperty("修改用户")
     private String modifyBy;
-
-
 }

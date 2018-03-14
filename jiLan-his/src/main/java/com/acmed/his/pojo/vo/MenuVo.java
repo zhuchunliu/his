@@ -19,4 +19,9 @@ public class MenuVo {
         this.menuName = permission.getPerName();
         this.menuCode = permission.getPerCode();
     }
+
+    public MenuVo(String menuName,String menuCode) {
+        this.menuName = menuName;
+        this.menuCode = menuCode;
+    }
 }

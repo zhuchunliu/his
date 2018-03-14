@@ -29,7 +29,7 @@ public class PurchaseMo {
     @ApiModelProperty("制单日期")
     private String date;
 
-    @ApiModelProperty("审核标记；0未审核[直接保存], 1：待审核[保存并提交审核] , 2:已审核[直接入库用]")
+    @ApiModelProperty("审核标记；0未提交[直接保存], 1：待审核[保存并提交审核] , 2:已审核[直接入库用]")
     private Integer status;
 
     private List<PurchaseDetail> detailList;
