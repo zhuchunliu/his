@@ -9,6 +9,7 @@ import com.acmed.his.model.dto.DrugInventoryDto;
 import com.acmed.his.pojo.mo.DrugInventoryMo;
 import com.acmed.his.pojo.mo.DrugInventoryQueryMo;
 import com.acmed.his.pojo.vo.DrugInventoryVo;
+import com.acmed.his.pojo.vo.DrugStockInventoryVo;
 import com.acmed.his.pojo.vo.PurchaseVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.UUIDUtil;
@@ -53,7 +54,6 @@ public class DrugInventoryManager {
 
     @Autowired
     private ManufacturerMapper manufacturerMapper;
-
 
     public void save(DrugInventoryMo mo, UserInfo info) {
         DrugInventory drugInventory = Optional.ofNullable(mo.getId()).
@@ -253,6 +253,38 @@ public class DrugInventoryManager {
                     map(obj->obj.getName()).orElse(""));
 
             vo.setDetailList(map.get(drug.getId()));
+            list.add(vo);
+        }
+        return list;
+    }
+
+    public List<DrugStockInventoryVo> getDrugStockDetail(String drugIds) {
+        List<DrugStockInventoryVo> list = Lists.newArrayList();
+        for(String id:drugIds.split(",")){
+            Integer drugId = Integer.parseInt(id);
+
+            List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+            Map<String,String> dicItemName = Maps.newHashMap();
+            dicItemList.forEach(obj->{
+                dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+            });
+
+            Drug drug = drugMapper.selectByPrimaryKey(drugId);
+            DrugStockInventoryVo vo = new DrugStockInventoryVo();
+            BeanUtils.copyProperties(drug,vo);
+            vo.setUnitName(null == drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
+            vo.setMinUnitName(null==drug.getMinUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit().toString()).getDicItemName());
+            vo.setDoseUnitName(null==drug.getDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
+            vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
+                    map(obj->obj.getName()).orElse(""));
+
+            List<DrugStockInventoryVo.DrugStockInventoryItemVo> itemList = Lists.newArrayList();
+            for(DrugStock stock:drugStockMapper.getByDrugId(drugId)){
+                DrugStockInventoryVo.DrugStockInventoryItemVo itemVo = new DrugStockInventoryVo.DrugStockInventoryItemVo();
+                BeanUtils.copyProperties(stock,itemVo);
+                itemList.add(itemVo);
+            }
+            vo.setDetailList(itemList);
             list.add(vo);
         }
         return list;

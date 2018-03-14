@@ -43,8 +43,7 @@ public class DrugInventoryApi {
     @Autowired
     private PermissionManager permissionManager;
 
-    @Autowired
-    private DrugStockMapper drugStockMapper;
+
 
     @ApiOperation(value = "保存盘库")
     @PostMapping("/save")
@@ -121,20 +120,9 @@ public class DrugInventoryApi {
 
     @ApiOperation(value = "根据药品id查询具体的库存信息")
     @GetMapping("/drug/stock/list")
-    public ResponseResult<List<DrugStockInventoryVo>> getDrugStockDetal(@ApiParam("盘库主键") @RequestParam(value = "drugId") Integer drugId){
+    public ResponseResult<List<DrugStockInventoryVo>> getDrugStockDetail(@ApiParam("盘库主键集合，逗号间隔") @RequestParam(value = "drugIds") String drugIds){
 
-        Example example = new Example(DrugStock.class);
-        example.createCriteria().andEqualTo("drugId",drugId).andEqualTo("removed","0");
-        List<DrugStock> drugStockList = drugStockMapper.selectByExample(example);
-
-        List<DrugStockInventoryVo> list = Lists.newArrayList();
-        drugStockList.forEach(item->{
-            DrugStockInventoryVo vo = new DrugStockInventoryVo();
-            BeanUtils.copyProperties(item,vo);
-            vo.setStockId(item.getId());
-            list.add(vo);
-        });
-        return ResponseUtil.setSuccessResult(list);
+        return ResponseUtil.setSuccessResult(drugInventoryManager.getDrugStockDetail(drugIds));
     }
 
 
