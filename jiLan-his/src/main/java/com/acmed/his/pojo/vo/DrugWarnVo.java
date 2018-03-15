@@ -33,6 +33,6 @@ public class DrugWarnVo {
     @ApiModelProperty("安全库存数量名称")
     private String safetyNumName;
 
-    @ApiModelProperty("预警类型 1：库存不足，2：过期提醒")
+    @ApiModelProperty("预警类型 1：库存不足，2：过期提醒 , 3:库存不足+过期提醒")
     private Integer warnType;
 }

@@ -108,12 +108,9 @@ public class DrugInventoryApi {
 
     @ApiOperation(value = "删除入库信息")
     @DeleteMapping("/del")
-    public ResponseResult deleteInfo(@ApiParam("{\"id\":\"\"}") @RequestBody String param,
+    public ResponseResult deleteInfo(@ApiParam("盘库主键") @RequestParam(value = "id") String id,
                                                   @AccessToken AccessInfo info){
-        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
-        }
-        drugInventoryManager.deleteInfo(JSONObject.parseObject(param).get("id").toString(),info.getUser());
+        drugInventoryManager.deleteInfo(id,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
