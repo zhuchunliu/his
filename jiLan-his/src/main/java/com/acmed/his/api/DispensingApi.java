@@ -263,15 +263,15 @@ public class DispensingApi {
         Prescription prescription = preMapper.getPreByApply(applyId).get(0);
 
         Example example = new Example(PrescriptionItem.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId);
         List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
 
         example = new Example(Inspect.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId);
         List<Inspect> inspectList = inspectMapper.selectByExample(example);
 
         example = new Example(Charge.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId);
         List<Charge> chargeList = chargeMapper.selectByExample(example);
 
         Map<String,List<PrescriptionItemStock>> map = Maps.newHashMap();
