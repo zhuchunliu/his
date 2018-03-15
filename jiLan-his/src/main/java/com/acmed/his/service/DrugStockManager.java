@@ -3,6 +3,7 @@ package com.acmed.his.service;
 import com.acmed.his.dao.DrugMapper;
 import com.acmed.his.dao.DrugStockMapper;
 import com.acmed.his.model.Drug;
+import com.acmed.his.model.DrugStock;
 import com.acmed.his.model.dto.DrugWarnDto;
 import com.acmed.his.pojo.mo.DrugStockPrice;
 import com.acmed.his.pojo.vo.DrugStockVo;
@@ -76,5 +77,9 @@ public class DrugStockManager {
 
     public Integer getWarnTotal(String name, UserInfo user) {
         return drugStockMapper.getWarnTotal(name,user.getOrgCode(),LocalDate.now().plusMonths(3).toString()+" 23:59:59");
+    }
+
+    public List<DrugStock> getWarnDrug(Integer drugId, Integer type) {
+        return drugStockMapper.getWarnDrug(drugId,type,LocalDate.now().plusMonths(3).toString()+" 23:59:59");
     }
 }

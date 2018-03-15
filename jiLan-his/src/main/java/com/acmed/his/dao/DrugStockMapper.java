@@ -20,4 +20,7 @@ public interface DrugStockMapper extends TkMapper<DrugStock>{
 
     Integer getWarnTotal(@Param("name") String name, @Param("orgCode") Integer orgCode,
                                   @Param("expiryDate") String expiryDate);
+
+    List<DrugStock> getWarnDrug(@Param("drugId") Integer drugId, @Param("type") Integer type,
+                                @Param("expiryDate") String expiryDate);
 }

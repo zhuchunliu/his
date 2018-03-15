@@ -98,4 +98,15 @@
 
     </select>
 
+
+    <select id = "getWarnDrug" resultType="com.acmed.his.model.DrugStock">
+        select * from t_b_drug_stock where drugid = #{drugId}
+        and (num != 0 or minnum !=0 or dosenum !=0)
+        <if test="type==1">
+            <![CDATA[
+              and expirydate < #{expiryDate}
+            ]]>
+        </if>
+    </select>
+
 </mapper>

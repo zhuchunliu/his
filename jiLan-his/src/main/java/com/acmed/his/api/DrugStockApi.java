@@ -1,12 +1,16 @@
 package com.acmed.his.api;
 
 import com.acmed.his.consts.DicTypeEnum;
+import com.acmed.his.dao.DrugMapper;
+import com.acmed.his.dao.DrugStockMapper;
 import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.Drug;
+import com.acmed.his.model.DrugStock;
 import com.acmed.his.model.dto.DrugWarnDto;
 import com.acmed.his.pojo.mo.DrugStockPrice;
 import com.acmed.his.pojo.vo.DrugStockVo;
+import com.acmed.his.pojo.vo.DrugStockWarnVo;
 import com.acmed.his.pojo.vo.DrugWarnVo;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.DrugStockManager;
@@ -21,6 +25,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +45,9 @@ public class DrugStockApi {
 
     @Autowired
     private DrugStockManager drugStockManager;
+
+    @Autowired
+    private DrugMapper drugMapper;
 
     @Autowired
     private BaseInfoManager baseInfoManager;
@@ -174,9 +183,48 @@ public class DrugStockApi {
         return ResponseUtil.setSuccessResult(result);
     }
 
+
+    @ApiOperation(value = "过期药详情")
+    @GetMapping("/warn/drug")
+    public ResponseResult<DrugStockWarnVo> warnList(@ApiParam("药品id") @RequestParam("drugId") Integer drugId,
+                                                    @ApiParam("是否过滤过期药 1：是，0：否 默认为1") @RequestParam(value = "type",defaultValue = "1") Integer type){
+        List<DrugStock> drugStockList = drugStockManager.getWarnDrug(drugId,type);
+        Drug drug = drugMapper.selectByPrimaryKey(drugId);
+
+        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+        Map<String,String> dicItemName = Maps.newHashMap();
+        dicItemList.forEach(obj->{
+            dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+        });
+
+        List<DrugStockWarnVo> list = Lists.newArrayList();
+        drugStockList.forEach(stock -> {
+            DrugStockWarnVo vo = new DrugStockWarnVo();
+            BeanUtils.copyProperties(stock,vo);
+            if(null != stock.getNum() && 0 != stock.getNum()){
+                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+stock.getNum()+
+                        (null == drug.getUnit()?"":dicItemName.get(drug.getUnit().toString())));
+            }
+            if(null != stock.getMinNum() && 0 != stock.getMinNum()){
+                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+stock.getMinNum()+
+                        (null == drug.getMinUnit()?"":dicItemName.get(drug.getMinUnit().toString())));
+            }
+            if(null != stock.getDoseNum() && 0 != stock.getDoseNum()){
+                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+
+                        (0==stock.getDoseNum()*10%1? String.valueOf((int)Math.floor(stock.getDoseNum())):String.valueOf(stock.getDoseNum()))+
+                        (null == drug.getDoseUnit()?"":dicItemName.get(drug.getDoseUnit().toString())));
+            }
+            list.add(vo);
+        });
+        return ResponseUtil.setSuccessResult(list);
+    }
+
     @ApiOperation(value = "是否需要预警")
     @GetMapping("/warn")
     public ResponseResult needWarn(@AccessToken AccessInfo info){
         return ResponseUtil.setSuccessResult(ImmutableMap.of("needWarn",drugStockManager.isNeedWarn(info.getUser().getOrgCode())));
     }
+
+
+
 }
