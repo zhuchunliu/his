@@ -123,6 +123,11 @@ public class PatientItemManager {
             if(localDate!=null){
                 patientItem.setDateOfBirth(localDate.toString());
             }
+        }else {
+            String dateOfBirth = patientItem.getDateOfBirth();
+            if (StringUtils.isNotEmpty(dateOfBirth)){
+                patientItem.setAge(DateTimeUtil.getAge(dateOfBirth));
+            }
         }
         patientItem.setModifyAt(LocalDateTime.now().toString());
         return patientItemMapper.updateByPrimaryKeySelective(patientItem);
