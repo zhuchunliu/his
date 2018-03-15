@@ -13,6 +13,7 @@ import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserQueryMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.DateTimeUtil;
 import com.acmed.his.util.IdCardUtil;
 import com.acmed.his.util.MD5Util;
 import com.acmed.his.util.PassWordUtil;
@@ -118,7 +119,7 @@ public class UserManager {
             user.setPassWd(MD5Util.encode("000000"));
             user.setRemoved("0");
             if(StringUtils.isNotEmpty(mo.getDateOfBirth())){
-                user.setAge(IdCardUtil.idCardToAge("000000"+mo.getDateOfBirth().replace("-","")+"0000"));
+                user.setAge(DateTimeUtil.getAge(mo.getDateOfBirth().replace("-","")));
             }
             userMapper.insertSelective(user);
         }else{
@@ -131,7 +132,7 @@ public class UserManager {
             user.setModifyAt(LocalDateTime.now().toString());
             user.setModifyBy(userInfo.getId().toString());
             if(StringUtils.isNotEmpty(mo.getDateOfBirth())){
-                user.setAge(IdCardUtil.idCardToAge("000000"+mo.getDateOfBirth().replace("-","")+"0000"));
+                user.setAge(DateTimeUtil.getAge(mo.getDateOfBirth().replace("-","")));
             }
             userMapper.updateByPrimaryKeySelective(user);
         }

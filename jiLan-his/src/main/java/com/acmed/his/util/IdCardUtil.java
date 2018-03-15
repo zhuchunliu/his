@@ -1,9 +1,7 @@
 package com.acmed.his.util;
 
-import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * IdCardUtil
@@ -12,14 +10,6 @@ import java.util.Date;
  * @date 2017/11/30
  */
 public class IdCardUtil {
-    /**
-     * 根据身份证号码查询年龄
-     * @param idCard 身份证号
-     * @return 年龄
-     */
-    public static int idCardToAge(String idCard){
-        return DateTimeUtil.getAge(idCard);
-    }
 
     /**
      * 根据身份证号码返回日期  yyyy-mm-dd

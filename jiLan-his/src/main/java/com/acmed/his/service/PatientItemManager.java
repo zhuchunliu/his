@@ -44,7 +44,8 @@ public class PatientItemManager {
             patientItem.setInputCode(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
         }
         if (StringUtils.isNotEmpty(patientItem.getIdCard())){
-            int i = IdCardUtil.idCardToAge(patientItem.getIdCard());
+
+            Integer i = DateTimeUtil.getAge(patientItem.getIdCard());
             patientItem.setAge(i);
             LocalDate localDate = IdCardUtil.idCardToDate(patientItem.getIdCard());
             if(localDate!=null){
@@ -114,7 +115,8 @@ public class PatientItemManager {
             patientItem.setInputCode(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
         }
         if (StringUtils.isNotEmpty(patientItem.getIdCard())){
-            int i = IdCardUtil.idCardToAge(patientItem.getIdCard());
+            Integer i = DateTimeUtil.getAge(patientItem.getIdCard());
+
             patientItem.setAge(i);
             LocalDate localDate = IdCardUtil.idCardToDate(patientItem.getIdCard());
             if(localDate!=null){
