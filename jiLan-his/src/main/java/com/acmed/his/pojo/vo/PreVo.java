@@ -41,7 +41,8 @@ public class PreVo {
     }
 
     public PreVo(Prescription prescription, List<Inspect> preInspectist,
-                 List<Charge> preChargeList, List<PrescriptionItem> preItemList, Patient patientInfo, MedicalRecord medicalRecord,
+                 List<Charge> preChargeList, List<PrescriptionItem> preItemList, PatientItem patientItem,
+                 MedicalRecord medicalRecord,
                  ManufacturerMapper manufacturerMapper, BaseInfoManager baseInfoManager, DrugMapper drugMapper, FeeItemManager feeItemManager) {
         if(null == prescription){
             return;
@@ -49,12 +50,23 @@ public class PreVo {
         this.id = prescription.getId();
         this.applyId = prescription.getApplyId();
 
-        BeanUtils.copyProperties(patientInfo,this.patient);
-        if(StringUtils.isNotEmpty(patientInfo.getIdCard())){
-            this.patient.setAge(DateTimeUtil.getAge(patientInfo.getIdCard()));
-        }else {
-            this.patient.setAge(Optional.ofNullable(patientInfo.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+        if(null != patientItem) {
+            this.patient.setPatientId(patientItem.getPatientId());
+            this.patient.setUserName(patientItem.getPatientName());
+            this.patient.setGender(patientItem.getGender());
+            this.patient.setDateOfBirth(patientItem.getDateOfBirth());
+            this.patient.setMobile(patientItem.getMobile());
+            this.patient.setAddress(patientItem.getAddress());
+            this.patient.setAnaphylaxis(patientItem.getAnaphylaxis());
+            this.patient.setIdCard(patientItem.getIdCard());
+            this.patient.setSocialCard(patientItem.getSocialCard());
+            if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
+                this.patient.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
+            } else {
+                this.patient.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+            }
         }
+
 
         BeanUtils.copyProperties(medicalRecord,record);
 

@@ -120,9 +120,6 @@ public class PrescriptionManager {
 
         Patient patient = patientManager.getPatientById(prescription.getPatientId());
         PatientItem patientItem = patientItemManager.getByPatientId(patient.getId(),userInfo.getOrgCode());
-        if(null != patientItem){
-            BeanUtils.copyProperties(patient,patientItem,"id");
-        }
 
         example = new Example(MedicalRecord.class);
         example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
@@ -130,7 +127,7 @@ public class PrescriptionManager {
                 filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(new MedicalRecord());
 
 
-        return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
+        return new PreVo(prescription,preInspectList,chargeList,preItemList,patientItem,medicalRecord,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
     }
 
 
