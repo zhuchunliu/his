@@ -18,17 +18,7 @@ public class IdCardUtil {
      * @return 年龄
      */
     public static int idCardToAge(String idCard){
-        int leh = idCard.length();
-        String dates="";
-        SimpleDateFormat df = new SimpleDateFormat("yyyy");
-        String year=df.format(new Date());
-        if (leh == 18) {
-            // int se = Integer.valueOf(idCard.substring(leh - 1)) % 2;
-            dates = idCard.substring(6, 10);
-        }else{
-            dates = 19+idCard.substring(6, 8);
-        }
-        return Integer.parseInt(year)-Integer.parseInt(dates)+1;
+        return DateTimeUtil.getAge(idCard);
     }
 
     /**
