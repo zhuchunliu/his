@@ -51,7 +51,7 @@ public class PatientItemApi {
                 String idCard = item.getIdCard();
                 if (StringUtils.isNotEmpty(idCard)){
                     if (StringUtils.equals("00",idCard.substring(0,2))){
-                        item.setIdCard(idCard.substring(6,14));
+                        item.setIdCard(null);
                     }
                 }
                 list.add(item);
@@ -96,6 +96,13 @@ public class PatientItemApi {
     @ApiOperation(value = "根据id 查询患者库库内患者详情   医生使用")
     @GetMapping("id")
     public ResponseResult<PatientItemDto> getPatientItemDtoById(@AccessToken AccessInfo info, @ApiParam("患者库id") @RequestParam(value = "id" )String id){
-        return ResponseUtil.setSuccessResult(patientItemManager.getPatientItemDtoById(id));
+        PatientItemDto patientItemDtoById = patientItemManager.getPatientItemDtoById(id);
+        String idCard = patientItemDtoById.getIdCard();
+        if (StringUtils.isNotEmpty(idCard)){
+            if (StringUtils.equals("00",idCard.substring(0,2))){
+                patientItemDtoById.setIdCard(null);
+            }
+        }
+        return ResponseUtil.setSuccessResult(patientItemDtoById);
     }
 }
