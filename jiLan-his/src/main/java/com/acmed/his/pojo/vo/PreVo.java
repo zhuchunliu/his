@@ -50,7 +50,11 @@ public class PreVo {
         this.applyId = prescription.getApplyId();
 
         BeanUtils.copyProperties(patientInfo,this.patient);
-        this.patient.setAge(Optional.ofNullable(patientInfo.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+        if(StringUtils.isNotEmpty(patientInfo.getIdCard())){
+            this.patient.setAge(DateTimeUtil.getAge(patientInfo.getIdCard()));
+        }else {
+            this.patient.setAge(Optional.ofNullable(patientInfo.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+        }
 
         BeanUtils.copyProperties(medicalRecord,record);
 

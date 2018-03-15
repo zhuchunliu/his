@@ -37,9 +37,9 @@ public class DateTimeUtil {
 
         LocalDate now = LocalDate.now();
         LocalDate birthDate = LocalDate.parse(birth,DateTimeFormatter.ofPattern("yyyyMMdd"));
-        int age = now.getYear()-birthDate.getYear();
-        if(birthDate.getMonthValue() < now.getMonthValue()) return age-1;
-        if(birthDate.getDayOfMonth() < now.getDayOfMonth()) return age-1;
+        int age = now.getYear()-birthDate.getYear()+1;
+//        if(birthDate.getMonthValue() < now.getMonthValue()) return age-1;
+//        if(birthDate.getDayOfMonth() < now.getDayOfMonth()) return age-1;
         return age;
     }
 

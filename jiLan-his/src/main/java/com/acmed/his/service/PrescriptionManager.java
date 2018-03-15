@@ -97,7 +97,7 @@ public class PrescriptionManager {
      * @param applyId
      * @return
      */
-    public PreVo getPre(String applyId) {
+    public PreVo getPre(String applyId,UserInfo userInfo) {
 
 
 
@@ -119,6 +119,10 @@ public class PrescriptionManager {
         List<PrescriptionItem> preItemList = preItemMapper.selectByExample(example);
 
         Patient patient = patientManager.getPatientById(prescription.getPatientId());
+        PatientItem patientItem = patientItemManager.getByPatientId(patient.getId(),userInfo.getOrgCode());
+        if(null != patientItem){
+            BeanUtils.copyProperties(patient,patientItem,"id");
+        }
 
         example = new Example(MedicalRecord.class);
         example.createCriteria().andEqualTo("applyId",prescription.getApplyId());

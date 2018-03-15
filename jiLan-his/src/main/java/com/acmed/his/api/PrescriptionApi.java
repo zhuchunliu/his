@@ -60,8 +60,9 @@ public class PrescriptionApi {
 
     @ApiOperation(value = "获取处方")
     @GetMapping
-    public ResponseResult<PreVo> getPre(@ApiParam("挂号单主键") @RequestParam("applyId") String applyId){
-        return ResponseUtil.setSuccessResult(preManager.getPre(applyId));
+    public ResponseResult<PreVo> getPre(@ApiParam("挂号单主键") @RequestParam("applyId") String applyId,
+                                        @AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(preManager.getPre(applyId,info.getUser()));
     }
 
 

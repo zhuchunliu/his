@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -148,5 +149,11 @@ public class PatientItemManager {
         param.setIdCard(idCard);
         param.setOrgCode(orgCode);
         return patientItemMapper.selectOne(param);
+    }
+
+    public PatientItem getByPatientId(String patientId,Integer orgCode) {
+        Example example = new Example(PatientItem.class);
+        example.createCriteria().andEqualTo("patientId",patientId).andEqualTo("orgCode",orgCode);
+        return Optional.ofNullable(patientItemMapper.selectByExample(example)).filter(list->0!=list.size()).map(list->list.get(0)).orElse(null);
     }
 }
