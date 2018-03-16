@@ -56,6 +56,9 @@ public class DrugDict {
     @ApiModelProperty("准字号")
     private String approvalNumber;
 
+    @ApiModelProperty("条形码")
+    private String barcode;
+
     @ApiModelProperty("单位（g/条）大单位 ")
     private String unitName;
 
