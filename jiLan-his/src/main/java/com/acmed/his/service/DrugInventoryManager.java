@@ -80,7 +80,7 @@ public class DrugInventoryManager {
         }
 
         Example example = new Example(DrugInventoryItem.class);
-        example.createCriteria().andEqualTo("inventoryId",mo.getId());
+        example.createCriteria().andEqualTo("inventoryId",drugInventory.getId());
         inventoryItemMapper.deleteByExample(example);
 
 

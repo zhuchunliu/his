@@ -180,7 +180,7 @@ public class PurchaseManager {
                 stock.setExpiryDate(item.getExpiryDate());
                 stock.setBatchNumber(item.getBatchNumber());
                 stock.setSupply(purchase.getSupplierId());
-                stock.setNum(item.getNum());
+                stock.setNum(null == item.getNum()?0 : item.getNum());
                 stock.setMinNum(0);
                 stock.setDoseNum(0d);
                 stock.setRemoved("0");
