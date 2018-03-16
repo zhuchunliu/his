@@ -50,8 +50,8 @@ public class DrugInventoryApi {
     public ResponseResult save(@RequestBody DrugInventoryMo mo,
                                @AccessToken AccessInfo info){
 
-        drugInventoryManager.save(mo,info.getUser());
-        return ResponseUtil.setSuccessResult();
+        String id = drugInventoryManager.save(mo,info.getUser());
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("id",id));
     }
 
     @ApiOperation(value = "查看审核权利")

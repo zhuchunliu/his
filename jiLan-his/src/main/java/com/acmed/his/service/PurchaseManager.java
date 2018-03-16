@@ -56,7 +56,7 @@ public class PurchaseManager {
      * @param info
      */
     @Transactional
-    public void save(PurchaseMo mo, UserInfo info) {
+    public String save(PurchaseMo mo, UserInfo info) {
 
         Purchase purchase = Optional.ofNullable(mo.getId()).
                 map(id->purchaseMapper.selectByPrimaryKey(id)).
@@ -108,6 +108,7 @@ public class PurchaseManager {
         if(2 == purchase.getStatus()){//直接审核通过
             this.updateStock(purchase.getId(),info);
         }
+        return purchase.getId();
     }
 
 

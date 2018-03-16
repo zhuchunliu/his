@@ -55,7 +55,7 @@ public class DrugInventoryManager {
     @Autowired
     private ManufacturerMapper manufacturerMapper;
 
-    public void save(DrugInventoryMo mo, UserInfo info) {
+    public String save(DrugInventoryMo mo, UserInfo info) {
         DrugInventory drugInventory = Optional.ofNullable(mo.getId()).
                 map(id->inventoryMapper.selectByPrimaryKey(id)).
                 orElse(new DrugInventory());
@@ -96,6 +96,7 @@ public class DrugInventoryManager {
         if(2 == drugInventory.getStatus()){//直接审核通过
             this.updateStock(drugInventory.getId(),info);
         }
+        return drugInventory.getId();
     }
 
     /**

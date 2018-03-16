@@ -80,8 +80,8 @@ public class PurchaseApi {
 //            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"禁止重复审核");
 //        }
 
-        purchaseManager.save(mo,info.getUser());
-        return ResponseUtil.setSuccessResult();
+        String id = purchaseManager.save(mo,info.getUser());
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("id",id));
     }
 
 
