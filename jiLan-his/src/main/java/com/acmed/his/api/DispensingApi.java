@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Example;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -94,11 +95,25 @@ public class DispensingApi {
     public ResponseResult<PageResult<DispensingVo>> getDispensingList(
             @RequestBody(required = false) PageBase<DispensQueryMo> mo,
             @AccessToken AccessInfo info){
+
+        if(null == mo.getParam() || (StringUtils.isEmpty(mo.getParam().getDiagnoseStartDate())) &&
+                (StringUtils.isEmpty(mo.getParam().getDiagnoseEndDate()))){
+            if(null == mo.getParam()){
+                mo.setParam(new DispensQueryMo());
+            }
+            mo.getParam().setDiagnoseStartDate(DateTimeUtil.getBeginDate(LocalDate.now().toString()));
+            mo.getParam().setDiagnoseEndDate(DateTimeUtil.getEndDate(LocalDate.now().toString()));
+        }else{
+            mo.getParam().setDiagnoseStartDate(Optional.ofNullable(mo.getParam().getDiagnoseStartDate()).
+                    map(DateTimeUtil::getBeginDate).orElse(null));
+            mo.getParam().setDiagnoseEndDate(Optional.ofNullable(mo.getParam().getDiagnoseEndDate()).
+                    map(DateTimeUtil::getEndDate).orElse(null));
+        }
         List<DispensingVo> list = new ArrayList<>();
         List<DispensingDto> applyList = dispensingManager.getDispensingList(mo.getPageNum(),mo.getPageSize(),
                 info.getUser().getOrgCode(), Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getDate()).orElse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                Optional.ofNullable(mo.getParam().getStatus()).orElse(null),
+                mo.getParam().getDiagnoseStartDate(),mo.getParam().getDiagnoseEndDate());
         applyList.forEach(obj->{
             DispensingVo vo = new DispensingVo();
             BeanUtils.copyProperties(obj,vo);
@@ -112,8 +127,8 @@ public class DispensingApi {
         });
         int total = dispensingManager.getDispensingTotal(info.getUser().getOrgCode(),
                 Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getDate()).orElse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                Optional.ofNullable(mo.getParam().getStatus()).orElse(null),
+                mo.getParam().getDiagnoseStartDate(),mo.getParam().getDiagnoseEndDate());
         return ResponseUtil.setSuccessResult(new PageResult(list,(long)total));
     }
 

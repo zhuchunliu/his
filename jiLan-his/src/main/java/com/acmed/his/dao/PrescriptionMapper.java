@@ -24,7 +24,8 @@ public interface PrescriptionMapper extends TkMapper<Prescription>{
      * @return
      */
     List<DispensingDto> getDispensingList(@Param("orgCode") Integer orgCode, @Param("name") String name,
-                                          @Param("status") String status,@Param("date") String date);
+                                          @Param("status") String status, @Param("diagnoseStartDate") String diagnoseStartDate,
+                                          @Param("diagnoseEndDate") String diagnoseEndDate);
 
 
     /**
@@ -36,6 +37,7 @@ public interface PrescriptionMapper extends TkMapper<Prescription>{
      * @return
      */
     Integer getDispensingTotal(@Param("orgCode") Integer orgCode, @Param("name") String name,
-                               @Param("status") String status,@Param("date") String date);
+                               @Param("status") String status,@Param("diagnoseStartDate") String diagnoseStartDate,
+                               @Param("diagnoseEndDate") String diagnoseEndDate);
 
 }

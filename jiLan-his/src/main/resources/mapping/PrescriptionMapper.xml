@@ -60,11 +60,18 @@
             <if test="@Ognl@isNotEmpty(status) and status == 4">
                 and pre.isdispensing = '1'
             </if>
-            <if test="@Ognl@isNotEmpty(date)">
-                and DATE_FORMAT(pre.createat,'%Y-%m-%d') = #{date}
+            <if test="@Ognl@isNotEmpty(diagnoseStartDate)">
+                <![CDATA[
+                 and pre.createat >= #{diagnoseStartDate}
+                ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(diagnoseEndDate)">
+                <![CDATA[
+                  and pre.createat <= #{diagnoseEndDate}
+                ]]>
             </if>
         </trim>
-        order by ispaid ASC,FIELD(isdispensing,0,2,1),apply.clinicno DESC
+        order by DATE_FORMAT(pre.createat,'%Y-%m-%d') desc ,ispaid ASC,FIELD(isdispensing,0,2,1),apply.clinicno DESC
     </select>
 
     <select id = "getDispensingTotal" resultType="java.lang.Integer">
@@ -92,8 +99,15 @@
             <if test="@Ognl@isNotEmpty(status) and status == 4">
                 and pre.isdispensing = '1'
             </if>
-            <if test="@Ognl@isNotEmpty(date)">
-                and DATE_FORMAT(pre.createat,'%Y-%m-%d') = #{date}
+            <if test="@Ognl@isNotEmpty(diagnoseStartDate)">
+                <![CDATA[
+                 and pre.createat >= #{diagnoseStartDate}
+                ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(diagnoseEndDate)">
+                <![CDATA[
+                  and pre.createat <= #{diagnoseEndDate}
+                ]]>
             </if>
         </trim>
     </select>

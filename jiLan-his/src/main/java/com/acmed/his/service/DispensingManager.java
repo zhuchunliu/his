@@ -61,13 +61,15 @@ public class DispensingManager {
     private PrescriptionItemStockMapper itemStockMapper;
 
 
-    public List<DispensingDto> getDispensingList(Integer pageNum , Integer pageSize, Integer orgCode, String name, String status, String date) {
+    public List<DispensingDto> getDispensingList(Integer pageNum , Integer pageSize, Integer orgCode, String name, String status,
+                                                 String diagnoseStartDate,String diagnoseEndDate) {
         PageHelper.startPage(pageNum,pageSize);
-        return preMapper.getDispensingList(orgCode,name,status,date);
+        return preMapper.getDispensingList(orgCode,name,status,diagnoseStartDate,diagnoseEndDate);
     }
 
-    public Integer getDispensingTotal(Integer orgCode, String name, String status,String date) {
-        return preMapper.getDispensingTotal(orgCode,name,status,date);
+    public Integer getDispensingTotal(Integer orgCode, String name, String status,
+                                      String diagnoseStartDate,String diagnoseEndDate) {
+        return preMapper.getDispensingTotal(orgCode,name,status,diagnoseStartDate,diagnoseEndDate);
     }
 
     /**
