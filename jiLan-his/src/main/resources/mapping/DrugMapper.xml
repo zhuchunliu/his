@@ -42,7 +42,7 @@
         select t1.*
         FROM t_b_drug t1
         where t1.orgcode = #{orgCode}
-        and t1.removed = '0' -- and t1.num is not null and t1.num != 0
+        and t1.removed = '0'
         <if test="@Ognl@isNotEmpty(name) ">
             and (
                 t1.name like concat('%', #{name} , '%') OR
@@ -58,7 +58,7 @@
         select count(1)
         FROM t_b_drug t1
         where t1.orgcode = #{orgCode}
-        and t1.removed = '0' -- and t1.num is not null and t1.num != 0
+        and t1.removed = '0'
         <if test="@Ognl@isNotEmpty(name) ">
             and (
                 t1.name like concat('%', #{name} , '%') OR
