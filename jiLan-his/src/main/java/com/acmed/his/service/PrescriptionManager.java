@@ -403,10 +403,12 @@ public class PrescriptionManager {
 
         PatientItem patientItem = Optional.ofNullable(mo.getPatient().getIdCard()).
                 map(idcard->patientItemManager.getPatientByIdCard(idcard,userInfo.getOrgCode())).orElse(null);
-        if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
-            patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
-        } else {
-            patientItem.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+        if(null != patientItem) {
+            if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
+                patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
+            } else {
+                patientItem.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+            }
         }
         if(null == patientItem){
             patientItem = new PatientItem();
