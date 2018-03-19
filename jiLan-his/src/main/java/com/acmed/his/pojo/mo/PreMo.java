@@ -50,6 +50,10 @@ public class  PreMo {
 
     @Data
     public static class ItemMo{
+
+        @ApiModelProperty("处方药品主键")
+        private String itemId;
+
         @ApiModelProperty("药品id")
         private Integer drugId;
 
@@ -74,12 +78,19 @@ public class  PreMo {
 
     @Data
     public static class ChargeMo{
+
+        @ApiModelProperty("处方附加主键")
+        private String chargeId;
+
         @ApiModelProperty("费用类型")
         private String category;
     }
 
     @Data
     public static class InspectMo{
+
+        @ApiModelProperty("处方检查主键")
+        private String inspectId;
 
         @ApiModelProperty("检查目的")
         private String aim;

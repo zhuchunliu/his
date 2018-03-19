@@ -5,7 +5,7 @@
 
 
     <delete id="delByPreId" parameterType="java.lang.String">
-        DELETE from t_b_prescription_item where prescriptionid = #{prescriptionId}
+        DELETE from t_b_prescription_item where prescriptionid = #{prescriptionId} AND paystatus != '1'
     </delete>
 
     <select id="getItemList" resultType="com.acmed.his.model.dto.DrugDayDetailDto">

@@ -5,7 +5,6 @@
 
     <delete id="delByPreId" parameterType="java.lang.String">
         DELETE from t_b_prescription_fee where prescriptionid = #{prescriptionId}
-        AND (receipts IS NULL OR refunded IS NOT NULL)
     </delete>
 
     <update id="payApplyFee">

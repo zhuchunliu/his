@@ -105,6 +105,7 @@ public class PreVo {
                                 (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())) :
                                 (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
                     }
+                    item.setItemId(obj.getId());
                     item.setMinUnitName(null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString()));
                     item.setMinPriceUnitType(drug.getMinPriceUnitType());
                     item.setRetailPrice(drug.getRetailPrice());
@@ -127,6 +128,7 @@ public class PreVo {
                 PreVo.InspectVo inspect = new PreVo.InspectVo();
                 BeanUtils.copyProperties(obj,inspect);
                 inspect.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory()).getDicItemName());
+                inspect.setInspectId(obj.getId());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo("2",null,inspect,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -143,6 +145,7 @@ public class PreVo {
                 PreVo.ChargeVo charge = new PreVo.ChargeVo();
                 BeanUtils.copyProperties(obj,charge);
                 charge.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory()).getDicItemName());
+                charge.setChargeId(obj.getId());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo(null,null,null,charge,
                             obj.getRequirement(),obj.getRemark()));
@@ -198,6 +201,9 @@ public class PreVo {
     @Data
     public class InspectVo{
 
+        @ApiModelProperty("处方检查主键")
+        private String inspectId;
+
         @ApiModelProperty("检查目的")
         private String aim;
 
@@ -229,6 +235,10 @@ public class PreVo {
 
     @Data
     public class ChargeVo{
+
+        @ApiModelProperty("处方附加主键")
+        private String chargeId;
+
         @ApiModelProperty("费用类型")
         private String category;
 
@@ -244,6 +254,10 @@ public class PreVo {
 
     @Data
     public class ItemVo{
+
+        @ApiModelProperty("处方药品主键")
+        private String itemId;
+
         @ApiModelProperty("药品id")
         private Integer drugId;
 

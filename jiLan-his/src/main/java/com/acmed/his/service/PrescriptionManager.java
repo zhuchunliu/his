@@ -287,9 +287,18 @@ public class PrescriptionManager {
         boolean contanisMedicine = false;
         for(int i=0; i< mo.getPreList().size(); i++){
             PreMo.PrescriptMo pre = mo.getPreList().get(i);
-            Double childPrice = 0.0d;
+            Double receivables = 0.0d;
+            Double receipts = 0.0d;
             if(null != pre.getItemList()) {
                 for (PreMo.ItemMo info : pre.getItemList()) {
+                    if(StringUtils.isNotEmpty(info.getItemId())){
+                        PrescriptionItem item = preItemMapper.selectByPrimaryKey(info.getItemId());
+                        if(null != item && 1 == item.getPayStatus()) {
+                            receivables += item.getFee();
+                            receipts += item.getFee();
+                            continue;
+                        }
+                    }
                     Drug drug = drugMapper.selectByPrimaryKey(info.getDrugId());
                     if(null == drug){
                         continue;
@@ -325,12 +334,20 @@ public class PrescriptionManager {
                     item.setRequirement(pre.getRequirement());
                     item.setRemark(pre.getRemark());
                     preItemMapper.insert(item);
-                    childPrice += item.getFee();
+                    receivables += item.getFee();
                 }
             }
 
             if(null != pre.getInspectList()) {
                 for (PreMo.InspectMo info : pre.getInspectList()) {
+                    if(StringUtils.isNotEmpty(info.getInspectId())){
+                        Inspect inspect = inspectMapper.selectByPrimaryKey(info.getInspectId());
+                        if(null != inspect && 1 == inspect.getPayStatus()) {
+                            receivables += inspect.getFee();
+                            receipts += inspect.getFee();
+                            continue;
+                        }
+                    }
                     Inspect inspect = new Inspect();
                     BeanUtils.copyProperties(prescription,inspect,"id");
                     BeanUtils.copyProperties(info, inspect);
@@ -345,12 +362,20 @@ public class PrescriptionManager {
                     inspect.setRequirement(pre.getRequirement());
                     inspect.setRemark(pre.getRemark());
                     inspectMapper.insert(inspect);
-                    childPrice += inspect.getFee();
+                    receivables += inspect.getFee();
                 }
             }
 
             if(null != pre.getChargeList()) {
                 for (PreMo.ChargeMo info : pre.getChargeList()) {
+                    if(StringUtils.isNotEmpty(info.getChargeId())){
+                        Charge charge = chargeMapper.selectByPrimaryKey(info.getChargeId());
+                        if(null != charge && 1 == charge.getPayStatus()) {
+                            receivables += charge.getFee();
+                            receipts += charge.getFee();
+                            continue;
+                        }
+                    }
                     Charge charge = new Charge();
                     BeanUtils.copyProperties(prescription,charge,"id");
                     charge.setId(UUIDUtil.generate());
@@ -364,20 +389,21 @@ public class PrescriptionManager {
                     charge.setRequirement(pre.getRequirement());
                     charge.setRemark(pre.getRemark());
                     chargeMapper.insert(charge);
-                    childPrice += charge.getFee();
+                    receivables += charge.getFee();
                 }
             }
 
             PrescriptionFee prescriptionFee = new PrescriptionFee();
             prescriptionFee.setApplyId(apply.getId());
             prescriptionFee.setPrescriptionId(prescription.getId());
-            prescriptionFee.setReceivables(childPrice);
+            prescriptionFee.setReceivables(receivables);
+            prescriptionFee.setReceipts(receipts);
             prescriptionFee.setGroupNum(String.valueOf(i+1));
             prescriptionFee.setCreateAt(LocalDateTime.now().toString());
             prescriptionFee.setCreateBy(userInfo.getId().toString());
             feeMapper.insert(prescriptionFee);
 
-            price += childPrice;
+            price += receivables;
 
 
         }
