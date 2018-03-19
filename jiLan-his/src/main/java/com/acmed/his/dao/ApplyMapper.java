@@ -65,5 +65,5 @@ public interface ApplyMapper extends TkMapper<Apply>{
 
     List<ApplyDto> selectApplys(Apply param);
 
-    int updatePatientNameByPatientItemId(@Param("patientItemId")String patientItemId,@Param("patientName")String patientName);
+    int updatePatientNameByPatientItemId(@Param("patientItemId") String patientItemId, @Param("patientName") String patientName,@Param("gender") String gender,@Param("pinyin") String pinyin, @Param("age")Integer age);
 }

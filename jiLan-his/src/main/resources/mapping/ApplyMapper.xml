@@ -134,6 +134,11 @@
     </select>
 
     <update id="updatePatientNameByPatientItemId">
-        UPDATE t_b_apply SET patientname = #{patientName} WHERE patientitemid = #{patientItemId}
+        UPDATE t_b_apply SET
+        `patientname` = #{patientName},
+        `gender` = #{gender},
+        `pinyin` = #{pinyin},
+        `age` = #{age}
+        WHERE patientitemid = #{patientItemId}
     </update>
 </mapper>

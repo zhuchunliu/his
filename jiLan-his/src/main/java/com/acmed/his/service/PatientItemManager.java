@@ -116,13 +116,15 @@ public class PatientItemManager {
      * @return
      */
     public int updatePatientItem(PatientItem patientItem){
+        Integer age = 0;
+        String pinyin = "";
         if (StringUtils.isNotEmpty(patientItem.getPatientName())){
-            patientItem.setInputCode(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
+            pinyin=PinYinUtil.getPinYinHeadChar(patientItem.getPatientName());
+            patientItem.setInputCode(pinyin);
         }
-        if (StringUtils.isNotEmpty(patientItem.getIdCard())){
-            Integer i = DateTimeUtil.getAge(patientItem.getIdCard());
 
-            patientItem.setAge(i);
+        if (StringUtils.isNotEmpty(patientItem.getIdCard())){
+            age = DateTimeUtil.getAge(patientItem.getIdCard());
             LocalDate localDate = IdCardUtil.idCardToDate(patientItem.getIdCard());
             if(localDate!=null){
                 patientItem.setDateOfBirth(localDate.toString());
@@ -130,13 +132,15 @@ public class PatientItemManager {
         }else {
             String dateOfBirth = patientItem.getDateOfBirth();
             if (StringUtils.isNotEmpty(dateOfBirth)){
-                patientItem.setAge(DateTimeUtil.getAge(dateOfBirth));
+                age = DateTimeUtil.getAge(dateOfBirth);
+
             }
         }
+        patientItem.setAge(age);
         patientItem.setModifyAt(LocalDateTime.now().toString());
         //  更新apply表患者姓名
         if (StringUtils.isNotEmpty(patientItem.getPatientName())){
-            applyMapper.updatePatientNameByPatientItemId(patientItem.getId(),patientItem.getPatientName());
+            applyMapper.updatePatientNameByPatientItemId(patientItem.getId(),patientItem.getPatientName(),patientItem.getGender(),pinyin,age);
         }
         return patientItemMapper.updateByPrimaryKeySelective(patientItem);
     }

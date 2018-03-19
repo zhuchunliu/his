@@ -1,6 +1,7 @@
 package com.acmed.his.service;
 
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.pojo.vo.UpTokenAndKeyVo;
 import com.acmed.his.util.ResponseResult;
@@ -40,6 +41,9 @@ public class QNManager {
         Auth auth = Auth.create(environment.getProperty("qiniu.accessKey"),environment.getProperty("qiniu.secretKey"));
         String key = null;
         DicItem qnUpType = baseInfoManager.getDicItem("QnUpType", type);
+        if (qnUpType==null){
+            throw new BaseException(StatusCode.FAIL,"图片类型错误");
+        }
         if (qnUpType == null){
             key = "img/other/" + System.currentTimeMillis() + "/" + WaterCodeUtil.getSixSmsCode();
         }else {
