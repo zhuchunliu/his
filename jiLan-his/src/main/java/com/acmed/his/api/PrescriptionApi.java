@@ -84,16 +84,16 @@ public class PrescriptionApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
-    @ApiOperation(value = "已完成")
-    @PostMapping("/finish")
-    public ResponseResult<PreTitleVo> finish(@ApiParam("{\"applyId\":\"\"},applyId：处方主键") @RequestBody String param,
-                                             @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
-            return ResponseUtil.setParamEmptyError("applyId");
-        }
-        preManager.finish(JSONObject.parseObject(param).getString("applyId"),info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
+//    @ApiOperation(value = "已完成")
+//    @PostMapping("/finish")
+//    public ResponseResult<PreTitleVo> finish(@ApiParam("{\"applyId\":\"\"},applyId：处方主键") @RequestBody String param,
+//                                             @AccessToken AccessInfo info){
+//        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
+//            return ResponseUtil.setParamEmptyError("applyId");
+//        }
+//        preManager.finish(JSONObject.parseObject(param).getString("applyId"),info.getUser());
+//        return ResponseUtil.setSuccessResult();
+//    }
 
 
 

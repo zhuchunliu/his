@@ -17,6 +17,9 @@ public class  PreMo {
     @ApiModelProperty("挂号主键 null:新开就诊；非null:挂号就诊")
     private String applyId;
 
+    @ApiModelProperty("是否完成 0:未完成，1：完成")
+    private Integer isFinish;
+
     @ApiModelProperty("处方集合")
     private List<PrescriptMo> PreList;
 

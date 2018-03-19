@@ -251,6 +251,10 @@ public class PrescriptionManager {
 
         //step5：统计处方总费用
         applyMapper.statisFee(apply.getId());//统计总费用
+
+        if(null != mo.getIsFinish() && 1 == mo.getIsFinish()){
+            this.finish(apply.getId(),userInfo);
+        }
         return true;
     }
 
