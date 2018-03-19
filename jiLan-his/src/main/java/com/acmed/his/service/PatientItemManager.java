@@ -1,5 +1,6 @@
 package com.acmed.his.service;
 
+import com.acmed.his.dao.ApplyMapper;
 import com.acmed.his.dao.PatientItemMapper;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.PatientItem;
@@ -33,6 +34,9 @@ public class PatientItemManager {
 
     @Autowired
     private PatientManager patientManager;
+
+    @Autowired
+    private ApplyMapper applyMapper;
     /**
      * 添加子表
      * @param patientItem
@@ -130,6 +134,10 @@ public class PatientItemManager {
             }
         }
         patientItem.setModifyAt(LocalDateTime.now().toString());
+        //  更新apply表患者姓名
+        if (StringUtils.isNotEmpty(patientItem.getPatientName())){
+            applyMapper.updatePatientNameByPatientItemId(patientItem.getId(),patientItem.getPatientName());
+        }
         return patientItemMapper.updateByPrimaryKeySelective(patientItem);
     }
 

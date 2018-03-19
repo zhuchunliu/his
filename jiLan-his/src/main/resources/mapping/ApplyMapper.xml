@@ -132,4 +132,8 @@
             </if>
         </where>
     </select>
+
+    <update id="updatePatientNameByPatientItemId">
+        UPDATE t_b_apply SET patientname = #{patientName} WHERE patientitemid = #{patientItemId}
+    </update>
 </mapper>

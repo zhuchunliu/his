@@ -64,4 +64,6 @@ public interface ApplyMapper extends TkMapper<Apply>{
     ChuZhenFuZhenCountDto chuZhenAndFuZhenTongJi(@Param("orgCode") Integer orgCode);
 
     List<ApplyDto> selectApplys(Apply param);
+
+    int updatePatientNameByPatientItemId(@Param("patientItemId")String patientItemId,@Param("patientName")String patientName);
 }
