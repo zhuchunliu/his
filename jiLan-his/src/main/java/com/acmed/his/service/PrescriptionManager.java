@@ -221,7 +221,7 @@ public class PrescriptionManager {
 
             if(StringUtils.isEmpty(mo.getApplyId()) ){
                 //step1:处理患者信息
-                Patient patient = this.handlePatient(mo, userInfo);
+                PatientItem patient = this.handlePatient(mo, userInfo);
 
                 //step2:处理挂号信息
                 PatientItem patientItem = new PatientItem();
@@ -396,7 +396,7 @@ public class PrescriptionManager {
      * 处理患者信息
      * @return
      */
-    private Patient handlePatient(PreMo mo,UserInfo userInfo){
+    private PatientItem handlePatient(PreMo mo,UserInfo userInfo){
         Patient patient = StringUtils.isEmpty(mo.getPatient().getIdCard())?null:
                 patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
         if(null == patient){
@@ -405,37 +405,37 @@ public class PrescriptionManager {
             patient = patientManager.add(patient);
         }
 
-        PatientItem patientItem = Optional.ofNullable(mo.getPatient().getIdCard()).
-                map(idcard->patientItemManager.getPatientByIdCard(idcard,userInfo.getOrgCode())).orElse(null);
+        PatientItem patientItem = patientItemManager.getByPatientId(patient.getId(),userInfo.getOrgCode());
         if(null != patientItem) {
             if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
                 patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
             } else {
                 patientItem.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
             }
-        }
-        if(null == patientItem){
+            BeanUtils.copyProperties(mo.getPatient(),patientItem);
+            patientItem.setPatientName(mo.getPatient().getRealName());
+            patientItemManager.updatePatientItem(patientItem);
+        }else{
             patientItem = new PatientItem();
             BeanUtils.copyProperties(mo.getPatient(),patientItem);
+            if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
+                patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
+            } else {
+                patientItem.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+            }
             patientItem.setPatientName(mo.getPatient().getRealName());
             patientItem.setOrgCode(userInfo.getOrgCode());
             patientItem.setPatientId(patient.getId());
             patientItemManager.addPatinetItem(patientItem);
-        }else{
-            BeanUtils.copyProperties(mo.getPatient(),patientItem);
-            patientItem.setPatientName(mo.getPatient().getRealName());
-            patientItem.setOrgCode(userInfo.getOrgCode());
-            patientItem.setPatientId(patient.getId());
-            patientItemManager.updatePatientItem(patientItem);
         }
-        return patient;
+        return patientItem;
     }
 
     /**
      * 处理挂号单信息
      * @return
      */
-    private Apply handleApply(PreMo mo,Patient patient,PatientItem patientItem,UserInfo userInfo){
+    private Apply handleApply(PreMo mo,PatientItem patient,PatientItem patientItem,UserInfo userInfo){
         Apply apply = new Apply();
         if(!StringUtils.isEmpty(mo.getApplyId())){
             apply = applyManager.getApplyById(mo.getApplyId());
