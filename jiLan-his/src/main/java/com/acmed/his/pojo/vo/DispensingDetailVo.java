@@ -76,7 +76,34 @@ public class DispensingDetailVo {
         Map<String,DispensingInfoVo> map = new TreeMap<>();
 
         for(PrescriptionItem item : itemList){
+            if(null == stockMap.get(item.getId()) || 0 == stockMap.get(item.getId()).size()){
+                Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
 
+                MedicalInfoVo medicalDetail = new MedicalInfoVo();
+                medicalDetail.setDrugCode(drug.getDrugCode());
+                medicalDetail.setDrugName(item.getDrugName());
+                medicalDetail.setPrice(item.getFee());
+                if(null != item.getNum() && 0 != item.getNum()){
+                    medicalDetail.setNumName(item.getNum()+unitItemName.get(1==item.getUnitType()?drug.getUnit().toString():
+                            (1 == drug.getMinPriceUnitType()?drug.getMinUnit().toString():drug.getDoseUnit().toString())));
+                }
+
+                medicalDetail.setManufacturerName(manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
+                medicalDetail.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
+                medicalDetail.setSingleDose(item.getSingleDose());
+                medicalDetail.setRemark(item.getRemark());
+                medicalDetail.setRequirement(item.getRequirement());
+                medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+                this.totalFee += medicalDetail.getPrice();
+                if(!map.containsKey(item.getGroupNum())){
+                    map.put(item.getGroupNum(),new DispensingInfoVo(medicalDetail,null,null
+                            ,item.getRequirement(),item.getRemark()));
+                }else{
+                    map.get(item.getGroupNum()).getMedicalInfoList().add(medicalDetail);
+                }
+
+                continue;
+            }
             stockMap.get(item.getId()).forEach(stock->{
                 MedicalInfoVo medicalDetail = new MedicalInfoVo();
                 BeanUtils.copyProperties(stock,medicalDetail);
