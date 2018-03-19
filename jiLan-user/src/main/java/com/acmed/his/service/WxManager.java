@@ -18,6 +18,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -81,11 +87,22 @@ public class WxManager {
     }
 
 
-    public WxUserInfo wxUserInfo(String openid,String accessToken) {
+    public WxUserInfo wxUserInfo(String openid,String accessToken) throws IOException {
         String url = String.format("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN",
                 accessToken, openid);
-        String info = new RestTemplate().getForObject(url, String.class);
-        JSONObject json = JSONObject.parseObject(info);
+        URL url1 = new URL(url);
+        HttpURLConnection urlConnection = (HttpURLConnection)url1.openConnection();
+
+        InputStream inputStream = urlConnection.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream,"UTF-8");
+        BufferedReader in = new BufferedReader(inputStreamReader);
+
+        String jsonUserStr =in.readLine().toString();
+
+// 释放资源
+        inputStream.close();
+        urlConnection.disconnect();
+        JSONObject json = JSONObject.parseObject(jsonUserStr);
         WxUserInfo wxUserInfo = new WxUserInfo();
         wxUserInfo.setHeadImgUrl(json.getString("headimgurl"));
         wxUserInfo.setNickName(EmojiUtil.emojiConvert(json.getString("nickname")));
