@@ -5,7 +5,7 @@ spring:
   application:
     name: his
   datasource:
-      url: jdbc:mysql://115.29.47.72:3306/his?characterEncoding=utf8&useSSL=true&serverTimezone=Hongkong
+      url: jdbc:mysql://rm-bp13w86vo1nrcb2l4.mysql.rds.aliyuncs.com/his?characterEncoding=utf8&useSSL=true&serverTimezone=Hongkong
       username: acmed
       password: acmed8686
       driver-class-name: com.mysql.cj.jdbc.Driver

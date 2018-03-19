@@ -224,11 +224,7 @@ public class PrescriptionManager {
                 PatientItem patient = this.handlePatient(mo, userInfo);
 
                 //step2:处理挂号信息
-                PatientItem patientItem = new PatientItem();
-                patientItem.setOrgCode(userInfo.getOrgCode());
-                patientItem.setPatientId(patient.getId());
-                List<PatientItem> patientItems = patientItemManager.patientItems(patientItem);
-                apply = this.handleApply(mo, patient,patientItems.get(0), userInfo);
+                apply = this.handleApply(mo, patient, userInfo);
             }else{
                 apply = applyMapper.selectByPrimaryKey(mo.getApplyId());
             }
@@ -437,7 +433,7 @@ public class PrescriptionManager {
      * 处理挂号单信息
      * @return
      */
-    private Apply handleApply(PreMo mo,PatientItem patient,PatientItem patientItem,UserInfo userInfo){
+    private Apply handleApply(PreMo mo,PatientItem patient,UserInfo userInfo){
         Apply apply = new Apply();
         if(!StringUtils.isEmpty(mo.getApplyId())){
             apply = applyManager.getApplyById(mo.getApplyId());
@@ -449,10 +445,10 @@ public class PrescriptionManager {
             apply.setDeptName(userInfo.getDeptName());
             apply.setDoctorId(userInfo.getId());
             apply.setDoctorName(userInfo.getUserName());
-            apply.setPatientItemId(patientItem.getId());
+            apply.setPatientItemId(patient.getId());
             apply.setPatientId(patient.getId());
-            apply.setPatientName(patientItem.getPatientName());
-            apply.setPinYin(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
+            apply.setPatientName(patient.getPatientName());
+            apply.setPinYin(PinYinUtil.getPinYinHeadChar(patient.getPatientName()));
             apply.setGender(patient.getGender());
             apply.setAge(Optional.ofNullable(patient.getIdCard()).map(DateTimeUtil::getAge).orElse(null));
             if(null == apply.getAge()){

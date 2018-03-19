@@ -75,7 +75,7 @@ public class CorsConfig extends WebMvcConfigurerAdapter {
         registry.addInterceptor(new GateInterceptor());
         registry.addInterceptor(new AccessTokenInterceptor(applicationContext));
         if(!getActiveProfile().equals("dev")) {
-            registry.addInterceptor(new AccessPermissionInterceptor(applicationContext));
+//            registry.addInterceptor(new AccessPermissionInterceptor(applicationContext));
         }
 
         super.addInterceptors(registry);
