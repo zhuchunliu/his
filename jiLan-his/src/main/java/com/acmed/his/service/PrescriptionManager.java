@@ -401,19 +401,17 @@ public class PrescriptionManager {
         PatientItem patientItem = null;
         if(StringUtils.isNotEmpty(mo.getPatient().getPatientItemId())) {
             patientItem = patientItemManager.getById(mo.getPatient().getPatientItemId());
+            BeanUtils.copyProperties(mo.getPatient(),patientItem);
             if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
                 patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
             } else {
                 patientItem.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
             }
-            BeanUtils.copyProperties(mo.getPatient(),patientItem);
             patientItem.setPatientName(mo.getPatient().getRealName());
             patientItemManager.updatePatientItem(patientItem);
         }else{
-
             Patient patient = StringUtils.isEmpty(mo.getPatient().getIdCard())?null:
                     patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
-
             if(null == patient){
                 patient = new Patient();
                 BeanUtils.copyProperties(mo.getPatient(),patient);
