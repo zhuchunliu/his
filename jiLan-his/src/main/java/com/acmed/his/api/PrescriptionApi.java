@@ -12,6 +12,7 @@ import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -81,6 +82,17 @@ public class PrescriptionApi {
         List<PreTitleVo> list = new ArrayList<>();
         preManager.getPreByApply(applyId).forEach(obj->list.add(new PreTitleVo(obj)));
         return ResponseUtil.setSuccessResult(list);
+    }
+
+    @ApiOperation(value = "已完成")
+    @PostMapping("/finish")
+    public ResponseResult<PreTitleVo> finish(@ApiParam("{\"applyId\":\"\"},applyId：处方主键") @RequestBody String param,
+                                             @AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
+            return ResponseUtil.setParamEmptyError("applyId");
+        }
+        preManager.finish(JSONObject.parseObject(param).getString("applyId"),info.getUser());
+        return ResponseUtil.setSuccessResult();
     }
 
 

@@ -585,4 +585,10 @@ public class PrescriptionManager {
 
         return list;
     }
+
+    public void finish(String applyId, UserInfo user) {
+        Apply apply = applyMapper.selectByPrimaryKey(applyId);
+        apply.setStatus("1");
+        applyMapper.updateByPrimaryKey(apply);
+    }
 }
