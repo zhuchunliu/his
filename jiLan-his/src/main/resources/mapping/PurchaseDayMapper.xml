@@ -18,7 +18,7 @@
 
     <select id="getPurchaseDayList" resultType="com.acmed.his.model.dto.PurchaseDayDto">
         select * from (
-            select t1.drugcode,t2.specname as drugname, sum(t1.num) as num,t3.num as storeNum,
+            select t1.drugcode,t3.goodsname as drugname, sum(t1.num) as num,t3.num as storeNum,
             FORMAT(sum(t1.bidfee)/sum(t1.num),2) as bid,
             FORMAT(sum(t1.retailfee)/sum(t1.num),2) as retailprice,
             sum(t1.bidfee) as bidfee ,sum(t1.retailfee) as retailfee
