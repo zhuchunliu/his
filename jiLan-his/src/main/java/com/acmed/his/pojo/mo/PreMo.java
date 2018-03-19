@@ -104,6 +104,9 @@ public class  PreMo {
     @Data
     public static class PatientMo{
 
+        @ApiModelProperty("患者详情主键")
+        private String patientItemId;
+
         @ApiModelProperty("用户姓名")
         private String realName;
 

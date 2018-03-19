@@ -397,16 +397,10 @@ public class PrescriptionManager {
      * @return
      */
     private PatientItem handlePatient(PreMo mo,UserInfo userInfo){
-        Patient patient = StringUtils.isEmpty(mo.getPatient().getIdCard())?null:
-                patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
-        if(null == patient){
-            patient = new Patient();
-            BeanUtils.copyProperties(mo.getPatient(),patient);
-            patient = patientManager.add(patient);
-        }
 
-        PatientItem patientItem = patientItemManager.getByPatientId(patient.getId(),userInfo.getOrgCode());
-        if(null != patientItem) {
+        PatientItem patientItem = null;
+        if(StringUtils.isNotEmpty(mo.getPatient().getPatientItemId())) {
+            patientItem = patientItemManager.getById(mo.getPatient().getPatientItemId());
             if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
                 patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
             } else {
@@ -416,6 +410,16 @@ public class PrescriptionManager {
             patientItem.setPatientName(mo.getPatient().getRealName());
             patientItemManager.updatePatientItem(patientItem);
         }else{
+
+            Patient patient = StringUtils.isEmpty(mo.getPatient().getIdCard())?null:
+                    patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
+
+            if(null == patient){
+                patient = new Patient();
+                BeanUtils.copyProperties(mo.getPatient(),patient);
+                patient = patientManager.add(patient);
+            }
+
             patientItem = new PatientItem();
             BeanUtils.copyProperties(mo.getPatient(),patientItem);
             if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
