@@ -44,10 +44,20 @@ public class RoleManager {
         if(!StringUtils.isEmpty(isValid)){
             role.setIsValid(isValid);
         }
-        role.setRemoved("0");
-        role.setHideFlag(0);
-        role.setOrgCode(orgCode);
-        return roleMapper.select(role);
+//        role.setRemoved("0");
+//        role.setHideFlag(0);
+//        role.setOrgCode(orgCode);
+        Example example = new Example(Role.class);
+        if(null == orgCode){
+            example.createCriteria().andEqualTo("removed","0").
+                    andEqualTo("hideFlag",0).andIsNull("orgCode");
+        }else{
+            example.createCriteria().andEqualTo("removed","0").
+                    andEqualTo("hideFlag",0).andEqualTo("orgCode",orgCode);
+
+        }
+
+        return roleMapper.selectByExample(example);
     }
 
     /**
