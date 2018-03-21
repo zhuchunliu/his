@@ -182,7 +182,7 @@ public class PreVo {
 
                 }
                 if(null != injectVo.getFrequency()){
-                    injectVo.setFrequencyName(frequencyItemName.get(inject.getFrequency()));
+                    injectVo.setFrequencyName(frequencyItemName.get(inject.getFrequency().toString()));
                 }
 
                 if(!injectMap.containsKey(inject.getGroupNum())){
