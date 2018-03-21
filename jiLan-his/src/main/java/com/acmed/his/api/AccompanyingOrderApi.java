@@ -271,7 +271,7 @@ public class AccompanyingOrderApi {
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setCreateBy(info.getPatientId());
         accompanyingOrder.setDelFlag(0);
-        PageResult<AccompanyingOrder> pageResult = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder,"createat DESC",pageNum,pageSize);
+        PageResult<AccompanyingOrder> pageResult = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder,"modifyat DESC",pageNum,pageSize);
         List<AccompanyingOrder> accompanyingOrders = pageResult.getData();
         List<AccompanyingOrderPatientVo> result = Lists.newArrayList();
         PageResult<AccompanyingOrderPatientVo> newResult = new PageResult<>();
