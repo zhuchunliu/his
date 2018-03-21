@@ -176,11 +176,13 @@ public class PreVo {
                 if(null != drug) {
                     injectVo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
                             map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
-                    if(null != drug.getMinPriceUnitType()) {
-                        injectVo.setMinOrDoseUnitName(1 == drug.getMinPriceUnitType() ?
-                                (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())) :
-                                (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
-                    }
+                    injectVo.setUnitName(null==drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
+                    injectVo.setMinUnitName(null==drug.getMinUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit().toString()).getDicItemName());
+                    injectVo.setDoseUnitName(null==drug.getDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
+
+                }
+                if(null != injectVo.getFrequency()){
+                    injectVo.setFrequencyName(frequencyItemName.get(inject.getFrequency()));
                 }
 
                 if(!injectMap.containsKey(inject.getGroupNum())){
@@ -432,7 +434,19 @@ public class PreVo {
         @ApiModelProperty("生产厂家名称")
         private String manufacturerName;
 
-        @ApiModelProperty("二级单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
-        private String minOrDoseUnitName;
+        @ApiModelProperty("单位名称")
+        private String unitName;
+
+        @ApiModelProperty("小单位名称")
+        private String minUnitName;
+
+        @ApiModelProperty("剂量单位名称")
+        private String doseUnitName;
+
+        @ApiModelProperty("频率")
+        private Integer frequency;
+
+        @ApiModelProperty("频率")
+        private String frequencyName;
     }
 }

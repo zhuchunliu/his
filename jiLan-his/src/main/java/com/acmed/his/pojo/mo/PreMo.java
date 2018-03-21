@@ -187,6 +187,9 @@ public class  PreMo {
 
         @ApiModelProperty("备注")
         private String memo;
+
+        @ApiModelProperty("频率 字典表：DrugFrequency")
+        private Integer frequency;
     }
 
 }

@@ -34,6 +34,9 @@ public class Inject {
     @ApiModelProperty("单次剂量")
     private Double singleDose;
 
+    @ApiModelProperty("频率 字典表：DrugFrequency")
+    private Integer frequency;
+
     @ApiModelProperty("备注")
     private String memo;
 
