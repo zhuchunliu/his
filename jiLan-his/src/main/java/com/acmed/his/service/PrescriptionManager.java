@@ -82,6 +82,9 @@ public class PrescriptionManager {
     @Autowired
     private ManufacturerMapper manufacturerMapper;
 
+    @Autowired
+    private InjectMapper injectMapper;
+
 
     /**
      * 根据挂号单查找处方列表
@@ -126,8 +129,12 @@ public class PrescriptionManager {
         MedicalRecord medicalRecord = Optional.ofNullable(recordMapper.selectByExample(example)).
                 filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(new MedicalRecord());
 
+        example = new Example(Inject.class);
+        example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
+        example.orderBy("groupNum").orderBy("id");
+        List<Inject> injectList = injectMapper.selectByExample(example);
 
-        return new PreVo(prescription,preInspectList,chargeList,preItemList,null,medicalRecord,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
+        return new PreVo(prescription,preInspectList,chargeList,preItemList,null,medicalRecord,injectList,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
     }
 
 
@@ -243,10 +250,13 @@ public class PrescriptionManager {
         this.handleMedicalRecord(mo,apply,userInfo);
 
         //step4:保存处方信息
-        this.handlePrescription(mo,apply,userInfo);
+        Prescription prescription = this.handlePrescription(mo,apply,userInfo);
 
         //step5：统计处方总费用
         applyMapper.statisFee(apply.getId());//统计总费用
+
+        //step6: 处理注射单
+        this.handleInject(mo,prescription,userInfo);
 
         if(null != mo.getIsFinish() && 1 == mo.getIsFinish()){
             this.finish(apply.getId(),userInfo);
@@ -254,11 +264,42 @@ public class PrescriptionManager {
         return true;
     }
 
+    private void handleInject(PreMo mo,  Prescription prescription, UserInfo userInfo) {
+        Example example = new Example(Inject.class);
+        example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
+        injectMapper.deleteByExample(example);
+
+        List<Inject> injectList = Lists.newArrayList();
+        if(null == mo.getInjectList() || 0 == mo.getInjectList().size()){
+            return;
+        }
+        for(Integer index = 0;index < mo.getInjectList().size(); index++) {
+            if(null == mo.getInjectList().get(index) || 0 == mo.getInjectList().get(index).size()){
+                continue;
+            }
+            for(Integer i =0;i < mo.getInjectList().get(index).size();i++){
+                Inject inject = new Inject();
+                BeanUtils.copyProperties(mo.getInjectList().get(index).get(i),inject);
+                inject.setGroupNum(index.toString());
+                inject.setApplyId(prescription.getApplyId());
+                inject.setPrescriptionId(prescription.getId());
+                inject.setCreateAt(LocalDateTime.now().toString());
+                inject.setCreateBy(userInfo.getId().toString());
+                injectList.add(inject);
+            }
+        }
+        if(0 != injectList.size()) {
+            injectMapper.insertList(injectList);
+        }
+
+
+    }
+
 
     /**
      * 处理处方信息
      */
-    private void handlePrescription(PreMo mo, Apply apply, UserInfo userInfo){
+    private Prescription handlePrescription(PreMo mo, Apply apply, UserInfo userInfo){
 
         Prescription prescription = Optional.ofNullable(mo.getId()).map(id->preMapper.selectByPrimaryKey(mo.getId()))
                 .orElse(new Prescription());
@@ -411,6 +452,7 @@ public class PrescriptionManager {
         prescription.setIsDispensing(contanisMedicine?"0":"2");
         prescription.setFee(price);
         preMapper.updateByPrimaryKey(prescription);
+        return prescription;
     }
 
 

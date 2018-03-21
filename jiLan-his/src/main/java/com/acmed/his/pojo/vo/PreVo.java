@@ -7,6 +7,7 @@ import com.acmed.his.model.*;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.FeeItemManager;
 import com.acmed.his.util.DateTimeUtil;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -36,13 +37,16 @@ public class PreVo {
     @ApiModelProperty("病例")
     private MedicalRecordVo record = new MedicalRecordVo();
 
+    @ApiModelProperty("注射单")
+    private List<List<InjectVo>> injectList = Lists.newArrayList();
+
     public PreVo(){
 
     }
 
     public PreVo(Prescription prescription, List<Inspect> preInspectist,
                  List<Charge> preChargeList, List<PrescriptionItem> preItemList, PatientItem patientItem,
-                 MedicalRecord medicalRecord,
+                 MedicalRecord medicalRecord,List<Inject> preInjectList,
                  ManufacturerMapper manufacturerMapper, BaseInfoManager baseInfoManager, DrugMapper drugMapper, FeeItemManager feeItemManager) {
         if(null == prescription){
             return;
@@ -160,6 +164,37 @@ public class PreVo {
         Iterator iterator = map.keySet().iterator();
         while (iterator.hasNext()){
             this.getPreList().add(map.get(iterator.next()));
+        }
+
+        if(null != preInjectList && 0 != preInjectList.size()){
+            Map<String,List<InjectVo>> injectMap = Maps.newHashMap();
+            for(Inject inject : preInjectList){
+                InjectVo injectVo = new InjectVo();
+                BeanUtils.copyProperties(inject,injectVo);
+                Drug drug = drugMapper.selectByPrimaryKey(inject.getDrugId());
+                injectVo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
+                if(null != drug) {
+                    injectVo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
+                            map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
+                    if(null != drug.getMinPriceUnitType()) {
+                        injectVo.setMinOrDoseUnitName(1 == drug.getMinPriceUnitType() ?
+                                (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())) :
+                                (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
+                    }
+                }
+
+                if(!injectMap.containsKey(inject.getGroupNum())){
+                    injectMap.put(inject.getGroupNum(),Lists.newArrayList(injectVo));
+                }else{
+                    injectMap.get(inject.getGroupNum()).add(injectVo);
+                }
+            }
+
+            Iterator iteratorInject = injectMap.keySet().iterator();
+            while (iteratorInject.hasNext()){
+                this.injectList.add(injectMap.get(iteratorInject.next()));
+            }
+
         }
 
     }
@@ -377,5 +412,27 @@ public class PreVo {
         @ApiModelProperty("备注")
         private String remark;
 
+    }
+
+
+    @Data
+    public static class InjectVo{
+        @ApiModelProperty("药品id")
+        private Integer drugId;
+
+        @ApiModelProperty("用药名称")
+        private String drugName;
+
+        @ApiModelProperty("单次剂量")
+        private Double singleDose;
+
+        @ApiModelProperty("备注")
+        private String memo;
+
+        @ApiModelProperty("生产厂家名称")
+        private String manufacturerName;
+
+        @ApiModelProperty("二级单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
+        private String minOrDoseUnitName;
     }
 }

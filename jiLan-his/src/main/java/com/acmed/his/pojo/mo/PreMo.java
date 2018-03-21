@@ -1,5 +1,6 @@
 package com.acmed.his.pojo.mo;
 
+import com.acmed.his.model.Inspect;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -28,6 +29,11 @@ public class  PreMo {
 
     @ApiModelProperty("病例")
     private MedicalRecordMo record;
+
+    @ApiModelProperty("注射单")
+    private List<List<InjectMo>> injectList;
+
+
 
     @Data
     public static class PrescriptMo {
@@ -168,6 +174,19 @@ public class  PreMo {
         @ApiModelProperty("备注")
         private String remark;
 
+    }
+
+
+    @Data
+    public static class InjectMo{
+        @ApiModelProperty("药品id")
+        private Integer drugId;
+
+        @ApiModelProperty("单次剂量")
+        private Double singleDose;
+
+        @ApiModelProperty("备注")
+        private String memo;
     }
 
 }
