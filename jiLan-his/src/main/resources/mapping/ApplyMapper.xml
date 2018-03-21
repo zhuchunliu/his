@@ -63,7 +63,8 @@
         t1.isfirst,
         t2.anaphylaxis,
         t2.personalhistory,
-        t2.familyhistory
+        t2.familyhistory,
+        t1.doctorname
         FROM t_b_apply t1
 
         LEFT JOIN t_b_patient_item AS  t2  ON t2.id = t1.patientitemid
