@@ -39,7 +39,7 @@
     <select id="getPurchaseDayTotal" resultType="java.lang.Integer">
         select count(1) from (
         select 1
-        from t_r_purchase_day t1 LEFT JOIN t_b_drugdict t2 on t1.drugcode = t2.code
+        from t_r_purchase_day t1
         where t1.orgcode = #{orgCode}
         <if test="@Ognl@isNotEmpty(startTime)">
             <![CDATA[ AND t1.date >= #{startTime} ]]>
