@@ -8,7 +8,8 @@
         NOT EXISTS (select * from t_b_drug where dictid = dict.id and removed= '0' and orgCode = #{orgCode} )
         <if test="@Ognl@isNotEmpty(name)">
             and (name like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%')
-            or goodsname like concat('%',#{name},'%') or goodspinyin like concat('%',#{name},'%'))
+            or goodsname like concat('%',#{name},'%') or goodspinyin like concat('%',#{name},'%')
+            or barcode like concat('%',#{name},'%'))
         </if>
         <if test="@Ognl@isNotEmpty(category)">
             and category = #{category}
@@ -20,7 +21,8 @@
         NOT EXISTS (select * from t_b_drug where dictid = dict.id and removed= '0' and orgCode = #{orgCode} )
         <if test="@Ognl@isNotEmpty(name)">
             and (name like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%')
-            or goodsname like concat('%',#{name},'%') or goodspinyin like concat('%',#{name},'%'))
+            or goodsname like concat('%',#{name},'%') or goodspinyin like concat('%',#{name},'%')
+            or barcode like concat('%',#{name},'%'))
         </if>
         <if test="@Ognl@isNotEmpty(category)">
             and category = #{category}
