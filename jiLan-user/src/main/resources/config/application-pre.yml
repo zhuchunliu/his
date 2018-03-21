@@ -35,6 +35,7 @@ mybatis:
 logging:
   config: classpath:logback.xml
 
+
 mapper:
     mappers:
         - com.acmed.his.util.TkMapper

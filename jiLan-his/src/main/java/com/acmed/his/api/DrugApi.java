@@ -112,26 +112,11 @@ public class DrugApi {
     @PostMapping("/dict")
     public ResponseResult<PageResult<DrugDictVo>> getDrugDictList(@RequestBody(required = false) PageBase<DrugQueryMo> pageBase,
                                                                   @AccessToken AccessInfo info){
-        List<DrugDict> list = drugManager.getDrugDictList(info.getUser().getOrgCode(),
+
+        return ResponseUtil.setSuccessResult(drugManager.getDrugDictList(info.getUser().getOrgCode(),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null),
-                pageBase.getPageNum(), pageBase.getPageSize());
-        int total = drugManager.getDrugDictTotal(info.getUser().getOrgCode(),
-                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
-                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null));
-
-        List<DrugDictVo> voList = Lists.newArrayList();
-        list.forEach(obj->{
-            DrugDictVo vo = new DrugDictVo();
-            BeanUtils.copyProperties(obj,vo);
-            voList.add(vo);
-        });
-
-        PageResult pageResult = new PageResult();
-        BeanUtils.copyProperties(pageBase,pageResult);
-        pageResult.setTotal((long)total);
-        pageResult.setData(voList);
-        return ResponseUtil.setSuccessResult(pageResult);
+                pageBase.getPageNum(), pageBase.getPageSize()));
 
     }
 

@@ -6,9 +6,13 @@ import com.acmed.his.dao.DrugMapper;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
 import com.acmed.his.pojo.mo.DrugMo;
+import com.acmed.his.pojo.vo.DrugDictVo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.PinYinUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.collect.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -161,9 +165,14 @@ public class DrugManager {
      * @param pageSize
      * @return
      */
-    public List<DrugDict> getDrugDictList(Integer orgCode, String name, String category, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum,pageSize);
-        return drugDictMapper.getDrugDictList(orgCode,name,category);
+    public PageResult<DrugDict> getDrugDictList(Integer orgCode, String name, String category, Integer pageNum, Integer pageSize) {
+        Page page = PageHelper.startPage(pageNum,pageSize);
+        List<DrugDict> list = drugDictMapper.getDrugDictList(orgCode,name,category);
+
+        PageResult result = new PageResult();
+        result.setTotal(page.getTotal());
+        result.setData(list);
+        return result;
 
     }
 
