@@ -78,6 +78,9 @@ public class DispensingApi {
     @Autowired
     private ManufacturerMapper manufacturerMapper;
 
+    @Autowired
+    private InjectMapper injectMapper;
+
 
     @ApiOperation(value = "收支概况")
     @GetMapping("/fee/survey")
@@ -297,8 +300,13 @@ public class DispensingApi {
         });
 
 
+        example = new Example(Inject.class);
+        example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
+        example.orderBy("groupNum").orderBy("id");
+        List<Inject> injectList = injectMapper.selectByExample(example);
 
-        return ResponseUtil.setSuccessResult(new DispensingDetailVo(prescription,itemList,inspectList,chargeList,map,baseInfoManager,drugMapper,manufacturerMapper));
+        return ResponseUtil.setSuccessResult(new DispensingDetailVo(prescription,itemList,inspectList,chargeList,
+                map,injectList,baseInfoManager,drugMapper,manufacturerMapper));
     }
 
 

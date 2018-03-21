@@ -24,6 +24,9 @@ public class DispensingDetailVo {
     @ApiModelProperty("费用合计")
     private Double totalFee = 0d;
 
+    @ApiModelProperty("注射单")
+    private List<List<PreVo.InjectVo>> injectList = Lists.newArrayList();
+
 
     private List<DispensingInfoVo> infoVoList;
     public DispensingDetailVo(){
@@ -55,6 +58,7 @@ public class DispensingDetailVo {
     public DispensingDetailVo(Prescription prescription, List<PrescriptionItem> itemList,
                                 List<Inspect> inspectList,List<Charge> chargeList,
                                 Map<String, List<PrescriptionItemStock>> stockMap,
+                                List<Inject> preInjectList,
                                 BaseInfoManager baseInfoManager, DrugMapper drugMapper,
                                 ManufacturerMapper manufacturerMapper) {
         this.prescriptionNo = prescription.getPrescriptionNo();
@@ -177,6 +181,37 @@ public class DispensingDetailVo {
             list.add(map.get(iterator.next()));
         }
         this.infoVoList = list;
+
+        if(null != preInjectList && 0 != preInjectList.size()){
+            Map<String,List<PreVo.InjectVo>> injectMap = Maps.newHashMap();
+            for(Inject inject : preInjectList){
+                PreVo.InjectVo injectVo = new PreVo.InjectVo();
+                BeanUtils.copyProperties(inject,injectVo);
+                Drug drug = drugMapper.selectByPrimaryKey(inject.getDrugId());
+                injectVo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
+                if(null != drug) {
+                    injectVo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
+                            map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
+                    if(null != drug.getMinPriceUnitType()) {
+                        injectVo.setMinOrDoseUnitName(1 == drug.getMinPriceUnitType() ?
+                                (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())) :
+                                (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
+                    }
+                }
+
+                if(!injectMap.containsKey(inject.getGroupNum())){
+                    injectMap.put(inject.getGroupNum(),Lists.newArrayList(injectVo));
+                }else{
+                    injectMap.get(inject.getGroupNum()).add(injectVo);
+                }
+            }
+
+            Iterator iteratorInject = injectMap.keySet().iterator();
+            while (iteratorInject.hasNext()){
+                this.injectList.add(injectMap.get(iteratorInject.next()));
+            }
+
+        }
     }
 
 
@@ -281,5 +316,26 @@ public class DispensingDetailVo {
 
         @ApiModelProperty("费用类型")
         private String categoryName;
+    }
+
+    @Data
+    public static class InjectDetailVo{
+        @ApiModelProperty("药品id")
+        private Integer drugId;
+
+        @ApiModelProperty("用药名称")
+        private String drugName;
+
+        @ApiModelProperty("单次剂量")
+        private Double singleDose;
+
+        @ApiModelProperty("备注")
+        private String memo;
+
+        @ApiModelProperty("生产厂家名称")
+        private String manufacturerName;
+
+        @ApiModelProperty("二级单位名称 药品 minPriceUnitType：1代表minUnit,2代表doseUnit")
+        private String minOrDoseUnitName;
     }
 }
