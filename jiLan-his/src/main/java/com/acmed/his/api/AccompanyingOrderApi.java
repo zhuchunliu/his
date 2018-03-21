@@ -436,7 +436,8 @@ public class AccompanyingOrderApi {
             String fee = totalBalance.multiply(new BigDecimal(100)).intValue()+"";
             Map<String, String> refund = wxManager.refund(orderCode, fee, "退款", fee);
             String returnCode = refund.get("return_code");
-            if (StringUtils.equals("SUCCESS",returnCode)){
+            String resultCode = refund.get("result_code");
+            if (StringUtils.equals("SUCCESS",returnCode) && StringUtils.equals("SUCCESS",resultCode)){
                 // 退款成功
                 //商户退款单号
                 String outRefundNo = refund.get("out_refund_no");
