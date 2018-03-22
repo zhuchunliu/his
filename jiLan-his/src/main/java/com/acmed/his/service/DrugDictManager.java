@@ -31,8 +31,9 @@ public class DrugDictManager {
     public PageResult<DrugDict> getDrugDictList(String name, String category, Integer pageNum, Integer pageSize) {
         PageResult pageResult = new PageResult();
         Page page= PageHelper.startPage(pageNum,pageSize);
-        pageResult.setTotal(page.getTotal());
+
         pageResult.setData(drugDictMapper.getDrugDictList(name,category));
+        pageResult.setTotal(page.getTotal());
         return pageResult;
     }
 
