@@ -38,6 +38,7 @@ insert into t_p_s_permission(percode,pername,sn,pid) select 'qxgl','权限管理
 insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'scsgl','生产商管理',8, id,1 from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'gysgl','供应商管理',9, id,1 from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'jggl','机构管理',10, id,1 from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'ypzdwh','药品字典维护',11, id,1 from t_p_s_permission where percode = 'xtsz' ;
 
 
 
