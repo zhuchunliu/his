@@ -167,7 +167,7 @@ public class DrugManager {
      */
     public PageResult<DrugDict> getDrugDictList(Integer orgCode, String name, String category, Integer pageNum, Integer pageSize) {
         Page page = PageHelper.startPage(pageNum,pageSize);
-        List<DrugDict> list = drugDictMapper.getDrugDictList(orgCode,name,category);
+        List<DrugDict> list = drugDictMapper.getOrgDrugDictList(orgCode,name,category);
 
         PageResult result = new PageResult();
         result.setTotal(page.getTotal());
