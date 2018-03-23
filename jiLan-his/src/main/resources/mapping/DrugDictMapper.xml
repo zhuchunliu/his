@@ -4,8 +4,8 @@
 <mapper namespace="com.acmed.his.dao.DrugDictMapper">
 
     <select id="getOrgDrugDictList"  resultType="com.acmed.his.model.DrugDict">
-        select * from t_b_drugdict dict where dict.removed = '0' AND
-        NOT EXISTS (select * from t_b_drug where dictid = dict.id and removed= '0' and orgCode = #{orgCode} )
+        select * from t_b_drugdict dict where dict.removed = '0' AND dict.id
+        NOT IN (select dictid from t_b_drug where removed= '0' and orgCode = #{orgCode} AND dictid IS NOT NULL )
         <if test="@Ognl@isNotEmpty(name)">
             and (name like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%')
             or goodsname like concat('%',#{name},'%') or goodspinyin like concat('%',#{name},'%')
