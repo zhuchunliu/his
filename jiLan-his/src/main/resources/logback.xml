@@ -7,6 +7,7 @@
             <onMatch>DENY</onMatch>
             <onMismatch>ACCEPT</onMismatch>
         </filter>
+        <prudent>true</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <FileNamePattern>${LOG_HOME}/his.info.log.%d{yyyy-MM-dd}-%i.log</FileNamePattern>
             <maxHistory>5</maxHistory>
@@ -21,6 +22,7 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>Error</level>
         </filter>
+        <prudent>true</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <FileNamePattern>${LOG_HOME}/his.error.log.%d{yyyy-MM-dd}-%i.log</FileNamePattern>
             <maxHistory>5</maxHistory>
