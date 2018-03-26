@@ -39,7 +39,7 @@ public class AccompanyingOrderManager {
         accompanyingOrder.setCreateAt(LocalDateTime.now().toString());
         accompanyingOrder.setPayStatus(0);
         accompanyingOrder.setOrderCode(WaterCodeUtil.getWaterCode());
-
+        accompanyingOrder.setModifyAt(LocalDateTime.now().toString());
         int insert = accompanyingOrderMapper.insert(accompanyingOrder);
         if (insert == 0){
             return null;
