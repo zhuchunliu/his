@@ -2,6 +2,7 @@ package com.acmed.his.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.annotation.NameStyle;
 
 import javax.persistence.GeneratedValue;
@@ -92,6 +93,12 @@ public class Apply {
 
     @ApiModelProperty("医生名字")
     private String doctorName;
+
+    @ApiModelProperty("接诊医生id")
+    private Integer attendingDoctorId;
+
+    @ApiModelProperty("接诊医生名字")
+    private String attendingDoctorName;
 
     @ApiModelProperty("预约时间")
     private String appointmentTime;

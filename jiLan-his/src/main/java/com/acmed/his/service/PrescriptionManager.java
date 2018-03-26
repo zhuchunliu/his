@@ -244,6 +244,8 @@ public class PrescriptionManager {
         }
         apply.setStatus("3");
         apply.setIsPaid("1");
+        apply.setAttendingDoctorId(userInfo.getId());//设置接诊医生
+        apply.setAttendingDoctorName(userInfo.getUserName());
         applyMapper.updateByPrimaryKey(apply);
 
         //step3:处理就诊信息

@@ -28,7 +28,7 @@ insert into t_p_s_permission(percode,pername,sn,pid) select 'jcxmtj','检查项�
 insert into t_p_s_permission(percode,pername,sn,pid) select 'nybbtj','年月报表统计',4, id from t_p_s_permission where percode = 'sjtj' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'gzltj','工作量统计',5, id from t_p_s_permission where percode = 'sjtj' ;
 
-insert into t_p_s_permission(percode,pername,sn,pid) select 'ysgl','医生管理',1, id from t_p_s_permission where percode = 'xtsz' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'yggl','员工管理',1, id from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'ksgl','科室管理',2, id from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'mbwh','模板维护',3, id from t_p_s_permission where percode = 'xtsz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'fygl','费用管理',4, id from t_p_s_permission where percode = 'xtsz' ;

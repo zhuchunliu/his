@@ -24,6 +24,9 @@ public class Supply {
     @ApiModelProperty("id")
     private Integer id;
 
+    @ApiModelProperty("所属机构")
+    private Integer orgCode;
+
     @ApiModelProperty("供货商名称")
     private String supplyerName;
 

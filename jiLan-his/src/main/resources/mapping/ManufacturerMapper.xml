@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.acmed.his.dao.SupplyMapper">
-    <select id="selectMohu" resultType="com.acmed.his.model.Supply">
-        SELECT * FROM t_b_supply
-        <trim prefixOverrides="AND" prefix="where">
-            <if test="@Ognl@isNotEmpty(param)">
-                AND (supplyername like CONCAT('%',#{param},'%')
-                or abbrname like CONCAT('%',#{param},'%')
-                or pinyin like CONCAT('%',#{param},'%'))
+<mapper namespace="com.acmed.his.dao.ManufacturerMapper">
+
+    <select id="selectByManufacture" resultType="com.acmed.his.model.Manufacturer">
+        select * from t_b_manufacturer
+        <trim prefixOverrides="and" prefix="where">
+            <if test="@Ognl@isNotEmpty(name)">
+                AND (name like concat('%',#{name},'%') or pinyin like concat('%',#{name},'%') )
             </if>
             <if test="@Ognl@isNotEmpty(orgCode)">
                 AND (orgcode is NULL  or orgCode = #{orgCode})
