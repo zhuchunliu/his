@@ -54,6 +54,7 @@ public class AccompanyingOrderManager {
      * @return
      */
     public int update(AccompanyingOrder accompanyingOrder){
+        accompanyingOrder.setModifyAt(LocalDateTime.now().toString());
         return accompanyingOrderMapper.updateByPrimaryKeySelective(accompanyingOrder);
     }
 
