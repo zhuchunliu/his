@@ -8,6 +8,7 @@ import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -33,8 +34,8 @@ public class SupplyApi {
     @ApiOperation(value = "添加/编辑  存在id就是编辑")
     @PostMapping("save")
     public ResponseResult saveSupply(@RequestBody Supply supply,@AccessToken AccessInfo info){
-        supplyManager.saveSupply(supply,info.getUser());
-        return ResponseUtil.setSuccessResult();
+        Integer id = supplyManager.saveSupply(supply,info.getUser());
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("id",id));
     }
 
     @ApiOperation(value = "根据id查询")

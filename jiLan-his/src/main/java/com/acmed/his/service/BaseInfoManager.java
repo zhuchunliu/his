@@ -7,6 +7,7 @@ import com.acmed.his.model.Area;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.DicType;
 import com.acmed.his.pojo.vo.DicDetailVo;
+import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.UUIDUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,20 +125,25 @@ public class BaseInfoManager {
      * @param dicItem 1成功
      * @return 0 失败
      */
-    public int addDicItem(DicItem dicItem){
+    public String addDicItem(DicItem dicItem, UserInfo userInfo){
         DicItem dicItemParam = new DicItem();
         dicItemParam.setDicItemName(dicItem.getDicItemName());
         dicItemParam.setDicTypeCode(dicItem.getDicTypeCode());
+
         List<DicItem> select = dicItemMapper.select(dicItemParam);
         if (select.size() == 0){
             dicItem.setRemoved("0");
+            dicItem.setOrgCode(userInfo.getOrgCode());
             dicItem.setDicItemCode(commonManager.getNextVal(dicItem.getDicTypeCode()));
-            return dicItemMapper.insertSelective(dicItem);
+            dicItemMapper.insertSelective(dicItem);
+            return dicItem.getDicItemCode();
         }else {
             // 如果字典存在 就改成未删除
             DicItem dicItem1 = select.get(0);
+            dicItem1.setOrgCode(userInfo.getOrgCode());
             dicItem1.setRemoved("0");
-            return dicItemMapper.updateByPrimaryKeySelective(dicItem1);
+            dicItemMapper.updateByPrimaryKeySelective(dicItem1);
+            return dicItem1.getDicItemCode();
         }
     }
 
@@ -223,6 +229,10 @@ public class BaseInfoManager {
         return dicItemMapper.selectByExample(example);
     }
 
+    public List<DicItem> getDicItemsByDicTypeCode(String dicTypeCode, UserInfo user) {
+        return dicItemMapper.getDicItemsByDicTypeCode(dicTypeCode,user.getOrgCode());
+    }
+
 
     public DicItem getByDicTypeCodeAndDicItemCode(String dicTypeCode,String dicItemCode){
         DicItem param = new DicItem();
@@ -238,4 +248,6 @@ public class BaseInfoManager {
         example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("dicItemCode",dicItemCode).andEqualTo("removed","0");
         return Optional.ofNullable(dicItemMapper.selectByExample(example)).filter(obj->obj.size()!=0).map(obj->obj.get(0)).orElse(new DicItem());
     }
+
+
 }

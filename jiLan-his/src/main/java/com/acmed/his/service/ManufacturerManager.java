@@ -34,7 +34,7 @@ public class ManufacturerManager {
         manufacturer.setPinYin(PinYinUtil.getPinYinHeadChar(manufacturer.getName()));
         if (id == null){
             manufacturer.setOrgCode(userInfo.getOrgCode());
-            return manufacturerMapper.insert(manufacturer);
+            manufacturerMapper.insert(manufacturer);
         }else {
             Manufacturer manufacturer1 = manufacturerMapper.selectByPrimaryKey(id);
             if (manufacturer1 == null){
@@ -43,9 +43,9 @@ public class ManufacturerManager {
             }else {
                 manufacturer.setOrgCode(userInfo.getOrgCode());
                 manufacturerMapper.updateByPrimaryKeySelective(manufacturer);
-                return 1;
             }
         }
+        return manufacturer.getId();
     }
 
     /**

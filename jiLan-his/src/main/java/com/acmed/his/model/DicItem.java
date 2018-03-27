@@ -34,6 +34,9 @@ public class DicItem {
     @ApiModelProperty("字典类型编码")
     private String dicTypeCode;
 
+    @ApiModelProperty("所属机构")
+    private Integer orgCode;
+
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;
 

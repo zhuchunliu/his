@@ -40,10 +40,11 @@ public class SupplyManager {
             if (select.size()!=0){
                 throw new BaseException(StatusCode.FAIL,supply.getSupplyerName()+"已经存在，请勿重复添加");
             }
-            return supplyMapper.insert(supply);
+            supplyMapper.insert(supply);
         }else {
-            return supplyMapper.updateByPrimaryKeySelective(supply);
+            supplyMapper.updateByPrimaryKeySelective(supply);
         }
+        return supply.getId();
     }
 
     /**

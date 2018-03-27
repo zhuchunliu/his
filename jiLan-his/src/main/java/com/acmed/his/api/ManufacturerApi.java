@@ -8,6 +8,7 @@ import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -35,8 +36,9 @@ public class ManufacturerApi {
     @PostMapping("save")
     public ResponseResult saveManufacturer(@RequestBody Manufacturer manufacturer,
                                            @AccessToken AccessInfo info){
-        manufacturerManager.saveManufacturer(manufacturer,info.getUser());
-        return ResponseUtil.setSuccessResult();
+        ;
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("id",
+                manufacturerManager.saveManufacturer(manufacturer,info.getUser())));
     }
 
     @ApiOperation(value = "根据id查询详情")
