@@ -47,3 +47,11 @@ pagehelper:
 #    reasonable: true
 #    supportMethodsArguments: true
 #    params: count=countSql
+
+weixin:
+  appid: wx7e396b520f901b15
+  secret: a9bdaf563dd6a2cfd988153058021955
+  mchId: 1301239801
+  key: 3ef5f2a417ce47d0a8deaa6ef903f8f6
+  certPath: src/main/resources/apiclient_cert.p12
+  url: http://wxpaytest.lanshiyihui.com:8994${server.context-path}
