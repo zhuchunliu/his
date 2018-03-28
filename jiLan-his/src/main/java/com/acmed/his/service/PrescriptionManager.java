@@ -184,11 +184,11 @@ public class PrescriptionManager {
 
                     if(null != obj.getNum() && 0 != obj.getNum()){
                         if(1 == obj.getUnitType()) {
-                            item.setNumName(obj.getNum() + unitItemName.get(drug.getUnit().toString()));
+                            item.setNumName(obj.getNum() + (null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString())));
                         }else if(1 == obj.getMinPriceUnitType()){
-                            item.setNumName(obj.getNum()+unitItemName.get(drug.getMinUnit().toString()));
+                            item.setNumName(obj.getNum()+(null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
                         }else{
-                            item.setNumName(obj.getNum()+unitItemName.get(drug.getDoseUnit().toString()));
+                            item.setNumName(obj.getNum()+(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
                         }
                     }
                 }

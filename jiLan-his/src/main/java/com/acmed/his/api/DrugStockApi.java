@@ -75,7 +75,7 @@ public class DrugStockApi {
             BeanUtils.copyProperties(drug,vo);
 
             vo.setManufacturerName(null == drug.getManufacturer()?"":manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
-            vo.setUnitName(dicItemName.get(drug.getUnit().toString()));
+            vo.setUnitName(null == drug.getUnit()?"":dicItemName.get(drug.getUnit().toString()));
             vo.setMinUnitName(null == drug.getMinUnit()?"":dicItemName.get(drug.getMinUnit().toString()));
             vo.setDoseUnitName(null == drug.getDoseUnit()?"":dicItemName.get(drug.getDoseUnit().toString()));
             if(null != drug.getRetailPrice()) {

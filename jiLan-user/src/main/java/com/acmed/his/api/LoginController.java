@@ -14,6 +14,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,8 @@ import java.util.WeakHashMap;
 @Api(tags ="登录接口")
 @RequestMapping("/login")
 public class LoginController {
+
+    private Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
     private LoginManager loginManager;

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -27,7 +29,11 @@ public class WxManagerTest {
 
     @Test
     public void getBaseAccessToken() {
-
+        try {
+            wxManager.wxUserInfo("ogmDPv0svLruqLy5d96QpihwVu-Y",null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //"7_3DbbsbCAZNzxFUcsjtj2kv-zehJpykrjnkDjWt68jbDCEAnekELHJmeRuL81SL8ODqNkE7nZC53uzzGdCm52HUfbI1JRDyUwyWYzQjmZ3PusZBDasygszlW0mXEFP1hNEydTNy5g4wZQiovoJRCgAFAVDO";
     }
 }

@@ -87,14 +87,17 @@ public class DrugApi {
                     map(obj->obj.getName()).orElse(""));
 
             if(null != drug.getNum() && 0 != drug.getNum()){
-                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+drug.getNum()+dicItemName.get(drug.getUnit().toString()));
+                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+drug.getNum()+
+                        (null == drug.getUnit()?"":dicItemName.get(drug.getUnit().toString())));
             }
             if(null != drug.getMinNum() && 0 != drug.getMinNum()){
-                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+drug.getMinNum()+dicItemName.get(drug.getMinUnit().toString()));
+                vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+drug.getMinNum()+
+                        (null == drug.getMinUnit()?"":dicItemName.get(drug.getMinUnit().toString())));
             }
             if(null != drug.getDoseNum() && 0 != drug.getDoseNum()){
                 vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+
-                        (0==drug.getDoseNum()*10%1? String.valueOf((int)Math.floor(drug.getDoseNum())):String.valueOf(drug.getDoseNum()))+dicItemName.get(drug.getDoseUnit().toString()));
+                        (0==drug.getDoseNum()*10%1? String.valueOf((int)Math.floor(drug.getDoseNum())):String.valueOf(drug.getDoseNum()))+
+                        (null == drug.getDoseUnit()?"":dicItemName.get(drug.getDoseUnit().toString())));
             }
             vo.setNeedSupplement(null == drug.getConversion()?1:0);
             voList.add(vo);

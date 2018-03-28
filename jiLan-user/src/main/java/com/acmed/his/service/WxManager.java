@@ -88,7 +88,18 @@ public class WxManager {
 
 
     public WxUserInfo wxUserInfo(String openid,String accessToken) throws IOException {
-        String url = String.format("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN",
+
+        logger.error("openid "+openid+" accessToken "+accessToken);
+
+        String accessTokenUrl =  String.format("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s",
+                environment.getProperty("weixin.appid"),environment.getProperty("weixin.secret"));
+        String info = new RestTemplate().getForObject(accessTokenUrl, String.class);
+        JSONObject jsonobject = JSONObject.parseObject(info);
+        accessToken = jsonobject.getString("access_token");
+
+//        String url = String.format("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN",
+//                accessToken, openid);
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN",
                 accessToken, openid);
         URL url1 = new URL(url);
         HttpURLConnection urlConnection = (HttpURLConnection)url1.openConnection();
@@ -105,7 +116,7 @@ public class WxManager {
         JSONObject json = JSONObject.parseObject(jsonUserStr);
         WxUserInfo wxUserInfo = new WxUserInfo();
         wxUserInfo.setHeadImgUrl(json.getString("headimgurl"));
-        wxUserInfo.setNickName(EmojiUtil.emojiConvert(json.getString("nickname")));
+        wxUserInfo.setNickName(StringUtils.isEmpty(json.getString("nickname"))?null:EmojiUtil.emojiConvert(json.getString("nickname")));
         String sex = json.getString("sex");
         if (StringUtils.equals("2",sex)){
             wxUserInfo.setSex("1");

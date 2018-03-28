@@ -72,4 +72,7 @@ public class OrgMo {
 
     @ApiModelProperty("医院账号")
     private String loginName;
+
+    @ApiModelProperty("医院图片")
+    private String imgUrl;
 }

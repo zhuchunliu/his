@@ -107,6 +107,7 @@ public class LoginManager {
             patient.setId(UUIDUtil.generate());
             patient.setOpenid(openIdAndAccessToken.getOpenId());
             patient.setNickName(EmojiUtil.emojiConvert(wxUserInfo.getNickName()));
+            patient.setAvatar(wxUserInfo.getHeadImgUrl());
             patient.setGender(wxUserInfo.getSex());
             patient.setCreateAt(LocalDateTime.now().toString());
             patientMapper.insert(patient);
