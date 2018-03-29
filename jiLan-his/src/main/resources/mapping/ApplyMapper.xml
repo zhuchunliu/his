@@ -132,6 +132,7 @@
                 and t1.createby = #{createBy}
             </if>
         </where>
+        ORDER BY t1.createat DESC
     </select>
 
     <update id="updatePatientNameByPatientItemId">
