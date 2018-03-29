@@ -176,7 +176,7 @@ public class PayApi {
         if (applyById == null){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"挂号单不存在");
         }
-        if (!StringUtils.equals("0",applyById.getIsPaid()) ){
+        if (StringUtils.isNotEmpty(applyById.getIsPaid()) && StringUtils.equals("1",applyById.getIsPaid()) ){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_PAY,"请不要重复支付");
         }
 
