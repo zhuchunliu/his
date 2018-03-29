@@ -87,6 +87,7 @@ public class DispensingDetailVo {
                 medicalDetail.setDrugCode(drug.getDrugCode());
                 medicalDetail.setDrugName(item.getDrugName());
                 medicalDetail.setPrice(item.getFee());
+                medicalDetail.setSpec(drug.getSpec());
                 if(null != item.getNum() && 0 != item.getNum()){
                     medicalDetail.setNumName(item.getNum()+unitItemName.get(1==item.getUnitType()?drug.getUnit().toString():
                             (1 == drug.getMinPriceUnitType()?drug.getMinUnit().toString():drug.getDoseUnit().toString())));
@@ -113,6 +114,7 @@ public class DispensingDetailVo {
                 BeanUtils.copyProperties(stock,medicalDetail);
                 BeanUtils.copyProperties(item,medicalDetail);
                 Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
+                medicalDetail.setSpec(drug.getSpec());
                 if(null != stock.getNum() && 0 != stock.getNum()){
                     medicalDetail.setPrice(drug.getRetailPrice()*stock.getNum());
                     medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getNum()+
@@ -225,6 +227,9 @@ public class DispensingDetailVo {
 
         @ApiModelProperty("药品编码")
         private String drugCode;
+
+        @ApiModelProperty("药品规格")
+        private String spec;
 
         @ApiModelProperty("用药名称")
         private String drugName;

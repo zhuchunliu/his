@@ -89,7 +89,7 @@ public class DispensingApi {
             endDate = DateTimeUtil.getEndDate(LocalDate.now().toString());
         }else{
             startDate = Optional.ofNullable(startDate).map(DateTimeUtil::getBeginDate).orElse(null);
-            endDate = Optional.ofNullable(startDate).map(DateTimeUtil::getEndDate).orElse(null);
+            endDate = Optional.ofNullable(endDate).map(DateTimeUtil::getEndDate).orElse(null);
         }
         List<Map<String,Object>> payList = payStatementsMapper.getFeeSurvey(startDate,endDate,info.getUser().getOrgCode());
         List<Map<String,Object>> refundList = payRefuseMapper.getFeeSurvey(startDate,endDate,info.getUser().getOrgCode());

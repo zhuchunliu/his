@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Darren on 2018-01-24
@@ -14,7 +15,7 @@ import java.util.Map;
 public class DispensingFeeSurveyVo {
 
     public DispensingFeeSurveyVo(Double fee,List<Map<String, Object>> payList, List<Map<String, Object>> refundList) {
-        this.fee = fee;
+        this.fee = Optional.ofNullable(fee).map(Double::doubleValue).orElse(0d);
         if(null != payList){
             for(Map<String,Object> pay : payList){
                 switch (Integer.parseInt(pay.get("feetype").toString())){
@@ -26,6 +27,9 @@ public class DispensingFeeSurveyVo {
                         break;
                     case 2:
                         this.alipayFee = new Double(pay.get("fee").toString()).doubleValue();
+                        break;
+                    case 3:
+                        this.cardFee = new Double(pay.get("fee").toString()).doubleValue();
                         break;
                 }
             }
@@ -43,11 +47,14 @@ public class DispensingFeeSurveyVo {
                     case 2:
                         this.alipayRefundFee = new Double(refund.get("fee").toString()).doubleValue();
                         break;
+                    case 3:
+                        this.cardRefundFee = new Double(refund.get("fee").toString()).doubleValue();
+                        break;
                 }
             }
         }
-        this.totalFee = this.cashFee + this.weixinFee + this.alipayFee;
-        this.totalRefundFee = this.cashRefundFee + this.weixinRefundFee + this.alipayRefundFee;
+        this.totalFee = this.cashFee + this.weixinFee + this.alipayFee+this.cardFee;
+        this.totalRefundFee = this.cashRefundFee + this.weixinRefundFee + this.alipayRefundFee+this.cardRefundFee;
     }
 
     @ApiModelProperty("总费用：收过费+未收费+已退款总额")
@@ -65,6 +72,9 @@ public class DispensingFeeSurveyVo {
     @ApiModelProperty("支付宝实收额")
     private double alipayFee;
 
+    @ApiModelProperty("刷卡实收额")
+    private double cardFee;
+
     @ApiModelProperty("实退总额")
     private double totalRefundFee;
 
@@ -76,6 +86,9 @@ public class DispensingFeeSurveyVo {
 
     @ApiModelProperty("支付宝实退额")
     private double alipayRefundFee;
+
+    @ApiModelProperty("刷卡实收额")
+    private double cardRefundFee;
 
 
 }
