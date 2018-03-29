@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -488,4 +486,6 @@ public class AccompanyingOrderApi {
         map.put("daichuli",total);
         return ResponseUtil.setSuccessResult(map);
     }
+
+
 }

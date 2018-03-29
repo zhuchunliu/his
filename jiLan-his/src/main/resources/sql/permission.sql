@@ -4,6 +4,7 @@ insert into t_p_s_permission(percode,pername,sn) values('sffy','收费发药',2)
 insert into t_p_s_permission(percode,pername,sn) values('ypjxc','药品进销存',3) ;
 insert into t_p_s_permission(percode,pername,sn) values('sjtj','数据统计',4) ;
 insert into t_p_s_permission(percode,pername,sn) values('xtsz','系统设置',5) ;
+insert into t_p_s_permission(percode,pername,sn) values('jybsg','就医北上广',6) ;
 
 
 -- 二级菜单
@@ -41,6 +42,10 @@ insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'jggl','机
 insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'ypzdwh','药品字典维护',11, id,1 from t_p_s_permission where percode = 'xtsz' ;
 
 
+
+insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'qd','渠道',1, id,1 from t_p_s_permission where percode = 'jybsg' ;
+insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'sc','市场',2, id,1 from t_p_s_permission where percode = 'jybsg' ;
+insert into t_p_s_permission(percode,pername,sn,pid,hideflag) select 'pt','平台',2, id,1 from t_p_s_permission where percode = 'jybsg' ;
 
 -- 门诊列表
 insert into t_p_s_permission(pername,url,pid) select '添加/编辑处方','/pre',id from t_p_s_permission where percode = 'mzlb';
@@ -201,3 +206,20 @@ insert into t_p_s_permission(pername,url,pid) select '添加/编辑 ','/supply/s
 -- 机构管理
 insert into t_p_s_permission(pername,url,pid) select '添加/编辑 ','/org/save',id from t_p_s_permission where percode = 'jggl';
 insert into t_p_s_permission(pername,url,pid) select '删除 ','/org/del',id from t_p_s_permission where percode = 'jggl';
+
+
+
+-- 就医北上广渠道
+insert into t_p_s_permission(pername,url,pid) select '创建附属订单 ','/accompanying/addAccompanyingOrderConfirmation',id from t_p_s_permission where percode = 'qd';
+insert into t_p_s_permission(pername,url,pid) select '预约失败 ','/accompanying/yuyueshibai',id from t_p_s_permission where percode = 'qd';
+insert into t_p_s_permission(pername,url,pid) select '标记为已经处理 ','/accompanying/handling',id from t_p_s_permission where percode = 'qd';
+insert into t_p_s_permission(pername,url,pid) select '标记为用户未就诊 ','/accompanying/doNotSeeDoc',id from t_p_s_permission where percode = 'qd';
+insert into t_p_s_permission(pername,url,pid) select '标记为待评价 ','/accompanying/evaluate',id from t_p_s_permission where percode = 'qd';
+insert into t_p_s_permission(pername,url,pid) select '标记为拒绝取消 ','/accompanying/rejectCancel',id from t_p_s_permission where percode = 'qd';
+insert into t_p_s_permission(pername,url,pid) select '标记为同意取消 ','/accompanying/agreedCancel',id from t_p_s_permission where percode = 'qd';
+insert into t_p_s_permission(pername,url,pid) select '管理员和渠道查看订单列表 ','/accompanying/suppliersOrderList',id from t_p_s_permission where percode = 'qd';
+insert into t_p_s_permission(pername,url,pid) select '消息 ','/accompanying/msg',id from t_p_s_permission where percode = 'qd';
+-- 就医北上广市场
+insert into t_p_s_permission(pername,url,pid) select '管理员和渠道查看订单列表 ','/accompanying/suppliersOrderList',id from t_p_s_permission where percode = 'sc';
+-- 就医北上广平台
+insert into t_p_s_permission(pername,url,pid) select '管理员和渠道查看订单列表 ','/accompanying/suppliersOrderList',id from t_p_s_permission where percode = 'pt';
