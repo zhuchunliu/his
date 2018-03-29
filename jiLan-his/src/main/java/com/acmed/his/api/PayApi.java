@@ -5,10 +5,7 @@ import com.acmed.his.model.AccompanyingOrder;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.PayStatements;
-import com.acmed.his.service.AccompanyingOrderManager;
-import com.acmed.his.service.ApplyManager;
-import com.acmed.his.service.PatientManager;
-import com.acmed.his.service.PayManager;
+import com.acmed.his.service.*;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.support.WithoutToken;
@@ -53,6 +50,9 @@ public class PayApi {
 
     @Autowired
     private PayManager payManager;
+
+    @Autowired
+    private CommonManager commonManager;
 
     @Autowired
     private ApplyManager applyManager;
@@ -260,6 +260,7 @@ public class PayApi {
                             if (StringUtils.isEmpty(applyById.getIsPaid()) || StringUtils.equals("0",applyById.getIsPaid())){
                                 Apply apply = new Apply();
                                 apply.setId(out_trade_no);
+                                apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
                                 apply.setIsPaid("1");
                                 int i = applyManager.updateApply(apply);
                                 PayStatements payStatements = new PayStatements();
