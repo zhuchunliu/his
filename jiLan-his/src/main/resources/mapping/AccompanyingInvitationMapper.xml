@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.AccompanyingInvitationMapper">
+
+    <select id="getInvitationDtoByUserId" resultType="com.acmed.his.model.dto.InvitationDto">
+        SELECT
+        ao.orgname hospitalName,
+        tu.username doctorName,
+        ao.realname name,
+        ao.cityname
+    FROM
+        accompanying_order ao
+        LEFT JOIN t_p_s_user tu ON tu.sharecode = ao.invitationcode
+    WHERE
+        ao.`status` IN ( 4, 5, 6, 7, 8, 9, 10, 11 )
+        AND ao.invitationcode IN (
+    SELECT
+        sharecode
+    FROM
+        t_p_s_user
+    WHERE
+        id IN ( SELECT ai.userid FROM accompanying_invitation ai WHERE ai.invitationcode = ( SELECT sharecode FROM t_p_s_user WHERE id = #{userId} ) )
+        )
+        ORDER BY ao.createat DESC
+    </select>
+</mapper>

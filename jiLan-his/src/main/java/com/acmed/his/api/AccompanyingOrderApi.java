@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.InvitationDto;
 import com.acmed.his.pojo.mo.AddAccompanyingOrderConfirmationModel;
 import com.acmed.his.pojo.mo.AddAccompanyingOrderModel;
 import com.acmed.his.pojo.mo.AppraiseAccompanyingOrderModel;
@@ -10,10 +11,7 @@ import com.acmed.his.pojo.vo.SuppliersOrderVo;
 import com.acmed.his.service.*;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.util.NumberFormtUtil;
-import com.acmed.his.util.PageResult;
-import com.acmed.his.util.ResponseResult;
-import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.util.*;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -400,6 +398,19 @@ public class AccompanyingOrderApi {
         return ResponseUtil.setSuccessResult();
     }
 
+    @ApiOperation(value = "医生接受邀请")
+    @GetMapping("doctorAccessInvitation")
+    public ResponseResult doctorAccessInvitation(@AccessToken AccessInfo info,@RequestParam("invitationCode")String invitationCode){
+        Integer userId = info.getUserId();
+
+
+        return ResponseUtil.setSuccessResult();
+    }
+
+
+
+
+
     /**
      * 取消预约
      */
@@ -487,5 +498,12 @@ public class AccompanyingOrderApi {
         return ResponseUtil.setSuccessResult(map);
     }
 
+
+
+    @ApiOperation(value = "预约成功列表")
+    @GetMapping("getList")
+    public ResponseResult<PageResult<InvitationDto>> getList(@RequestParam("pageNum")Integer pageNum, @RequestParam("pageSize")Integer pageSize, @AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(accompanyingInvitationManager.selectAccompanyingInvitationByUserId(info.getUserId(),pageNum,pageSize));
+    }
 
 }

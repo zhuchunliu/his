@@ -109,4 +109,7 @@ public class User implements Serializable{
     @ApiModelProperty("限号数量")
     private Integer applyNum;
 
+    @ApiModelProperty("分享码")
+    private String shareCode;
+
 }

@@ -117,10 +117,6 @@ public class AccompanyingOrder{
 
     private Integer delFlag;
     /**
-     * 邀请码
-     */
-    private String otherShareCode;
-    /**
      * 评价
      */
     private Double point;
