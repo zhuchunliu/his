@@ -402,8 +402,10 @@ public class AccompanyingOrderApi {
     @GetMapping("doctorAccessInvitation")
     public ResponseResult doctorAccessInvitation(@AccessToken AccessInfo info,@RequestParam("invitationCode")String invitationCode){
         Integer userId = info.getUserId();
-
-
+        AccompanyingInvitation accompanyingInvitation = new AccompanyingInvitation();
+        accompanyingInvitation.setUserId(userId);
+        accompanyingInvitation.setInvitationCode(invitationCode);
+        accompanyingInvitationManager.addAccompanyingInvitation(accompanyingInvitation);
         return ResponseUtil.setSuccessResult();
     }
 
