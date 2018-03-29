@@ -499,6 +499,10 @@ public class ApplyManager {
             apply.setPatientId(generatePatientId);
             apply.setPatientName(mo.getPatientName());
             apply.setFee(fee);
+            if (fee==0){
+                apply.setIsPaid("1");
+                apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+            }
             apply.setPatientItemId(generatePatientItemId);
             int i1 = addApply(apply);
             return ResponseUtil.setSuccessResult(applyId);
@@ -522,6 +526,10 @@ public class ApplyManager {
                 apply.setGender(patientItem1.getGender());
                 apply.setPinYin(patientItem1.getInputCode());
                 apply.setFee(fee);
+                if (fee==0){
+                    apply.setIsPaid("1");
+                    apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+                }
                 apply.setAge(patientItem1.getAge());
                 apply.setIsFirst(0);
                 apply.setPatientItemId(patientItem1.getId());
@@ -549,6 +557,10 @@ public class ApplyManager {
                 apply.setGender(patientItem1.getGender());
                 apply.setPinYin(patientItem1.getInputCode());
                 apply.setFee(fee);
+                if (fee==0){
+                    apply.setIsPaid("1");
+                    apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+                }
                 apply.setAge(DateTimeUtil.getAge(mo.getIdcard()));
                 apply.setIsFirst(0);
                 apply.setPatientItemId(generatePatientItemId);
@@ -590,7 +602,6 @@ public class ApplyManager {
         // 挂号单号在付款完成后生成
         //String formatVal = commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000");
         apply.setClinicNo(null);
-        apply.setIsPaid("0");
         apply.setStatus("0");
         apply.setModifyBy(null);
         apply.setModifyAt(null);
