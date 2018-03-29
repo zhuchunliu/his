@@ -21,7 +21,7 @@ public interface PermissionMapper extends TkMapper<Permission> {
 
     List<Permission> getBasePermission();
 
-    List<Permission> getPermissionByPid(@Param("pid") Integer pid);
+    List<Permission> getPermissionByPid(@Param("pid") Integer pid,@Param("orgCode") Integer orgCode);
 
     List<Permission> getNeedFilterPermissionList();
 

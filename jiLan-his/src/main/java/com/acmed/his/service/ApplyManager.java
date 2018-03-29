@@ -452,6 +452,7 @@ public class ApplyManager {
         }
         Apply apply = new Apply();
         String applyId = UUIDUtil.generate32();
+        apply.setIsPaid("0");
         apply.setId(applyId);
         apply.setDoctorName(doctorName);
         apply.setDoctorId(doctorId);

@@ -41,7 +41,11 @@
     </select>
 
     <select id="getPermissionByPid" resultType="com.acmed.his.model.Permission">
-        select * from t_p_s_permission where pid = #{pid} AND hideflag = 0 order by sn asc
+        select * from t_p_s_permission where pid = #{pid}
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            AND hideflag = 0
+        </if>
+        order by sn asc
     </select>
 
     <select id="getNeedFilterPermissionList" resultType="com.acmed.his.model.Permission">

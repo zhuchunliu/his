@@ -257,7 +257,7 @@ public class PayApi {
                         logger.info("微信支付订单号" + transaction_id);
                         Apply applyById = applyManager.getApplyById(out_trade_no);
                         if (applyById != null) {
-                            if (StringUtils.equals("0",applyById.getIsPaid())){
+                            if (StringUtils.isEmpty(applyById.getIsPaid()) || StringUtils.equals("0",applyById.getIsPaid())){
                                 Apply apply = new Apply();
                                 apply.setId(out_trade_no);
                                 apply.setIsPaid("1");
