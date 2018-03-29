@@ -40,4 +40,14 @@ public interface PrescriptionMapper extends TkMapper<Prescription>{
                                @Param("status") String status,@Param("diagnoseStartDate") String diagnoseStartDate,
                                @Param("diagnoseEndDate") String diagnoseEndDate);
 
+    /**
+     * 统计机构费用
+     * @param startDate
+     * @param endDate
+     * @param orgCode
+     * @return
+     */
+    Double getFee(@Param("startDate") String startDate,
+                  @Param("endDate") String endDate,
+                  @Param("orgCode") Integer orgCode);
 }

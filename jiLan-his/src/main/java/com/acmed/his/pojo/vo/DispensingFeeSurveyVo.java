@@ -13,7 +13,8 @@ import java.util.Map;
 @Data
 public class DispensingFeeSurveyVo {
 
-    public DispensingFeeSurveyVo(List<Map<String, Object>> payList, List<Map<String, Object>> refundList) {
+    public DispensingFeeSurveyVo(Double fee,List<Map<String, Object>> payList, List<Map<String, Object>> refundList) {
+        this.fee = fee;
         if(null != payList){
             for(Map<String,Object> pay : payList){
                 switch (Integer.parseInt(pay.get("feetype").toString())){
@@ -48,6 +49,9 @@ public class DispensingFeeSurveyVo {
         this.totalFee = this.cashFee + this.weixinFee + this.alipayFee;
         this.totalRefundFee = this.cashRefundFee + this.weixinRefundFee + this.alipayRefundFee;
     }
+
+    @ApiModelProperty("总费用：收过费+未收费+已退款总额")
+    private double fee;
 
     @ApiModelProperty("实收总额")
     private double totalFee;

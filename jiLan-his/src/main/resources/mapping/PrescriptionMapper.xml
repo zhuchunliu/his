@@ -111,4 +111,18 @@
             </if>
         </trim>
     </select>
+
+    <select id="getFee" resultType="java.lang.Double">
+        select sum(fee) as fee from t_b_prescription where orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(startDate) ">
+            <![CDATA[
+              and createat >= #{startDate}
+            ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endDate) ">
+            <![CDATA[
+              and createat <= #{endDate}
+            ]]>
+        </if>
+    </select>
 </mapper>

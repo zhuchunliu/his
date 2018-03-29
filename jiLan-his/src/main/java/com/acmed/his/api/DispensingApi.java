@@ -81,13 +81,21 @@ public class DispensingApi {
 
     @ApiOperation(value = "收支概况")
     @GetMapping("/fee/survey")
-    public ResponseResult<DispensingFeeSurveyVo> getFeeSurvey(@Param("日期 yyyy-MM-dd格式 默认当天")@RequestParam(required = false) String date,
+    public ResponseResult<DispensingFeeSurveyVo> getFeeSurvey(@Param("日期 yyyy-MM-dd格式 默认当天")@RequestParam(required = false) String startDate,
+                                                              @Param("日期 yyyy-MM-dd格式 默认当天")@RequestParam(required = false) String endDate,
                                                               @AccessToken AccessInfo info){
-        date = Optional.ofNullable(date).orElse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        List<Map<String,Object>> payList = payStatementsMapper.getFeeSurvey(date,info.getUser().getOrgCode());
-        List<Map<String,Object>> refundList = payRefuseMapper.getFeeSurvey(date,info.getUser().getOrgCode());
+        if(null == startDate && null == endDate){
+            startDate = DateTimeUtil.getBeginDate(LocalDate.now().toString());
+            endDate = DateTimeUtil.getEndDate(LocalDate.now().toString());
+        }else{
+            startDate = Optional.ofNullable(startDate).map(DateTimeUtil::getBeginDate).orElse(null);
+            endDate = Optional.ofNullable(startDate).map(DateTimeUtil::getEndDate).orElse(null);
+        }
+        List<Map<String,Object>> payList = payStatementsMapper.getFeeSurvey(startDate,endDate,info.getUser().getOrgCode());
+        List<Map<String,Object>> refundList = payRefuseMapper.getFeeSurvey(startDate,endDate,info.getUser().getOrgCode());
+        Double fee = preMapper.getFee(startDate,endDate,info.getUser().getOrgCode());
 
-        return ResponseUtil.setSuccessResult(new DispensingFeeSurveyVo(payList,refundList));
+        return ResponseUtil.setSuccessResult(new DispensingFeeSurveyVo(fee,payList,refundList));
     }
 
     @ApiOperation(value = "收费发药列表")

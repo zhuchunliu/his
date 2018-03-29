@@ -31,6 +31,12 @@ public class DrugDay {
     @ApiModelProperty("销售数量")
     private Double saleNum;
 
+    @ApiModelProperty("销售小单位数量")
+    private Double saleMinNum;
+
+    @ApiModelProperty("销售剂量单位数量")
+    private Double saleDoseNum;
+
     @ApiModelProperty("库存数量")
     private Double storeNum;
 
