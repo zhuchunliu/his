@@ -502,7 +502,7 @@ public class ApplyManager {
             apply.setFee(fee);
             if (fee==0){
                 apply.setIsPaid("1");
-                apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+                apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
             }
             apply.setPatientItemId(generatePatientItemId);
             int i1 = addApply(apply);
@@ -529,7 +529,7 @@ public class ApplyManager {
                 apply.setFee(fee);
                 if (fee==0){
                     apply.setIsPaid("1");
-                    apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+                    apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
                 }
                 apply.setAge(patientItem1.getAge());
                 apply.setIsFirst(0);
@@ -560,7 +560,7 @@ public class ApplyManager {
                 apply.setFee(fee);
                 if (fee==0){
                     apply.setIsPaid("1");
-                    apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+                    apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
                 }
                 apply.setAge(DateTimeUtil.getAge(mo.getIdcard()));
                 apply.setIsFirst(0);
