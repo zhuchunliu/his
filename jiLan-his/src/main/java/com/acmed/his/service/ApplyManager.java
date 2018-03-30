@@ -602,7 +602,7 @@ public class ApplyManager {
         apply.setCreateAt(LocalDateTime.now().toString());
         // 挂号单号在付款完成后生成
         //String formatVal = commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000");
-        apply.setClinicNo(null);
+//        apply.setClinicNo(null);
         apply.setStatus("0");
         apply.setModifyBy(null);
         apply.setModifyAt(null);
