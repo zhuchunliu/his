@@ -94,7 +94,7 @@ public class OrgApi {
                                                         @ApiParam("医院名称") @RequestParam(value="orgName",required = false) String orgName,
                                                         @ApiParam("直线距离 默认100Km") @RequestParam(value = "range",defaultValue = "100") Double range){
         List<OrgVo> list = new ArrayList<>();
-        DecimalFormat format =  new DecimalFormat("#.00");
+        DecimalFormat format =  new DecimalFormat("#0.00");
         orgManager.getOrgList(lng,lat,range,orgName).forEach((obj)->{
 
             OrgVo vo = new OrgVo();
