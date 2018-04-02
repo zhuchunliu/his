@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.DicItemMapper">
     <select id="getDicItemsByDicTypeCode" resultType="com.acmed.his.model.DicItem">
-        SELECT * FROM t_p_s_dicitem
+        SELECT * FROM t_p_s_dicitem AND removed = '0'
         <trim prefixOverrides="AND" prefix="where">
             <if test="@Ognl@isNotEmpty(dicTypeCode)">
                 AND dictypecode = #{dicTypeCode}
