@@ -57,6 +57,9 @@
         <if test="@Ognl@isNotEmpty(orgCode)">
             and t1.orgcode = #{orgCode}
         </if>
+        <if test="@Ognl@isEmpty(orgCode)">
+            and t1.orgcode is NULL
+        </if>
     </select>
 
     <select id="getUserTotal" resultType="java.lang.Integer">
@@ -76,6 +79,9 @@
         </if>
         <if test="@Ognl@isNotEmpty(orgCode)">
             and t1.orgcode = #{orgCode}
+        </if>
+        <if test="@Ognl@isEmpty(orgCode)">
+            and t1.orgcode is NULL
         </if>
     </select>
     <update id="updateUserDept">
