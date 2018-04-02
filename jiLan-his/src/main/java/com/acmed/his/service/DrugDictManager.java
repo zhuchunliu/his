@@ -28,11 +28,11 @@ public class DrugDictManager {
     @Autowired
     private BaseInfoManager baseInfoManager;
 
-    public PageResult<DrugDict> getDrugDictList(String name, String category, Integer pageNum, Integer pageSize) {
+    public PageResult<DrugDict> getDrugDictList(String name, String category, Integer isHandle,Integer pageNum, Integer pageSize) {
         PageResult pageResult = new PageResult();
         Page page= PageHelper.startPage(pageNum,pageSize);
 
-        pageResult.setData(drugDictMapper.getDrugDictList(name,category));
+        pageResult.setData(drugDictMapper.getDrugDictList(name,category,isHandle));
         pageResult.setTotal(page.getTotal());
         return pageResult;
     }
@@ -56,6 +56,7 @@ public class DrugDictManager {
                     drug.getConversion(),
                     null == drug.getUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getUnit().toString()).getDicItemName()
             ));
+            drug.setIsHandle(1);
             drugDictMapper.updateByPrimaryKey(drug);
         } else {
             DrugDict drug = new DrugDict();
@@ -71,6 +72,7 @@ public class DrugDictManager {
             drug.setPinYin(Optional.ofNullable(drug.getName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setGoodsPinYin(Optional.ofNullable(drug.getGoodsName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setRemoved("0");
+            drug.setIsHandle(1);
             drugDictMapper.insert(drug);
         }
     }

@@ -124,4 +124,7 @@ public class DrugDict {
     @ApiModelProperty("是否删除 0:无；1：有")
     private String removed;
 
+    @ApiModelProperty("是否处理过0:否，1:是")
+    private Integer isHandle;
+
 }

@@ -39,6 +39,9 @@
         <if test="@Ognl@isNotEmpty(category)">
             and category = #{category}
         </if>
+        <if test="@Ognl@isNotEmpty(isHandle)">
+            and ishandle = #{isHandle}
+        </if>
     </select>
 
 </mapper>

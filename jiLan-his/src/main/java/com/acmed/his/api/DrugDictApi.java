@@ -53,10 +53,11 @@ public class DrugDictApi {
 
     @ApiOperation(value = "药品信息列表")
     @PostMapping("/list")
-    public ResponseResult<PageResult<DrugListVo>> getDrugList(@RequestBody(required = false) PageBase<DrugDictQueryMo> pageBase){
+    public ResponseResult<PageResult<DrugDictListVo>> getDrugList(@RequestBody(required = false) PageBase<DrugDictQueryMo> pageBase){
 
         PageResult<DrugDict> pageResult = drugDictManager.getDrugDictList(Optional.ofNullable(pageBase.getParam()).map(DrugDictQueryMo::getName).orElse(null),
                 Optional.ofNullable(pageBase.getParam()).map(DrugDictQueryMo::getCategory).orElse(null),
+                Optional.ofNullable(pageBase.getParam()).map(DrugDictQueryMo::getIsHandle).orElse(null),
                 pageBase.getPageNum(), pageBase.getPageSize());
 
         List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());

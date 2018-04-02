@@ -13,4 +13,7 @@ public class DrugDictQueryMo {
 
     @ApiModelProperty("药品分类 参考字典表：DrugClassification")
     private String category;
+
+    @ApiModelProperty("是否处理过0:否，1:是")
+    private Integer isHandle;
 }

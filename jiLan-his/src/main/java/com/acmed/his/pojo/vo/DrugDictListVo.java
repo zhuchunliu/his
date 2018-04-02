@@ -53,4 +53,7 @@ public class DrugDictListVo {
     @ApiModelProperty("剂量单位名称")
     private String doseUnitName;
 
+    @ApiModelProperty("是否处理过0:否，1:是")
+    private Integer isHandle;
+
 }
