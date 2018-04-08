@@ -19,7 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @SpringBootApplication
-//@EnableCaching
+@EnableCaching
 @EnableScheduling
 @MapperScan(basePackages = "com.acmed.his.dao")
 public class HisApplication {

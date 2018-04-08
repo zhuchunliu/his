@@ -38,7 +38,7 @@ public class UserManagerTest {
 
     @Test
     public void getUserDetail(){
-        System.err.print(userManager.getUserDetail(1));
+        System.err.print(userManager.getUserDetail(2));
     }
 
     @Test

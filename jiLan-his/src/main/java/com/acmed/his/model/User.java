@@ -4,10 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -20,6 +17,7 @@ import java.io.Serializable;
 @Table(name = "t_p_s_user")
 @NameStyle
 public class User implements Serializable{
+    private static final long serialVersionUID = 1463205064791037735L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty("id")
@@ -111,5 +109,4 @@ public class User implements Serializable{
 
     @ApiModelProperty("分享码")
     private String shareCode;
-
 }

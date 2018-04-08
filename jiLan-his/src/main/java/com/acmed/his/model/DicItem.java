@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * DicItem
@@ -18,8 +19,9 @@ import javax.persistence.Table;
 @Data
 @Table(name = "t_p_s_dicitem")
 @NameStyle
-public class DicItem {
+public class DicItem implements Serializable{
 
+    private static final long serialVersionUID = -3373944916158625893L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "主键不做业务",hidden = true)
