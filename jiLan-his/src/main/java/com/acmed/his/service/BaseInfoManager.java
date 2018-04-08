@@ -242,7 +242,7 @@ public class BaseInfoManager {
     }
 
 
-    @Cacheable(value = "dicItem",key = "#dicTypeCode+#dicItemCode")
+    @Cacheable(value = "dicItem",key = "'dicItem_cache_'+#dicTypeCode+#dicItemCode")
     public DicItem getDicItem(String dicTypeCode,String dicItemCode){
         Example example = new Example(DicItem.class);
         example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("dicItemCode",dicItemCode).andEqualTo("removed","0");
