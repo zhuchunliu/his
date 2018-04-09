@@ -37,6 +37,11 @@ public class BaseInfoManager {
     @Autowired
     private CommonManager commonManager;
 
+    public List<Area> bsgcitys(){
+        return areaMapper.bsgcitys();
+    }
+
+
     /**
      * 根据层级查询列表
      * @param level 1省  2 市  3区

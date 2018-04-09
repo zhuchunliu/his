@@ -52,9 +52,14 @@ public class DeptManager {
      * @param mo
      */
     public void saveDept(DeptMo mo,UserInfo userInfo){
-
+        Integer orgCode = null;
+        if (mo.getOrgCode()==null){
+            orgCode=userInfo.getOrgCode();
+        }else {
+            orgCode=mo.getOrgCode();
+        }
         Example example = new Example(Dept.class);
-        example.createCriteria().andEqualTo("orgCode",userInfo.getOrgCode()).andEqualTo("dept",mo.getDept()).
+        example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("dept",mo.getDept()).
                 andEqualTo("removed","0");
         List<Dept> list = deptMapper.selectByExample(example);
         if(null != list && 0 != list.size() &&  (null == mo.getId() || list.get(0).getId() != mo.getId())){
@@ -63,7 +68,7 @@ public class DeptManager {
         if(null == mo.getId()){
             Dept dept = new Dept();
             BeanUtils.copyProperties(mo,dept);
-            dept.setOrgCode(userInfo.getOrgCode());
+            dept.setOrgCode(orgCode);
             dept.setRemoved("0");
             dept.setCreateBy(userInfo.getId().toString());
             dept.setCreateAt(LocalDateTime.now().toString());
@@ -71,9 +76,10 @@ public class DeptManager {
         }else{
             Dept dept = deptMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,dept);
+            dept.setOrgCode(null);
             dept.setModifyBy(userInfo.getId().toString());
             dept.setModifyAt(LocalDateTime.now().toString());
-            deptMapper.updateByPrimaryKey(dept);
+            deptMapper.updateByPrimaryKeySelective(dept);
             if (StringUtils.isNotEmpty(mo.getDept())){
                 userManager.updateUserDept(mo.getId(),mo.getDept());
             }

@@ -508,4 +508,10 @@ public class AccompanyingOrderApi {
         return ResponseUtil.setSuccessResult(accompanyingInvitationManager.selectAccompanyingInvitationByUserId(info.getUserId(),pageNum,pageSize));
     }
 
+    @ApiOperation(value = "设置价格")
+    @PostMapping("setprice")
+    public ResponseResult setprice(@RequestBody AccompanyingPrice accompanyingPrice){
+        accompanyingPriceManager.save(accompanyingPrice);
+        return ResponseUtil.setSuccessResult();
+    }
 }
