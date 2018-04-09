@@ -458,14 +458,22 @@ public class ApplyManager {
         apply.setDoctorId(doctorId);
         apply.setAppointmentTime(mo.getAppointmentTime());
         Patient param = new Patient();
-        param.setIdCard(mo.getIdcard());
-        List<Patient> byPatient = patientManager.getByPatient(param);
+
         apply.setOrgCode(orgCode);
         apply.setDept(dept);
         apply.setDeptName(deptName);
         apply.setOrgName(orgName);
         apply.setCreateBy(createBy);
-        if (byPatient.size() == 0){
+        Patient patient = null;
+        if(StringUtils.isNotEmpty(mo.getPatientItemId())){
+            PatientItem patientItem = patientItemManager.getById(mo.getPatientItemId());
+            patient = patientManager.getPatientById(patientItem.getPatientId());
+        }else{
+            patient = patientManager.getPatientByIdCard(mo.getIdcard());
+        }
+//        param.setIdCard(mo.getIdcard());
+//        List<Patient> byPatient = patientManager.getByPatient(param);
+        if (null == patient){
             // 不存在主表信息
             // 创建患者主表
             BeanUtils.copyProperties(mo,param);
@@ -509,7 +517,7 @@ public class ApplyManager {
             return ResponseUtil.setSuccessResult(applyId);
         }else {
             // 存在主表信息
-            Patient patient = byPatient.get(0);
+//            Patient patient = byPatient.get(0);
 
             PatientItem patientItem = new PatientItem();
             patientItem.setOrgCode(orgCode);
