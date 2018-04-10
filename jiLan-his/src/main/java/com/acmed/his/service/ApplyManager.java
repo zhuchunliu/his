@@ -530,6 +530,15 @@ public class ApplyManager {
                     // 被拉黑
                     return ResponseUtil.setErrorMeg(StatusCode.FAIL,"您在该医院存在不良记录，具体操作请联系客服");
                 }
+                patientItem1.setPatientId(patient.getId());
+                patientItem1.setPatientName(mo.getPatientName());
+                patientItem1.setGender(mo.getGender());
+                patientItem1.setIdCard(mo.getIdcard());
+                patientItem1.setMobile(mo.getMobile());
+                patientItem1.setSocialCard(mo.getSocialCard());
+                patientItem1.setAnaphylaxis(mo.getAnaphylaxis());
+                patientItem1.setAddress(mo.getAddress());
+                patientItemManager.updatePatientItem(patientItem1);
                 apply.setPatientId(patient.getId());
                 apply.setPatientName(patientItem1.getPatientName());
                 apply.setGender(patientItem1.getGender());
