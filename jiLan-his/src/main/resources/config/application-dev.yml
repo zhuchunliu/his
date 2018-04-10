@@ -59,3 +59,5 @@ qiniu:
     accessKey: h6xfCteR-MvdFwf0Y44M6q6alGKBvnD2LQwNnUg_
     secretKey: fbSuf2EDMVETHUlx7Oo6YK5C8UeymNXJEmtN8Uh0
     imgurl: http://qntest.lanshiyihui.com
+zhangyao:
+  url: http://presapi.lkhealth.net/index.php

@@ -5,13 +5,16 @@ import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
+import com.acmed.his.model.zhangyao.ZYDrug;
 import com.acmed.his.pojo.mo.DrugMo;
 import com.acmed.his.pojo.mo.DrugQueryMo;
+import com.acmed.his.pojo.mo.DrugZYQueryMo;
 import com.acmed.his.pojo.vo.DrugDictVo;
 import com.acmed.his.pojo.vo.DrugListVo;
 import com.acmed.his.pojo.vo.DrugVo;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.DrugManager;
+import com.acmed.his.service.ZhangYaoManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.PageBase;
@@ -51,6 +54,9 @@ public class DrugApi {
 
     @Autowired
     private BaseInfoManager baseInfoManager;
+
+    @Autowired
+    private ZhangYaoManager zhangYaoManager;
 
     @ApiOperation(value = "药品信息列表")
     @PostMapping("/list")
@@ -185,5 +191,14 @@ public class DrugApi {
     }
 
 
+
+    @ApiOperation(value = "掌药药品信息列表")
+    @PostMapping("/zy/list")
+    public ResponseResult<PageResult<ZYDrug>> getZYDrugList(@RequestBody(required = false) PageBase<DrugZYQueryMo> pageBase,
+                                                            @AccessToken AccessInfo info){
+        PageResult<ZYDrug> pageResult = zhangYaoManager.getDrugList(pageBase);
+        return ResponseUtil.setSuccessResult(pageResult);
+
+    }
 
 }

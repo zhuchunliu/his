@@ -54,3 +54,5 @@ weixin:
   key: 3ef5f2a417ce47d0a8deaa6ef903f8f6
   certPath: src/main/resources/apiclient_cert.p12
   url: http://wxpaytest.lanshiyihui.com:8994${server.context-path}
+zhangyao:
+  url: http://presapi.lkhealth.net/index.php
