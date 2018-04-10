@@ -102,8 +102,14 @@ public class ApplyApi {
     @GetMapping("id")
     public ResponseResult<ApplyDoctorVo> id(@ApiParam("挂号单id") @RequestParam(value = "id" ) String id){
         Apply applyById = applyManager.getApplyById(id);
+        String patientItemId = applyById.getPatientItemId();
+
+        PatientItem byId = patientItemManager.getById(patientItemId);
+
         ApplyDoctorVo result = new ApplyDoctorVo();
         BeanUtils.copyProperties(applyById,result);
+        result.setIdCard(byId.getIdCard());
+        result.setMobile(byId.getMobile());
         return ResponseUtil.setSuccessResult(result);
     }
 
