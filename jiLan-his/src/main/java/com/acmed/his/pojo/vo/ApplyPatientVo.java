@@ -49,4 +49,7 @@ public class ApplyPatientVo {
 
     @ApiModelProperty("医生头像")
     private String avatar;
+
+    @ApiModelProperty("创建时间")
+    private String createAt;
 }

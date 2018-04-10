@@ -13,5 +13,6 @@
         <if test="@Ognl@isNotEmpty(blackFlag)">
             AND t1.blackflag = #{blackFlag}
         </if>
+        ORDER BY t1.inputcode ASC
     </select>
 </mapper>

@@ -10,7 +10,8 @@
         where t1.orgCode = #{orgCode} AND t1.removed = '0'
         <if test="@Ognl@isNotEmpty(name)">
             and (t1.name like concat('%',#{name},'%') or t1.pinyin like concat('%',#{name},'%') or
-            t1.goodsname like concat('%',#{name},'%') or t1.goodspinyin like concat('%',#{name},'%') )
+            t1.goodsname like concat('%',#{name},'%') or t1.goodspinyin like concat('%',#{name},'%') or
+            t1.barcode like concat('%',#{name},'%'))
         </if>
         <if test="@Ognl@isNotEmpty(category)">
             and t1.category = #{category}
@@ -24,7 +25,8 @@
         select count(1) from t_b_drug t1 where orgCode = #{orgCode} and removed = '0'
         <if test="@Ognl@isNotEmpty(name)">
             and (t1.name like concat('%',#{name},'%') or t1.pinyin like concat('%',#{name},'%') or
-            t1.goodsname like concat('%',#{name},'%') or t1.goodspinyin like concat('%',#{name},'%') )
+            t1.goodsname like concat('%',#{name},'%') or t1.goodspinyin like concat('%',#{name},'%') OR
+            t1.barcode like concat('%',#{name},'%'))
         </if>
         <if test="@Ognl@isNotEmpty(category)">
             and t1.category = #{category}
@@ -40,7 +42,7 @@
         select t1.*
         FROM t_b_drug t1
         where t1.orgcode = #{orgCode}
-        and t1.removed = '0' -- and t1.num is not null and t1.num != 0
+        and t1.removed = '0'
         <if test="@Ognl@isNotEmpty(name) ">
             and (
                 t1.name like concat('%', #{name} , '%') OR
@@ -56,7 +58,7 @@
         select count(1)
         FROM t_b_drug t1
         where t1.orgcode = #{orgCode}
-        and t1.removed = '0' -- and t1.num is not null and t1.num != 0
+        and t1.removed = '0'
         <if test="@Ognl@isNotEmpty(name) ">
             and (
                 t1.name like concat('%', #{name} , '%') OR

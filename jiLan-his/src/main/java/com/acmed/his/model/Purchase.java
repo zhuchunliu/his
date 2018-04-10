@@ -42,7 +42,7 @@ public class Purchase {
     @ApiModelProperty("制单日期")
     private String date;
 
-    @ApiModelProperty("审核标记；0未审核, 1：待审核, 2已审核 , 3:已驳回")
+    @ApiModelProperty("审核标记；0未提交, 1：待审核, 2已审核 , 3:已驳回")
     private Integer status;
 
     @ApiModelProperty("审核人员")

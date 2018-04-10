@@ -61,6 +61,9 @@ public class DrugMo {
     @ApiModelProperty("小单位 字典表： Unit")
     private Integer minUnit;
 
+    @ApiModelProperty("安全库存数量")
+    private Integer safetyNum;
+
     @ApiModelProperty("剂量")
     private Double dose;
 

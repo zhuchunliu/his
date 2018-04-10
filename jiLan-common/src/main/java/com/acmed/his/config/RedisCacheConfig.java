@@ -3,14 +3,20 @@ package com.acmed.his.config;/**
  */
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.lang.reflect.Method;
 
 /**
  * Redis服务
@@ -47,11 +53,28 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
 
     @Bean
     public CacheManager cacheManager(RedisTemplate redisTemplate) {
+        redisTemplate.setKeySerializer(new Jackson2JsonRedisSerializer(Object.class));
         RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
 
         // Number of seconds before expiration. Defaults to unlimited (0)
-        cacheManager.setDefaultExpiration(3000); // Sets the default expire time (in seconds)
+        cacheManager.setDefaultExpiration(60*60); // Sets the default expire time (in seconds)
         return cacheManager;
+    }
+
+    @Bean
+    public KeyGenerator customKeyGenerator() {
+        return new KeyGenerator() {
+            @Override
+            public Object generate(Object o, Method method, Object... objects) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(o.getClass().getName());
+                sb.append(method.getName());
+                for (Object obj : objects) {
+                    sb.append(obj.toString());
+                }
+                return sb.toString();
+            }
+        };
     }
 
 }

@@ -2,6 +2,7 @@ package com.acmed.his.dao;
 
 import com.acmed.his.model.Supply;
 import com.acmed.his.util.TkMapper;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -13,5 +14,5 @@ import java.util.List;
  * @date 2017/11/21
  */
 public interface SupplyMapper extends TkMapper<Supply> {
-    List<Supply> selectMohu(@Param("param") String param);
+    List<Supply> selectMohu(@Param("param") String param, @Param("orgCode")Integer orgCode);
 }

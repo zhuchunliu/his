@@ -32,6 +32,6 @@ public class PurchaseDto {
     @ApiModelProperty("供应商")
     private String supplierName;
 
-    @ApiModelProperty("审核标记；0未审核：1，已审核")
+    @ApiModelProperty("审核标记；0未提交, 1：待审核, 2已审核 , 3:已驳回")
     private Integer status;
 }

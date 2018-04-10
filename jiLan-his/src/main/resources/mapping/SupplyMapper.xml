@@ -4,8 +4,18 @@
 <mapper namespace="com.acmed.his.dao.SupplyMapper">
     <select id="selectMohu" resultType="com.acmed.his.model.Supply">
         SELECT * FROM t_b_supply
-        <if test="@Ognl@isNotEmpty(param)">
-            WHERE supplyername like CONCAT('%',#{param},'%') or abbrname like CONCAT('%',#{param},'%') or pinyin like CONCAT('%',#{param},'%')
-        </if>
+        <trim prefixOverrides="AND" prefix="where">
+            <if test="@Ognl@isNotEmpty(param)">
+                AND (supplyername like CONCAT('%',#{param},'%')
+                or abbrname like CONCAT('%',#{param},'%')
+                or pinyin like CONCAT('%',#{param},'%'))
+            </if>
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                AND (orgcode is NULL  or orgCode = #{orgCode})
+            </if>
+            <if test="@Ognl@isEmpty(orgCode)">
+                AND orgcode is NULL
+            </if>
+        </trim>
     </select>
 </mapper>

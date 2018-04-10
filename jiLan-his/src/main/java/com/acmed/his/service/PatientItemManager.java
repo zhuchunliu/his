@@ -1,5 +1,6 @@
 package com.acmed.his.service;
 
+import com.acmed.his.dao.ApplyMapper;
 import com.acmed.his.dao.PatientItemMapper;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.PatientItem;
@@ -12,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,6 +34,9 @@ public class PatientItemManager {
 
     @Autowired
     private PatientManager patientManager;
+
+    @Autowired
+    private ApplyMapper applyMapper;
     /**
      * 添加子表
      * @param patientItem
@@ -44,7 +49,8 @@ public class PatientItemManager {
             patientItem.setInputCode(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
         }
         if (StringUtils.isNotEmpty(patientItem.getIdCard())){
-            int i = IdCardUtil.idCardToAge(patientItem.getIdCard());
+
+            Integer i = DateTimeUtil.getAge(patientItem.getIdCard());
             patientItem.setAge(i);
             LocalDate localDate = IdCardUtil.idCardToDate(patientItem.getIdCard());
             if(localDate!=null){
@@ -110,18 +116,32 @@ public class PatientItemManager {
      * @return
      */
     public int updatePatientItem(PatientItem patientItem){
+        Integer age = 0;
+        String pinyin = "";
         if (StringUtils.isNotEmpty(patientItem.getPatientName())){
-            patientItem.setInputCode(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
+            pinyin=PinYinUtil.getPinYinHeadChar(patientItem.getPatientName());
+            patientItem.setInputCode(pinyin);
         }
+
         if (StringUtils.isNotEmpty(patientItem.getIdCard())){
-            int i = IdCardUtil.idCardToAge(patientItem.getIdCard());
-            patientItem.setAge(i);
+            age = DateTimeUtil.getAge(patientItem.getIdCard());
             LocalDate localDate = IdCardUtil.idCardToDate(patientItem.getIdCard());
             if(localDate!=null){
                 patientItem.setDateOfBirth(localDate.toString());
             }
+        }else {
+            String dateOfBirth = patientItem.getDateOfBirth();
+            if (StringUtils.isNotEmpty(dateOfBirth)){
+                age = DateTimeUtil.getAge(dateOfBirth);
+
+            }
         }
+        patientItem.setAge(age);
         patientItem.setModifyAt(LocalDateTime.now().toString());
+        //  更新apply表患者姓名
+        if (StringUtils.isNotEmpty(patientItem.getPatientName())){
+            applyMapper.updatePatientNameByPatientItemId(patientItem.getId(),patientItem.getPatientName(),patientItem.getGender(),pinyin,age);
+        }
         return patientItemMapper.updateByPrimaryKeySelective(patientItem);
     }
 
@@ -146,5 +166,11 @@ public class PatientItemManager {
         param.setIdCard(idCard);
         param.setOrgCode(orgCode);
         return patientItemMapper.selectOne(param);
+    }
+
+    public PatientItem getByPatientId(String patientId,Integer orgCode) {
+        Example example = new Example(PatientItem.class);
+        example.createCriteria().andEqualTo("patientId",patientId).andEqualTo("orgCode",orgCode);
+        return Optional.ofNullable(patientItemMapper.selectByExample(example)).filter(list->0!=list.size()).map(list->list.get(0)).orElse(null);
     }
 }

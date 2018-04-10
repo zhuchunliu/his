@@ -4,7 +4,17 @@
 <mapper namespace="com.acmed.his.dao.PayStatementsMapper">
     <select id="getFeeSurvey" resultType="java.util.Map">
         select sum(fee) as fee , feetype from t_b_pay_statements where orgcode = #{orgCode}
-        and DATE_FORMAT(createat,'%Y-%m-%d') = #{date}
+        and source in(2,3,4)
+        <if test="@Ognl@isNotEmpty(startDate) ">
+            <![CDATA[
+              and createat >= #{startDate}
+            ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endDate) ">
+            <![CDATA[
+              and createat <= #{endDate}
+            ]]>
+        </if>
         GROUP BY feetype
     </select>
 

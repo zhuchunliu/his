@@ -1,5 +1,6 @@
 package com.acmed.his.pojo.mo;
 
+import com.acmed.his.model.Inspect;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -17,6 +18,9 @@ public class  PreMo {
     @ApiModelProperty("挂号主键 null:新开就诊；非null:挂号就诊")
     private String applyId;
 
+    @ApiModelProperty("是否完成 0:未完成，1：完成")
+    private Integer isFinish;
+
     @ApiModelProperty("处方集合")
     private List<PrescriptMo> PreList;
 
@@ -25,6 +29,11 @@ public class  PreMo {
 
     @ApiModelProperty("病例")
     private MedicalRecordMo record;
+
+    @ApiModelProperty("注射单")
+    private List<List<InjectMo>> injectList;
+
+
 
     @Data
     public static class PrescriptMo {
@@ -47,6 +56,10 @@ public class  PreMo {
 
     @Data
     public static class ItemMo{
+
+        @ApiModelProperty("处方药品主键")
+        private String itemId;
+
         @ApiModelProperty("药品id")
         private Integer drugId;
 
@@ -71,12 +84,19 @@ public class  PreMo {
 
     @Data
     public static class ChargeMo{
+
+        @ApiModelProperty("处方附加主键")
+        private String chargeId;
+
         @ApiModelProperty("费用类型")
         private String category;
     }
 
     @Data
     public static class InspectMo{
+
+        @ApiModelProperty("处方检查主键")
+        private String inspectId;
 
         @ApiModelProperty("检查目的")
         private String aim;
@@ -100,6 +120,9 @@ public class  PreMo {
 
     @Data
     public static class PatientMo{
+
+        @ApiModelProperty("患者详情主键")
+        private String patientItemId;
 
         @ApiModelProperty("用户姓名")
         private String realName;
@@ -151,6 +174,22 @@ public class  PreMo {
         @ApiModelProperty("备注")
         private String remark;
 
+    }
+
+
+    @Data
+    public static class InjectMo{
+        @ApiModelProperty("药品id")
+        private Integer drugId;
+
+        @ApiModelProperty("单次剂量")
+        private Double singleDose;
+
+        @ApiModelProperty("备注")
+        private String memo;
+
+        @ApiModelProperty("频率 字典表：DrugFrequency")
+        private Integer frequency;
     }
 
 }

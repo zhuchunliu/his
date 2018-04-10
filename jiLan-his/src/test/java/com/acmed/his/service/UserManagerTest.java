@@ -1,6 +1,8 @@
 package com.acmed.his.service;
 
 import com.acmed.his.HisApplication;
+import com.acmed.his.dao.DicItemMapper;
+import com.acmed.his.model.DicItem;
 import com.acmed.his.model.UserVsRole;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
@@ -21,6 +23,9 @@ public class UserManagerTest {
     @Autowired
     private UserManager userManager;
 
+    @Autowired
+    private BaseInfoManager baseInfoManager;
+
     @Test
     public void getUserList(){
 //        userManager.getUserList(new UserInfo(),null).forEach((obj)->System.err.println(obj));
@@ -38,7 +43,12 @@ public class UserManagerTest {
 
     @Test
     public void getUserDetail(){
-        System.err.print(userManager.getUserDetail(1));
+        System.err.println(userManager.getUserDetail(1));
+        System.err.println(userManager.getUserDetail(2));
+        System.err.println(baseInfoManager.getDicItem("UserCategory","1"));
+        System.err.println(baseInfoManager.getDicItem("UserCategory","2"));
+        System.err.println(baseInfoManager.getDicItem("Schedule","1"));
+        System.err.println(baseInfoManager.getDicItem("Schedule","2"));
     }
 
     @Test

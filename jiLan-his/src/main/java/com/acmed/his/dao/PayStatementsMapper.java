@@ -16,9 +16,10 @@ import java.util.Map;
 public interface PayStatementsMapper extends TkMapper<PayStatements> {
     /**
      * 根据付费类型，统计指定日期流水
-     * @param date
      * @param orgCode
      * @return
      */
-    List<Map<String,Object>> getFeeSurvey(@Param("date") String date, @Param("orgCode") Integer orgCode);
+    List<Map<String,Object>> getFeeSurvey(@Param("startDate") String startDate,
+                                          @Param("endDate") String endDate,
+                                          @Param("orgCode") Integer orgCode);
 }

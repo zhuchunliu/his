@@ -63,10 +63,11 @@
         t1.isfirst,
         t2.anaphylaxis,
         t2.personalhistory,
-        t2.familyhistory
+        t2.familyhistory,
+        t1.doctorname
         FROM t_b_apply t1
 
-        LEFT JOIN t_b_patient_item AS  t2  ON t2.patientid = t1.patientid
+        LEFT JOIN t_b_patient_item AS  t2  ON t2.id = t1.patientitemid
         LEFT JOIN  t_b_patient AS t3 ON t3.id = t1.patientid
 
         <trim prefixOverrides="and" prefix="where">
@@ -131,5 +132,15 @@
                 and t1.createby = #{createBy}
             </if>
         </where>
+        ORDER BY t1.createat DESC
     </select>
+
+    <update id="updatePatientNameByPatientItemId">
+        UPDATE t_b_apply SET
+        `patientname` = #{patientName},
+        `gender` = #{gender},
+        `pinyin` = #{pinyin},
+        `age` = #{age}
+        WHERE patientitemid = #{patientItemId}
+    </update>
 </mapper>

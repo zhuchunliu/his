@@ -7,6 +7,7 @@ import com.acmed.his.model.Area;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.DicType;
 import com.acmed.his.pojo.vo.DicDetailVo;
+import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.UUIDUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,11 @@ public class BaseInfoManager {
 
     @Autowired
     private CommonManager commonManager;
+
+    public List<Area> bsgcitys(){
+        return areaMapper.bsgcitys();
+    }
+
 
     /**
      * 根据层级查询列表
@@ -124,20 +130,25 @@ public class BaseInfoManager {
      * @param dicItem 1成功
      * @return 0 失败
      */
-    public int addDicItem(DicItem dicItem){
+    public String addDicItem(DicItem dicItem, UserInfo userInfo){
         DicItem dicItemParam = new DicItem();
         dicItemParam.setDicItemName(dicItem.getDicItemName());
         dicItemParam.setDicTypeCode(dicItem.getDicTypeCode());
+
         List<DicItem> select = dicItemMapper.select(dicItemParam);
         if (select.size() == 0){
             dicItem.setRemoved("0");
+            dicItem.setOrgCode(userInfo.getOrgCode());
             dicItem.setDicItemCode(commonManager.getNextVal(dicItem.getDicTypeCode()));
-            return dicItemMapper.insert(dicItem);
+            dicItemMapper.insertSelective(dicItem);
+            return dicItem.getDicItemCode();
         }else {
             // 如果字典存在 就改成未删除
             DicItem dicItem1 = select.get(0);
+            dicItem1.setOrgCode(userInfo.getOrgCode());
             dicItem1.setRemoved("0");
-            return dicItemMapper.updateByPrimaryKeySelective(dicItem1);
+            dicItemMapper.updateByPrimaryKeySelective(dicItem1);
+            return dicItem1.getDicItemCode();
         }
     }
 
@@ -151,9 +162,25 @@ public class BaseInfoManager {
             dicItem.setDicTypeCode(null);
             return dicItemMapper.updateByPrimaryKeySelective(dicItem);
         }else {
-            dicItem.setDicItemName(null);
-            dicItem.setDicItemCode(null);
-            dicItem.setDicTypeCode(null);
+            DicItem dicItem1 = select.get(0);
+            dicItem1.setDicItemName(null);
+            dicItem1.setDicItemCode(null);
+            dicItem1.setDicTypeCode(null);
+            if (StringUtils.equals("1",dicItem1.getRemoved())){
+                dicItem.setRemoved("0");
+            }
+            if (StringUtils.isEmpty(dicItem.getStartTime()) && StringUtils.isEmpty(dicItem.getEndTime()) && StringUtils.isEmpty(dicItem.getRemoved())){
+                return 0;
+            }
+            if (StringUtils.isNotEmpty(dicItem.getStartTime())){
+                dicItem1.setStartTime(dicItem.getStartTime());
+            }
+            if (StringUtils.isNotEmpty(dicItem.getEndTime())){
+                dicItem1.setEndTime(dicItem.getEndTime());
+            }
+            if (StringUtils.isNotEmpty(dicItem.getRemoved())){
+                dicItem1.setRemoved(dicItem.getRemoved());
+            }
             return dicItemMapper.updateByPrimaryKeySelective(dicItem);
         }
     }
@@ -202,9 +229,13 @@ public class BaseInfoManager {
      */
     public List<DicItem> getDicItemsByDicTypeCode(String dicTypeCode){
         Example example = new Example(DicItem.class);
-        example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("removed","0");
+        example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode);
         example.setOrderByClause("id ASC");
         return dicItemMapper.selectByExample(example);
+    }
+
+    public List<DicItem> getDicItemsByDicTypeCode(String dicTypeCode, UserInfo user) {
+        return dicItemMapper.getDicItemsByDicTypeCode(dicTypeCode,user.getOrgCode());
     }
 
 
@@ -216,10 +247,12 @@ public class BaseInfoManager {
     }
 
 
-    @Cacheable
+    @Cacheable(value = "dicItem",key = "'dicItem_cache_'+#dicTypeCode+#dicItemCode")
     public DicItem getDicItem(String dicTypeCode,String dicItemCode){
         Example example = new Example(DicItem.class);
         example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("dicItemCode",dicItemCode).andEqualTo("removed","0");
         return Optional.ofNullable(dicItemMapper.selectByExample(example)).filter(obj->obj.size()!=0).map(obj->obj.get(0)).orElse(new DicItem());
     }
+
+
 }

@@ -82,6 +82,9 @@ public class PrescriptionManager {
     @Autowired
     private ManufacturerMapper manufacturerMapper;
 
+    @Autowired
+    private InjectMapper injectMapper;
+
 
     /**
      * 根据挂号单查找处方列表
@@ -97,7 +100,7 @@ public class PrescriptionManager {
      * @param applyId
      * @return
      */
-    public PreVo getPre(String applyId) {
+    public PreVo getPre(String applyId,UserInfo userInfo) {
 
 
 
@@ -118,15 +121,20 @@ public class PrescriptionManager {
         example.orderBy("id").asc();
         List<PrescriptionItem> preItemList = preItemMapper.selectByExample(example);
 
-        Patient patient = patientManager.getPatientById(prescription.getPatientId());
+//        Patient patient = patientManager.getPatientById(prescription.getPatientId());
+//        PatientItem patientItem = patientItemManager.getByPatientId(patient.getId(),userInfo.getOrgCode());
 
         example = new Example(MedicalRecord.class);
         example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
         MedicalRecord medicalRecord = Optional.ofNullable(recordMapper.selectByExample(example)).
                 filter(obj->0!=obj.size()).map(obj->obj.get(0)).orElse(new MedicalRecord());
 
+        example = new Example(Inject.class);
+        example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
+        example.orderBy("groupNum").orderBy("id");
+        List<Inject> injectList = injectMapper.selectByExample(example);
 
-        return new PreVo(prescription,preInspectList,chargeList,preItemList,patient,medicalRecord,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
+        return new PreVo(prescription,preInspectList,chargeList,preItemList,null,medicalRecord,injectList,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
     }
 
 
@@ -176,11 +184,11 @@ public class PrescriptionManager {
 
                     if(null != obj.getNum() && 0 != obj.getNum()){
                         if(1 == obj.getUnitType()) {
-                            item.setNumName(obj.getNum() + unitItemName.get(drug.getUnit().toString()));
+                            item.setNumName(obj.getNum() + (null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString())));
                         }else if(1 == obj.getMinPriceUnitType()){
-                            item.setNumName(obj.getNum()+unitItemName.get(drug.getMinUnit().toString()));
+                            item.setNumName(obj.getNum()+(null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
                         }else{
-                            item.setNumName(obj.getNum()+unitItemName.get(drug.getDoseUnit().toString()));
+                            item.setNumName(obj.getNum()+(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
                         }
                     }
                 }
@@ -220,14 +228,10 @@ public class PrescriptionManager {
 
             if(StringUtils.isEmpty(mo.getApplyId()) ){
                 //step1:处理患者信息
-                Patient patient = this.handlePatient(mo, userInfo);
+                PatientItem patient = this.handlePatient(mo, userInfo);
 
                 //step2:处理挂号信息
-                PatientItem patientItem = new PatientItem();
-                patientItem.setOrgCode(userInfo.getOrgCode());
-                patientItem.setPatientId(patient.getId());
-                List<PatientItem> patientItems = patientItemManager.patientItems(patientItem);
-                apply = this.handleApply(mo, patient,patientItems.get(0), userInfo);
+                apply = this.handleApply(mo, patient, userInfo);
             }else{
                 apply = applyMapper.selectByPrimaryKey(mo.getApplyId());
             }
@@ -240,24 +244,64 @@ public class PrescriptionManager {
         }
         apply.setStatus("3");
         apply.setIsPaid("1");
+        apply.setAttendingDoctorId(userInfo.getId());//设置接诊医生
+        apply.setAttendingDoctorName(userInfo.getUserName());
         applyMapper.updateByPrimaryKey(apply);
 
         //step3:处理就诊信息
         this.handleMedicalRecord(mo,apply,userInfo);
 
         //step4:保存处方信息
-        this.handlePrescription(mo,apply,userInfo);
+        Prescription prescription = this.handlePrescription(mo,apply,userInfo);
 
         //step5：统计处方总费用
         applyMapper.statisFee(apply.getId());//统计总费用
+
+        //step6: 处理注射单
+        this.handleInject(mo,prescription,userInfo);
+
+        if(null != mo.getIsFinish() && 1 == mo.getIsFinish()){
+            this.finish(apply.getId(),userInfo);
+        }
         return true;
+    }
+
+    private void handleInject(PreMo mo,  Prescription prescription, UserInfo userInfo) {
+        Example example = new Example(Inject.class);
+        example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
+        injectMapper.deleteByExample(example);
+
+        List<Inject> injectList = Lists.newArrayList();
+        if(null == mo.getInjectList() || 0 == mo.getInjectList().size()){
+            return;
+        }
+        for(Integer index = 0;index < mo.getInjectList().size(); index++) {
+            if(null == mo.getInjectList().get(index) || 0 == mo.getInjectList().get(index).size()){
+                continue;
+            }
+            for(Integer i =0;i < mo.getInjectList().get(index).size();i++){
+                Inject inject = new Inject();
+                BeanUtils.copyProperties(mo.getInjectList().get(index).get(i),inject);
+                inject.setGroupNum(index.toString());
+                inject.setApplyId(prescription.getApplyId());
+                inject.setPrescriptionId(prescription.getId());
+                inject.setCreateAt(LocalDateTime.now().toString());
+                inject.setCreateBy(userInfo.getId().toString());
+                injectList.add(inject);
+            }
+        }
+        if(0 != injectList.size()) {
+            injectMapper.insertList(injectList);
+        }
+
+
     }
 
 
     /**
      * 处理处方信息
      */
-    private void handlePrescription(PreMo mo, Apply apply, UserInfo userInfo){
+    private Prescription handlePrescription(PreMo mo, Apply apply, UserInfo userInfo){
 
         Prescription prescription = Optional.ofNullable(mo.getId()).map(id->preMapper.selectByPrimaryKey(mo.getId()))
                 .orElse(new Prescription());
@@ -286,9 +330,18 @@ public class PrescriptionManager {
         boolean contanisMedicine = false;
         for(int i=0; i< mo.getPreList().size(); i++){
             PreMo.PrescriptMo pre = mo.getPreList().get(i);
-            Double childPrice = 0.0d;
+            Double receivables = 0.0d;
+            Double receipts = 0.0d;
             if(null != pre.getItemList()) {
                 for (PreMo.ItemMo info : pre.getItemList()) {
+                    if(StringUtils.isNotEmpty(info.getItemId())){
+                        PrescriptionItem item = preItemMapper.selectByPrimaryKey(info.getItemId());
+                        if(null != item && 1 == item.getPayStatus()) {
+                            receivables += item.getFee();
+                            receipts += item.getFee();
+                            continue;
+                        }
+                    }
                     Drug drug = drugMapper.selectByPrimaryKey(info.getDrugId());
                     if(null == drug){
                         continue;
@@ -324,12 +377,20 @@ public class PrescriptionManager {
                     item.setRequirement(pre.getRequirement());
                     item.setRemark(pre.getRemark());
                     preItemMapper.insert(item);
-                    childPrice += item.getFee();
+                    receivables += item.getFee();
                 }
             }
 
             if(null != pre.getInspectList()) {
                 for (PreMo.InspectMo info : pre.getInspectList()) {
+                    if(StringUtils.isNotEmpty(info.getInspectId())){
+                        Inspect inspect = inspectMapper.selectByPrimaryKey(info.getInspectId());
+                        if(null != inspect && 1 == inspect.getPayStatus()) {
+                            receivables += inspect.getFee();
+                            receipts += inspect.getFee();
+                            continue;
+                        }
+                    }
                     Inspect inspect = new Inspect();
                     BeanUtils.copyProperties(prescription,inspect,"id");
                     BeanUtils.copyProperties(info, inspect);
@@ -344,12 +405,20 @@ public class PrescriptionManager {
                     inspect.setRequirement(pre.getRequirement());
                     inspect.setRemark(pre.getRemark());
                     inspectMapper.insert(inspect);
-                    childPrice += inspect.getFee();
+                    receivables += inspect.getFee();
                 }
             }
 
             if(null != pre.getChargeList()) {
                 for (PreMo.ChargeMo info : pre.getChargeList()) {
+                    if(StringUtils.isNotEmpty(info.getChargeId())){
+                        Charge charge = chargeMapper.selectByPrimaryKey(info.getChargeId());
+                        if(null != charge && 1 == charge.getPayStatus()) {
+                            receivables += charge.getFee();
+                            receipts += charge.getFee();
+                            continue;
+                        }
+                    }
                     Charge charge = new Charge();
                     BeanUtils.copyProperties(prescription,charge,"id");
                     charge.setId(UUIDUtil.generate());
@@ -363,20 +432,21 @@ public class PrescriptionManager {
                     charge.setRequirement(pre.getRequirement());
                     charge.setRemark(pre.getRemark());
                     chargeMapper.insert(charge);
-                    childPrice += charge.getFee();
+                    receivables += charge.getFee();
                 }
             }
 
             PrescriptionFee prescriptionFee = new PrescriptionFee();
             prescriptionFee.setApplyId(apply.getId());
             prescriptionFee.setPrescriptionId(prescription.getId());
-            prescriptionFee.setReceivables(childPrice);
+            prescriptionFee.setReceivables(receivables);
+            prescriptionFee.setReceipts(receipts);
             prescriptionFee.setGroupNum(String.valueOf(i+1));
             prescriptionFee.setCreateAt(LocalDateTime.now().toString());
             prescriptionFee.setCreateBy(userInfo.getId().toString());
             feeMapper.insert(prescriptionFee);
 
-            price += childPrice;
+            price += receivables;
 
 
         }
@@ -384,6 +454,7 @@ public class PrescriptionManager {
         prescription.setIsDispensing(contanisMedicine?"0":"2");
         prescription.setFee(price);
         preMapper.updateByPrimaryKey(prescription);
+        return prescription;
     }
 
 
@@ -391,39 +462,48 @@ public class PrescriptionManager {
      * 处理患者信息
      * @return
      */
-    private Patient handlePatient(PreMo mo,UserInfo userInfo){
-        Patient patient = StringUtils.isEmpty(mo.getPatient().getIdCard())?null:
-                patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
-        if(null == patient){
-            patient = new Patient();
-            BeanUtils.copyProperties(mo.getPatient(),patient);
-            patient = patientManager.add(patient);
-        }
+    private PatientItem handlePatient(PreMo mo,UserInfo userInfo){
 
-        PatientItem patientItem = Optional.ofNullable(mo.getPatient().getIdCard()).
-                map(idcard->patientItemManager.getPatientByIdCard(idcard,userInfo.getOrgCode())).orElse(null);
-        if(null == patientItem){
+        PatientItem patientItem = null;
+        if(StringUtils.isNotEmpty(mo.getPatient().getPatientItemId())) {
+            patientItem = patientItemManager.getById(mo.getPatient().getPatientItemId());
+            BeanUtils.copyProperties(mo.getPatient(),patientItem);
+            if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
+                patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
+            } else {
+                patientItem.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+            }
+            patientItem.setPatientName(mo.getPatient().getRealName());
+            patientItemManager.updatePatientItem(patientItem);
+        }else{
+            Patient patient = StringUtils.isEmpty(mo.getPatient().getIdCard())?null:
+                    patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
+            if(null == patient){
+                patient = new Patient();
+                BeanUtils.copyProperties(mo.getPatient(),patient);
+                patient = patientManager.add(patient);
+            }
+
             patientItem = new PatientItem();
             BeanUtils.copyProperties(mo.getPatient(),patientItem);
+            if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
+                patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
+            } else {
+                patientItem.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+            }
             patientItem.setPatientName(mo.getPatient().getRealName());
             patientItem.setOrgCode(userInfo.getOrgCode());
             patientItem.setPatientId(patient.getId());
             patientItemManager.addPatinetItem(patientItem);
-        }else{
-            BeanUtils.copyProperties(mo.getPatient(),patientItem);
-            patientItem.setPatientName(mo.getPatient().getRealName());
-            patientItem.setOrgCode(userInfo.getOrgCode());
-            patientItem.setPatientId(patient.getId());
-            patientItemManager.updatePatientItem(patientItem);
         }
-        return patient;
+        return patientItem;
     }
 
     /**
      * 处理挂号单信息
      * @return
      */
-    private Apply handleApply(PreMo mo,Patient patient,PatientItem patientItem,UserInfo userInfo){
+    private Apply handleApply(PreMo mo,PatientItem patient,UserInfo userInfo){
         Apply apply = new Apply();
         if(!StringUtils.isEmpty(mo.getApplyId())){
             apply = applyManager.getApplyById(mo.getApplyId());
@@ -435,10 +515,10 @@ public class PrescriptionManager {
             apply.setDeptName(userInfo.getDeptName());
             apply.setDoctorId(userInfo.getId());
             apply.setDoctorName(userInfo.getUserName());
-            apply.setPatientItemId(patientItem.getId());
+            apply.setPatientItemId(patient.getId());
             apply.setPatientId(patient.getId());
-            apply.setPatientName(patientItem.getPatientName());
-            apply.setPinYin(PinYinUtil.getPinYinHeadChar(patientItem.getPatientName()));
+            apply.setPatientName(patient.getPatientName());
+            apply.setPinYin(PinYinUtil.getPinYinHeadChar(patient.getPatientName()));
             apply.setGender(patient.getGender());
             apply.setAge(Optional.ofNullable(patient.getIdCard()).map(DateTimeUtil::getAge).orElse(null));
             if(null == apply.getAge()){
@@ -576,5 +656,11 @@ public class PrescriptionManager {
         }
 
         return list;
+    }
+
+    public void finish(String applyId, UserInfo user) {
+        Apply apply = applyMapper.selectByPrimaryKey(applyId);
+        apply.setStatus("1");
+        applyMapper.updateByPrimaryKey(apply);
     }
 }

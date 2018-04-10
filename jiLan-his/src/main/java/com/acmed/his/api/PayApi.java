@@ -5,10 +5,7 @@ import com.acmed.his.model.AccompanyingOrder;
 import com.acmed.his.model.Apply;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.PayStatements;
-import com.acmed.his.service.AccompanyingOrderManager;
-import com.acmed.his.service.ApplyManager;
-import com.acmed.his.service.PatientManager;
-import com.acmed.his.service.PayManager;
+import com.acmed.his.service.*;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.support.WithoutToken;
@@ -53,6 +50,9 @@ public class PayApi {
 
     @Autowired
     private PayManager payManager;
+
+    @Autowired
+    private CommonManager commonManager;
 
     @Autowired
     private ApplyManager applyManager;
@@ -176,7 +176,7 @@ public class PayApi {
         if (applyById == null){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"挂号单不存在");
         }
-        if (!StringUtils.equals("0",applyById.getIsPaid()) ){
+        if (StringUtils.isNotEmpty(applyById.getIsPaid()) && StringUtils.equals("1",applyById.getIsPaid()) ){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_PAY,"请不要重复支付");
         }
 
@@ -257,9 +257,10 @@ public class PayApi {
                         logger.info("微信支付订单号" + transaction_id);
                         Apply applyById = applyManager.getApplyById(out_trade_no);
                         if (applyById != null) {
-                            if (StringUtils.equals("0",applyById.getIsPaid())){
+                            if (StringUtils.isEmpty(applyById.getIsPaid()) || StringUtils.equals("0",applyById.getIsPaid())){
                                 Apply apply = new Apply();
                                 apply.setId(out_trade_no);
+                                apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
                                 apply.setIsPaid("1");
                                 int i = applyManager.updateApply(apply);
                                 PayStatements payStatements = new PayStatements();

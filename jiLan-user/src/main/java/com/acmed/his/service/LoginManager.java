@@ -5,6 +5,7 @@ import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.dao.UserMapper;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.OpenIdAndAccessToken;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.User;
@@ -23,6 +24,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -93,11 +95,19 @@ public class LoginManager {
         example.createCriteria().andEqualTo("openid",openIdAndAccessToken.getOpenId());
         Patient patient = Optional.ofNullable(patientMapper.selectByExample(example)).filter((obj)->obj.size()>0).map((obj)->obj.get(0)).orElse(null);
         if(null == patient){//都没有数据的时候，则手动创建一条患者信息
-            WxUserInfo wxUserInfo = wxManager.wxUserInfo(openIdAndAccessToken.getOpenId(),openIdAndAccessToken.getAccessToken());
+            WxUserInfo wxUserInfo = null;
+            try {
+                wxUserInfo = wxManager.wxUserInfo(openIdAndAccessToken.getOpenId(),openIdAndAccessToken.getAccessToken());
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error(e.toString());
+                throw new BaseException(StatusCode.FAIL,"获取微信信息失败");
+            }
             patient = new Patient();
             patient.setId(UUIDUtil.generate());
             patient.setOpenid(openIdAndAccessToken.getOpenId());
-            patient.setNickName(wxUserInfo.getNickName());
+            patient.setNickName(EmojiUtil.emojiConvert(wxUserInfo.getNickName()));
+            patient.setAvatar(wxUserInfo.getHeadImgUrl());
             patient.setGender(wxUserInfo.getSex());
             patient.setCreateAt(LocalDateTime.now().toString());
             patientMapper.insert(patient);

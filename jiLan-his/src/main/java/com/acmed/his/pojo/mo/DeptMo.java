@@ -14,6 +14,9 @@ public class DeptMo {
     @ApiModelProperty("科室名称")
     private String dept;
 
+    @ApiModelProperty("不传默认是当前医院")
+    private Integer orgCode;
+
     @ApiModelProperty("是否是优势科室   0不是  1 是")
     private Integer superiorityFlag;
 }

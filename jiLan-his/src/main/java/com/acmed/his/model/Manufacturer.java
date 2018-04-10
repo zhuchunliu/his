@@ -23,8 +23,14 @@ public class Manufacturer {
     @ApiModelProperty("厂商编码")
     private Integer id;
 
+    @ApiModelProperty("所属机构")
+    private Integer orgCode;
+
     @ApiModelProperty("厂商名称")
     private String name;
+
+    @ApiModelProperty("拼音")
+    private String pinYin;
 
     @ApiModelProperty("地址")
     private String address;

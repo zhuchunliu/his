@@ -28,7 +28,19 @@
     </select>
 
     <select id="getOrgDtoList" resultType="com.acmed.his.model.dto.OrgDto">
-        SELECT t1.*,t2.dicitemname categorystr ,t3.dicitemname levelstr,t4.loginname FROM t_p_s_org t1
+        SELECT
+        t1.*,
+        t2.dicitemname categorystr ,
+        t3.dicitemname levelstr,
+        t4.loginname,
+        t5.name provinceStr,
+        t6.name cityStr,
+        t7.name countryStr,
+        t8.gradeoneprice,
+        t8.gradetwoprice,
+        t8.gradethreeprice,
+        t8.accompanyingprice
+        FROM t_p_s_org t1
         LEFT JOIN (
 	      SELECT * FROM t_p_s_dicitem WHERE dictypecode = 'OrgCategory'
         )as t2 ON t2.dicitemcode = t1.category
@@ -36,10 +48,21 @@
 	      SELECT * FROM t_p_s_dicitem WHERE dictypecode = 'OrgLevel'
         )as t3 ON t3.dicitemcode = t1.`level`
         LEFT JOIN t_p_s_user t4 ON t4.id = t1.manager
+        LEFT JOIN t_p_s_area t5 ON t5.id = t1.province
+        LEFT JOIN t_p_s_area t6 ON t6.id = t1.city
+        LEFT JOIN t_p_s_area t7 ON t7.id = t1.country
+        LEFT JOIN accompanying_price t8 ON t8.orgcode = t1.orgcode
         <trim prefixOverrides="and" prefix="where">
             AND t1.removed = '0'
-            <if test="@Ognl@isNotEmpty(param)">
-                and t1.orgname like CONCAT('%',#{param},'%')
+            <if test="@Ognl@isNotEmpty(orgName)">
+                and t1.orgname like CONCAT('%',#{orgName},'%')
+            </if>
+            <if test="@Ognl@isNotEmpty(cityId)">
+                and t1.city = #{cityId}
+            </if>
+
+            <if test="@Ognl@isNotEmpty(isRecommend)">
+                and t1.isrecommend = #{isRecommend}
             </if>
         </trim>
     </select>

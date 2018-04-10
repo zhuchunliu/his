@@ -2,6 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.*;
+import com.acmed.his.model.dto.InvitationDto;
 import com.acmed.his.pojo.mo.AddAccompanyingOrderConfirmationModel;
 import com.acmed.his.pojo.mo.AddAccompanyingOrderModel;
 import com.acmed.his.pojo.mo.AppraiseAccompanyingOrderModel;
@@ -10,9 +11,7 @@ import com.acmed.his.pojo.vo.SuppliersOrderVo;
 import com.acmed.his.service.*;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.util.NumberFormtUtil;
-import com.acmed.his.util.ResponseResult;
-import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.util.*;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,13 +23,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * AccompanyingOrderApi
@@ -269,12 +263,17 @@ public class AccompanyingOrderApi {
      */
     @ApiOperation(value = "患者查看就医北上广列表")
     @GetMapping("patientOrderList")
-    public ResponseResult<List<AccompanyingOrderPatientVo>> patientOrderList(@AccessToken AccessInfo info){
+    public ResponseResult<PageResult<AccompanyingOrderPatientVo>> patientOrderList(@AccessToken AccessInfo info,@RequestParam("pageSize")  Integer pageSize,@RequestParam("pageNum")  Integer pageNum){
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setCreateBy(info.getPatientId());
         accompanyingOrder.setDelFlag(0);
-        List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder,"createat DESC");
+        PageResult<AccompanyingOrder> pageResult = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder,"modifyat DESC",pageNum,pageSize);
+        List<AccompanyingOrder> accompanyingOrders = pageResult.getData();
         List<AccompanyingOrderPatientVo> result = Lists.newArrayList();
+        PageResult<AccompanyingOrderPatientVo> newResult = new PageResult<>();
+        newResult.setPageSize(pageSize);
+        newResult.setPageNum(pageNum);
+        newResult.setTotal(pageResult.getTotal());
         if (accompanyingOrders.size() != 0){
             List<String> orderCodeList = Lists.newArrayList();
             for (AccompanyingOrder item :accompanyingOrders){
@@ -314,12 +313,13 @@ public class AccompanyingOrderApi {
                 result.add(accompanyingOrderPatientVo);
             }
         }
-        return ResponseUtil.setSuccessResult(result);
+        newResult.setData(result);
+        return ResponseUtil.setSuccessResult(newResult);
     }
 
     @ApiOperation(value = "管理员和渠道查看订单列表")
     @GetMapping("suppliersOrderList")
-    public ResponseResult<List<SuppliersOrderVo>> suppliersOrderList(@RequestParam("status")  Integer status,@RequestParam("type")  Integer type){
+    public ResponseResult<PageResult<SuppliersOrderVo>> suppliersOrderList(@RequestParam("status")  Integer status,@RequestParam("type")  Integer type,@RequestParam("pageSize")  Integer pageSize,@RequestParam("pageNum")  Integer pageNum){
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setStatus(status);
         accompanyingOrder.setDelFlag(0);
@@ -327,8 +327,10 @@ public class AccompanyingOrderApi {
         if (type == 1){
             orderBy = "starttime DESC";
         }
-        List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder,orderBy);
+        PageResult<AccompanyingOrder> accompanyingOrderPageResult = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder,orderBy,pageNum,pageSize);
+        List<AccompanyingOrder> accompanyingOrders = accompanyingOrderPageResult.getData();
         List<SuppliersOrderVo> result = Lists.newArrayList();
+        PageResult<SuppliersOrderVo> res = new PageResult<>();
         if (accompanyingOrders.size() != 0){
             List<String> orderCodeList = new ArrayList<>();
             for (AccompanyingOrder item :accompanyingOrders){
@@ -372,7 +374,11 @@ public class AccompanyingOrderApi {
                 result.add(suppliersOrderVo);
             }
         }
-        return ResponseUtil.setSuccessResult(result);
+        res.setTotal(accompanyingOrderPageResult.getTotal());
+        res.setPageNum(pageNum);
+        res.setPageSize(pageSize);
+        res.setData(result);
+        return ResponseUtil.setSuccessResult(res);
     }
 
     @ApiOperation(value = "接受邀请")
@@ -382,7 +388,7 @@ public class AccompanyingOrderApi {
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setCreateBy(patientId);
         // 查询是否有订单
-        List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder, null);
+        List<AccompanyingOrder> accompanyingOrders = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder);
         if (accompanyingOrders.size() == 0){
             AccompanyingInvitation accompanyingInvitation = new AccompanyingInvitation();
             accompanyingInvitation.setPatientId(patientId);
@@ -391,6 +397,21 @@ public class AccompanyingOrderApi {
         }
         return ResponseUtil.setSuccessResult();
     }
+
+    @ApiOperation(value = "医生接受邀请")
+    @GetMapping("doctorAccessInvitation")
+    public ResponseResult doctorAccessInvitation(@AccessToken AccessInfo info,@RequestParam("invitationCode")String invitationCode){
+        Integer userId = info.getUserId();
+        AccompanyingInvitation accompanyingInvitation = new AccompanyingInvitation();
+        accompanyingInvitation.setUserId(userId);
+        accompanyingInvitation.setInvitationCode(invitationCode);
+        accompanyingInvitationManager.addAccompanyingInvitation(accompanyingInvitation);
+        return ResponseUtil.setSuccessResult();
+    }
+
+
+
+
 
     /**
      * 取消预约
@@ -426,7 +447,8 @@ public class AccompanyingOrderApi {
             String fee = totalBalance.multiply(new BigDecimal(100)).intValue()+"";
             Map<String, String> refund = wxManager.refund(orderCode, fee, "退款", fee);
             String returnCode = refund.get("return_code");
-            if (StringUtils.equals("SUCCESS",returnCode)){
+            String resultCode = refund.get("result_code");
+            if (StringUtils.equals("SUCCESS",returnCode) && StringUtils.equals("SUCCESS",resultCode)){
                 // 退款成功
                 //商户退款单号
                 String outRefundNo = refund.get("out_refund_no");
@@ -459,6 +481,37 @@ public class AccompanyingOrderApi {
         accompanyingOrder.setModifyBy(info.getPatientId());
         accompanyingOrder.setPoint(accompanyingOrder.getPoint());
         accompanyingOrderManager.update(accompanyingOrder);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "消息")
+    @GetMapping("msg")
+    public ResponseResult<Map<String,Long>> getMsg(){
+        String orderBy = "createat DESC";
+        AccompanyingOrder accompanyingOrder1 = new AccompanyingOrder();
+        accompanyingOrder1.setStatus(2);
+        AccompanyingOrder accompanyingOrder2 = new AccompanyingOrder();
+        accompanyingOrder2.setStatus(7);
+        Long total = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder1, orderBy, 1, 1).getTotal();
+        Long total1 = accompanyingOrderManager.selectByAccompanyingOrder(accompanyingOrder2, orderBy, 1, 1).getTotal();
+        Map<String,Long> map = new HashMap<>(2);
+        map.put("quxiao",total1);
+        map.put("daichuli",total);
+        return ResponseUtil.setSuccessResult(map);
+    }
+
+
+
+    @ApiOperation(value = "预约成功列表")
+    @GetMapping("getList")
+    public ResponseResult<PageResult<InvitationDto>> getList(@RequestParam("pageNum")Integer pageNum, @RequestParam("pageSize")Integer pageSize, @AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(accompanyingInvitationManager.selectAccompanyingInvitationByUserId(info.getUserId(),pageNum,pageSize));
+    }
+
+    @ApiOperation(value = "设置价格")
+    @PostMapping("setprice")
+    public ResponseResult setprice(@RequestBody AccompanyingPrice accompanyingPrice){
+        accompanyingPriceManager.save(accompanyingPrice);
         return ResponseUtil.setSuccessResult();
     }
 }

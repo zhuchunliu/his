@@ -1,5 +1,6 @@
 package com.acmed.his.exceptions.handler;
 
+import com.acmed.his.constants.CommonConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.exceptions.ErrorMsg;
@@ -28,6 +29,8 @@ public class ServiceExceptionHandler implements HandlerExceptionResolver {
         logger.error("ip: "+ IPAddressUtil.parse(request));
         logger.error("url: "+request.getMethod() + request.getServletPath());
         logger.error("query: "+ request.getQueryString());
+        String token = request.getHeader(CommonConstants.USER_HEADER_TOKEN);
+        logger.error("token :"+token);
         try {
             String body = Okio.buffer(Okio.source(request.getInputStream())).readString(Charsets.UTF_8);
             if (StringUtils.isNotBlank(body)) {

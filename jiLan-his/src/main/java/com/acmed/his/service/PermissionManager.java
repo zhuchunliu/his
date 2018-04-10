@@ -94,6 +94,10 @@ public class PermissionManager {
         return permissionMapper.hasPermission(uid,path)>0;
     }
 
+    public Boolean hasMenu(String uid, String perCode) {
+        return permissionMapper.hasMenu(uid,perCode)>0;
+    }
+
 
     public List<Permission> getNeedFilterPermissionList(){
         return permissionMapper.getNeedFilterPermissionList();
@@ -110,4 +114,6 @@ public class PermissionManager {
     public List<Permission> getBasePermission(){
         return permissionMapper.getBasePermission();
     }
+
+
 }

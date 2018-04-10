@@ -17,6 +17,9 @@ public class DispensQueryMo {
     @ApiModelProperty("1:未收费、2:未发药、3：已退款、4：已完成")
     private String status;
 
-    @ApiModelProperty("日期 yyyy-MM-dd格式")
-    private String date;
+    @ApiModelProperty("就诊开始日期")
+    private String diagnoseStartDate;
+
+    @ApiModelProperty("就诊结束时间")
+    private String diagnoseEndDate;
 }

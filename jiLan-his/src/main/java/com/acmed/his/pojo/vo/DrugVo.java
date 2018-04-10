@@ -66,6 +66,9 @@ public class DrugVo {
     @ApiModelProperty("小单位名称")
     private String minUnitName;
 
+    @ApiModelProperty("安全库存数量")
+    private Integer safetyNum;
+
     @ApiModelProperty("剂量")
     private Double dose;
 

@@ -19,4 +19,11 @@ public interface AreaMapper extends TkMapper<Area> {
      * @return
      */
     List<Area> getOrgAddress(@Param("address") String address);
+
+
+    /**
+     * 北上广
+     * @return 北上广支持城市列表
+     */
+    List<Area> bsgcitys();
 }

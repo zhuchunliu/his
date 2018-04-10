@@ -37,7 +37,7 @@
         case isdispensing when 2 THEN 0 ELSE 1 END AS contanisMedicine
         from t_b_apply apply
         JOIN t_b_prescription pre on apply.id = pre.applyid
-        JOIN t_b_patient patient on apply.patientid = patient.id
+        JOIN t_b_patient_item patient on apply.patientitemid = patient.id
         JOIN t_p_s_user user on pre.createby = user.id
 
         <trim prefixOverrides="and" prefix="where">
@@ -52,19 +52,26 @@
                 and pre.ispaid = '0'
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 2">
-                and pre.ispaid = '1' and pre.isdispensing = '0'
+                and (pre.ispaid = '1' and pre.isdispensing = '0')
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 3">
                 and (pre.ispaid = '2' or pre.ispaid = '3')
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 4">
-                and pre.isdispensing = '1'
+                and (pre.isdispensing = '1' or (pre.ispaid = '1' and pre.isdispensing = '2'))
             </if>
-            <if test="@Ognl@isNotEmpty(date)">
-                and DATE_FORMAT(pre.createat,'%Y-%m-%d') = #{date}
+            <if test="@Ognl@isNotEmpty(diagnoseStartDate)">
+                <![CDATA[
+                 and pre.createat >= #{diagnoseStartDate}
+                ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(diagnoseEndDate)">
+                <![CDATA[
+                  and pre.createat <= #{diagnoseEndDate}
+                ]]>
             </if>
         </trim>
-        order by ispaid ASC,FIELD(isdispensing,0,2,1)
+        order by DATE_FORMAT(pre.createat,'%Y-%m-%d') desc ,ispaid ASC,FIELD(isdispensing,0,2,1),apply.clinicno DESC
     </select>
 
     <select id = "getDispensingTotal" resultType="java.lang.Integer">
@@ -84,17 +91,38 @@
                 and pre.ispaid = '0'
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 2">
-                and pre.ispaid = '1' and pre.isdispensing = '0'
+                and (pre.ispaid = '1' and pre.isdispensing = '0')
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 3">
                 and (pre.ispaid = '2' or pre.ispaid = '3')
             </if>
             <if test="@Ognl@isNotEmpty(status) and status == 4">
-                and pre.isdispensing = '1'
+                and (pre.isdispensing = '1' or (pre.ispaid = '1' and pre.isdispensing = '2'))
             </if>
-            <if test="@Ognl@isNotEmpty(date)">
-                and DATE_FORMAT(pre.createat,'%Y-%m-%d') = #{date}
+            <if test="@Ognl@isNotEmpty(diagnoseStartDate)">
+                <![CDATA[
+                 and pre.createat >= #{diagnoseStartDate}
+                ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(diagnoseEndDate)">
+                <![CDATA[
+                  and pre.createat <= #{diagnoseEndDate}
+                ]]>
             </if>
         </trim>
+    </select>
+
+    <select id="getFee" resultType="java.lang.Double">
+        select sum(fee) as fee from t_b_prescription where orgcode = #{orgCode}
+        <if test="@Ognl@isNotEmpty(startDate) ">
+            <![CDATA[
+              and createat >= #{startDate}
+            ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(endDate) ">
+            <![CDATA[
+              and createat <= #{endDate}
+            ]]>
+        </if>
     </select>
 </mapper>

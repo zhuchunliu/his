@@ -452,19 +452,28 @@ public class ApplyManager {
         }
         Apply apply = new Apply();
         String applyId = UUIDUtil.generate32();
+        apply.setIsPaid("0");
         apply.setId(applyId);
         apply.setDoctorName(doctorName);
         apply.setDoctorId(doctorId);
         apply.setAppointmentTime(mo.getAppointmentTime());
         Patient param = new Patient();
-        param.setIdCard(mo.getIdcard());
-        List<Patient> byPatient = patientManager.getByPatient(param);
+
         apply.setOrgCode(orgCode);
         apply.setDept(dept);
         apply.setDeptName(deptName);
         apply.setOrgName(orgName);
         apply.setCreateBy(createBy);
-        if (byPatient.size() == 0){
+        Patient patient = null;
+        if(StringUtils.isNotEmpty(mo.getPatientItemId())){
+            PatientItem patientItem = patientItemManager.getById(mo.getPatientItemId());
+            patient = patientManager.getPatientById(patientItem.getPatientId());
+        }else{
+            patient = patientManager.getPatientByIdCard(mo.getIdcard());
+        }
+//        param.setIdCard(mo.getIdcard());
+//        List<Patient> byPatient = patientManager.getByPatient(param);
+        if (null == patient){
             // 不存在主表信息
             // 创建患者主表
             BeanUtils.copyProperties(mo,param);
@@ -499,12 +508,16 @@ public class ApplyManager {
             apply.setPatientId(generatePatientId);
             apply.setPatientName(mo.getPatientName());
             apply.setFee(fee);
+            if (fee==0){
+                apply.setIsPaid("1");
+                apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+            }
             apply.setPatientItemId(generatePatientItemId);
             int i1 = addApply(apply);
             return ResponseUtil.setSuccessResult(applyId);
         }else {
             // 存在主表信息
-            Patient patient = byPatient.get(0);
+//            Patient patient = byPatient.get(0);
 
             PatientItem patientItem = new PatientItem();
             patientItem.setOrgCode(orgCode);
@@ -517,11 +530,24 @@ public class ApplyManager {
                     // 被拉黑
                     return ResponseUtil.setErrorMeg(StatusCode.FAIL,"您在该医院存在不良记录，具体操作请联系客服");
                 }
+                patientItem1.setPatientId(patient.getId());
+                patientItem1.setPatientName(mo.getPatientName());
+                patientItem1.setGender(mo.getGender());
+                patientItem1.setIdCard(mo.getIdcard());
+                patientItem1.setMobile(mo.getMobile());
+                patientItem1.setSocialCard(mo.getSocialCard());
+                patientItem1.setAnaphylaxis(mo.getAnaphylaxis());
+                patientItem1.setAddress(mo.getAddress());
+                patientItemManager.updatePatientItem(patientItem1);
                 apply.setPatientId(patient.getId());
                 apply.setPatientName(patientItem1.getPatientName());
                 apply.setGender(patientItem1.getGender());
                 apply.setPinYin(patientItem1.getInputCode());
                 apply.setFee(fee);
+                if (fee==0){
+                    apply.setIsPaid("1");
+                    apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+                }
                 apply.setAge(patientItem1.getAge());
                 apply.setIsFirst(0);
                 apply.setPatientItemId(patientItem1.getId());
@@ -549,7 +575,11 @@ public class ApplyManager {
                 apply.setGender(patientItem1.getGender());
                 apply.setPinYin(patientItem1.getInputCode());
                 apply.setFee(fee);
-                apply.setAge(IdCardUtil.idCardToAge(mo.getIdcard()));
+                if (fee==0){
+                    apply.setIsPaid("1");
+                    apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+                }
+                apply.setAge(DateTimeUtil.getAge(mo.getIdcard()));
                 apply.setIsFirst(0);
                 apply.setPatientItemId(generatePatientItemId);
                 int i1 = addApply(apply);
@@ -589,8 +619,7 @@ public class ApplyManager {
         apply.setCreateAt(LocalDateTime.now().toString());
         // 挂号单号在付款完成后生成
         //String formatVal = commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000");
-        apply.setClinicNo(null);
-        apply.setIsPaid("0");
+//        apply.setClinicNo(null);
         apply.setStatus("0");
         apply.setModifyBy(null);
         apply.setModifyAt(null);

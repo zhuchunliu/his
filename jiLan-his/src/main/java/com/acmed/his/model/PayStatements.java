@@ -23,7 +23,7 @@ public class PayStatements {
     @ApiModelProperty("支付流水号")
     private String id;
 
-    @ApiModelProperty("付费类型 现金 支付宝 微信 ")
+    @ApiModelProperty("付费类型 现金 支付宝 微信 刷卡")
     private String feeType;
 
     @ApiModelProperty("机构编码")

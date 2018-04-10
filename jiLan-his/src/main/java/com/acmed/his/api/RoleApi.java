@@ -103,7 +103,8 @@ public class RoleApi {
 
     @ApiOperation(value = "获取角色绑定的权限列表")
     @GetMapping("/permission")
-    public ResponseResult<List<RoleVsPermissionVo>> getPermissionByRole(@ApiParam("角色主键") @RequestParam(value = "rid",required = false) Integer rid) {
+    public ResponseResult<List<RoleVsPermissionVo>> getPermissionByRole(@ApiParam("角色主键") @RequestParam(value = "rid",required = false) Integer rid,
+                                                                        @AccessToken AccessInfo info) {
 
         List<Integer> checkedList = Lists.newArrayList();
         if(null != rid) {
@@ -117,7 +118,7 @@ public class RoleApi {
         List<RoleVsPermissionVo> list = Lists.newArrayList();
         parentList.forEach(parent->{
 
-            List<Permission> childList = permissionMapper.getPermissionByPid(parent.getId());
+            List<Permission> childList = permissionMapper.getPermissionByPid(parent.getId(),info.getUser().getOrgCode());
             List<RoleVsPermissionVo.PermissionChild> childMoList = Lists.newArrayList();
             childList.forEach(child->{
                 RoleVsPermissionVo.PermissionChild pchild = new RoleVsPermissionVo().new PermissionChild();

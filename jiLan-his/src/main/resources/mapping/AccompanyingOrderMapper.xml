@@ -80,9 +80,6 @@
             <if test="@Ognl@isNotEmpty(delFlag)">
                 and delflag = #{delFlag}
             </if>
-            <if test="@Ognl@isNotEmpty(otherShareCode)">
-                and othersharecode = #{otherShareCode}
-            </if>
             <if test="@Ognl@isNotEmpty(point)">
                 and point = #{point}
             </if>

@@ -7,6 +7,7 @@ import com.acmed.his.model.*;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.FeeItemManager;
 import com.acmed.his.util.DateTimeUtil;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,18 +31,22 @@ public class PreVo {
     @ApiModelProperty("处方集合")
     private List<PrescriptVo> PreList = new ArrayList<>();
 
-    @ApiModelProperty("患者信息")
-    private PatientVo patient = new PatientVo();
+//    @ApiModelProperty("患者信息")
+//    private PatientVo patient = new PatientVo();
 
     @ApiModelProperty("病例")
     private MedicalRecordVo record = new MedicalRecordVo();
+
+    @ApiModelProperty("注射单")
+    private List<List<InjectVo>> injectList = Lists.newArrayList();
 
     public PreVo(){
 
     }
 
     public PreVo(Prescription prescription, List<Inspect> preInspectist,
-                 List<Charge> preChargeList, List<PrescriptionItem> preItemList, Patient patientInfo, MedicalRecord medicalRecord,
+                 List<Charge> preChargeList, List<PrescriptionItem> preItemList, PatientItem patientItem,
+                 MedicalRecord medicalRecord,List<Inject> preInjectList,
                  ManufacturerMapper manufacturerMapper, BaseInfoManager baseInfoManager, DrugMapper drugMapper, FeeItemManager feeItemManager) {
         if(null == prescription){
             return;
@@ -49,8 +54,23 @@ public class PreVo {
         this.id = prescription.getId();
         this.applyId = prescription.getApplyId();
 
-        BeanUtils.copyProperties(patientInfo,this.patient);
-        this.patient.setAge(Optional.ofNullable(patientInfo.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+//        if(null != patientItem) {
+//            this.patient.setPatientId(patientItem.getPatientId());
+//            this.patient.setUserName(patientItem.getPatientName());
+//            this.patient.setGender(patientItem.getGender());
+//            this.patient.setDateOfBirth(patientItem.getDateOfBirth());
+//            this.patient.setMobile(patientItem.getMobile());
+//            this.patient.setAddress(patientItem.getAddress());
+//            this.patient.setAnaphylaxis(patientItem.getAnaphylaxis());
+//            this.patient.setIdCard(patientItem.getIdCard());
+//            this.patient.setSocialCard(patientItem.getSocialCard());
+//            if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
+//                this.patient.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
+//            } else {
+//                this.patient.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+//            }
+//        }
+
 
         BeanUtils.copyProperties(medicalRecord,record);
 
@@ -89,6 +109,7 @@ public class PreVo {
                                 (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())) :
                                 (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
                     }
+                    item.setItemId(obj.getId());
                     item.setMinUnitName(null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString()));
                     item.setMinPriceUnitType(drug.getMinPriceUnitType());
                     item.setRetailPrice(drug.getRetailPrice());
@@ -111,6 +132,7 @@ public class PreVo {
                 PreVo.InspectVo inspect = new PreVo.InspectVo();
                 BeanUtils.copyProperties(obj,inspect);
                 inspect.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.INSPECT_CATEGORY.getCode(),inspect.getCategory()).getDicItemName());
+                inspect.setInspectId(obj.getId());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo("2",null,inspect,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -127,6 +149,7 @@ public class PreVo {
                 PreVo.ChargeVo charge = new PreVo.ChargeVo();
                 BeanUtils.copyProperties(obj,charge);
                 charge.setCategoryName(baseInfoManager.getDicItem(DicTypeEnum.CHARGE_CATEGORY.getCode(),charge.getCategory()).getDicItemName());
+                charge.setChargeId(obj.getId());
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new PrescriptVo(null,null,null,charge,
                             obj.getRequirement(),obj.getRemark()));
@@ -141,6 +164,39 @@ public class PreVo {
         Iterator iterator = map.keySet().iterator();
         while (iterator.hasNext()){
             this.getPreList().add(map.get(iterator.next()));
+        }
+
+        if(null != preInjectList && 0 != preInjectList.size()){
+            Map<String,List<InjectVo>> injectMap = Maps.newHashMap();
+            for(Inject inject : preInjectList){
+                InjectVo injectVo = new InjectVo();
+                BeanUtils.copyProperties(inject,injectVo);
+                Drug drug = drugMapper.selectByPrimaryKey(inject.getDrugId());
+                injectVo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
+                if(null != drug) {
+                    injectVo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
+                            map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
+                    injectVo.setUnitName(null==drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
+                    injectVo.setMinUnitName(null==drug.getMinUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit().toString()).getDicItemName());
+                    injectVo.setDoseUnitName(null==drug.getDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
+
+                }
+                if(null != injectVo.getFrequency()){
+                    injectVo.setFrequencyName(frequencyItemName.get(inject.getFrequency().toString()));
+                }
+
+                if(!injectMap.containsKey(inject.getGroupNum())){
+                    injectMap.put(inject.getGroupNum(),Lists.newArrayList(injectVo));
+                }else{
+                    injectMap.get(inject.getGroupNum()).add(injectVo);
+                }
+            }
+
+            Iterator iteratorInject = injectMap.keySet().iterator();
+            while (iteratorInject.hasNext()){
+                this.injectList.add(injectMap.get(iteratorInject.next()));
+            }
+
         }
 
     }
@@ -182,6 +238,9 @@ public class PreVo {
     @Data
     public class InspectVo{
 
+        @ApiModelProperty("处方检查主键")
+        private String inspectId;
+
         @ApiModelProperty("检查目的")
         private String aim;
 
@@ -213,6 +272,10 @@ public class PreVo {
 
     @Data
     public class ChargeVo{
+
+        @ApiModelProperty("处方附加主键")
+        private String chargeId;
+
         @ApiModelProperty("费用类型")
         private String category;
 
@@ -228,6 +291,10 @@ public class PreVo {
 
     @Data
     public class ItemVo{
+
+        @ApiModelProperty("处方药品主键")
+        private String itemId;
+
         @ApiModelProperty("药品id")
         private Integer drugId;
 
@@ -347,5 +414,39 @@ public class PreVo {
         @ApiModelProperty("备注")
         private String remark;
 
+    }
+
+
+    @Data
+    public static class InjectVo{
+        @ApiModelProperty("药品id")
+        private Integer drugId;
+
+        @ApiModelProperty("用药名称")
+        private String drugName;
+
+        @ApiModelProperty("单次剂量")
+        private Double singleDose;
+
+        @ApiModelProperty("备注")
+        private String memo;
+
+        @ApiModelProperty("生产厂家名称")
+        private String manufacturerName;
+
+        @ApiModelProperty("单位名称")
+        private String unitName;
+
+        @ApiModelProperty("小单位名称")
+        private String minUnitName;
+
+        @ApiModelProperty("剂量单位名称")
+        private String doseUnitName;
+
+        @ApiModelProperty("频率")
+        private Integer frequency;
+
+        @ApiModelProperty("频率")
+        private String frequencyName;
     }
 }

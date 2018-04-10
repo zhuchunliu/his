@@ -14,6 +14,7 @@ import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.*;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -25,9 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -151,12 +150,18 @@ public class UserApi {
 
     @ApiOperation(value = "获取可访问菜单列表")
     @GetMapping("/menu")
-    public ResponseResult<List<MenuVo>> getMenu(@AccessToken AccessInfo info) {
+    public ResponseResult<Set<MenuVo>> getMenu(@AccessToken AccessInfo info) {
         List<Permission> source = permissionManager.getPermissionByUserId(info.getUserId());
-        List<MenuVo> list = Lists.newArrayList();
+        Set<MenuVo> set = new LinkedHashSet<MenuVo>();
         source.forEach(obj->{
-            list.add(new MenuVo(obj));
+            set.add(new MenuVo(obj));
+            if(StringUtils.isNotEmpty(obj.getPerCode()) && obj.getPerCode().equals("cgrk")){
+                set.add(new MenuVo("入库审核","rksh"));
+            }
+            if(StringUtils.isNotEmpty(obj.getPerCode()) && obj.getPerCode().equals("kcpd")){
+                set.add(new MenuVo("盘点审核","pdsh"));
+            }
         });
-        return ResponseUtil.setSuccessResult(list);
+        return ResponseUtil.setSuccessResult(set);
     }
 }

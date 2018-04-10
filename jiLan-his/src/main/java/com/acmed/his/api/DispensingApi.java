@@ -27,12 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Example;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 发药接口
@@ -77,16 +75,27 @@ public class DispensingApi {
     @Autowired
     private ManufacturerMapper manufacturerMapper;
 
+    @Autowired
+    private InjectMapper injectMapper;
+
 
     @ApiOperation(value = "收支概况")
     @GetMapping("/fee/survey")
-    public ResponseResult<DispensingFeeSurveyVo> getFeeSurvey(@Param("日期 yyyy-MM-dd格式 默认当天")@RequestParam(required = false) String date,
+    public ResponseResult<DispensingFeeSurveyVo> getFeeSurvey(@Param("日期 yyyy-MM-dd格式 默认当天")@RequestParam(required = false) String startDate,
+                                                              @Param("日期 yyyy-MM-dd格式 默认当天")@RequestParam(required = false) String endDate,
                                                               @AccessToken AccessInfo info){
-        date = Optional.ofNullable(date).orElse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        List<Map<String,Object>> payList = payStatementsMapper.getFeeSurvey(date,info.getUser().getOrgCode());
-        List<Map<String,Object>> refundList = payRefuseMapper.getFeeSurvey(date,info.getUser().getOrgCode());
+        if(null == startDate && null == endDate){
+            startDate = DateTimeUtil.getBeginDate(LocalDate.now().toString());
+            endDate = DateTimeUtil.getEndDate(LocalDate.now().toString());
+        }else{
+            startDate = Optional.ofNullable(startDate).map(DateTimeUtil::getBeginDate).orElse(null);
+            endDate = Optional.ofNullable(endDate).map(DateTimeUtil::getEndDate).orElse(null);
+        }
+        List<Map<String,Object>> payList = payStatementsMapper.getFeeSurvey(startDate,endDate,info.getUser().getOrgCode());
+        List<Map<String,Object>> refundList = payRefuseMapper.getFeeSurvey(startDate,endDate,info.getUser().getOrgCode());
+        Double fee = preMapper.getFee(startDate,endDate,info.getUser().getOrgCode());
 
-        return ResponseUtil.setSuccessResult(new DispensingFeeSurveyVo(payList,refundList));
+        return ResponseUtil.setSuccessResult(new DispensingFeeSurveyVo(fee,payList,refundList));
     }
 
     @ApiOperation(value = "收费发药列表")
@@ -94,26 +103,40 @@ public class DispensingApi {
     public ResponseResult<PageResult<DispensingVo>> getDispensingList(
             @RequestBody(required = false) PageBase<DispensQueryMo> mo,
             @AccessToken AccessInfo info){
+
+        if(null == mo.getParam() || (StringUtils.isEmpty(mo.getParam().getDiagnoseStartDate())) &&
+                (StringUtils.isEmpty(mo.getParam().getDiagnoseEndDate()))){
+            if(null == mo.getParam()){
+                mo.setParam(new DispensQueryMo());
+            }
+            mo.getParam().setDiagnoseStartDate(DateTimeUtil.getBeginDate(LocalDate.now().toString()));
+            mo.getParam().setDiagnoseEndDate(DateTimeUtil.getEndDate(LocalDate.now().toString()));
+        }else{
+            mo.getParam().setDiagnoseStartDate(Optional.ofNullable(mo.getParam().getDiagnoseStartDate()).
+                    map(DateTimeUtil::getBeginDate).orElse(null));
+            mo.getParam().setDiagnoseEndDate(Optional.ofNullable(mo.getParam().getDiagnoseEndDate()).
+                    map(DateTimeUtil::getEndDate).orElse(null));
+        }
         List<DispensingVo> list = new ArrayList<>();
         List<DispensingDto> applyList = dispensingManager.getDispensingList(mo.getPageNum(),mo.getPageSize(),
                 info.getUser().getOrgCode(), Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getDate()).orElse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                Optional.ofNullable(mo.getParam().getStatus()).orElse(null),
+                mo.getParam().getDiagnoseStartDate(),mo.getParam().getDiagnoseEndDate());
         applyList.forEach(obj->{
             DispensingVo vo = new DispensingVo();
             BeanUtils.copyProperties(obj,vo);
             if("0".equals(obj.getIsPaid())) vo.setStatus("1");
-            if("1".equals(obj.getIsPaid()) && ("0".equals(obj.getIsDispensing()) || "2".equals(obj.getIsDispensing()))) vo.setStatus("2");
-            if("2".equals(obj.getIsPaid())) vo.setStatus("3");
-            if("3".equals(obj.getIsPaid())) vo.setStatus("4");
-            if("1".equals(obj.getIsDispensing())) vo.setStatus("5");
+            if("1".equals(obj.getIsPaid()) && "0".equals(obj.getIsDispensing())) vo.setStatus("2");
+            if("2".equals(obj.getIsPaid()) || "3".equals(obj.getIsPaid())) vo.setStatus("4");
+            if("1".equals(obj.getIsDispensing()) ||
+                    ("1".equals(obj.getIsPaid()) && "2".equals(obj.getIsDispensing()))) vo.setStatus("5");
 
             list.add(vo);
         });
         int total = dispensingManager.getDispensingTotal(info.getUser().getOrgCode(),
                 Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getStatus()).orElse(null),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getDate()).orElse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                Optional.ofNullable(mo.getParam().getStatus()).orElse(null),
+                mo.getParam().getDiagnoseStartDate(),mo.getParam().getDiagnoseEndDate());
         return ResponseUtil.setSuccessResult(new PageResult(list,(long)total));
     }
 
@@ -263,15 +286,15 @@ public class DispensingApi {
         Prescription prescription = preMapper.getPreByApply(applyId).get(0);
 
         Example example = new Example(PrescriptionItem.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId);
         List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
 
         example = new Example(Inspect.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId);
         List<Inspect> inspectList = inspectMapper.selectByExample(example);
 
         example = new Example(Charge.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId);
         List<Charge> chargeList = chargeMapper.selectByExample(example);
 
         Map<String,List<PrescriptionItemStock>> map = Maps.newHashMap();
@@ -282,10 +305,12 @@ public class DispensingApi {
         });
 
 
+        example = new Example(Inject.class);
+        example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
+        example.orderBy("groupNum").orderBy("id");
+        List<Inject> injectList = injectMapper.selectByExample(example);
 
-        return ResponseUtil.setSuccessResult(new DispensingDetailVo(prescription,itemList,inspectList,chargeList,map,baseInfoManager,drugMapper,manufacturerMapper));
+        return ResponseUtil.setSuccessResult(new DispensingDetailVo(prescription,itemList,inspectList,chargeList,
+                map,injectList,baseInfoManager,drugMapper,manufacturerMapper));
     }
-
-
-
 }

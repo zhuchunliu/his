@@ -2,10 +2,13 @@ package com.acmed.his.api;
 
 import com.acmed.his.model.Supply;
 import com.acmed.his.service.SupplyManager;
+import com.acmed.his.support.AccessInfo;
+import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -30,9 +33,9 @@ public class SupplyApi {
 
     @ApiOperation(value = "添加/编辑  存在id就是编辑")
     @PostMapping("save")
-    public ResponseResult saveSupply(@RequestBody Supply supply){
-        supplyManager.saveSupply(supply);
-        return ResponseUtil.setSuccessResult();
+    public ResponseResult saveSupply(@RequestBody Supply supply,@AccessToken AccessInfo info){
+        Integer id = supplyManager.saveSupply(supply,info.getUser());
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("id",id));
     }
 
     @ApiOperation(value = "根据id查询")
@@ -43,13 +46,15 @@ public class SupplyApi {
 
     @ApiOperation(value = "列表分页")
     @PostMapping("listByPage")
-    public ResponseResult<PageResult<Supply>> getAllSupplyByPage(@ApiParam("param 名字  短名 拼音都可以模糊搜索   不传就是全部查询")@RequestBody PageBase<String> pageBase){
-        return ResponseUtil.setSuccessResult(supplyManager.getSupplyByPage(pageBase));
+    public ResponseResult<PageResult<Supply>> getAllSupplyByPage(@ApiParam("param 名字  短名 拼音都可以模糊搜索   不传就是全部查询")@RequestBody PageBase<String> pageBase,
+                                                                 @AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(supplyManager.getSupplyByPage(pageBase,info.getUser()));
     }
 
     @ApiOperation(value = "列表分页")
     @GetMapping("list")
-    public ResponseResult<List<Supply>> getAllSupply(@ApiParam("名字  短名 拼音都可以模糊搜索") @RequestParam(value = "param",required = false)String param){
-        return ResponseUtil.setSuccessResult(supplyManager.getSupply(param));
+    public ResponseResult<List<Supply>> getAllSupply(@ApiParam("名字  短名 拼音都可以模糊搜索") @RequestParam(value = "param",required = false)String param,
+                                                     @AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(supplyManager.getSupply(param,info.getUser()));
     }
 }

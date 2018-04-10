@@ -2,8 +2,10 @@ package com.acmed.his.service;
 
 import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.Manufacturer;
+import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
+import com.acmed.his.util.PinYinUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -27,20 +29,23 @@ public class ManufacturerManager {
      * @param manufacturer 药品生产商参数
      * @return 0失败 1成功
      */
-    public int saveManufacturer(Manufacturer manufacturer){
+    public int saveManufacturer(Manufacturer manufacturer, UserInfo userInfo){
         Integer id = manufacturer.getId();
+        manufacturer.setPinYin(PinYinUtil.getPinYinHeadChar(manufacturer.getName()));
         if (id == null){
-            return manufacturerMapper.insert(manufacturer);
+            manufacturer.setOrgCode(userInfo.getOrgCode());
+            manufacturerMapper.insert(manufacturer);
         }else {
             Manufacturer manufacturer1 = manufacturerMapper.selectByPrimaryKey(id);
             if (manufacturer1 == null){
                 //id 不存在
                 return 0;
             }else {
+                manufacturer.setOrgCode(userInfo.getOrgCode());
                 manufacturerMapper.updateByPrimaryKeySelective(manufacturer);
-                return 1;
             }
         }
+        return manufacturer.getId();
     }
 
     /**
@@ -57,12 +62,8 @@ public class ManufacturerManager {
      * @param name 生产商名字
      * @return List<Manufacturer>
      */
-    public List<Manufacturer> getManufacturerLikeName(String name){
-        Example example = new Example(Manufacturer.class);
-        if (!StringUtils.isEmpty(name)){
-            example.createCriteria().andLike("name","%"+name+"%");
-        }
-        return manufacturerMapper.selectByExample(example);
+    public List<Manufacturer> getManufacturerLikeName(String name,UserInfo userInfo){
+        return manufacturerMapper.selectByManufacture(name,userInfo.getOrgCode());
     }
 
     /**
@@ -70,17 +71,12 @@ public class ManufacturerManager {
      * @param pageBase 生产商名字
      * @return List<Manufacturer>
      */
-    public PageResult<Manufacturer> getManufacturerLikeNameByPage(PageBase<String> pageBase){
-        Example example = new Example(Manufacturer.class);
-        String param = pageBase.getParam();
-        if (!StringUtils.isEmpty(param)){
-            example.createCriteria().andLike("name","%"+param+"%");
-        }
+    public PageResult<Manufacturer> getManufacturerLikeNameByPage(PageBase<String> pageBase,UserInfo userInfo){
         PageResult<Manufacturer> pageResult = new PageResult<>();
         Integer pageNum = pageBase.getPageNum();
         Integer pageSize = pageBase.getPageSize();
         PageHelper.startPage(pageNum,pageSize);
-        List<Manufacturer> manufacturers = manufacturerMapper.selectByExample(example);
+        List<Manufacturer> manufacturers = manufacturerMapper.selectByManufacture(pageBase.getParam(),userInfo.getOrgCode());
         PageInfo<Manufacturer> manufacturerPageInfo = new PageInfo<>(manufacturers);
         pageResult.setPageNum(pageNum);
         pageResult.setPageSize(pageSize);

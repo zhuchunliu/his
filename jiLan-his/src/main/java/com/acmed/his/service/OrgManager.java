@@ -1,11 +1,14 @@
 package com.acmed.his.service;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.AreaMapper;
 import com.acmed.his.dao.OrgMapper;
 import com.acmed.his.dao.RoleVsPermissionMapper;
 import com.acmed.his.dao.UserVsRoleMapper;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.OrgDto;
+import com.acmed.his.pojo.mo.BsgOrgMo;
 import com.acmed.his.pojo.mo.OrgMo;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.UserMo;
@@ -110,12 +113,42 @@ public class OrgManager {
             this.getOrgArea(org);
             org.setModifyAt(LocalDateTime.now().toString());
             org.setModifyBy(userInfo.getId().toString());
-            orgMapper.updateByPrimaryKey(org);
+            orgMapper.updateByPrimaryKeySelective(org);
             if (StringUtils.isNotEmpty(mo.getOrgName())){
                 userManager.updateUserOrg(mo.getOrgCode(),mo.getOrgName());
             }
         }
     }
+
+
+    @Transactional
+    public void saveBsgOrg(BsgOrgMo bsgOrgMo,UserInfo userInfo){
+        Integer orgCode = bsgOrgMo.getOrgCode();
+        if (orgCode==null){
+            // 新增
+            Org org = new Org();
+            org.setOrgName(bsgOrgMo.getOrgName());
+            List<Org> select = orgMapper.select(org);
+            if(select.size()!=0){
+                throw new BaseException(StatusCode.FAIL,"机构已存在");
+            }
+            BeanUtils.copyProperties(bsgOrgMo,org);
+            //this.getOrgArea(org);
+            org.setRemoved("0");
+            org.setIsRecommend("1");
+            org.setCreateAt(LocalDateTime.now().toString());
+            org.setCreateBy(userInfo.getId().toString());
+            orgMapper.insert(org);
+        }else {
+            Org org = new Org();
+            BeanUtils.copyProperties(bsgOrgMo,org);
+            //this.getOrgArea(org);
+            org.setModifyAt(LocalDateTime.now().toString());
+            org.setModifyBy(userInfo.getId().toString());
+            orgMapper.updateByPrimaryKeySelective(org);
+        }
+    }
+
 
     /**
      * 根据机构地址信息，解析出省市县信息
@@ -200,7 +233,7 @@ public class OrgManager {
         result.setPageNum(pageBase.getPageNum());
         result.setPageSize(pageBase.getPageSize());
         PageHelper.startPage(pageBase.getPageNum(),pageBase.getPageSize());
-        List<OrgDto> orgDtoList = orgMapper.getOrgDtoList(pageBase.getParam());
+        List<OrgDto> orgDtoList = orgMapper.getOrgDtoList(pageBase.getParam(),null,null);
         PageInfo<OrgDto> supplyPageInfo = new PageInfo<>(orgDtoList);
         result.setTotal(supplyPageInfo.getTotal());
         result.setData(orgDtoList);
@@ -213,5 +246,17 @@ public class OrgManager {
         org.setModifyAt(LocalDateTime.now().toString());
         org.setModifyBy(user.getId().toString());
         orgMapper.updateByPrimaryKey(org);
+    }
+
+    public PageResult<OrgDto> getOrgDtoByPage(Integer pageNum,Integer pageSize,String orgName,String cityId,String isRecommend) {
+        PageResult<OrgDto> result = new PageResult<>();
+        result.setPageNum(pageNum);
+        result.setPageSize(pageSize);
+        PageHelper.startPage(pageNum,pageSize);
+        List<OrgDto> orgDtoList = orgMapper.getOrgDtoList(orgName,cityId,isRecommend);
+        PageInfo<OrgDto> supplyPageInfo = new PageInfo<>(orgDtoList);
+        result.setTotal(supplyPageInfo.getTotal());
+        result.setData(orgDtoList);
+        return result;
     }
 }

@@ -61,13 +61,15 @@ public class DispensingManager {
     private PrescriptionItemStockMapper itemStockMapper;
 
 
-    public List<DispensingDto> getDispensingList(Integer pageNum , Integer pageSize, Integer orgCode, String name, String status, String date) {
+    public List<DispensingDto> getDispensingList(Integer pageNum , Integer pageSize, Integer orgCode, String name, String status,
+                                                 String diagnoseStartDate,String diagnoseEndDate) {
         PageHelper.startPage(pageNum,pageSize);
-        return preMapper.getDispensingList(orgCode,name,status,date);
+        return preMapper.getDispensingList(orgCode,name,status,diagnoseStartDate,diagnoseEndDate);
     }
 
-    public Integer getDispensingTotal(Integer orgCode, String name, String status,String date) {
-        return preMapper.getDispensingTotal(orgCode,name,status,date);
+    public Integer getDispensingTotal(Integer orgCode, String name, String status,
+                                      String diagnoseStartDate,String diagnoseEndDate) {
+        return preMapper.getDispensingTotal(orgCode,name,status,diagnoseStartDate,diagnoseEndDate);
     }
 
     /**
@@ -80,9 +82,6 @@ public class DispensingManager {
     public void pay(String applyId, String feeType,UserInfo userInfo){
 
         Apply apply = applyMapper.selectByPrimaryKey(applyId);
-
-        apply.setStatus("1");
-        applyMapper.updateByPrimaryKey(apply);
 
         Example example = new Example(Prescription.class);
         example.createCriteria().andEqualTo("applyId",applyId);
@@ -236,8 +235,6 @@ public class DispensingManager {
     @Transactional
     public void refund(DispensingRefundMo mo , UserInfo userInfo) {
         Apply apply = applyMapper.selectByPrimaryKey(mo.getApplyId());
-        apply.setStatus("3");
-        applyMapper.updateByPrimaryKey(apply);
 
         Map<String,Double> groupFeeMap = Maps.newHashMap();
         for(DispensingRefundMo.RefundMo refundMo : mo.getMoList()){
@@ -355,7 +352,7 @@ public class DispensingManager {
         }
 
         Prescription prescription = preMapper.getPreByApply(mo.getApplyId()).get(0);
-        prescription.setIsPaid(flag?"3":"2");//设置退款状态
+        prescription.setIsPaid("3");//设置退款状态
         preMapper.updateByPrimaryKey(prescription);
     }
 

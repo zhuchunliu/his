@@ -4,7 +4,10 @@ import com.acmed.his.dao.AccompanyingOrderMapper;
 import com.acmed.his.model.AccompanyingOrder;
 import com.acmed.his.model.dto.AccompanyingOrderCountDto;
 import com.acmed.his.model.dto.AccompanyingOrderMo;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.WaterCodeUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +39,7 @@ public class AccompanyingOrderManager {
         accompanyingOrder.setCreateAt(LocalDateTime.now().toString());
         accompanyingOrder.setPayStatus(0);
         accompanyingOrder.setOrderCode(WaterCodeUtil.getWaterCode());
-
+        accompanyingOrder.setModifyAt(LocalDateTime.now().toString());
         int insert = accompanyingOrderMapper.insert(accompanyingOrder);
         if (insert == 0){
             return null;
@@ -51,6 +54,7 @@ public class AccompanyingOrderManager {
      * @return
      */
     public int update(AccompanyingOrder accompanyingOrder){
+        accompanyingOrder.setModifyAt(LocalDateTime.now().toString());
         return accompanyingOrderMapper.updateByPrimaryKeySelective(accompanyingOrder);
     }
 
@@ -60,11 +64,19 @@ public class AccompanyingOrderManager {
      * @param orderBy
      * @return List<AccompanyingOrder>
      */
-    public List<AccompanyingOrder> selectByAccompanyingOrder(AccompanyingOrder accompanyingOrder,String orderBy){
+    public PageResult<AccompanyingOrder> selectByAccompanyingOrder(AccompanyingOrder accompanyingOrder,String orderBy,Integer pageNum,Integer pageSize){
         AccompanyingOrderMo bean = new AccompanyingOrderMo();
         BeanUtils.copyProperties(accompanyingOrder,bean);
         bean.setOrderBy(orderBy);
-        return accompanyingOrderMapper.selectByAccompanyingOrder(bean);
+        PageHelper.startPage(pageNum,pageSize);
+        List<AccompanyingOrder> accompanyingOrders = accompanyingOrderMapper.selectByAccompanyingOrder(bean);
+        PageResult<AccompanyingOrder> result = new PageResult<>();
+        result.setData(accompanyingOrders);
+        result.setPageSize(pageSize);
+        result.setPageNum(pageNum);
+        PageInfo<AccompanyingOrder> accompanyingOrderPageInfo = new PageInfo<>(accompanyingOrders);
+        result.setTotal(accompanyingOrderPageInfo.getTotal());
+        return result;
     }
 
     /**
@@ -96,4 +108,7 @@ public class AccompanyingOrderManager {
     }
 
 
+    public List<AccompanyingOrder> selectByAccompanyingOrder(AccompanyingOrder accompanyingOrder) {
+        return accompanyingOrderMapper.select(accompanyingOrder);
+    }
 }

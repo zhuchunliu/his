@@ -4,6 +4,7 @@ import com.acmed.his.model.Dept;
 import com.acmed.his.model.Org;
 import com.acmed.his.model.PatientItem;
 import com.acmed.his.model.dto.OrgDto;
+import com.acmed.his.pojo.mo.BsgOrgMo;
 import com.acmed.his.pojo.mo.OrgMo;
 import com.acmed.his.pojo.vo.OrgPatientVo;
 import com.acmed.his.pojo.vo.OrgVo;
@@ -94,7 +95,7 @@ public class OrgApi {
                                                         @ApiParam("医院名称") @RequestParam(value="orgName",required = false) String orgName,
                                                         @ApiParam("直线距离 默认100Km") @RequestParam(value = "range",defaultValue = "100") Double range){
         List<OrgVo> list = new ArrayList<>();
-        DecimalFormat format =  new DecimalFormat("#.00");
+        DecimalFormat format =  new DecimalFormat("#0.00");
         orgManager.getOrgList(lng,lat,range,orgName).forEach((obj)->{
 
             OrgVo vo = new OrgVo();
@@ -189,6 +190,27 @@ public class OrgApi {
     @PostMapping("/listbyPage")
     public ResponseResult<PageResult<OrgDto>> getOrgList(@RequestBody PageBase<String> pageBase){
         PageResult<OrgDto> orgDtoByPage = orgManager.getOrgDtoByPage(pageBase);
+        return ResponseUtil.setSuccessResult(orgDtoByPage);
+    }
+
+
+    @ApiOperation(value = "就医北上广 新增/编辑 机构信息")
+    @PostMapping("/bsgsave")
+    public ResponseResult bsgSaveOrg(@ApiParam("orgCode等于null:新增; orgCode不等于null：编辑") @RequestBody BsgOrgMo orgMo,
+                                     @AccessToken AccessInfo info){
+        orgManager.saveBsgOrg(orgMo,info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+
+    @ApiOperation(value = "pc端北上广医院列表")
+    @GetMapping("/bsglistpagepc")
+    public ResponseResult<PageResult<OrgDto>> bsglistpagepc(
+            @ApiParam("页码") @RequestParam("pageNum") Integer pageNum,
+            @ApiParam("记录数") @RequestParam("pageSize") Integer pageSize,
+            @ApiParam("机构名") @RequestParam(value = "orgName",required = false) String orgName,
+            @ApiParam("城市id") @RequestParam(value = "cityId",required = false) String cityId){
+        PageResult<OrgDto> orgDtoByPage = orgManager.getOrgDtoByPage(pageNum,pageSize,orgName,cityId,"1");
         return ResponseUtil.setSuccessResult(orgDtoByPage);
     }
 }

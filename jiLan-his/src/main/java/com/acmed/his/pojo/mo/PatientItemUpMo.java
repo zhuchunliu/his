@@ -76,4 +76,7 @@ public class PatientItemUpMo {
     @ApiModelProperty("社保卡")
     private String socialCard;
 
+    @ApiModelProperty("出生日期")
+    private String dateOfBirth;
+
 }

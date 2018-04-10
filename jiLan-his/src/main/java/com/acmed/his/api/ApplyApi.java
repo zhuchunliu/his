@@ -67,15 +67,7 @@ public class ApplyApi {
                               @AccessToken AccessInfo info){
         String idcard = mo.getIdcard();
         String dateOfBirth = mo.getDateOfBirth();
-        if (StringUtils.isNotEmpty(idcard)){
-            if (idcard.length() == 8){
-                // 表示传的是生日
-                String orgCode = "0000000"+info.getUser().getOrgCode();
-                long l = System.currentTimeMillis();
-                String s = l + "";
-                mo.setIdcard(orgCode.substring(orgCode.length()-6)+idcard+s.substring(s.length()-4));
-            }
-        }else {
+        if (StringUtils.isEmpty(idcard)){
             String orgCode = "0000000"+info.getUser().getOrgCode();
             long l = System.currentTimeMillis();
             String s = l + "";
@@ -110,8 +102,14 @@ public class ApplyApi {
     @GetMapping("id")
     public ResponseResult<ApplyDoctorVo> id(@ApiParam("挂号单id") @RequestParam(value = "id" ) String id){
         Apply applyById = applyManager.getApplyById(id);
+        String patientItemId = applyById.getPatientItemId();
+
+        PatientItem byId = patientItemManager.getById(patientItemId);
+
         ApplyDoctorVo result = new ApplyDoctorVo();
         BeanUtils.copyProperties(applyById,result);
+        result.setIdCard(byId.getIdCard());
+        result.setMobile(byId.getMobile());
         return ResponseUtil.setSuccessResult(result);
     }
 

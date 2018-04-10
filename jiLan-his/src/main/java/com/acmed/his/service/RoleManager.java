@@ -41,13 +41,25 @@ public class RoleManager {
      */
     public List<Role> getRoleList(String isValid,Integer orgCode){
         Role role = new Role();
-        if(!StringUtils.isEmpty(isValid)){
-            role.setIsValid(isValid);
+
+//        role.setRemoved("0");
+//        role.setHideFlag(0);
+//        role.setOrgCode(orgCode);
+        Example example = new Example(Role.class);
+        Example.Criteria criteria = null;
+        if(null == orgCode){
+            criteria = example.createCriteria().andEqualTo("removed","0").
+                    andEqualTo("hideFlag",0).andIsNull("orgCode");
+        }else{
+            criteria = example.createCriteria().andEqualTo("removed","0").
+                    andEqualTo("hideFlag",0).andEqualTo("orgCode",orgCode);
+
         }
-        role.setRemoved("0");
-        role.setHideFlag(0);
-        role.setOrgCode(orgCode);
-        return roleMapper.select(role);
+        if(!StringUtils.isEmpty(isValid)){
+            criteria.andEqualTo("isValid",isValid);
+        }
+
+        return roleMapper.selectByExample(example);
     }
 
     /**

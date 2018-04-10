@@ -13,6 +13,7 @@ import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserQueryMo;
 import com.acmed.his.pojo.mo.UserVsRoleMo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.DateTimeUtil;
 import com.acmed.his.util.IdCardUtil;
 import com.acmed.his.util.MD5Util;
 import com.acmed.his.util.PassWordUtil;
@@ -75,8 +76,8 @@ public class UserManager {
      * @param mo
      */
     @Caching(evict = {
-            @CacheEvict(value = "user",key = "#mo.id"),
-            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+            @CacheEvict(value = "user",key = "'user_cache_id_'+#mo.id"),
+            @CacheEvict(value="user",key="'user_cache_openid_'+#result.openid",condition = "#result.openid ne null")
     })
     @Transactional
     public User save(UserMo mo, UserInfo userInfo){
@@ -118,7 +119,7 @@ public class UserManager {
             user.setPassWd(MD5Util.encode("000000"));
             user.setRemoved("0");
             if(StringUtils.isNotEmpty(mo.getDateOfBirth())){
-                user.setAge(IdCardUtil.idCardToAge("000000"+mo.getDateOfBirth().replace("-","")+"0000"));
+                user.setAge(DateTimeUtil.getAge(mo.getDateOfBirth().replace("-","")));
             }
             userMapper.insertSelective(user);
         }else{
@@ -131,7 +132,7 @@ public class UserManager {
             user.setModifyAt(LocalDateTime.now().toString());
             user.setModifyBy(userInfo.getId().toString());
             if(StringUtils.isNotEmpty(mo.getDateOfBirth())){
-                user.setAge(IdCardUtil.idCardToAge("000000"+mo.getDateOfBirth().replace("-","")+"0000"));
+                user.setAge(DateTimeUtil.getAge(mo.getDateOfBirth().replace("-","")));
             }
             userMapper.updateByPrimaryKeySelective(user);
         }
@@ -151,7 +152,7 @@ public class UserManager {
      * @param id
      * @return
      */
-    @Cacheable(value = "user",key = "#id")
+    @Cacheable(value = "user",key = "'user_cache_id_'+#id")
     public User getUserDetail(Integer id){
         return userMapper.selectByPrimaryKey(id);
     }
@@ -161,8 +162,8 @@ public class UserManager {
      * @param id
      */
     @Caching(evict = {
-            @CacheEvict(value = "user",key = "#id"),
-            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+            @CacheEvict(value = "user",key = "'user_cache_id_'+#id"),
+            @CacheEvict(value="user",key="'user_cache_openid_'+#result.openid",condition = "#result.openid ne null")
     })
     public User delUser(Integer id,UserInfo userInfo){
         User user = userMapper.selectByPrimaryKey(id);
@@ -180,8 +181,8 @@ public class UserManager {
      * @return
      */
     @Caching(evict = {
-            @CacheEvict(value = "user",key = "#id"),
-            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+            @CacheEvict(value = "user",key = "'user_cache_id_'+#id"),
+            @CacheEvict(value="user",key="'user_cache_openid_'+#result.openid",condition = "#result.openid ne null")
     })
     public User switchUser(Integer id,UserInfo userInfo){
         User user = userMapper.selectByPrimaryKey(id);
@@ -200,7 +201,7 @@ public class UserManager {
      * @param openid
      * @return
      */
-    @Cacheable(value="user",key = "#openid")
+    @Cacheable(value="user",key = "'user_cache_openid_'+#openid")
     public User getUserByOpenid(String openid){
         return userMapper.getUserByOpenid(openid);
     }
@@ -211,8 +212,8 @@ public class UserManager {
      * 修改密码
      */
     @Caching(evict = {
-            @CacheEvict(value = "user",key = "#result.id"),
-            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+            @CacheEvict(value = "user",key = "'user_cache_id_'+#result.id"),
+            @CacheEvict(value="user",key="'user_cache_openid_'+#result.openid",condition = "#result.openid ne null")
     })
     public User changePasswd(String oldPasswd, String newPasswd, UserInfo userInfo) {
         User user = userMapper.selectByPrimaryKey(userInfo.getId());
@@ -230,8 +231,8 @@ public class UserManager {
 
 
     @Caching(evict = {
-            @CacheEvict(value = "user",key = "#result.id"),
-            @CacheEvict(value="user",key="#result.openid",condition = "#result.openid ne null")
+            @CacheEvict(value = "user",key = "'user_cache_id_'+#result.id"),
+            @CacheEvict(value="user",key="'user_cache_openid_'+#result.openid",condition = "#result.openid ne null")
     })
     public User changeMobile(String mobile, UserInfo userInfo) {
         User user = userMapper.selectByPrimaryKey(userInfo.getId());

@@ -5,7 +5,7 @@
 
 
     <delete id="delByPreId" parameterType="java.lang.String">
-        DELETE from t_b_prescription_item where prescriptionid = #{prescriptionId}
+        DELETE from t_b_prescription_item where prescriptionid = #{prescriptionId} AND paystatus != '1'
     </delete>
 
     <select id="getItemList" resultType="com.acmed.his.model.dto.DrugDayDetailDto">
@@ -13,7 +13,7 @@
         from t_b_prescription_item t1
         LEFT JOIN t_b_prescription t2 on t1.prescriptionid = t2.id
         LEFT JOIN t_b_drugdict t3 on t1.drugcode = t3.code
-        where t2.orgcode = #{orgCode}
+        where t2.orgcode = #{orgCode} and t1.paystatus != '1'
         <if test="@Ognl@isNotEmpty(startTime)">
             <![CDATA[ AND t2.createat >= #{startTime} ]]>
         </if>

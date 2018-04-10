@@ -88,4 +88,7 @@ public class ApplyDoctorVo {
 
     @ApiModelProperty("医生名字")
     private String doctorName;
+
+    @ApiModelProperty("创建时间")
+    private String createAt;
 }

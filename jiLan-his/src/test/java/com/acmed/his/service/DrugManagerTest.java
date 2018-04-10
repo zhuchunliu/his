@@ -87,7 +87,7 @@ public class DrugManagerTest {
         m.setAddress("江苏苏州");
         m.setLicenceNo("ISO11112");
         m.setScope("范围");
-        manufacturerManager.saveManufacturer(m);
+        manufacturerManager.saveManufacturer(m,null);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class DrugManagerTest {
 
     @Test
     public void getManufacturerLikeName() throws Exception {
-        manufacturerManager.getManufacturerLikeName("y");
+        manufacturerManager.getManufacturerLikeName("y",null);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class DrugManagerTest {
         supply.setMobile(123+i+"");
         supply.setBusiscope("业务范围"+i);
         supply.setComment("备注"+i);
-        supplyManager.saveSupply(supply);
+        supplyManager.saveSupply(supply,null);
     }
 
     @Test

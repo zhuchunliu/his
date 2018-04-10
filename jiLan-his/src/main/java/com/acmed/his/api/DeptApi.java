@@ -50,7 +50,8 @@ public class DeptApi {
 
     @ApiOperation(value = "获取科室列表")
     @GetMapping("/list")
-    public ResponseResult<List<DeptVo>> getDeptList(@AccessToken AccessInfo info,@ApiParam("科室主键") @RequestParam(value = "orgCode",required = false) Integer orgCode){
+    public ResponseResult<List<DeptVo>> getDeptList(@AccessToken AccessInfo info,@ApiParam("机构主键") @RequestParam(value = "orgCode",required = false) Integer orgCode,
+                                                    @ApiParam("是否优势科室 不传不筛选 传1表示只显示优势科室") @RequestParam(value = "superiorityFlag",required = false) Integer superiorityFlag){
         List<DeptVo> list = new ArrayList<>();
         Integer org = null;
         if (orgCode == null){
@@ -65,7 +66,14 @@ public class DeptApi {
                         .map(user->user.getUserName()).orElse(null));
             }
             BeanUtils.copyProperties(obj,deptVo);
-            list.add(deptVo);
+            if (new Integer(1).equals( superiorityFlag)){
+                Integer superiorityFlag1 = deptVo.getSuperiorityFlag();
+                if (superiorityFlag1==1){
+                    list.add(deptVo);
+                }
+            }else {
+                list.add(deptVo);
+            }
         });
         return ResponseUtil.setSuccessResult(list);
     }

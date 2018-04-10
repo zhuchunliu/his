@@ -22,7 +22,7 @@ import java.util.List;
  * @date 2018/1/25
  */
 @RestController
-@Api(tags = "挂号")
+@Api(tags = "地区")
 @RequestMapping("/area")
 public class AreaApi {
 
@@ -62,5 +62,12 @@ public class AreaApi {
     public ResponseResult<List<Area>> getAreasByFirstByPinYin(@ApiParam("pinYin") @RequestParam("pinYin") String pinYin){
         List<Area> areasByPinYin = baseInfoManager.getAreasByPinYin(pinYin);
         return ResponseUtil.setSuccessResult(areasByPinYin);
+    }
+
+
+    @ApiOperation(value = "北上广城市列表")
+    @GetMapping("/bsg")
+    public ResponseResult<List<Area>> bsg(){
+        return ResponseUtil.setSuccessResult(baseInfoManager.bsgcitys());
     }
 }

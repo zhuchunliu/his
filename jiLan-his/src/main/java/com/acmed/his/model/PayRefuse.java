@@ -26,7 +26,7 @@ public class PayRefuse {
     @ApiModelProperty("机构编码")
     private Integer orgCode;
 
-    @ApiModelProperty("付费类型 现金 支付宝 微信 ")
+    @ApiModelProperty("付费类型 现金 支付宝 微信 刷卡")
     private String feeType;
 
     @ApiModelProperty("来源  1:挂号  2:药  3：检查  4：附加")

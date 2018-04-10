@@ -5,7 +5,7 @@ spring:
   application:
     name: his
   datasource:
-      url: jdbc:mysql://115.29.47.72:3306/his?characterEncoding=utf8&useSSL=true&serverTimezone=Hongkong
+      url: jdbc:mysql://rm-bp13w86vo1nrcb2l4.mysql.rds.aliyuncs.com/his?characterEncoding=utf8&useSSL=true&serverTimezone=Hongkong
       username: acmed
       password: acmed8686
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -40,6 +40,20 @@ mapper:
         - com.acmed.his.util.TkMapper
     not-empty: false
     identity: MYSQL
+
+weixin:
+  appid: wx3d71d42f9956d861
+  secret: 0cfc86874245070901f8b7059376fb1c
+  mchId: 1492994072
+  key: 3ef5f2a417ce47d0a8deaa6ef903f8f6
+  certPath: src/main/resources/apiclient_cert.p12
+  url: http://wxpaytest.lanshiyihui.com:8994${server.context-path}
+
+qiniu:
+    bucket: jlhistest #七牛仓库
+    accessKey: h6xfCteR-MvdFwf0Y44M6q6alGKBvnD2LQwNnUg_
+    secretKey: fbSuf2EDMVETHUlx7Oo6YK5C8UeymNXJEmtN8Uh0
+    imgurl: http://qntest.lanshiyihui.com
 
 pagehelper:
     helperDialect: mysql

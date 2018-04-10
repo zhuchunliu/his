@@ -38,9 +38,9 @@ public class DateTimeUtil {
         LocalDate now = LocalDate.now();
         LocalDate birthDate = LocalDate.parse(birth,DateTimeFormatter.ofPattern("yyyyMMdd"));
         int age = now.getYear()-birthDate.getYear();
-        if(birthDate.getMonthValue() < now.getMonthValue()) return age-1;
-        if(birthDate.getDayOfMonth() < now.getDayOfMonth()) return age-1;
-        return age;
+        if(birthDate.getMonthValue() > now.getMonthValue()) return age-1;
+        if(birthDate.getDayOfMonth() > now.getDayOfMonth()) return age-1;
+        return age < 0?0:age;
     }
 
     public static Date parsetDate(String date){
@@ -117,8 +117,8 @@ public class DateTimeUtil {
     }
 
     public static void main(String[] args) {
-        System.err.println(DateTimeUtil.getAge("1987-12-19"));
-        System.err.println(DateTimeUtil.getAge("19871219"));
+        System.err.println(DateTimeUtil.getAge("1987-03-19"));
+        System.err.println(DateTimeUtil.getAge("20170328"));
         System.err.println(DateTimeUtil.getAge("000000198712195552"));
         System.err.println(DateTimeUtil.getAge("1987-12-18 10:10:10"));
         System.err.println(DateTimeUtil.getAge("1987-12-20 10:10:10"));
