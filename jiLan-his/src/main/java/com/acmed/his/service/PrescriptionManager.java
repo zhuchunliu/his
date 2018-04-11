@@ -342,12 +342,35 @@ public class PrescriptionManager {
                             continue;
                         }
                     }
+                    PrescriptionItem item = new PrescriptionItem();
+                    if(StringUtils.isNotEmpty(info.getStoreId())){//掌药药品信息
+                        item.setId(UUIDUtil.generate());
+                        item.setDrugId(info.getDrugId());
+                        item.setNum(info.getNum());
+                        item.setRetailPrice(info.getRetailPrice());
+                        item.setFee(info.getNum()*info.getRetailPrice());
+                        item.setZyStoreId(info.getStoreId());
+                        item.setZyStoreName(info.getStoreName());
+                        item.setZyDrugSpec(info.getSpec());
+                        item.setZyManufacturerName(info.getManufacturerName());
+
+                        item.setApplyId(apply.getId());
+                        item.setPrescriptionId(prescription.getId());
+                        item.setGroupNum(String.valueOf(i+1));
+                        item.setPayStatus(0);
+
+                        preItemMapper.insert(item);
+                        receivables += item.getFee();
+
+                        continue;
+                    }
+
                     Drug drug = drugMapper.selectByPrimaryKey(info.getDrugId());
                     if(null == drug){
                         continue;
                     }
                     contanisMedicine = true;
-                    PrescriptionItem item = new PrescriptionItem();
+
                     BeanUtils.copyProperties(info,item,"id");
                     item.setId(UUIDUtil.generate());
                     item.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));

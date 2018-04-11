@@ -1,14 +1,13 @@
-package com.acmed.his.model.zhangyao;
+package com.acmed.his.pojo.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by Darren on 2018-04-10
  **/
 @Data
-public class ZYDrug {
+public class ZYDrugVo {
 
     @ApiModelProperty("药店id")
     private String storeId;
@@ -26,13 +25,13 @@ public class ZYDrug {
     private String OTC;
 
     @ApiModelProperty("药品名")
-    private String cnName;
+    private String goodsName;
 
     @ApiModelProperty("药品规格")
-    private String form;
+    private String spec;
 
     @ApiModelProperty("生产厂家")
-    private String companyName;
+    private String manufacturerName;
 
     @ApiModelProperty("药品功效")
     private String indication;
@@ -41,13 +40,13 @@ public class ZYDrug {
     private String number;
 
     @ApiModelProperty("库存数")
-    private String storage;
+    private String num;
 
     @ApiModelProperty("药品图片")
     private String picPath;
 
     @ApiModelProperty("药品价格")
-    private String goodsPrice;
+    private String retailPrice;
 
     @ApiModelProperty("服务费")
     private String servicePrice;
@@ -60,5 +59,4 @@ public class ZYDrug {
 
     @ApiModelProperty("所在城市")
     private String city;
-
 }

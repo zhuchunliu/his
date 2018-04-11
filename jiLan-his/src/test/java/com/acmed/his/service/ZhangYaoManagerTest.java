@@ -24,8 +24,8 @@ public class ZhangYaoManagerTest {
     public void getDrugList(){
         DrugZYQueryMo mo = new DrugZYQueryMo();
         mo.setName("999");
-        mo.setLat(31.270177);
-        mo.setLng(120.738683);
+        mo.setLat("31.270177");
+        mo.setLng("120.738683");
 
         PageBase pageBase = new PageBase<DrugZYQueryMo>();
         pageBase.setParam(mo);

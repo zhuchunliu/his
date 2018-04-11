@@ -12,10 +12,10 @@ public class DrugZYQueryMo {
     private String name;
 
     @ApiModelProperty("经度")
-    private Double lat;
+    private String lat;
 
     @ApiModelProperty("纬度")
-    private Double lng;
+    private String lng;
 
 
 }

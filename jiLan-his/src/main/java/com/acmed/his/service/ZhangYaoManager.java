@@ -5,6 +5,7 @@ import com.acmed.his.consts.ZhangYaoConstant;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.zhangyao.ZYDrug;
 import com.acmed.his.pojo.mo.DrugZYQueryMo;
+import com.acmed.his.pojo.vo.ZYDrugVo;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.alibaba.fastjson.JSONArray;
@@ -12,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -37,10 +39,10 @@ public class ZhangYaoManager {
      * 获取药品信息
      * @return
      */
-    public PageResult<ZYDrug> getDrugList(PageBase<DrugZYQueryMo> pageBase) {
+    public PageResult<ZYDrugVo> getDrugList(PageBase<DrugZYQueryMo> pageBase) {
         StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
         DrugZYQueryMo mo = Optional.ofNullable(pageBase.getParam()).orElse(new DrugZYQueryMo());
-        builder.append(ZhangYaoConstant.buildDrugUrl(mo.getName(),pageBase.getPageNum(),pageBase.getPageSize(),3,
+        builder.append(ZhangYaoConstant.buildDrugUrl(mo.getName(),(pageBase.getPageNum()-1)*pageBase.getPageSize(),pageBase.getPageSize(),3,
                 mo.getLat(),mo.getLng(),null));
         RestTemplate restTemplate = new RestTemplate();
         JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
@@ -48,10 +50,17 @@ public class ZhangYaoManager {
             PageResult result = new PageResult();
             result.setTotal(json.getJSONObject("data").getLong("totalCount"));
             JSONArray jsonArray = json.getJSONObject("data").getJSONArray("bigSearchList");
-            List<ZYDrug> drugList = Lists.newArrayList();
+            List<ZYDrugVo> drugList = Lists.newArrayList();
             for(int i = 0;i<jsonArray.size();i++){
-                ZYDrug zyDrug = JSONObject.parseObject(jsonArray.getString(1),ZYDrug.class);
-                drugList.add(zyDrug);
+                ZYDrug zyDrug = JSONObject.parseObject(jsonArray.getString(i),ZYDrug.class);
+                ZYDrugVo vo = new ZYDrugVo();
+                BeanUtils.copyProperties(zyDrug,vo);
+                vo.setSpec(zyDrug.getForm());
+                vo.setRetailPrice(zyDrug.getGoodsPrice());
+                vo.setNum(zyDrug.getStorage());
+                vo.setManufacturerName(zyDrug.getCompanyName());
+                vo.setGoodsName(zyDrug.getCnName());
+                drugList.add(vo);
             }
             result.setData(drugList);
             return result;

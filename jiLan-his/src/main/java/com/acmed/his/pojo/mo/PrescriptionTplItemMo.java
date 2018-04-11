@@ -15,10 +15,10 @@ public class PrescriptionTplItemMo {
     @ApiModelProperty("处方模板id")
     private Integer tplId;
 
-    private List<ItemMo> list;
+    private List<TplItemMo> list;
 
     @Data
-    public static class ItemMo {
+    public static class TplItemMo {
 
         @ApiModelProperty("药品id")
         private Integer drugId;

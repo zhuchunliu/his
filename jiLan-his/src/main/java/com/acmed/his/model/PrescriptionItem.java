@@ -80,4 +80,16 @@ public class PrescriptionItem {
 
     @ApiModelProperty("备注")
     private String remark;
+
+    @ApiModelProperty("药店id - 掌药")
+    private String zyStoreId;
+
+    @ApiModelProperty("药店名称 - 掌药")
+    private String zyStoreName;
+
+    @ApiModelProperty("药品类型 - 掌药")
+    private String zyDrugSpec;
+
+    @ApiModelProperty("药品厂家 - 掌药")
+    private String zyManufacturerName;
 }

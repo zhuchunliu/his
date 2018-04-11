@@ -80,6 +80,21 @@ public class  PreMo {
 
         @ApiModelProperty("备注")
         private String memo;
+
+        @ApiModelProperty("药店id - 掌药")
+        private String storeId;
+
+        @ApiModelProperty("药店名称 - 掌药")
+        private String storeName;
+
+        @ApiModelProperty("药品类型 - 掌药")
+        private String spec;
+
+        @ApiModelProperty("药品厂家 - 掌药")
+        private String manufacturerName;
+
+        @ApiModelProperty("药品价格 - 掌药")
+        private Double retailPrice;
     }
 
     @Data
