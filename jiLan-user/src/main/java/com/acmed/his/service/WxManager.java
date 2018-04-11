@@ -91,16 +91,18 @@ public class WxManager {
 
         logger.error("openid "+openid+" accessToken "+accessToken);
 
-//        String accessTokenUrl =  String.format("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s",
-//                environment.getProperty("weixin.appid"),environment.getProperty("weixin.secret"));
-//        String info = new RestTemplate().getForObject(accessTokenUrl, String.class);
-//        JSONObject jsonobject = JSONObject.parseObject(info);
-//        accessToken = jsonobject.getString("access_token");
-
-        String url = String.format("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN",
-                accessToken, openid);
-//        String url = String.format("https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN",
-//                accessToken, openid);
+        String url = null;
+        if(environment.getActiveProfiles()[0].equals("pre")){//预发
+            url = String.format("https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN",
+                    accessToken, openid);
+        }else{
+            String accessTokenUrl =  String.format("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s",
+                environment.getProperty("weixin.appid"),environment.getProperty("weixin.secret"));
+            String info = new RestTemplate().getForObject(accessTokenUrl, String.class);
+            JSONObject jsonobject = JSONObject.parseObject(info);
+            accessToken = jsonobject.getString("access_token");
+            url = String.format("https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN", accessToken, openid);
+        }
         URL url1 = new URL(url);
         HttpURLConnection urlConnection = (HttpURLConnection)url1.openConnection();
 

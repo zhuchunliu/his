@@ -217,7 +217,7 @@ public class WxManager {
         String s = WXPayUtil.generateSignature(param, environment.getProperty("weixin.key"));
         param.put("sign",s);
         String xml = WXPayUtil.mapToXml(param);
-        String s1 = WXPayRequest.postXmlWithKey(WXPayConstants.REFUND_URL_SUFFIX,xml,mchId);
+        String s1 = WXPayRequest.postXmlWithKey(WXPayConstants.REFUND_URL_SUFFIX,xml,mchId,environment.getProperty("weixin.certPath"));
         Map<String, String> map = WXPayUtil.xmlToMap(s1);
         System.err.println(map);
         return map;

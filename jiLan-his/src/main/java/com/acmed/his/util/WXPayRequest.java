@@ -100,14 +100,14 @@ public class WXPayRequest {
     /**
      * 可以处理中文乱码， 带上 证书信息
      */
-    public static String postXmlWithKey(String url, String xml, String mchId) throws Exception {
+    public static String postXmlWithKey(String url, String xml, String mchId,String certPath) throws Exception {
 
 /*        String certPath = "src/main/resources/apiclient_cert.p12";
         File file = new File(certPath);
         InputStream certStream = new FileInputStream(file);*/
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream certStream = classloader.getResourceAsStream("apiclient_cert.p12");
+        InputStream certStream = classloader.getResourceAsStream(certPath);
 
         //URL urlP = new URL("http://qn.medlion.cc/wxpay_medlion.p12");
         //URLConnection urlConnection = urlP.openConnection();

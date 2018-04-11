@@ -48,9 +48,5 @@ pagehelper:
 #    params: count=countSql
 
 weixin:
-  appid: wx3d71d42f9956d861
-  secret: 0cfc86874245070901f8b7059376fb1c
-  mchId: 1492994072
-  key: 3ef5f2a417ce47d0a8deaa6ef903f8f6
-  certPath: src/main/resources/apiclient_cert.p12
-  url: http://wxpaytest.lanshiyihui.com:8994${server.context-path}
+  appid: wx7e396b520f901b15
+  secret: a9bdaf563dd6a2cfd988153058021955
