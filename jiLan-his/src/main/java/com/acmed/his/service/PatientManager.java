@@ -5,10 +5,10 @@ import com.acmed.his.dao.PatientMapper;
 import com.acmed.his.model.Patient;
 import com.acmed.his.model.dto.OrgPatientNumDto;
 import com.acmed.his.model.dto.PatientCountDto;
+import com.acmed.his.pojo.mo.OpenIdAndAccessToken;
 import com.acmed.his.pojo.mo.WxRegistPatientMo;
 import com.acmed.his.pojo.vo.PatientInfoVo;
 import com.acmed.his.util.*;
-import com.soecode.wxtools.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,18 +132,21 @@ public class PatientManager {
      */
     public ResponseResult<PatientInfoVo> wxRegistPatient(WxRegistPatientMo wxRegistPatientMo){
         //获取openid
-        String openid = null;
+        OpenIdAndAccessToken openIdAndAccessToken = null;
         try {
-            openid = wxManager.getOPenidByCode(wxRegistPatientMo.getCode());
-        } catch (WxErrorException e) {
+            openIdAndAccessToken = wxManager.getOpenid(wxRegistPatientMo.getCode());
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_GETOPENIDECORD,"获取openid异常");
         }
+        String openId = openIdAndAccessToken.getOpenId();
+
+
         String idCard = wxRegistPatientMo.getIdCard();
         String now = LocalDateTime.now().toString();
         PatientInfoVo patientInfoVo = new PatientInfoVo();
         Example example = new Example(Patient.class);
-        example.createCriteria().orEqualTo("openId",openid).orEqualTo("idCard",idCard);
+        example.createCriteria().orEqualTo("openId",openId).orEqualTo("idCard",idCard);
         List<Patient> select = patientMapper.selectByExample(example);
         int size = select.size();
         if ( size == 0){
@@ -151,7 +154,7 @@ public class PatientManager {
             Patient patient = new Patient();
             BeanUtils.copyProperties(wxRegistPatientMo,patient);
             patient.setId(null);
-            patient.setOpenid(openid);
+            patient.setOpenid(openId);
             patient.setInputCode(patient.getRealName());
             patient.setUnionid(null);
             patient.setCreateAt(now);
@@ -164,7 +167,7 @@ public class PatientManager {
             String openid1 = patient.getOpenid();
             if (openid1 == null){
                 // 信息已录入 没有绑定微信号
-                patient.setOpenid(openid);
+                patient.setOpenid(openId);
                 patient.setModifyAt(now);
                 patientMapper.updateByPrimaryKeySelective(patient);
             }
@@ -172,7 +175,7 @@ public class PatientManager {
         }else {
             // 已经绑定过
             for (Patient p : select){
-                if (StringUtils.equals(p.getOpenid(),openid)){
+                if (StringUtils.equals(p.getOpenid(),openId)){
                     BeanUtils.copyProperties(p,patientInfoVo);
                 }
             }
