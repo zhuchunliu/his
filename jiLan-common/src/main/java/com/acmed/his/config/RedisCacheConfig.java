@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -30,6 +31,9 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
     @Autowired
     private RedisConfiguration redisConfiguration;
 
+    @Autowired
+    private Environment environment;
+
     @Bean
     public JedisConnectionFactory redisConnectionFactory() {
         JedisConnectionFactory redisConnectionFactory = new JedisConnectionFactory();
@@ -38,6 +42,12 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         int port = Integer.parseInt(redisConfiguration.getPort());//Redis Port
         String password = redisConfiguration.getPassword();//Redis Password
 
+        if(environment.getActiveProfiles()[0].equalsIgnoreCase("pre")){
+            redisConnectionFactory.setDatabase(1);
+        }else{
+            redisConnectionFactory.setDatabase(0);
+        }
+        redisConnectionFactory.setDatabase(1);
         redisConnectionFactory.setHostName(ip);
         redisConnectionFactory.setPort(port);
         redisConnectionFactory.setPassword(password);
