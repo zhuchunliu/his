@@ -1,6 +1,8 @@
 package com.acmed.his.service;
 
 import com.acmed.his.constants.RedisKeyConstants;
+import com.acmed.his.constants.StatusCode;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.pojo.mo.OpenIdAndAccessToken;
 import com.acmed.his.pojo.vo.WxConfig;
 import com.acmed.his.util.*;
@@ -72,6 +74,10 @@ public class WxManager {
         String info = new RestTemplate().getForObject(url, String.class);
         JSONObject json = JSONObject.parseObject(info);
         String accessToken = json.getString("access_token");
+        if (StringUtils.isEmpty(accessToken)){
+            logger.error("微信获取accesstoken  异常"+info);
+            throw new BaseException(StatusCode.FAIL);
+        }
         redisTemplate.opsForValue().set(RedisKeyConstants.WX_BASE_ACCESS_TOKEN,accessToken);
         redisTemplate.expire(RedisKeyConstants.WX_BASE_ACCESS_TOKEN,100, TimeUnit.MINUTES);
         return accessToken;
