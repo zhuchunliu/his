@@ -13,6 +13,6 @@
         ta.*
         FROM t_p_s_org torg
         LEFT JOIN t_p_s_area ta ON ta.id = torg.city
-        WHERE torg.isrecommend = '1' AND torg.city IS NOT NULL GROUP BY torg.city
+        WHERE torg.isrecommend = '1' AND torg.city IS NOT NULL AND torg.city != '' GROUP BY  ta.id
     </select>
 </mapper>
