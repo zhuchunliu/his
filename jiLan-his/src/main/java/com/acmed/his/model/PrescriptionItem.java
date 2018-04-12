@@ -92,4 +92,10 @@ public class PrescriptionItem {
 
     @ApiModelProperty("药品厂家 - 掌药")
     private String zyManufacturerName;
+
+    @ApiModelProperty("订单id - 掌药")
+    private String zyOrderId;
+
+    @ApiModelProperty("是否已经下单 null:不需要下单 0:否，1:是")
+    private Integer isOrder;
 }

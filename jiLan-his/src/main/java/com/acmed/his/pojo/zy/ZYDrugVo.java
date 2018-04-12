@@ -1,4 +1,4 @@
-package com.acmed.his.pojo.vo;
+package com.acmed.his.pojo.zy;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class ZYDrugVo {
     private String OTC;
 
     @ApiModelProperty("药品名")
-    private String goodsName;
+    private String drugName;
 
     @ApiModelProperty("药品规格")
     private String spec;

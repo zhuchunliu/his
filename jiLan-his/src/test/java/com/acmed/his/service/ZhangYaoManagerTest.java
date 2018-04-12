@@ -2,6 +2,7 @@ package com.acmed.his.service;
 
 import com.acmed.his.HisApplication;
 import com.acmed.his.pojo.mo.DrugZYQueryMo;
+import com.acmed.his.pojo.zy.ZYOrderDetailVo;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import org.junit.Test;
@@ -9,6 +10,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
 
 /**
  * Created by Darren on 2018-04-10
@@ -33,5 +36,12 @@ public class ZhangYaoManagerTest {
         pageBase.setPageSize(2);
         PageResult pageResult = zhangYaoManager.getDrugList(pageBase);
         System.err.println(pageResult);
+    }
+
+    @Test
+    public void getOrderDetail(){
+
+        List<ZYOrderDetailVo> list = zhangYaoManager.getOrderDetail("");
+        System.err.println(list);
     }
 }

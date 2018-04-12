@@ -38,7 +38,7 @@ public class SwaggerConfig {
         List<Parameter> list = Lists.newArrayList();
         list.add(new ParameterBuilder().name("Authorization").description("token令牌").
                 modelRef(new ModelRef("string")).parameterType("header").required(false).
-                defaultValue("zlNGZwkDcuNVOwMkRyZHSkhjdygmN0cDM4QDO4QDMyUTM3QUQQ9lUFNVV").build());
+                defaultValue("Fx8EUPVDbxQ2Sll1Rm9mQ3dzTYFTNxYzM0czM3kTOxUTMyQUQQ9lUFNVV").build());
         return new Docket(DocumentationType.SWAGGER_2).ignoredParameterTypes(AccessToken.class)
                 .globalOperationParameters(list)
                 .apiInfo(apiInfo())

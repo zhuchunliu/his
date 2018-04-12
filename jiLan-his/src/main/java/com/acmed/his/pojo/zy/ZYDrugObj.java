@@ -1,14 +1,13 @@
-package com.acmed.his.model.zhangyao;
+package com.acmed.his.pojo.zy;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by Darren on 2018-04-10
  **/
 @Data
-public class ZYDrug {
+public class ZYDrugObj {
 
     @ApiModelProperty("药店id")
     private String storeId;

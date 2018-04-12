@@ -106,6 +106,8 @@ public class PreVo {
                     item.setRetailPrice(obj.getRetailPrice());
                     item.setDrugSpec(obj.getZyDrugSpec());
                     item.setStoreId(obj.getZyStoreId());
+                    item.setStoreName(obj.getZyStoreName());
+                    item.setDrugName(obj.getDrugName());
                 }else {
                     Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
                     if (null != drug) {
@@ -370,6 +372,9 @@ public class PreVo {
 
         @ApiModelProperty("药店id - 掌药")
         private String storeId;
+
+        @ApiModelProperty("药店名称 - 掌药")
+        private String storeName;
     }
 
     @Data
