@@ -29,7 +29,7 @@ public class PayStatements {
     @ApiModelProperty("机构编码")
     private Integer orgCode;
 
-    @ApiModelProperty("来源  1:挂号  2:药  3：检查  4：附加")
+    @ApiModelProperty("来源  1:挂号  2:药  3：检查  4：附加 5：零售")
     private String source;
 
     @ApiModelProperty("处方id")
@@ -40,6 +40,9 @@ public class PayStatements {
 
     @ApiModelProperty("患者id")
     private String patientId;
+
+    @ApiModelProperty("药品零售主键")
+    private String retailId;
 
     @ApiModelProperty("付款账号")
     private String payerAccount;

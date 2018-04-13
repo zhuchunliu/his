@@ -228,7 +228,7 @@ public class PrescriptionManager {
 
             if(StringUtils.isEmpty(mo.getApplyId()) ){
                 //step1:处理患者信息
-                PatientItem patient = this.handlePatient(mo, userInfo);
+                PatientItem patient = this.handlePatient(mo.getPatient(), userInfo);
 
                 //step2:处理挂号信息
                 apply = this.handleApply(mo, patient, userInfo);
@@ -462,36 +462,36 @@ public class PrescriptionManager {
      * 处理患者信息
      * @return
      */
-    private PatientItem handlePatient(PreMo mo,UserInfo userInfo){
+    public PatientItem handlePatient(PreMo.PatientMo patientMo, UserInfo userInfo){
 
         PatientItem patientItem = null;
-        if(StringUtils.isNotEmpty(mo.getPatient().getPatientItemId())) {
-            patientItem = patientItemManager.getById(mo.getPatient().getPatientItemId());
-            BeanUtils.copyProperties(mo.getPatient(),patientItem);
+        if(StringUtils.isNotEmpty(patientMo.getPatientItemId())) {
+            patientItem = patientItemManager.getById(patientMo.getPatientItemId());
+            BeanUtils.copyProperties(patientMo,patientItem);
             if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
                 patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
             } else {
                 patientItem.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
             }
-            patientItem.setPatientName(mo.getPatient().getRealName());
+            patientItem.setPatientName(patientMo.getRealName());
             patientItemManager.updatePatientItem(patientItem);
         }else{
-            Patient patient = StringUtils.isEmpty(mo.getPatient().getIdCard())?null:
-                    patientManager.getPatientByIdCard(mo.getPatient().getIdCard());
+            Patient patient = StringUtils.isEmpty(patientMo.getIdCard())?null:
+                    patientManager.getPatientByIdCard(patientMo.getIdCard());
             if(null == patient){
                 patient = new Patient();
-                BeanUtils.copyProperties(mo.getPatient(),patient);
+                BeanUtils.copyProperties(patientMo,patient);
                 patient = patientManager.add(patient);
             }
 
             patientItem = new PatientItem();
-            BeanUtils.copyProperties(mo.getPatient(),patientItem);
+            BeanUtils.copyProperties(patientMo,patientItem);
             if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
                 patientItem.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
             } else {
                 patientItem.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
             }
-            patientItem.setPatientName(mo.getPatient().getRealName());
+            patientItem.setPatientName(patientMo.getRealName());
             patientItem.setOrgCode(userInfo.getOrgCode());
             patientItem.setPatientId(patient.getId());
             patientItemManager.addPatinetItem(patientItem);
