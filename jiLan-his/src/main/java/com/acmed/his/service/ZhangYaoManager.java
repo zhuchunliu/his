@@ -134,7 +134,7 @@ public class ZhangYaoManager {
             zyOrder.setCreateBy(info.getId().toString());
 
             zyOrder.setZyOrderId("191882");//暂时写死，用于测试
-            zyOrder.setZyOrderSn("10102018031556515698");//暂时写死，用于测试
+            zyOrder.setZyOrderSn("10102018032350539897");//暂时写死，用于测试
             zyOrderMapper.insert(zyOrder);
 
             childList.forEach(obj->{
@@ -186,30 +186,49 @@ public class ZhangYaoManager {
      * 获取掌药订单详情
      * @param orderId
      */
-    public List<ZYOrderDetailVo> getOrderDetail(String orderId) {
+    public ZYOrderDetailVo getOrderDetail(String orderId) {
         ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(orderId);
         if (null != zyOrder && StringUtils.isNotEmpty(zyOrder.getZyOrderSn())) {
             StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
             builder.append(ZhangYaoConstant.buildOrderQueryUrl(zyOrder.getZyOrderSn()));
             RestTemplate restTemplate = new RestTemplate();
             JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
-            if (json.get("code").equals("0000")) {
-                JSONArray jsonArray = json.getJSONObject("data").getJSONArray("bigSearchList");
-                List<ZYOrderDetailVo> drugList = Lists.newArrayList();
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    ZYOrderDetailObj zyDrug = JSONObject.parseObject(jsonArray.getString(i), ZYOrderDetailObj.class);
-                    ZYOrderDetailVo vo = new ZYOrderDetailVo();
-                    BeanUtils.copyProperties(zyDrug, vo);
-                    drugList.add(vo);
+            if (json.get("code").equals("1")) {
+                ZYOrderDetailObj obj = new ZYOrderDetailObj();
+                JSONObject data = json.getJSONObject("data");
+                obj.setOrderId(data.getString("orderId"));
+                obj.setOrderSn(data.getString("orderSn"));
+                obj.setPayAmount(data.getString("payAmount"));
+                obj.setPayTime(data.getString("payTime"));
+                obj.setOrderState(data.getString("orderState"));
+                obj.setPhone(data.getString("phone"));
+
+                JSONArray jsonArray = data.getJSONArray("goodsList");
+                List<ZYOrderDetailObj.ZYOrderDetailItem> list = Lists.newArrayList();
+
+                List<ZYOrderDetailVo.ZYOrderDetailItemVo> voList = Lists.newArrayList();
+
+                for(int i = 0;i<jsonArray.size();i++) {
+                    ZYOrderDetailObj.ZYOrderDetailItem item = JSONObject.parseObject(jsonArray.getString(i), ZYOrderDetailObj.ZYOrderDetailItem.class);
+                    list.add(item);
+                    ZYOrderDetailVo.ZYOrderDetailItemVo itemVo = new ZYOrderDetailVo.ZYOrderDetailItemVo();
+                    BeanUtils.copyProperties(item,itemVo);
+                    voList.add(itemVo);
                 }
-                return drugList;
-            } else {
+                obj.setGoodsList(list);
+
+                ZYOrderDetailVo vo = new ZYOrderDetailVo();
+                BeanUtils.copyProperties(obj, vo,"goodsList");
+                vo.setGoodsList(voList);
+                return vo;
+            }else {
                 logger.error("get zhangyao drug fail,msg: " + json.get("message") + "  ;the url is :" + builder.toString());
                 throw new BaseException(StatusCode.FAIL, "获取掌药药品信息失败");
             }
         }
         return null;
     }
+
 
     /**
      * 确认发药

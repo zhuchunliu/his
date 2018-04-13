@@ -29,10 +29,10 @@ public class ZYOrderDetailVo {
     @ApiModelProperty("用户手机号")
     private String phone;
 
-    private List<ZYOrderDetailObj.DetailItem> goodsList;
+    private List<ZYOrderDetailVo.ZYOrderDetailItemVo> goodsList;
 
     @Data
-    public class DetailItem{
+    public static class ZYOrderDetailItemVo{
         @ApiModelProperty("商品名称")
         @JSONField(name="drugName")
         private String cnName;

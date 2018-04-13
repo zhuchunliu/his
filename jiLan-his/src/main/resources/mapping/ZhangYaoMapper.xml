@@ -9,7 +9,7 @@
         from t_b_prescription_item item
         LEFT JOIN t_b_apply apply on item.applyid = apply.id
         LEFT JOIN t_b_prescription pre on item.prescriptionid = pre.id
-        where item.isorder = 0 AND item.paystatus =1 and apply.orgcode = #{orgCode}
+        where item.zystoreid IS NOT null AND item.isorder = 0 AND item.paystatus =1 and apply.orgcode = #{orgCode}
         ORDER BY apply.clinicno ASC
     </select>
 

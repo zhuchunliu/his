@@ -75,7 +75,7 @@ public class ZhangYaoApi {
         return ResponseUtil.setSuccessResult(result);
     }
 
-    @ApiOperation(value = "订单处方详情")
+    @ApiOperation(value = "订单处方详情 - 数据来源:his")
     @GetMapping("/order/item")
     public ResponseResult<List<OrgVo>> getOrderItem(@Param("掌药订单id") @RequestParam("id") String id){
         List<OrderItemDrugDto> source = zhangYaoManager.getOrderItemList(id);
@@ -88,7 +88,7 @@ public class ZhangYaoApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
-    @ApiOperation(value = "获取掌药订单详情")
+    @ApiOperation(value = "获取掌药订单详情 - 数据来源:掌药")
     @GetMapping("/order/detail")
     public ResponseResult<List<OrgVo>> getOrderDetail(@Param("掌药订单id") @RequestParam("id") String id){
         return ResponseUtil.setSuccessResult(zhangYaoManager.getOrderDetail(id));
