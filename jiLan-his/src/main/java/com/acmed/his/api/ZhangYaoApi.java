@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.model.zy.OrderItemDrugDto;
 import com.acmed.his.pojo.vo.OrgVo;
 import com.acmed.his.pojo.zy.OrderItemDrugVo;
+import com.acmed.his.pojo.zy.ZYOrderDetailVo;
 import com.acmed.his.pojo.zy.ZyOrderQueryMo;
 import com.acmed.his.pojo.zy.ZyOrderVo;
 import com.acmed.his.service.ZhangYaoManager;
@@ -77,7 +78,7 @@ public class ZhangYaoApi {
 
     @ApiOperation(value = "订单处方详情 - 数据来源:his")
     @GetMapping("/order/item")
-    public ResponseResult<List<OrgVo>> getOrderItem(@Param("掌药订单id") @RequestParam("id") String id){
+    public ResponseResult<List<OrderItemDrugVo>> getOrderItem(@Param("掌药订单id") @RequestParam("id") String id){
         List<OrderItemDrugDto> source = zhangYaoManager.getOrderItemList(id);
         List<OrderItemDrugVo> list = Lists.newArrayList();
         source.forEach(obj->{
@@ -90,7 +91,7 @@ public class ZhangYaoApi {
 
     @ApiOperation(value = "获取掌药订单详情 - 数据来源:掌药")
     @GetMapping("/order/detail")
-    public ResponseResult<List<OrgVo>> getOrderDetail(@Param("掌药订单id") @RequestParam("id") String id){
+    public ResponseResult<ZYOrderDetailVo> getOrderDetail(@Param("掌药订单id") @RequestParam("id") String id){
         return ResponseUtil.setSuccessResult(zhangYaoManager.getOrderDetail(id));
     }
 
