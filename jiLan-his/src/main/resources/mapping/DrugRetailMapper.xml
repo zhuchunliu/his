@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.DrugRetailMapper">
     <select id="getRetailList" resultType="com.acmed.his.model.dto.DrugRetailDto">
-        select retail.id, item.patientname, item.gender, retail.age, retail.paystatus,retail.removed ,retail.createat
+        select retail.id, item.patientname, item.gender, retail.age, retail.paystatus,retail.fee,retail.removed ,retail.createat
         from t_b_drug_retail retail
         LEFT JOIN t_b_patient_item  item ON retail.patientitemid = item.id
         WHERE retail.orgcode = #{orgCode}

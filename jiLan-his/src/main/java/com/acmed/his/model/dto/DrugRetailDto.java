@@ -20,7 +20,7 @@ public class DrugRetailDto {
     @ApiModelProperty("年龄")
     private Integer age;
 
-    @ApiModelProperty("挂号费")
+    @ApiModelProperty("费用")
     private Double fee;
 
     @ApiModelProperty("支付状态 0:未支付,1:已支付")
