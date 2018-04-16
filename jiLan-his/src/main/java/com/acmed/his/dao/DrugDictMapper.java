@@ -18,4 +18,6 @@ public interface DrugDictMapper extends TkMapper<DrugDict> {
 
     List<DrugDict> getDrugDictList(@Param("name") String name, @Param("category") String category,
                                    @Param("isHandle")Integer isHandle);
+
+    List<DrugDict> getExportDate(@Param("category") String category);
 }

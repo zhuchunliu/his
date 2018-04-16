@@ -44,4 +44,12 @@
         </if>
     </select>
 
+    <select id="getExportDate" resultType="com.acmed.his.model.DrugDict">
+
+      SELECT id ,name ,goodsname ,drugformname,manufacturername,spec from t_b_drugdict where removed = '0'
+        <if test="@Ognl@isNotEmpty(category)">
+            and category = #{category}
+        </if>
+    </select>
+
 </mapper>

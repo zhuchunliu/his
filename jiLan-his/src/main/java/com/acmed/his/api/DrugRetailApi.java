@@ -63,7 +63,7 @@ public class DrugRetailApi {
     public ResponseResult<PageResult<DrugListVo>> delRetail(@ApiParam("零售主键")@RequestParam("id") String id,
                                                                   @AccessToken AccessInfo info) {
         drugRetailManager.delRetail(id,info.getUser());
-        return null;
+        return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "付费")

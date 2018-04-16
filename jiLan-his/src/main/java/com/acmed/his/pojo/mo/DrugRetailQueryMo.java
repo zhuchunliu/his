@@ -15,6 +15,9 @@ public class DrugRetailQueryMo {
     @ApiModelProperty("支付状态 0:未支付,1:已支付")
     private Integer payStatus;
 
+    @ApiModelProperty("是否删除 0:无；1：有")
+    private String removed;
+
     @ApiModelProperty("开始时间")
     private String startTime;
 

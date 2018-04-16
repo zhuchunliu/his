@@ -13,6 +13,9 @@
         <if test="@Ognl@isNotEmpty(mo.payStatus) ">
             and retail.paystatus = #{mo.payStatus}
         </if>
+        <if test="@Ognl@isNotEmpty(mo.removed) ">
+            and retail.removed = #{mo.removed}
+        </if>
         <if test="@Ognl@isNotEmpty(mo.startTime) ">
             <![CDATA[
               and retail.createat >= #{mo.startTime}
