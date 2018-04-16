@@ -62,7 +62,7 @@ public class DeptManager {
         example.createCriteria().andEqualTo("orgCode",orgCode).andEqualTo("dept",mo.getDept()).
                 andEqualTo("removed","0");
         List<Dept> list = deptMapper.selectByExample(example);
-        if(null != list && 0 != list.size() &&  (null == mo.getId() || list.get(0).getId() != mo.getId())){
+        if(null != list && 0 != list.size() &&  (null == mo.getId() || !list.get(0).getId().equals( mo.getId()))){
             throw new BaseException(StatusCode.FAIL,"科室名称不能重复!");
         }
         if(null == mo.getId()){
