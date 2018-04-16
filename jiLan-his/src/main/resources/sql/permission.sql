@@ -14,6 +14,7 @@ insert into t_p_s_permission(percode,pername,sn,pid) select 'ghlb','挂号列表
 insert into t_p_s_permission(percode,pername,sn,pid) select 'hzk','患者库',4,	id from t_p_s_permission where percode = 'kbjz' ;
 
 insert into t_p_s_permission(percode,pername,sn,pid) select 'sffy','收费发药',1, id from t_p_s_permission where percode = 'sffy' and pid is NULL ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'ypls','药品零售',2, id from t_p_s_permission where percode = 'sffy' and pid is NULL ;
 
 insert into t_p_s_permission(percode,pername,sn,pid) select 'ypxxwh','药品信息维护',1, id from t_p_s_permission where percode = 'ypjxc' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'gyswh','供应商维护',2, id from t_p_s_permission where percode = 'ypjxc' ;

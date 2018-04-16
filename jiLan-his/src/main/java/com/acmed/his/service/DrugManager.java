@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -211,4 +212,26 @@ public class DrugManager {
 
 
 
+    public void importDrug(String[] ids, UserInfo info) {
+        List<DrugDict> drugDictList = drugDictMapper.filterDrug(ids,info.getOrgCode());
+        for(DrugDict dict :drugDictList){
+            Drug drug = new Drug();
+            BeanUtils.copyProperties(dict,drug,"id");
+            drug.setOrgCode(info.getOrgCode());
+            String categoryName = baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName();
+            String key = PinYinUtil.getPinYinHeadChar(categoryName)+new java.text.DecimalFormat("000000").format(info.getOrgCode());
+            drug.setDrugCode(key+String.format("%06d",Integer.parseInt(commonManager.getNextVal(key))));
+            drug.setPinYin(PinYinUtil.getPinYinHeadChar(dict.getName()));
+            drug.setGoodsPinYin(PinYinUtil.getPinYinHeadChar(dict.getGoodsName()));
+            drug.setDictId(dict.getId());
+            drug.setIsValid(0);
+            drug.setNum(0);
+            drug.setMinNum(0);
+            drug.setDoseNum(0d);
+            drug.setRemoved("0");
+            drug.setCreateAt(LocalDateTime.now().toString());
+            drug.setCreateBy(info.getId().toString());
+            drugMapper.insert(drug);
+        }
+    }
 }

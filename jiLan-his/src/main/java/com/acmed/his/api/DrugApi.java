@@ -1,7 +1,9 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.ManufacturerMapper;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
@@ -17,6 +19,7 @@ import com.acmed.his.service.DrugManager;
 import com.acmed.his.service.ZhangYaoManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
+import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
@@ -28,10 +31,18 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -162,6 +173,41 @@ public class DrugApi {
         return ResponseUtil.setSuccessResult();
     }
 
+
+    @ApiOperation(value = "药品导入")
+    @PostMapping("/import")
+    public ResponseResult importDrug(@RequestParam("file") MultipartFile file ,
+                           @AccessToken AccessInfo info) throws IOException{
+        String name = file.getOriginalFilename();
+        if(!name.contains(".")){
+            throw new BaseException(StatusCode.FAIL,"请上传正确的Excel文件");
+        }
+        String suffix = name.substring(name.lastIndexOf(".")+1,name.length());
+        if(!suffix.equalsIgnoreCase("xlsx") &&
+                !suffix.equalsIgnoreCase("xls")){
+            throw new BaseException(StatusCode.FAIL,"请上传正确的Excel文件");
+        }
+        Workbook book = null;
+        if(suffix.equalsIgnoreCase("xlsx")){
+            book = new XSSFWorkbook(file.getInputStream());
+        }else{
+            book = new HSSFWorkbook(file.getInputStream());
+        }
+        Sheet sheet = book.getSheetAt(0);
+        StringBuilder builder = new StringBuilder();
+        if(0 == sheet.getLastRowNum()){
+            return ResponseUtil.setSuccessResult();
+        }
+        for(int index =1; index <= sheet.getLastRowNum();index ++){
+            builder.append((int)(sheet.getRow(index).getCell(0).getNumericCellValue())+",");
+        }
+        String ids = Optional.ofNullable(builder.toString()).map(obj->obj.substring(0,obj.length()-1)).orElse(null);
+        if(null != ids) {
+            drugManager.importDrug(builder.toString().split(","), info.getUser());
+        }
+        return ResponseUtil.setSuccessResult();
+
+    }
 
     @ApiOperation(value = "更新药品信息")
     @PostMapping("/update")

@@ -87,6 +87,10 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object o, ModelAndView modelAndView) throws Exception {
+        //刷新token有效期
+        Object loginId = request.getAttribute("loginId");
+        if((null != loginId && loginId.toString().startsWith("USER_PAD")))
+            redisTemplate.expire(String.format(RedisKeyConstants.USERKEY_PRE, loginId.toString()), CommonConstants.LOGININFO_EXPIRE_SECONDS, TimeUnit.SECONDS);
 
     }
 

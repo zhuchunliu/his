@@ -28,11 +28,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Param;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,49 +140,76 @@ public class DrugDictApi {
         return ResponseUtil.setSuccessResult(vo);
     }
 
-    @ApiOperation(value = "药品信息列表")
+    @ApiOperation(value = "导出字典表")
     @GetMapping("/export")
     @WithoutToken
-    public void export(@Param("type 0对应03版Excel,1对应07版Excel;默认07版")
+    public void export(@ApiParam("type 0对应03版Excel,1对应07版Excel;默认07版")
                        @RequestParam(value = "type", defaultValue = "1") Integer type,
-                       @Param("药品分类 参考字典表：category")
+                       @ApiParam("药品分类 参考字典表：category")
                        @RequestParam(value = "category",required = false) String category,
                        HttpServletResponse response) throws IOException {
 
         Workbook book = 1 == type ? new XSSFWorkbook() : new HSSFWorkbook();
         try {
             response.setHeader("content-Type", "application/vnd.ms-excel");
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("药品字典", "utf-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("药品字典"+(1 == type?".xlsx":".xls"), "utf-8"));
 
             List<DrugDict> list = drugDictMapper.getExportDate(category);
 
-
             Sheet sheet = book.createSheet("药品字典");
+
+
             //标题
             Row row = sheet.createRow(0);
-            CellStyle style = book.createCellStyle();
-            Font font = book.createFont();
-            font.setBold(true);
-            style.setFont(font);
-            row.setRowStyle(style);
-            row.createCell(0).setCellValue("药品ID");
-            row.createCell(1).setCellValue("通用名");
-            row.createCell(2).setCellValue("商品名");
-            row.createCell(3).setCellValue("剂型");
-            row.createCell(4).setCellValue("生成企业");
-            row.createCell(5).setCellValue("规格");
+
+            CellStyle titleStyle = book.createCellStyle();
+            titleStyle.setBorderBottom(BorderStyle.THIN);
+            titleStyle.setBorderLeft(BorderStyle.THIN);
+            titleStyle.setBorderRight(BorderStyle.THIN);
+            titleStyle.setBorderTop(BorderStyle.THIN);
+
+
+            CellStyle valueStyle = book.createCellStyle();
+            valueStyle.setBorderBottom(BorderStyle.THIN);
+            valueStyle.setBorderLeft(BorderStyle.THIN);
+            valueStyle.setBorderRight(BorderStyle.THIN);
+            valueStyle.setBorderTop(BorderStyle.THIN);
+
+            Font titleFont = book.createFont();
+            Font valueFont = book.createFont();
+            titleFont.setBold(true);
+            titleFont.setFontName("黑体");
+            titleStyle.setFont(titleFont);
+
+            valueFont.setFontName("宋体");
+            valueStyle.setFont(valueFont);
+
+            this.getCell(row.createCell(0),titleStyle).setCellValue("药品ID");
+            this.getCell(row.createCell(1),titleStyle).setCellValue("通用名");
+            this.getCell(row.createCell(2),titleStyle).setCellValue("商品名");
+            this.getCell(row.createCell(3),titleStyle).setCellValue("剂型");
+            this.getCell(row.createCell(4),titleStyle).setCellValue("生成企业");
+            this.getCell(row.createCell(5),titleStyle).setCellValue("规格");
 
 
             for (int index = 0; index < list.size(); index++) {
                 DrugDict drugDict = list.get(index);
-                sheet.createRow(index + 1);
-                row.createCell(0).setCellValue(drugDict.getId());
-                row.createCell(1).setCellValue(drugDict.getName());
-                row.createCell(2).setCellValue(drugDict.getGoodsName());
-                row.createCell(3).setCellValue(drugDict.getDrugFormName());
-                row.createCell(4).setCellValue(drugDict.getManufacturerName());
-                row.createCell(5).setCellValue(drugDict.getSpec());
+                row = sheet.createRow(index + 1);
+                this.getCell(row.createCell(0),valueStyle).setCellValue(drugDict.getId());
+                this.getCell(row.createCell(1),valueStyle).setCellValue(drugDict.getName());
+                this.getCell(row.createCell(2),valueStyle).setCellValue(drugDict.getGoodsName());
+                this.getCell(row.createCell(3),valueStyle).setCellValue(drugDict.getDrugFormName());
+                this.getCell(row.createCell(4),valueStyle).setCellValue(drugDict.getManufacturerName());
+                this.getCell(row.createCell(5),valueStyle).setCellValue(drugDict.getSpec());
             }
+
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
+            sheet.autoSizeColumn(2);
+            sheet.autoSizeColumn(3);
+            sheet.autoSizeColumn(4);
+            sheet.autoSizeColumn(5);
+
             book.write(response.getOutputStream());
 
 
@@ -194,5 +218,11 @@ public class DrugDictApi {
         }finally {
             book.close();
         }
+    }
+
+
+    private Cell getCell(Cell cell,CellStyle style){
+        cell.setCellStyle(style);
+        return cell;
     }
 }
