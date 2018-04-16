@@ -24,7 +24,7 @@ public class GateInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
-        logger.info("start time: "+System.currentTimeMillis());
+        logger.info(request.getServletPath() +" start time: "+System.currentTimeMillis());
         String path = request.getServletPath();
         if(path.contains("swagger") || path.contains("api-docs")){
             return true;
@@ -46,7 +46,7 @@ public class GateInterceptor implements HandlerInterceptor {
 //            loginManager.tokenRefresh(token);
             //TODO 刷新token
         }
-        logger.info("end time: "+System.currentTimeMillis());
+        logger.info(request.getServletPath()+" end time: "+System.currentTimeMillis());
     }
 
     @Override
