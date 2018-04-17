@@ -79,7 +79,7 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
             if(StringUtils.isNotEmpty(user.getStatus()) && "0".equals(user.getStatus())){
                 throw new BaseException(StatusCode.ERROR_FORBIDDEN,"当前用户已被禁用，请联系管理员");
             }
-            redisTemplate.expire(String.format(RedisKeyConstants.USERKEY_PRE, loginId), CommonConstants.LOGININFO_EXPIRE_SECONDS, TimeUnit.SECONDS);
+//            redisTemplate.expire(String.format(RedisKeyConstants.USERKEY_PRE, loginId), CommonConstants.LOGININFO_EXPIRE_SECONDS, TimeUnit.SECONDS);
         }
         request.setAttribute("loginId",loginId);
         return true;

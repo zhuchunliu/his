@@ -66,6 +66,7 @@ public class AccessTokenResolver implements HandlerMethodArgumentResolver  {
         User user = null;
         Patient patient = null;
         Integer source = null;
+        String patientId = null;
         if(loginId.startsWith("PATIENT_WX")){
             source = 1;
             patient = patientManager.getPatientById(loginId.substring("PATIENT_WX".length()));

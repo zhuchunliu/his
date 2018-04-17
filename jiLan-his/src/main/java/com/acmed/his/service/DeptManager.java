@@ -5,6 +5,7 @@ import com.acmed.his.dao.DeptMapper;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Dept;
 import com.acmed.his.pojo.mo.DeptMo;
+import com.acmed.his.pojo.vo.DeptVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -104,5 +105,9 @@ public class DeptManager {
         dept.setModifyAt(LocalDateTime.now().toString());
         dept.setModifyBy(userInfo.getId().toString());
         deptMapper.updateByPrimaryKey(dept);
+    }
+
+    public List<DeptVo> getDeptVoList(Integer orgCode, Integer superiorityFlag) {
+        return deptMapper.getDeptVoList(orgCode,superiorityFlag);
     }
 }

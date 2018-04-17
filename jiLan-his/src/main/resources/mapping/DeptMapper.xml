@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.DeptMapper">
+    <select id="getDeptVoList" resultType="com.acmed.his.pojo.vo.DeptVo">
+        select t1.id ,t1.dept,t1.superiorityflag,t1.createat,t2.username as createusername
+        from t_p_s_dept t1 LEFT JOIN t_p_s_user t2 on t1.createby = t2.id
+        where t1.removed = '0'
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            and t1.orgcode = #{orgCode}
+        </if>
+        <if test="@Ognl@isNotEmpty(superiorityFlag)">
+            and t1.superiorityflag = #{superiorityFlag}
+        </if>
+    </select>
+</mapper>

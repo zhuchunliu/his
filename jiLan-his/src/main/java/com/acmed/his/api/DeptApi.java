@@ -59,22 +59,23 @@ public class DeptApi {
         }else {
             org = orgCode;
         }
-        deptManager.getDeptList(org).forEach(obj->{
-            DeptVo deptVo = new DeptVo();
-            if(!StringUtils.isEmpty(obj.getCreateBy())){
-                deptVo.setCreateUserName(Optional.ofNullable(userManager.getUserDetail(Integer.parseInt(obj.getCreateBy())))
-                        .map(user->user.getUserName()).orElse(null));
-            }
-            BeanUtils.copyProperties(obj,deptVo);
-            if (new Integer(1).equals( superiorityFlag)){
-                Integer superiorityFlag1 = deptVo.getSuperiorityFlag();
-                if (superiorityFlag1==1){
-                    list.add(deptVo);
-                }
-            }else {
-                list.add(deptVo);
-            }
-        });
+        list = deptManager.getDeptVoList(org,superiorityFlag);
+//        deptManager.getDeptList(org).forEach(obj->{
+//            DeptVo deptVo = new DeptVo();
+//            if(!StringUtils.isEmpty(obj.getCreateBy())){
+//                deptVo.setCreateUserName(Optional.ofNullable(userManager.getUserDetail(Integer.parseInt(obj.getCreateBy())))
+//                        .map(user->user.getUserName()).orElse(null));
+//            }
+//            BeanUtils.copyProperties(obj,deptVo);
+//            if (new Integer(1).equals( superiorityFlag)){
+//                Integer superiorityFlag1 = deptVo.getSuperiorityFlag();
+//                if (superiorityFlag1==1){
+//                    list.add(deptVo);
+//                }
+//            }else {
+//                list.add(deptVo);
+//            }
+//        });
         return ResponseUtil.setSuccessResult(list);
     }
 
