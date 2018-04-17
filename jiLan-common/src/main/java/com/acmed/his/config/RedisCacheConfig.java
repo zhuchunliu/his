@@ -47,7 +47,6 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         }else{
             redisConnectionFactory.setDatabase(0);
         }
-        redisConnectionFactory.setDatabase(1);
         redisConnectionFactory.setHostName(ip);
         redisConnectionFactory.setPort(port);
         redisConnectionFactory.setPassword(password);
