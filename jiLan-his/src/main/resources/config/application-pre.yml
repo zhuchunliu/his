@@ -60,3 +60,5 @@ pagehelper:
 #    reasonable: true
 #    supportMethodsArguments: true
 #    params: count=countSql
+insurance:
+    price: 200 #每个挂号收取 200分  既 2元

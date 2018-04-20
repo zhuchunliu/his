@@ -1,10 +1,7 @@
 package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
-import com.acmed.his.model.AccompanyingOrder;
-import com.acmed.his.model.Apply;
-import com.acmed.his.model.Patient;
-import com.acmed.his.model.PayStatements;
+import com.acmed.his.model.*;
 import com.acmed.his.service.*;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -49,6 +46,9 @@ public class PayApi {
     private PatientManager patientManager;
 
     @Autowired
+    private UserManager userManager;
+
+    @Autowired
     private PayManager payManager;
 
     @Autowired
@@ -56,6 +56,10 @@ public class PayApi {
 
     @Autowired
     private ApplyManager applyManager;
+
+    @Autowired
+    private InsuranceOrderManager insuranceOrderManager;
+
     private static Logger logger = Logger.getLogger(PayApi.class);
 
     @ApiOperation("就医北上广初始化支付")
@@ -274,6 +278,116 @@ public class PayApi {
                                 payStatements.setFee(BigDecimal.valueOf(applyById.getFee()));
                                 payStatements.setPayStatus("1");
                                 payManager.addPayStatements(payStatements);
+                                if (i == 1) {
+                                    // 回调成功
+                                    respString = "SUCCESS";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            resp.getWriter().write("<xml><return_code><![CDATA["+respString+"]]></return_code></xml>");
+        } catch (Exception e) {
+            logger.error(e.toString());
+            e.printStackTrace();
+        }
+    }
+
+
+    @ApiOperation("保单支付初始化")
+    @GetMapping("insuranceOrderInit")
+    @ResponseBody
+    public ResponseResult insuranceOrderInit(@RequestParam("id") String id, @AccessToken AccessInfo info, HttpServletRequest request) throws Exception {
+        InsuranceOrder insuranceOrder = insuranceOrderManager.getById(id);
+        if (insuranceOrder == null){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"挂号单不存在");
+        }
+        if (insuranceOrder.getFee().equals(0) ||  StringUtils.isNotEmpty(insuranceOrder.getPayId()) ){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_PAY,"请不要重复支付");
+        }
+        Integer userId = info.getUserId();
+        if (!insuranceOrder.getUserId().equals(userId)){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_PAY,"暂时不支持代付功能");
+        }
+        User userDetail = userManager.getUserDetail(userId);
+        String openid = userDetail.getOpenid();
+        String mchId = environment.getProperty("weixin.mchId");
+        Map<String,String> param = new HashMap<>(15);
+        param.put("appid",environment.getProperty("weixin.appid"));
+        param.put("mch_id",mchId);
+        param.put("nonce_str", WXPayUtil.generateNonceStr());
+        param.put("sign_type", WXPayConstants.MD5);
+        param.put("body","机构保单支付");
+        //param.put("detail","详情");
+        long currentTimestamp = WXPayUtil.getCurrentTimestamp();
+        System.err.println(currentTimestamp);
+        param.put("out_trade_no",id);
+        param.put("total_fee", insuranceOrder.getFee().toString());
+        // 客户端ip
+        param.put("spbill_create_ip",request.getRemoteAddr());
+        param.put("notify_url",environment.getProperty("weixin.url")+"/pay/insuranceOrderCallBack");
+        param.put("trade_type","JSAPI");
+        param.put("openid",openid);
+        // 生成签名
+        String s = WXPayUtil.generateSignature(param, environment.getProperty("weixin.key"));
+        param.put("sign",s);
+        String xml = WXPayUtil.mapToXml(param);
+        String s1 = WXPayRequest.postXml(WXPayConstants.UNIFIEDORDER_URL_SUFFIX,xml);
+        Map<String, String> map = WXPayUtil.xmlToMap(s1);
+        System.err.println(map);
+        if ("SUCCESS".equals(map.get("result_code"))){
+            Map<String,String> result = new HashMap<>();
+            result.put("appId",map.get("appid"));
+            result.put("timeStamp",WXPayUtil.getCurrentTimestamp()+"");
+            result.put("nonceStr", UUIDUtil.generate32());
+            result.put("package","prepay_id="+map.get("prepay_id"));
+            result.put("signType","MD5");
+            String s2 = WXPayUtil.generateSignature(result, environment.getProperty("weixin.key"));
+            result.put("paySign",s2);
+            JSONUtils.toJSONString(result);
+            System.err.println();
+            return ResponseUtil.setSuccessResult(JSONUtils.toJSONString(result));
+        }else {
+            logger.error("微信支付初始化异常--------"+map.toString());
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_PAY_INIT_ERR,"网络繁忙");
+        }
+    }
+
+
+
+    @ApiOperation("保单回调")
+    @PostMapping("insuranceOrderCallBack")
+    @WithoutToken
+    @Transactional
+    public void insuranceOrderCallBack(HttpServletRequest req, HttpServletResponse resp){
+        try {
+            req.setCharacterEncoding("utf-8");
+            resp.setCharacterEncoding("utf-8");
+            resp.setHeader("Content-type", "application/xml;charset=UTF-8");
+            String resString = WXPayUtil.parseRequst(req);
+            logger.info("回调通知内容"+resString);
+            String respString = "FAIL";
+            if(resString != null && !"".equals(resString)){
+                Map<String,String> map = WXPayUtil.toMap(resString.getBytes(), "utf-8");
+                boolean s = WXPayUtil.isSignatureValid(map,environment.getProperty("weixin.key"));
+                if (!s){
+                    respString = "FAIL";
+                }else {
+                    String return_code = map.get("return_code");
+                    String result_code = map.get("result_code");
+                    if (StringUtils.equals("SUCCESS", return_code) && StringUtils.equals("SUCCESS", result_code)) {
+                        // 本地訂單號
+                        String out_trade_no = map.get("out_trade_no");
+                        // 第三方订单号
+                        String transaction_id = map.get("transaction_id");
+                        logger.info("微信支付订单号" + transaction_id);
+                        InsuranceOrder insuranceOrder = insuranceOrderManager.getById(out_trade_no);
+                        if (insuranceOrder != null) {
+                            if (StringUtils.isEmpty(insuranceOrder.getPayId())){
+                                insuranceOrder.setFeeType("2");
+                                insuranceOrder.setPayId(transaction_id);
+                                int i = insuranceOrderManager.update(insuranceOrder);
                                 if (i == 1) {
                                     // 回调成功
                                     respString = "SUCCESS";

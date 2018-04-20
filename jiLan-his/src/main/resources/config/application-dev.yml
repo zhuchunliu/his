@@ -61,3 +61,5 @@ qiniu:
     imgurl: http://qntest.lanshiyihui.com
 zhangyao:
   url: http://presapi.lkhealth.net/index.php
+insurance:
+    price: 200 #每个挂号收取 200分  既 2元

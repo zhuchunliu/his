@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.InsuranceOrderMapper">
+
+    <insert id="insertInsuranceOrderList">
+        INSERT INTO `his`.`tb_insurance_order`(`id`, `orgcode`, `applynum`, `fee`, `createat`,`userid`, `appointmenttime`)
+        SELECT
+        UUID() id,
+        t1.orgcode,
+        IFNULL(t2.applyNum,0) applyNum,
+        IFNULL(t2.applyNum * #{price},0) fee,
+        #{createAt},
+        t1.manager  userId,
+        #{appointmentTime}
+        FROM t_p_s_org t1
+        LEFT JOIN (
+            SELECT orgcode,COUNT(id) applyNum FROM t_b_apply WHERE ispaid = 1 AND appointmenttime BETWEEN #{startTime} AND #{endTime} GROUP BY orgcode
+        ) AS t2 ON t2.orgcode = t1.orgcode
+        WHERE t1.isrecommend IS NULL OR t1.isrecommend = '0';
+    </insert>
+
+    <update id="updateId">
+        UPDATE `his`.`tb_insurance_order` SET id = REPLACE(id,'-','') WHERE appointmenttime = #{appointmentTime};
+    </update>
+</mapper>
