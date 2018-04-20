@@ -2,13 +2,16 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.Permission;
 import com.acmed.his.model.User;
+import com.acmed.his.pojo.mo.OpenIdAndAccessToken;
 import com.acmed.his.pojo.vo.*;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.PermissionManager;
 import com.acmed.his.service.UserManager;
+import com.acmed.his.service.WxManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.*;
@@ -44,6 +47,9 @@ public class UserApi {
 
     @Autowired
     private PermissionManager permissionManager;
+
+    @Autowired
+    private WxManager wxManager;
 
     @Autowired
     @Qualifier(value="stringRedisTemplate")
@@ -163,5 +169,24 @@ public class UserApi {
             }
         });
         return ResponseUtil.setSuccessResult(set);
+    }
+
+    @ApiOperation("绑定微信")
+    @GetMapping(value = "/bindwx")
+    public ResponseResult getUser(@AccessToken AccessInfo info,@ApiParam("微信code") @RequestParam("code")String code){
+        OpenIdAndAccessToken openid;
+        try {
+            openid = wxManager.getOpenid(code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BaseException(StatusCode.ERROR_GETOPENIDECORD);
+        }
+        String openId = openid.getOpenId();
+        Integer userId = info.getUserId();
+        User user = new User();
+        user.setId(userId);
+        user.setOpenid(openId);
+        userManager.changeOpenId(openId,userId,user.toString());
+        return ResponseUtil.setSuccessResult();
     }
 }

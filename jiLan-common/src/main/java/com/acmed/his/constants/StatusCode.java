@@ -45,7 +45,8 @@ public enum StatusCode {
 	ERROR_DATA_EMPTY (10026,"没有查询到对应数据"),
 	ERROR_IS_NOT_PAY (10027,"未支付"),
 	ERROR_APPLY_NUM_OUT (10028,"医生挂号达到上限"),
-	ERROR_FORBIDDEN(10029,"用户已经被禁用，请联系管理员");
+	ERROR_FORBIDDEN(10029,"用户已经被禁用，请联系管理员"),
+	ERROR_OPENID_NULL(10030,"还未绑定微信");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatusCode.class);
 

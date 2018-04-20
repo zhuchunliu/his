@@ -312,6 +312,9 @@ public class PayApi {
         }
         User userDetail = userManager.getUserDetail(userId);
         String openid = userDetail.getOpenid();
+        if(StringUtils.isEmpty(openid)){
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_OPENID_NULL,"请先绑定微信");
+        }
         String mchId = environment.getProperty("weixin.mchId");
         Map<String,String> param = new HashMap<>(15);
         param.put("appid",environment.getProperty("weixin.appid"));

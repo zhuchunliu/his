@@ -243,6 +243,19 @@ public class UserManager {
         return user;
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "user",key = "'user_cache_id_'+#result.id"),
+            @CacheEvict(value="user",key="'user_cache_openid_'+#result.openid",condition = "#result.openid ne null")
+    })
+    public User changeOpenId(String openId, Integer userId,String modifyBy) {
+        User user = userMapper.selectByPrimaryKey(userId);
+        user.setOpenid(openId);
+        user.setModifyBy(modifyBy);
+        user.setModifyAt(LocalDateTime.now().toString());
+        userMapper.updateByPrimaryKeySelective(user);
+        return user;
+    }
+
     public List<User> getByUser(User user){
         return userMapper.select(user);
     }

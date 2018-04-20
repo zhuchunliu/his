@@ -62,9 +62,15 @@ public class InsuranceOrderManager {
     }
 
 
-    public PageResult<InsuranceOrder> insuranceOrderList(Integer pageNum,Integer pageSize,Integer userId){
+    public PageResult<InsuranceOrder> insuranceOrderList(Integer pageNum,Integer pageSize,Integer userId,Integer isPaid,String startTime,String endTime){
         Example example = new Example(InsuranceOrder.class);
-        example.createCriteria().andEqualTo("userId",userId);
+        if (isPaid==null){
+            example.createCriteria().andEqualTo("userId",userId).andBetween("appointmentTime",startTime,endTime);
+        }else if (isPaid==1){
+            example.createCriteria().andEqualTo("userId",userId).andEqualTo("fee",0).andIsNotNull("payId").andBetween("appointmentTime",startTime,endTime);
+        }else {
+            example.createCriteria().andEqualTo("userId",userId).andIsNull("payId").andBetween("appointmentTime",startTime,endTime);
+        }
         example.setOrderByClause("createAt desc");
         PageHelper.startPage(pageNum,pageSize);
         List<InsuranceOrder> insuranceOrders = insuranceOrderMapper.selectByExample(example);
