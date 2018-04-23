@@ -53,6 +53,7 @@ public class WxManager {
         String openid = json.getString("openid");
         if (StringUtils.isEmpty(access_token) || StringUtils.isEmpty(openid)){
             logger.error("微信获取openid异常: "+json.toJSONString());
+            throw new BaseException(StatusCode.ERROR_GETOPENIDECORD);
         }
         OpenIdAndAccessToken openIdAndAccessToken = new OpenIdAndAccessToken();
         openIdAndAccessToken.setOpenId(openid);
@@ -76,7 +77,7 @@ public class WxManager {
         String accessToken = json.getString("access_token");
         if (StringUtils.isEmpty(accessToken)){
             logger.error("微信获取accesstoken  异常"+info);
-            throw new BaseException(StatusCode.FAIL);
+            throw new BaseException(StatusCode.ERROR_GETOPENIDECORD);
         }
         redisTemplate.opsForValue().set(RedisKeyConstants.WX_BASE_ACCESS_TOKEN,accessToken);
         redisTemplate.expire(RedisKeyConstants.WX_BASE_ACCESS_TOKEN,100, TimeUnit.MINUTES);
