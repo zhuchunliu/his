@@ -4,6 +4,7 @@ import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.RoleMapper;
 import com.acmed.his.model.Role;
+import com.acmed.his.model.User;
 import com.acmed.his.model.dto.UserDto;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.mo.UserQueryMo;
@@ -78,8 +79,14 @@ public class UserManagerApi {
                                                 @AccessToken AccessInfo info){
         id = Optional.ofNullable(id).orElse(info.getUserId());
         UserVo vo = new UserVo();
-        BeanUtils.copyProperties(userManager.getUserDetail(id),vo);
-
+        User userDetail = userManager.getUserDetail(id);
+        BeanUtils.copyProperties(userDetail,vo);
+        String openid = userDetail.getOpenid();
+        if (StringUtils.isNotEmpty(openid)){
+            vo.setBindWx(1);
+        }else {
+            vo.setBindWx(0);
+        }
         vo.setCategoryName(Optional.ofNullable(vo.getCategory()).
                 map(obj->baseInfoManager.getDicItem(DicTypeEnum.USER_CATEGORY.getCode(),obj).getDicItemName()).orElse(null));
         vo.setDiagnosLevelName(Optional.ofNullable(vo.getDiagnosLevel()).

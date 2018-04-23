@@ -105,7 +105,7 @@ public class PayApiTest {
 
     @Test
     public void orderquery2() throws Exception {
-        System.err.println(environment.getProperty("weixin.url"));
+        System.err.println(environment.getProperty("weixin.url")+"/pay/BSGCallBack");
     }
 
 

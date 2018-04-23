@@ -76,6 +76,9 @@ public class UserVo {
     @ApiModelProperty("头像")
     private String avatar;
 
+    @ApiModelProperty("绑定微信  0绑定  1未绑定")
+    private Integer bindWx;
+
     private List<UserRoleVo> userRoleVoList;
 
     @Data

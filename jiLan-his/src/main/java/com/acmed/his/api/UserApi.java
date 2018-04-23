@@ -186,7 +186,7 @@ public class UserApi {
         User user = new User();
         user.setId(userId);
         user.setOpenid(openId);
-        userManager.changeOpenId(openId,userId,user.toString());
+        userManager.changeOpenId(openId,userId,userId.toString());
         return ResponseUtil.setSuccessResult();
     }
 }

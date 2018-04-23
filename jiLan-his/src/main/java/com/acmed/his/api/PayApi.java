@@ -11,6 +11,7 @@ import com.acmed.his.util.*;
 import com.alibaba.druid.support.json.JSONUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -298,10 +299,13 @@ public class PayApi {
     @ApiOperation("保单支付初始化")
     @GetMapping("insuranceOrderInit")
     @ResponseBody
-    public ResponseResult insuranceOrderInit(@RequestParam("id") String id, @AccessToken AccessInfo info, HttpServletRequest request) throws Exception {
+    public ResponseResult insuranceOrderInit(@ApiParam("保单id") @RequestParam("id") String id,
+                                             @ApiParam("微信code") @RequestParam(value = "code",required = false) String code,
+                                             @AccessToken AccessInfo info,
+                                             HttpServletRequest request) throws Exception {
         InsuranceOrder insuranceOrder = insuranceOrderManager.getById(id);
         if (insuranceOrder == null){
-            return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"挂号单不存在");
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"保单不存在");
         }
         if (insuranceOrder.getFee().equals(0) ||  StringUtils.isNotEmpty(insuranceOrder.getPayId()) ){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_IS_PAY,"请不要重复支付");
@@ -313,7 +317,7 @@ public class PayApi {
         User userDetail = userManager.getUserDetail(userId);
         String openid = userDetail.getOpenid();
         if(StringUtils.isEmpty(openid)){
-            return ResponseUtil.setErrorMeg(StatusCode.ERROR_OPENID_NULL,"请先绑定微信");
+            return ResponseUtil.setErrorMeg(StatusCode.ERROR_OPENID_NEED_BIND,"请先绑定微信");
         }
         String mchId = environment.getProperty("weixin.mchId");
         Map<String,String> param = new HashMap<>(15);

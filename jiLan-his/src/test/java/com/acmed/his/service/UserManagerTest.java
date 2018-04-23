@@ -76,4 +76,9 @@ public class UserManagerTest {
     public void delUserRole() {
 //        userManager.delUserRole(1,3);
     }
+
+    @Test
+    public void changeOpenId() {
+        userManager.changeOpenId("openid123",17,"17");
+    }
 }
