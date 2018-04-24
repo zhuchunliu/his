@@ -67,9 +67,9 @@ public class InsuranceOrderManager {
         if (isPaid==null){
             example.createCriteria().andEqualTo("userId",userId).andBetween("appointmentTime",startTime,endTime);
         }else if (isPaid==1){
-            example.createCriteria().andEqualTo("userId",userId).andEqualTo("fee",0).andIsNotNull("payId").andBetween("appointmentTime",startTime,endTime);
+            example.createCriteria().andEqualTo("userId",userId).andEqualTo("fee",0).orIsNotNull("payId").andBetween("appointmentTime",startTime,endTime);
         }else {
-            example.createCriteria().andEqualTo("userId",userId).andIsNull("payId").andBetween("appointmentTime",startTime,endTime);
+            example.createCriteria().andEqualTo("userId",userId).orIsNotNull("payId").andBetween("appointmentTime",startTime,endTime);
         }
         example.setOrderByClause("createAt desc");
         PageHelper.startPage(pageNum,pageSize);
