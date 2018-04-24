@@ -8,6 +8,9 @@ import com.acmed.his.model.dto.DispensingDto;
 import com.acmed.his.pojo.mo.DispensingRefundApplyMo;
 import com.acmed.his.pojo.mo.DispensingRefundMo;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.PageResult;
+import com.acmed.his.util.ResponseResult;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -61,10 +64,13 @@ public class DispensingManager {
     private PrescriptionItemStockMapper itemStockMapper;
 
 
-    public List<DispensingDto> getDispensingList(Integer pageNum , Integer pageSize, Integer orgCode, String name, String status,
-                                                 String diagnoseStartDate,String diagnoseEndDate) {
-        PageHelper.startPage(pageNum,pageSize);
-        return preMapper.getDispensingList(orgCode,name,status,diagnoseStartDate,diagnoseEndDate);
+    public PageResult<DispensingDto> getDispensingList(Integer pageNum , Integer pageSize, Integer orgCode, String name, String status,
+                                                                 String diagnoseStartDate, String diagnoseEndDate) {
+        PageResult result = new PageResult();
+        Page page = PageHelper.startPage(pageNum,pageSize);
+        result.setData(preMapper.getDispensingList(orgCode,name,status,diagnoseStartDate,diagnoseEndDate));
+        result.setTotal(page.getTotal());
+        return result;
     }
 
     public Integer getDispensingTotal(Integer orgCode, String name, String status,

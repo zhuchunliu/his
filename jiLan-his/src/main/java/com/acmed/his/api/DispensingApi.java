@@ -118,11 +118,11 @@ public class DispensingApi {
                     map(DateTimeUtil::getEndDate).orElse(null));
         }
         List<DispensingVo> list = new ArrayList<>();
-        List<DispensingDto> applyList = dispensingManager.getDispensingList(mo.getPageNum(),mo.getPageSize(),
+        PageResult<DispensingDto> result = dispensingManager.getDispensingList(mo.getPageNum(),mo.getPageSize(),
                 info.getUser().getOrgCode(), Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
                 Optional.ofNullable(mo.getParam().getStatus()).orElse(null),
                 mo.getParam().getDiagnoseStartDate(),mo.getParam().getDiagnoseEndDate());
-        applyList.forEach(obj->{
+        result.getData().forEach(obj->{
             DispensingVo vo = new DispensingVo();
             BeanUtils.copyProperties(obj,vo);
             if("0".equals(obj.getIsPaid())) vo.setStatus("1");
@@ -133,11 +133,8 @@ public class DispensingApi {
 
             list.add(vo);
         });
-        int total = dispensingManager.getDispensingTotal(info.getUser().getOrgCode(),
-                Optional.ofNullable(mo.getParam()).map(obj->obj.getName()).orElse(null),
-                Optional.ofNullable(mo.getParam().getStatus()).orElse(null),
-                mo.getParam().getDiagnoseStartDate(),mo.getParam().getDiagnoseEndDate());
-        return ResponseUtil.setSuccessResult(new PageResult(list,(long)total));
+
+        return ResponseUtil.setSuccessResult(new PageResult(list,result.getTotal()));
     }
 
     @ApiOperation(value = "付费费用列表，支付页面显示")
