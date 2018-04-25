@@ -181,7 +181,7 @@ public class TemplateApi {
 
     @ApiOperation(value = "获取导入的处方模板列表")
     @PostMapping("/prescripTpl/global")
-    public ResponseResult<PageResult<PrescriptionTplDto>> getGlobalTplList(@RequestBody(required = false) PageBase page,
+    public ResponseResult<PageResult<PrescriptionTplDto>> getGlobalTplList(@RequestBody(required = false) PageBase<String> page,
                                                                              @AccessToken AccessInfo info){
         return ResponseUtil.setSuccessResult(templateManager.getGloablPrescripTplList(
                 Optional.ofNullable(page.getParam()).map(String::valueOf).orElse(null),page.getPageNum(),page.getPageSize()));
