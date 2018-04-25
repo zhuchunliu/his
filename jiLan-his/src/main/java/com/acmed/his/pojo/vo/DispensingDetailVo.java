@@ -96,7 +96,7 @@ public class DispensingDetailVo {
                 medicalDetail.setManufacturerName(manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
                 medicalDetail.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
                 medicalDetail.setSingleDose(item.getSingleDose());
-                medicalDetail.setRemark(item.getRemark());
+                medicalDetail.setMemo(item.getMemo());
                 medicalDetail.setRequirement(item.getRequirement());
                 medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
                 this.totalFee += medicalDetail.getPrice();
@@ -262,7 +262,7 @@ public class DispensingDetailVo {
         private String requirement;
 
         @ApiModelProperty("备注")
-        private String remark;
+        private String memo;
 
 
     }

@@ -74,23 +74,47 @@ public class DrugDictApi {
                 Optional.ofNullable(pageBase.getParam()).map(DrugDictQueryMo::getIsHandle).orElse(null),
                 pageBase.getPageNum(), pageBase.getPageSize());
 
-        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
-        Map<String, String> dicItemName = Maps.newHashMap();
-        dicItemList.forEach(obj -> {
-            dicItemName.put(obj.getDicItemCode(), obj.getDicItemName());
+//        List<DicItem> unitItmList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+//        Map<String, String> unitItemName = Maps.newHashMap();
+//        unitItmList.forEach(obj -> {
+//            unitItemName.put(obj.getDicItemCode(), obj.getDicItemName());
+//        });
+
+        List<DicItem> drugFormList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FORM.getCode());
+        Map<String, String> drugFormName = Maps.newHashMap();
+        drugFormList.forEach(obj -> {
+            drugFormName.put(obj.getDicItemCode(), obj.getDicItemName());
+        });
+
+        List<DicItem> classficationList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_CLASSIFICATION.getCode());
+        Map<String, String> classficationName = Maps.newHashMap();
+        classficationList.forEach(obj -> {
+            classficationName.put(obj.getDicItemCode(), obj.getDicItemName());
+        });
+
+//        List<DicItem> useageList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.USEAGE.getCode());
+//        Map<String, String> useageName = Maps.newHashMap();
+//        useageList.forEach(obj -> {
+//            useageName.put(obj.getDicItemCode(), obj.getDicItemName());
+//        });
+
+        List<DicItem> prescriptionList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.PRESCRIPTION_TYPE.getCode());
+        Map<String, String> prescriptionName = Maps.newHashMap();
+        prescriptionList.forEach(obj -> {
+            prescriptionName.put(obj.getDicItemCode(), obj.getDicItemName());
         });
 
         List<DrugDictListVo> voList = Lists.newArrayList();
         pageResult.getData().forEach(dict -> {
             DrugDictListVo vo = new DrugDictListVo();
             BeanUtils.copyProperties(dict, vo);
-            vo.setCategoryName(null == dict.getCategory() ? "" : baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(), dict.getCategory().toString()).getDicItemName());
-            vo.setDrugFormName(null == dict.getDrugForm() ? "" : baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(), dict.getDrugForm().toString()).getDicItemName());
-            vo.setUnitName(null == dict.getUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), dict.getUnit().toString()).getDicItemName());
-            vo.setMinUnitName(null == dict.getMinUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), dict.getMinUnit().toString()).getDicItemName());
-            vo.setDoseUnitName(null == dict.getDoseUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), dict.getDoseUnit().toString()).getDicItemName());
-            vo.setUseageName(null == dict.getUseage() ? "" : baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(), dict.getUseage().toString()).getDicItemName());
-            vo.setPrescriptionTypeName(null == dict.getPrescriptionType() ? "" : baseInfoManager.getDicItem(DicTypeEnum.PRESCRIPTION_TYPE.getCode(), dict.getPrescriptionType().toString()).getDicItemName());
+            vo.setCategoryName(null == dict.getCategory() ? "" : classficationName.get(dict.getCategory().toString()));
+            vo.setDrugFormName(null == dict.getDrugForm() ? "" : drugFormName.get(dict.getDrugForm().toString()));
+//            vo.setUnitName(null == dict.getUnit() ? "" : unitItemName.get(dict.getUnit().toString()));
+//            vo.setMinUnitName(null == dict.getMinUnit() ? "" : unitItemName.get(dict.getMinUnit().toString()));
+//            vo.setDoseUnitName(null == dict.getDoseUnit() ? "" : unitItemName.get(dict.getDoseUnit().toString()));
+//            vo.setUseageName(null == dict.getUseage() ? "" : useageName.get(dict.getUseage().toString()));
+            vo.setPrescriptionTypeName(null == dict.getPrescriptionType() ? "" : prescriptionName.get(dict.getPrescriptionType().toString()));
             vo.setManufacturerName(Optional.ofNullable(dict.getManufacturer()).map(obj -> manufacturerMapper.selectByPrimaryKey(obj)).
                     map(obj -> obj.getName()).orElse(""));
 

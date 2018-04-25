@@ -2,10 +2,7 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.DicTypeEnum;
-import com.acmed.his.dao.InspectTplMapper;
-import com.acmed.his.dao.ManufacturerMapper;
-import com.acmed.his.dao.PrescriptionTplItemMapper;
-import com.acmed.his.dao.PrescriptionTplMapper;
+import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.AdviceTplDto;
 import com.acmed.his.model.dto.DiagnosisTplDto;
@@ -66,6 +63,9 @@ public class TemplateApi {
     @Autowired
     private BaseInfoManager baseInfoManager;
 
+    @Autowired
+    private DrugDictMapper drugDictMapper;
+
     @ApiOperation(value = "新增/编辑 诊断模板")
     @PostMapping("/diagnosis/save")
     public ResponseResult saveDiagnosisList(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody DiagnosisTplMo mo,
@@ -81,12 +81,8 @@ public class TemplateApi {
     @PostMapping("/diagnosis/list")
     public ResponseResult<PageResult<DiagnosisTplDto>> getDiagnosisList(@RequestBody(required = false) PageBase<TplQueryMo> pageBase,
                                                                         @AccessToken AccessInfo info){
-        PageResult result = new PageResult();
-        List<DiagnosisTplDto> list = templateManager.getDiagnosisTplList(pageBase.getParam(),pageBase.getPageNum(),
-                pageBase.getPageSize(),info.getUser());
-        result.setData(list);
-        result.setTotal((long)templateManager.getDiagnosisTplTotal(pageBase.getParam(),info.getUser()));
-        return ResponseUtil.setSuccessResult(result);
+        return ResponseUtil.setSuccessResult(templateManager.getDiagnosisTplList(pageBase.getParam(),pageBase.getPageNum(),
+                pageBase.getPageSize(),info.getUser()));
     }
 
     @ApiOperation(value = "诊断模板-禁用数")
@@ -133,12 +129,8 @@ public class TemplateApi {
     @PostMapping("/advice/list")
     public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceTplList(@RequestBody(required = false) PageBase<TplQueryMo> pageBase,
                                                                         @AccessToken AccessInfo info){
-        PageResult result = new PageResult();
-        List<AdviceTplDto> list = templateManager.getAdviceTplList(pageBase.getParam(),pageBase.getPageNum(),
-                pageBase.getPageSize(),info.getUser());
-        result.setData(list);
-        result.setTotal((long)templateManager.getAdviceTplTotal(pageBase.getParam(),info.getUser()));
-        return ResponseUtil.setSuccessResult(result);
+        return ResponseUtil.setSuccessResult(templateManager.getAdviceTplList(pageBase.getParam(),pageBase.getPageNum(),
+                pageBase.getPageSize(),info.getUser()));
     }
 
     @ApiOperation(value = "医嘱模板-禁用数")
@@ -184,10 +176,26 @@ public class TemplateApi {
     @PostMapping("/prescripTpl/list")
     public ResponseResult<PageResult<PrescriptionTplDto>> getPrescripTplList(@RequestBody(required = false) PageBase<PrescriptionQueryTplMo> page,
                                                                              @AccessToken AccessInfo info){
-        PageResult result = new PageResult();
-        result.setData(templateManager.getPrescripTplList(page.getParam(),page.getPageNum(),page.getPageSize(), info.getUser()));
-        result.setTotal((long)templateManager.getPrescripTplTotal(page.getParam(), info.getUser()));
-        return ResponseUtil.setSuccessResult(result);
+        return ResponseUtil.setSuccessResult(templateManager.getPrescripTplList(page.getParam(),page.getPageNum(),page.getPageSize(), info.getUser()));
+    }
+
+    @ApiOperation(value = "获取导入的处方模板列表")
+    @PostMapping("/prescripTpl/global")
+    public ResponseResult<PageResult<PrescriptionTplDto>> getGlobalTplList(@RequestBody(required = false) PageBase page,
+                                                                             @AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(templateManager.getGloablPrescripTplList(
+                Optional.ofNullable(page.getParam()).map(String::valueOf).orElse(null),page.getPageNum(),page.getPageSize()));
+    }
+
+    @ApiOperation(value = "导入处方模板")
+    @PostMapping("/prescripTpl/import")
+    public ResponseResult importTpl(@ApiParam("{\"ids\":\"\"} ids：模板主键集合，逗号间隔") @RequestBody String param,
+                                                                           @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("ids")){
+            return ResponseUtil.setParamEmptyError("ids");
+        }
+        templateManager.importPrescriptTpl(JSONObject.parseObject(param).get("ids").toString(),info.getUser());
+        return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "处方模板-禁用数")
@@ -229,7 +237,14 @@ public class TemplateApi {
             List<PrescriptionTplItemVo> list = Lists.newArrayList();
             preTplItemMapper.selectByExample(example).forEach(obj->{
                 PrescriptionTplItemVo vo = new PrescriptionTplItemVo();
-                Drug drug = drugManager.getDrugById(obj.getDrugId());
+                Drug drug = new Drug();
+                if(null != info.getUser().getOrgCode()){
+                    drug = drugManager.getDrugById(obj.getDrugId());
+                }else{//管理员读取药品字典表数据
+                    DrugDict drugDict = drugDictMapper.selectByPrimaryKey(obj.getDrugId());
+                    BeanUtils.copyProperties(drugDict,drug);
+                }
+
                 if(null == drug.getIsValid() || 1 == drug.getIsValid()) {//药品禁用的过滤掉
                     BeanUtils.copyProperties(obj, vo);
                     vo.setDrugId(drug.getId());
@@ -292,6 +307,8 @@ public class TemplateApi {
         boolean flag = templateManager.savInspectTpl(mo);
         return flag?ResponseUtil.setSuccessResult():ResponseUtil.setErrorMeg(StatusCode.FAIL,"新增处方模板失败");
     }
+
+
 
     public static void main(String[] args) {
         double i = 10.5d;

@@ -78,6 +78,6 @@ public class PrescriptionItem {
     @ApiModelProperty("要求")
     private String requirement;
 
-    @ApiModelProperty("备注")
+    @ApiModelProperty("服药备注")
     private String remark;
 }

@@ -6,7 +6,6 @@ import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.Drug;
-import com.acmed.his.model.DrugDict;
 import com.acmed.his.model.zhangyao.ZYDrug;
 import com.acmed.his.pojo.mo.DrugMo;
 import com.acmed.his.pojo.mo.DrugQueryMo;
@@ -19,7 +18,6 @@ import com.acmed.his.service.DrugManager;
 import com.acmed.his.service.ZhangYaoManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
@@ -31,7 +29,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -41,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -169,7 +165,7 @@ public class DrugApi {
         if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("codes")){
             return ResponseUtil.setParamEmptyError("codes");
         }
-        drugManager.saveDrugByDict(JSONObject.parseObject(param).get("codes").toString().split(","),info.getUser());
+        drugManager.saveDrugByDict(JSONObject.parseObject(param).get("codes").toString().split(","),info.getUser(),false);
         return ResponseUtil.setSuccessResult();
     }
 

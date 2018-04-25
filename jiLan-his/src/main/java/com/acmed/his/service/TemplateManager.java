@@ -2,14 +2,19 @@ package com.acmed.his.service;
 
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.*;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.AdviceTplDto;
 import com.acmed.his.model.dto.DiagnosisTplDto;
 import com.acmed.his.model.dto.PrescriptionTplDto;
 import com.acmed.his.pojo.mo.*;
 import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.PinYinUtil;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.collect.Lists;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +48,12 @@ public class TemplateManager {
     private DrugMapper drugMapper;
 
     @Autowired
+    private DrugManager drugManager;
+
+    @Autowired
+    private DrugDictMapper drugDictMapper;
+
+    @Autowired
     private InspectTplMapper inspectTplMapper;
 
 
@@ -53,13 +64,16 @@ public class TemplateManager {
      * @param query
      * @param pageSize
      */
-    public List<DiagnosisTplDto> getDiagnosisTplList(TplQueryMo query, Integer pageNum, Integer pageSize , UserInfo userInfo){
-        PageHelper.startPage(pageNum,pageSize);
-
-        return diagnosisTplMapper.getDiagnosisTplList(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
+    public PageResult<DiagnosisTplDto> getDiagnosisTplList(TplQueryMo query, Integer pageNum, Integer pageSize , UserInfo userInfo){
+        PageResult result = new PageResult();
+        Page page = PageHelper.startPage(pageNum,pageSize);
+        result.setData(diagnosisTplMapper.getDiagnosisTplList(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
-                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode());
+                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode()));
+        result.setTotal(page.getTotal());
+
+        return result;
     }
 
     public Integer getDiagnosisTplTotal(TplQueryMo query, UserInfo userInfo){
@@ -119,13 +133,16 @@ public class TemplateManager {
      * 获取医嘱模板列表
      * @return
      */
-    public List<AdviceTplDto> getAdviceTplList(TplQueryMo query, Integer pageNum, Integer pageSize , UserInfo userInfo){
-        PageHelper.startPage(pageNum,pageSize);
+    public PageResult<AdviceTplDto> getAdviceTplList(TplQueryMo query, Integer pageNum, Integer pageSize , UserInfo userInfo){
+        PageResult result = new PageResult();
+        Page page = PageHelper.startPage(pageNum,pageSize);
 
-        return adviceTplMapper.getAdviceTplList(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
+        result.setData(adviceTplMapper.getAdviceTplList(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
-                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode());
+                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode()));
+        result.setTotal(page.getTotal());
+        return result;
     }
 
     public Integer getAdviceTplTotal(TplQueryMo query, UserInfo userInfo){
@@ -196,15 +213,25 @@ public class TemplateManager {
      * @param
      * @return
      */
-    public List<PrescriptionTplDto> getPrescripTplList(PrescriptionQueryTplMo query, Integer pageNum, Integer pageSize, UserInfo userInfo){
-        PageHelper.startPage(pageNum,pageSize);
-        return prescriptionTplMapper.getPrescripTplList(Optional.ofNullable(query).map(obj->obj.getTplName()).orElse(null),
+    public PageResult<PrescriptionTplDto> getPrescripTplList(PrescriptionQueryTplMo query, Integer pageNum, Integer pageSize, UserInfo userInfo){
+        PageResult result = new PageResult();
+        Page page = PageHelper.startPage(pageNum,pageSize);
+        result.setData(prescriptionTplMapper.getPrescripTplList(Optional.ofNullable(query).map(obj->obj.getTplName()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getCategory()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
-                userInfo, DicTypeEnum.PRESCRIPTION.getCode());
+                userInfo, DicTypeEnum.PRESCRIPTION.getCode()));
+        result.setTotal(page.getTotal());
+        return result;
     }
 
+    public Object getGloablPrescripTplList(String tplName, Integer pageNum, Integer pageSize) {
+        PageResult result = new PageResult();
+        Page page = PageHelper.startPage(pageNum,pageSize);
+        result.setData(prescriptionTplMapper.getGloablPrescripTplList(tplName, "1"));
+        result.setTotal(page.getTotal());
+        return result;
+    }
     public Integer getPrescripTplTotal( PrescriptionQueryTplMo query, UserInfo userInfo) {
         return prescriptionTplMapper.getPrescripTplTotal(Optional.ofNullable(query).map(obj->obj.getTplName()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getCategory()).orElse(null),
@@ -333,5 +360,65 @@ public class TemplateManager {
     }
 
 
+    /**
+     * 导入处方模板
+     * @param ids
+     * @param user
+     */
+//    @Transactional
+    public void importPrescriptTpl(String ids, UserInfo user) {
+        List<Integer> tplIdList = Lists.newArrayList();
+        List<Integer> drugDictIdList = Lists.newArrayList();
+        try {
+            for (String id : ids.split(",")) {
+                PrescriptionTpl tpl = prescriptionTplMapper.selectByPrimaryKey(Integer.parseInt(id));
+                List<PrescriptionTplItem> itemList = prescriptionTplItemMapper.getPrescripTplItemList(Integer.parseInt(id));
+                PrescriptionTpl prescriptionTpl = new PrescriptionTpl();
+                prescriptionTpl.setOrgCode(user.getOrgCode());
+                prescriptionTpl.setTplName(tpl.getTplName());
+                prescriptionTpl.setCategory(tpl.getCategory());
+                prescriptionTpl.setPinYin(tpl.getPinYin());
+                prescriptionTpl.setDescription(tpl.getDescription());
+                prescriptionTpl.setCreateBy(user.getId().toString());
+                prescriptionTpl.setCreateAt(LocalDateTime.now().toString());
+                prescriptionTpl.setIsPublic("1");
+                prescriptionTpl.setIsValid("1");
+                prescriptionTpl.setRemoved("0");
 
+                prescriptionTplMapper.insert(prescriptionTpl);
+
+                tplIdList.add(prescriptionTpl.getId());
+
+                for (PrescriptionTplItem item : itemList) {
+
+                    PrescriptionTplItem tplItem = new PrescriptionTplItem();
+                    BeanUtils.copyProperties(item, tplItem, "id", "tplId", "drugId");
+                    tplItem.setTplId(prescriptionTpl.getId());
+                    List<Drug> drugList = drugMapper.getByDrugDictId(item.getDrugId(), user.getOrgCode());
+                    if (null == drugList || 0 == drugList.size()) {
+                        drugList = drugManager.saveDrugByDict(new String[]{item.getDrugId().toString()}, user,true);
+                        drugDictIdList.add(item.getDrugId());
+                    }
+                    tplItem.setDrugId(drugList.get(0).getId());
+                    prescriptionTplItemMapper.insert(tplItem);
+
+                }
+            }
+        }catch (Exception ex){
+            Example example = new Example(PrescriptionTpl.class);
+            example.createCriteria().andIn("id",tplIdList);
+            prescriptionTplMapper.deleteByExample(example);
+
+            example = new Example(PrescriptionTplItem.class);
+            example.createCriteria().andIn("tplId",tplIdList);
+            prescriptionTplItemMapper.deleteByExample(example);
+
+            example = new Example(Drug.class);
+            example.createCriteria().andIn("dictId",drugDictIdList).andEqualTo("orgCode",user.getOrgCode());
+            drugMapper.deleteByExample(example);
+
+            throw ex;
+        }
+
+    }
 }

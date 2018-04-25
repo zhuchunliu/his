@@ -21,4 +21,6 @@ public interface PrescriptionTplMapper extends TkMapper<PrescriptionTpl>{
                                 @Param("userInfo") UserInfo userInfo);
 
     PrescriptionTpl selectRecentTpl(PrescriptionTpl prescriptionTpl);
+
+    List getGloablPrescripTplList(@Param("tplName") String tplName,@Param("category") String category);
 }

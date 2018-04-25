@@ -23,4 +23,5 @@ public interface DrugMapper extends TkMapper<Drug>{
 
     Drug getByDrugCode(@Param("drugCode") String drugCode);
 
+    List<Drug> getByDrugDictId(@Param("dictId") Integer dictId, @Param("orgCode") Integer orgCode);
 }

@@ -186,7 +186,8 @@ public class DrugManager {
      * @param codes
      */
     @Transactional
-    public void saveDrugByDict(String[] codes,UserInfo info) {
+    public List<Drug> saveDrugByDict(String[] codes,UserInfo info,boolean isValid) {
+        List<Drug> drugList = Lists.newArrayList();
         for(String code :codes){
             DrugDict dict = drugDictMapper.selectByPrimaryKey(Integer.parseInt(code));
             Drug drug = new Drug();
@@ -198,7 +199,7 @@ public class DrugManager {
             drug.setPinYin(PinYinUtil.getPinYinHeadChar(dict.getName()));
             drug.setGoodsPinYin(PinYinUtil.getPinYinHeadChar(dict.getGoodsName()));
             drug.setDictId(dict.getId());
-            drug.setIsValid(0);
+            drug.setIsValid(isValid?1:0);
             drug.setNum(0);
             drug.setMinNum(0);
             drug.setDoseNum(0d);
@@ -206,7 +207,9 @@ public class DrugManager {
             drug.setCreateAt(LocalDateTime.now().toString());
             drug.setCreateBy(info.getId().toString());
             drugMapper.insert(drug);
+            drugList.add(drug);
         }
+        return drugList;
 
     }
 

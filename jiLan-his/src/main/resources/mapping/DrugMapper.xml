@@ -73,6 +73,10 @@
         select *  FROM t_b_drug t1
         where t1.drugcode = #{drugCode}
     </select>
+    
+    <select id="getByDrugDictId" resultType="com.acmed.his.model.Drug">
+        select * from t_b_drug t1 where t1.dictid = #{dictId} and t1.orgcode = #{orgCode}  and t1.removed = '0'
+    </select>
 
 
 </mapper>

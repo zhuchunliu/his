@@ -56,8 +56,11 @@ public class LoginController {
         }
         String token = Optional.ofNullable(result)
                 .map(obj->(RequestToken)obj.getResult()).map(obj->obj.getToken()).orElse(null);
-        Map<String,String > map = new HashMap<>();
+        Integer status = Optional.ofNullable(result)
+                .map(obj->(RequestToken)obj.getResult()).map(obj->obj.getStatus()).orElse(null);
+        Map<String,Object > map = new HashMap<>();
         map.put("token",token);
+        map.put("status",status);
         return ResponseUtil.setSuccessResult(map);
     }
 

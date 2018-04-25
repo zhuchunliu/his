@@ -69,6 +69,7 @@ public class LoginManager {
         }
         User user = (User) result.getResult();
         RequestToken requestToken = this.getToken(String.format(RedisKeyConstants.USER_PAD,user.getId()));
+        requestToken.setStatus(StringUtils.isEmpty(user.getOrgCode())?0:2);
         logger.info("登录成功，返回的token是：" + requestToken.getToken());
 
         return ResponseUtil.setSuccessResult(requestToken);

@@ -10,7 +10,16 @@
             from t_b_advice_tpl t1
             JOIN t_p_s_dicitem t2 on t1.category  = t2.dicitemcode
             LEFT JOIN t_p_s_user t3 on t1.createby = t3.id
-            where t1.orgcode = #{userInfo.orgCode} and t2.dictypecode = #{dicTypeCode} and t1.removed = '0'
+            where  t2.dictypecode = #{dicTypeCode} and t1.removed = '0'
+
+            <if test="@Ognl@isNotEmpty(userInfo.orgCode)">
+                and t1.orgcode = #{userInfo.orgCode}
+            </if>
+
+            <if test="@Ognl@isEmpty(userInfo.orgCode)">
+                and t1.orgcode is null
+            </if>
+
             <if test="@Ognl@isNotEmpty(name)">
                 and t1.tplname like concat('%',#{name},'%')
             </if>
@@ -33,7 +42,16 @@
             select count(1)
             from t_b_advice_tpl t1
             JOIN t_p_s_dicitem t2 on t1.category  = t2.dicitemcode
-            where t1.orgcode = #{userInfo.orgCode} and t2.dictypecode = #{dicTypeCode} and t1.removed = '0'
+            where t2.dictypecode = #{dicTypeCode} and t1.removed = '0'
+
+            <if test="@Ognl@isNotEmpty(userInfo.orgCode)">
+                and t1.orgcode = #{userInfo.orgCode}
+            </if>
+
+            <if test="@Ognl@isEmpty(userInfo.orgCode)">
+                and t1.orgcode is null
+            </if>
+
             <if test="@Ognl@isNotEmpty(name)">
                 and t1.tplname like concat('%',#{name},'%')
             </if>

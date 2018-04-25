@@ -25,13 +25,10 @@ class RequestToken {
     @ApiModelProperty(hidden = true)
     private String remoteip;//访问客户端ip地址
     @ApiModelProperty("用户角色 1:患者； 2:医生/患者")
-    private Integer status;//1:患者  2:医生/患者
+    private Integer status;//0:管理员 1:患者  2:医生/患者
 
     public RequestToken(){
 
-    }
-    public RequestToken(Integer status){
-        this.status = status;
     }
 
 }
