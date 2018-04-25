@@ -31,7 +31,6 @@ redis:
 
 mybatis:
   mapperLocations: classpath*:mapping/*.xml
-  config-location: classpath:mybatis-config.xml
 logging:
   config: classpath:logback.xml
 
