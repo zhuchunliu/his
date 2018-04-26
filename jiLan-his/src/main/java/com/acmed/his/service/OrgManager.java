@@ -61,8 +61,8 @@ public class OrgManager {
      * 获取机构列表
      * @return
      */
-    public List<OrgVo> getOrgList(Integer cityId, String orgName){
-        return orgMapper.getOrgListByCity(cityId,orgName);
+    public List<OrgVo> getOrgList(Integer cityId, String orgName,String level){
+        return orgMapper.getOrgListByCity(cityId,orgName,level);
     }
 
     /**
