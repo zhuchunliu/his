@@ -399,6 +399,7 @@ public class TemplateManager {
                         drugList = drugManager.saveDrugByDict(new String[]{item.getDrugId().toString()}, user,true);
                         drugDictIdList.add(item.getDrugId());
                     }
+                    tplItem.setUnitType(1);
                     tplItem.setDrugId(drugList.get(0).getId());
                     prescriptionTplItemMapper.insert(tplItem);
 
