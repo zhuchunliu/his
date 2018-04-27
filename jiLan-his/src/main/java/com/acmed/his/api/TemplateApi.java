@@ -267,6 +267,9 @@ public class TemplateApi {
                     vo.setMinUnitName(null == drug.getMinUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getMinUnit().toString()).getDicItemName());
                     vo.setMinPriceUnitType(drug.getMinPriceUnitType());
                     vo.setUnitType(obj.getUnitType());
+                    vo.setStockNum(drug.getNum());
+                    vo.setStockMinNum(drug.getMinNum());
+                    vo.setStockDoseNum(drug.getDoseNum());
                     list.add(vo);
                 }
 
