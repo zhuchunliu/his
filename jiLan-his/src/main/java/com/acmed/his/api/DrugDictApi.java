@@ -74,11 +74,11 @@ public class DrugDictApi {
                 Optional.ofNullable(pageBase.getParam()).map(DrugDictQueryMo::getIsHandle).orElse(null),
                 pageBase.getPageNum(), pageBase.getPageSize());
 
-//        List<DicItem> unitItmList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
-//        Map<String, String> unitItemName = Maps.newHashMap();
-//        unitItmList.forEach(obj -> {
-//            unitItemName.put(obj.getDicItemCode(), obj.getDicItemName());
-//        });
+        List<DicItem> unitItmList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+        Map<String, String> unitItemName = Maps.newHashMap();
+        unitItmList.forEach(obj -> {
+            unitItemName.put(obj.getDicItemCode(), obj.getDicItemName());
+        });
 
         List<DicItem> drugFormList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FORM.getCode());
         Map<String, String> drugFormName = Maps.newHashMap();
@@ -110,9 +110,9 @@ public class DrugDictApi {
             BeanUtils.copyProperties(dict, vo);
             vo.setCategoryName(null == dict.getCategory() ? "" : classficationName.get(dict.getCategory().toString()));
             vo.setDrugFormName(null == dict.getDrugForm() ? "" : drugFormName.get(dict.getDrugForm().toString()));
-//            vo.setUnitName(null == dict.getUnit() ? "" : unitItemName.get(dict.getUnit().toString()));
+            vo.setUnitName(null == dict.getUnit() ? "" : unitItemName.get(dict.getUnit().toString()));
 //            vo.setMinUnitName(null == dict.getMinUnit() ? "" : unitItemName.get(dict.getMinUnit().toString()));
-//            vo.setDoseUnitName(null == dict.getDoseUnit() ? "" : unitItemName.get(dict.getDoseUnit().toString()));
+            vo.setDoseUnitName(null == dict.getDoseUnit() ? "" : unitItemName.get(dict.getDoseUnit().toString()));
 //            vo.setUseageName(null == dict.getUseage() ? "" : useageName.get(dict.getUseage().toString()));
             vo.setPrescriptionTypeName(null == dict.getPrescriptionType() ? "" : prescriptionName.get(dict.getPrescriptionType().toString()));
             vo.setManufacturerName(Optional.ofNullable(dict.getManufacturer()).map(obj -> manufacturerMapper.selectByPrimaryKey(obj)).
