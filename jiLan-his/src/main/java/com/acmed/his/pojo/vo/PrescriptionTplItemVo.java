@@ -28,6 +28,12 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("单位数量")
     private Integer num;
 
+    @ApiModelProperty("小单位数量")
+    private Integer minNum;
+
+    @ApiModelProperty("剂量单位库存数量")
+    private Double doseNum;
+
     @ApiModelProperty("生产厂家名称")
     private String manufacturerName;
 
@@ -66,5 +72,7 @@ public class PrescriptionTplItemVo {
 
     @ApiModelProperty("二级单位零售价")
     private Double minRetailPrice;
+
+
 
 }

@@ -174,7 +174,7 @@ public class PrescriptionManager {
                 BeanUtils.copyProperties(obj,item);
                 item.setTotalFee(Optional.ofNullable(obj.getNum()).orElse(0) * Optional.ofNullable(obj.getRetailPrice()).orElse(0d));
                 if (null != obj.getFrequency()) {
-                    item.setFrequencyName(frequencyItemName.get(obj.getFrequency().toString()));
+                    item.setFrequencyName(null == obj.getFrequency()?"":frequencyItemName.get(obj.getFrequency().toString()));
                 }
                 Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
                 if (null != drug) {

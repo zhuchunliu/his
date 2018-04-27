@@ -93,8 +93,8 @@ public class DispensingDetailVo {
                             (1 == drug.getMinPriceUnitType()?drug.getMinUnit().toString():drug.getDoseUnit().toString())));
                 }
 
-                medicalDetail.setManufacturerName(manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
-                medicalDetail.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
+                medicalDetail.setManufacturerName(null == drug.getManufacturer()?"":manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
+                medicalDetail.setFrequencyName(null == item.getFrequency()?"":frequencyItemName.get(item.getFrequency().toString()));
                 medicalDetail.setSingleDose(item.getSingleDose());
                 medicalDetail.setMemo(item.getMemo());
                 medicalDetail.setRequirement(item.getRequirement());
@@ -131,8 +131,8 @@ public class DispensingDetailVo {
                             (0==stock.getDoseNum()*10%1? String.valueOf((int)Math.floor(stock.getDoseNum())):String.valueOf(stock.getDoseNum()))+
                             (null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
                 }
-                medicalDetail.setManufacturerName(manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
-                medicalDetail.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
+                medicalDetail.setManufacturerName(null == drug.getManufacturer()?"":manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
+                medicalDetail.setFrequencyName(null == item.getFrequency()?"":frequencyItemName.get(item.getFrequency().toString()));
                 medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
                 this.totalFee += medicalDetail.getPrice();
                 if(!map.containsKey(item.getGroupNum())){
