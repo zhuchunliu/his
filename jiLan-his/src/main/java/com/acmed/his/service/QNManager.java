@@ -9,6 +9,7 @@ import com.acmed.his.util.ResponseUtil;
 import com.acmed.his.util.WaterCodeUtil;
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
+import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.model.FetchRet;
@@ -95,5 +96,20 @@ public class QNManager {
         Auth auth = Auth.create(accessKey, secretKey);
         String upToken = auth.uploadToken(environment.getProperty("qiniu.bucket"),null,expires,null);
         return upToken;
+    }
+
+    public void delete(String key){
+        String accessKey = environment.getProperty("qiniu.accessKey");
+        String secretKey = environment.getProperty("qiniu.secretKey");
+        String bucket = environment.getProperty("qiniu.bucket");
+        Configuration cfg = new Configuration(Zone.zone0());
+        Auth auth = Auth.create(accessKey, secretKey);
+        BucketManager bucketManager = new BucketManager(auth,cfg);
+        try {
+            Response delete = bucketManager.delete(bucket, key);
+        } catch (QiniuException e) {
+            e.printStackTrace();
+            System.err.println(e.toString());
+        }
     }
 }
