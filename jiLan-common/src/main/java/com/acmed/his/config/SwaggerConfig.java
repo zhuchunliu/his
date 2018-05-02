@@ -4,12 +4,12 @@ package com.acmed.his.config;
  * Created by Eric on 2017-05-11.
  */
 
-import com.acmed.his.constants.MyConditional;
 import com.acmed.his.support.AccessToken;
 import com.google.common.collect.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -28,10 +28,12 @@ import java.util.List;
  * @Author Eric
  * @Version 2017-05-11 17:03
  **/
-@Conditional(MyConditional.class)
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
+
+    @Autowired
+    private Environment environment;
 
     @Bean
     public Docket createRestApi() {
@@ -41,6 +43,7 @@ public class SwaggerConfig {
                 defaultValue("zlNGZwkDcuNVOwMkRyZHSkhjdygmN0cDM4QDO4QDMyUTM3QUQQ9lUFNVV").build());
         return new Docket(DocumentationType.SWAGGER_2).ignoredParameterTypes(AccessToken.class)
                 .globalOperationParameters(list)
+                .enable(environment.getActiveProfiles()[0].equalsIgnoreCase("pre")?false:true)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.acmed"))
