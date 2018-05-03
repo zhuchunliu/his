@@ -10,13 +10,11 @@ import com.acmed.his.model.*;
 import com.acmed.his.model.dto.OrgDto;
 import com.acmed.his.pojo.mo.BsgOrgMo;
 import com.acmed.his.pojo.mo.OrgMo;
-import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.mo.UserMo;
 import com.acmed.his.pojo.vo.OrgVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
-import com.acmed.his.util.PinYinUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +26,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Darren on 2017-11-22
@@ -47,9 +44,6 @@ public class OrgManager {
 
     @Autowired
     private RoleManager roleManager;
-
-    @Autowired
-    private PermissionManager permissionManager;
 
     @Autowired
     private UserVsRoleMapper userVsRoleMapper;
@@ -86,6 +80,8 @@ public class OrgManager {
             org.setRemoved("0");
             org.setCreateAt(LocalDateTime.now().toString());
             org.setCreateBy(userInfo.getId().toString());
+            //默认不是就医北上广医院
+            org.setIsRecommend("0");
             orgMapper.insert(org);
             // 添加用户
             UserMo userMo = new UserMo();
@@ -216,9 +212,9 @@ public class OrgManager {
      * @param orgName 机构名称
      * @return
      */
-    public List<Org> getOrgList(Double lng, Double lat,Double range,String orgName) {
+    public List<Org> getOrgList(Double lng, Double lat,Double range,String orgName,String isRecommend) {
         Double offset = range * 1.5 / 100; //防止误差，先夸大范围
-        List<Org> list = orgMapper.getOrgList(lng-offset,lng+offset,lat-offset,lat+offset,orgName);
+        List<Org> list = orgMapper.getOrgList(lng-offset,lng+offset,lat-offset,lat+offset,orgName,isRecommend);
         return list;
     }
 

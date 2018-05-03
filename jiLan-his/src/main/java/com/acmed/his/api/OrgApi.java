@@ -95,10 +95,11 @@ public class OrgApi {
     public ResponseResult<List<OrgVo>> getRecentOrgList(@ApiParam("经度") @RequestParam(value = "lng") Double lng,
                                                         @ApiParam("纬度") @RequestParam(value = "lat") Double lat,
                                                         @ApiParam("医院名称") @RequestParam(value="orgName",required = false) String orgName,
+                                                        @ApiParam("是否就医北上广医院  不传表示全部  1推荐") @RequestParam(value="isRecommend",required = false) String isRecommend,
                                                         @ApiParam("直线距离 默认100Km") @RequestParam(value = "range",defaultValue = "100") Double range){
         List<OrgVo> list = new ArrayList<>();
         DecimalFormat format =  new DecimalFormat("#0.00");
-        orgManager.getOrgList(lng,lat,range,orgName).forEach((obj)->{
+        orgManager.getOrgList(lng,lat,range,orgName,isRecommend).forEach((obj)->{
 
             OrgVo vo = new OrgVo();
             BeanUtils.copyProperties(obj,vo);

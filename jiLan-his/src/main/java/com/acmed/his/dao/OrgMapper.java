@@ -22,11 +22,13 @@ public interface OrgMapper extends TkMapper<Org> {
      * @param latBegin 开始纬度
      * @param latEnd 结束纬度
      * @param orgName 医院名称
+     * @param  isRecommend 就医北上广
      * @return
      */
     List<Org> getOrgList(@Param("lngBegin") double lngBegin, @Param("lngEnd")double lngEnd,
                          @Param("latBegin") double latBegin, @Param("latEnd") double latEnd,
-                         @Param("orgName") String orgName);
+                         @Param("orgName") String orgName,
+                         @Param("isRecommend") String isRecommend);
 
     /**
      * 根据城市获取机构信息

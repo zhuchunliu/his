@@ -10,6 +10,9 @@
         <if test="@Ognl@isNotEmpty(orgName)">
             and orgname like CONCAT('%',#{orgName},'%')
         </if>
+        <if test="@Ognl@isNotEmpty(isRecommend)">
+            and isrecommend = #{isRecommend}
+        </if>
     </select>
 
     <select id="getOrgListByCity" resultType="com.acmed.his.pojo.vo.OrgVo">
