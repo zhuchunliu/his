@@ -112,11 +112,12 @@ public class DrugManager {
      * @param category
      * @return
      */
-    public List<Drug> getDrugList(Integer orgCode, String name, String category,String isValid, Integer pageNum, Integer pageSize ) {
-
-        PageHelper.startPage(pageNum,pageSize);
-        return drugMapper.getDrugList(orgCode,name,category,isValid);
-
+    public PageResult<Drug> getDrugList(Integer orgCode, String name, String category,String isValid, Integer pageNum, Integer pageSize ) {
+        PageResult pageResult = new PageResult();
+        Page page = PageHelper.startPage(pageNum,pageSize);
+        pageResult.setData(drugMapper.getDrugList(orgCode,name,category,isValid));
+        pageResult.setTotal(page.getTotal());
+        return pageResult;
     }
 
     /**

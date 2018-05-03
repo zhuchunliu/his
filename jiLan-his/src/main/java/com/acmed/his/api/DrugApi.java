@@ -69,58 +69,78 @@ public class DrugApi {
     @PostMapping("/list")
     public ResponseResult<PageResult<DrugListVo>> getDrugList(@RequestBody(required = false) PageBase<DrugQueryMo> pageBase,
                                                               @AccessToken AccessInfo info){
-        List<Drug> list = drugManager.getDrugList(info.getUser().getOrgCode(),
+        PageResult<Drug> pageResult = drugManager.getDrugList(info.getUser().getOrgCode(),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null),
                 Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getIsValid).orElse(null),
                 pageBase.getPageNum(), pageBase.getPageSize());
-        int total = drugManager.getDrugTotal(info.getUser().getOrgCode(),
-                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getName).orElse(null),
-                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getCategory).orElse(null),
-                Optional.ofNullable(pageBase.getParam()).map(DrugQueryMo::getIsValid).orElse(null));
 
-        List<DicItem> dicItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
-        Map<String,String> dicItemName = Maps.newHashMap();
-        dicItemList.forEach(obj->{
-            dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
+        List<DicItem> unitItmList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+        Map<String, String> unitItemName = Maps.newHashMap();
+        unitItmList.forEach(obj -> {
+            unitItemName.put(obj.getDicItemCode(), obj.getDicItemName());
+        });
+
+        List<DicItem> drugFormList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FORM.getCode());
+        Map<String, String> drugFormName = Maps.newHashMap();
+        drugFormList.forEach(obj -> {
+            drugFormName.put(obj.getDicItemCode(), obj.getDicItemName());
+        });
+
+        List<DicItem> classficationList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_CLASSIFICATION.getCode());
+        Map<String, String> classficationName = Maps.newHashMap();
+        classficationList.forEach(obj -> {
+            classficationName.put(obj.getDicItemCode(), obj.getDicItemName());
+        });
+
+        List<DicItem> useageList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.USEAGE.getCode());
+        Map<String, String> useageName = Maps.newHashMap();
+        useageList.forEach(obj -> {
+            useageName.put(obj.getDicItemCode(), obj.getDicItemName());
+        });
+
+        List<DicItem> prescriptionList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.PRESCRIPTION_TYPE.getCode());
+        Map<String, String> prescriptionName = Maps.newHashMap();
+        prescriptionList.forEach(obj -> {
+            prescriptionName.put(obj.getDicItemCode(), obj.getDicItemName());
         });
 
         List<DrugListVo> voList = Lists.newArrayList();
-        list.forEach(drug->{
+        pageResult.getData().forEach(drug->{
             DrugListVo vo = new DrugListVo();
             BeanUtils.copyProperties(drug,vo);
-            vo.setCategoryName(null == drug.getCategory()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(),drug.getCategory().toString()).getDicItemName());
-            vo.setDrugFormName(null == drug.getDrugForm()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FORM.getCode(),drug.getDrugForm().toString()).getDicItemName());
-            vo.setUnitName(null == drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
-            vo.setMinUnitName(null==drug.getMinUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit().toString()).getDicItemName());
-            vo.setDoseUnitName(null==drug.getDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
-            vo.setUseageName(null == drug.getUseage()?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage().toString()).getDicItemName());
-            vo.setPrescriptionTypeName(null == drug.getPrescriptionType()?"":baseInfoManager.getDicItem(DicTypeEnum.PRESCRIPTION_TYPE.getCode(),drug.getPrescriptionType().toString()).getDicItemName());
+            vo.setCategoryName(null == drug.getCategory()?"":classficationName.get(drug.getCategory().toString()));
+            vo.setDrugFormName(null == drug.getDrugForm()?"":drugFormName.get(drug.getDrugForm().toString()));
+            vo.setUnitName(null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString()));
+            vo.setMinUnitName(null==drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString()));
+            vo.setDoseUnitName(null==drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+            vo.setUseageName(null == drug.getUseage()?"":useageName.get(drug.getUseage().toString()));
+            vo.setPrescriptionTypeName(null == drug.getPrescriptionType()?"":prescriptionName.get(drug.getPrescriptionType().toString()));
             vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
                     map(obj->obj.getName()).orElse(""));
 
             if(null != drug.getNum() && 0 != drug.getNum()){
                 vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+drug.getNum()+
-                        (null == drug.getUnit()?"":dicItemName.get(drug.getUnit().toString())));
+                        (null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString())));
             }
             if(null != drug.getMinNum() && 0 != drug.getMinNum()){
                 vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+drug.getMinNum()+
-                        (null == drug.getMinUnit()?"":dicItemName.get(drug.getMinUnit().toString())));
+                        (null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
             }
             if(null != drug.getDoseNum() && 0 != drug.getDoseNum()){
                 vo.setNumName(Optional.ofNullable(vo.getNumName()).orElse("")+
                         (0==drug.getDoseNum()*10%1? String.valueOf((int)Math.floor(drug.getDoseNum())):String.valueOf(drug.getDoseNum()))+
-                        (null == drug.getDoseUnit()?"":dicItemName.get(drug.getDoseUnit().toString())));
+                        (null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
             }
             vo.setNeedSupplement(null == drug.getConversion()?1:0);
             voList.add(vo);
         });
 
-        PageResult pageResult = new PageResult();
-        BeanUtils.copyProperties(pageBase,pageResult);
-        pageResult.setTotal((long)total);
-        pageResult.setData(voList);
-        return ResponseUtil.setSuccessResult(pageResult);
+        PageResult result = new PageResult();
+        result.setTotal(pageResult.getTotal());
+        result.setData(voList);
+        return ResponseUtil.setSuccessResult(result);
+
 
     }
 
