@@ -14,7 +14,7 @@ import javax.persistence.Id;
 public class DrugDictVo {
 
     @ApiModelProperty("药品id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("药品名称")
     private String name;

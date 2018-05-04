@@ -25,7 +25,7 @@ public class Drug {
     private Integer id;
 
     @ApiModelProperty("药品字典id")
-    private Integer dictId;
+    private String dictId;
 
     @ApiModelProperty("药品编码")
     private String drugCode;

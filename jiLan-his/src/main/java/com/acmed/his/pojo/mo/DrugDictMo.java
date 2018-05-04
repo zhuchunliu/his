@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class DrugDictMo {
     @ApiModelProperty("药品id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("是否是国家基本药物  1 是 2 否")
     private Integer isEssential;

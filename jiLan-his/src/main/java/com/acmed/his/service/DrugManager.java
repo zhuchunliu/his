@@ -190,7 +190,7 @@ public class DrugManager {
     public List<Drug> saveDrugByDict(String[] codes,UserInfo info,boolean isValid) {
         List<Drug> drugList = Lists.newArrayList();
         for(String code :codes){
-            DrugDict dict = drugDictMapper.selectByPrimaryKey(Integer.parseInt(code));
+            DrugDict dict = drugDictMapper.selectByPrimaryKey(code);
             Drug drug = new Drug();
             BeanUtils.copyProperties(dict,drug,"id");
             drug.setOrgCode(info.getOrgCode());

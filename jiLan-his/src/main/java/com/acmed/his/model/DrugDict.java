@@ -19,9 +19,8 @@ import javax.persistence.Table;
 public class DrugDict {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty("药品id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("药品名称")
     private String name;
@@ -126,5 +125,8 @@ public class DrugDict {
 
     @ApiModelProperty("是否处理过0:否，1:是")
     private Integer isHandle;
+
+    @ApiModelProperty("序号")
+    private Integer serialNum;
 
 }

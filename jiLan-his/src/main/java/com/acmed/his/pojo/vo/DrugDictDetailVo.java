@@ -11,7 +11,7 @@ import javax.persistence.Id;
 @Data
 public class DrugDictDetailVo {
     @ApiModelProperty("药品字典id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("是否是国家基本药物  1 是 2 否")
     private Integer isEssential;

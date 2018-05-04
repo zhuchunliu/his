@@ -12,7 +12,7 @@ import static com.sun.btrace.BTraceUtils.println;
 public class DrugTraceTest {
 
 
-    @OnMethod(clazz = "com.acmed.his.api.DrugApi",method = "/.*/")
+    @OnMethod(clazz = "com.acmed.his.api.DrugApi",method = "getDrugList")
     public static void getDrugList(@ProbeClassName String className, @ProbeMethodName String methodName){
 //                                   @Return AnyType value){
         println("****************");

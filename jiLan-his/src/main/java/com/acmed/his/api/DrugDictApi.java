@@ -31,6 +31,8 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.usermodel.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +54,8 @@ import java.util.Optional;
 @RequestMapping("/drugdict")
 @RestController
 public class DrugDictApi {
+
+    private Logger logger = LoggerFactory.getLogger(DrugDictApi.class);
 
     @Autowired
     private DrugDictManager drugDictManager;
@@ -130,7 +134,7 @@ public class DrugDictApi {
 
     @ApiOperation(value = "删除")
     @DeleteMapping("/del")
-    public ResponseResult delDrugDict(@ApiParam("药品字典主键") @RequestParam(value = "id") Integer id,
+    public ResponseResult delDrugDict(@ApiParam("药品字典主键") @RequestParam(value = "id") String id,
                                       @AccessToken AccessInfo info) {
         drugDictManager.delDrugDict(id);
         return ResponseUtil.setSuccessResult();
@@ -147,7 +151,7 @@ public class DrugDictApi {
 
     @ApiOperation(value = "根据id查询药品详情")
     @GetMapping("/detail")
-    public ResponseResult<DrugDictDetailVo> selectDrugsById(@ApiParam("药品id") @RequestParam("id") Integer id) {
+    public ResponseResult<DrugDictDetailVo> selectDrugsById(@ApiParam("药品id") @RequestParam("id") String id) {
         DrugDict drug = drugDictMapper.selectByPrimaryKey(id);
         DrugDictDetailVo vo = new DrugDictDetailVo();
         BeanUtils.copyProperties(drug, vo);
@@ -208,23 +212,27 @@ public class DrugDictApi {
             valueFont.setFontName("宋体");
             valueStyle.setFont(valueFont);
 
-            this.getCell(row.createCell(0),titleStyle).setCellValue("药品ID");
+            this.getCell(row.createCell(0),titleStyle).setCellValue("序号");
             this.getCell(row.createCell(1),titleStyle).setCellValue("通用名");
-            this.getCell(row.createCell(2),titleStyle).setCellValue("商品名");
-            this.getCell(row.createCell(3),titleStyle).setCellValue("剂型");
-            this.getCell(row.createCell(4),titleStyle).setCellValue("生成企业");
-            this.getCell(row.createCell(5),titleStyle).setCellValue("规格");
+            this.getCell(row.createCell(2),titleStyle).setCellValue("通用名简称");
+            this.getCell(row.createCell(3),titleStyle).setCellValue("商品名");
+            this.getCell(row.createCell(4),titleStyle).setCellValue("商品名简称");
+            this.getCell(row.createCell(5),titleStyle).setCellValue("剂型");
+            this.getCell(row.createCell(6),titleStyle).setCellValue("生成企业");
+            this.getCell(row.createCell(7),titleStyle).setCellValue("规格");
 
 
             for (int index = 0; index < list.size(); index++) {
                 DrugDict drugDict = list.get(index);
                 row = sheet.createRow(index + 1);
-                this.getCell(row.createCell(0),valueStyle).setCellValue(drugDict.getId());
+                this.getCell(row.createCell(0),valueStyle).setCellValue(drugDict.getSerialNum());
                 this.getCell(row.createCell(1),valueStyle).setCellValue(drugDict.getName());
-                this.getCell(row.createCell(2),valueStyle).setCellValue(drugDict.getGoodsName());
-                this.getCell(row.createCell(3),valueStyle).setCellValue(drugDict.getDrugFormName());
-                this.getCell(row.createCell(4),valueStyle).setCellValue(drugDict.getManufacturerName());
-                this.getCell(row.createCell(5),valueStyle).setCellValue(drugDict.getSpec());
+                this.getCell(row.createCell(2),valueStyle).setCellValue(drugDict.getPinYin());
+                this.getCell(row.createCell(3),valueStyle).setCellValue(drugDict.getGoodsName());
+                this.getCell(row.createCell(4),valueStyle).setCellValue(drugDict.getGoodsPinYin());
+                this.getCell(row.createCell(5),valueStyle).setCellValue(drugDict.getDrugFormName());
+                this.getCell(row.createCell(6),valueStyle).setCellValue(drugDict.getManufacturerName());
+                this.getCell(row.createCell(7),valueStyle).setCellValue(drugDict.getSpec());
             }
 
             sheet.autoSizeColumn(0);
@@ -233,11 +241,15 @@ public class DrugDictApi {
             sheet.autoSizeColumn(3);
             sheet.autoSizeColumn(4);
             sheet.autoSizeColumn(5);
+            sheet.autoSizeColumn(6);
+            sheet.autoSizeColumn(7);
 
             book.write(response.getOutputStream());
 
 
         }catch (Exception ex){
+            ex.printStackTrace();
+            logger.error(ex.getMessage(),ex);
             throw new BaseException(StatusCode.FAIL,"字典导出失败");
         }finally {
             book.close();

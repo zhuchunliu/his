@@ -12,7 +12,7 @@ import javax.persistence.Id;
 public class DrugDictListVo {
     @Id
     @ApiModelProperty("药品字典id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty("药品编码")
     private String drugCode;

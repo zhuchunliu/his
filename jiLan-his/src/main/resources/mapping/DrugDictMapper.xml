@@ -46,17 +46,19 @@
 
     <select id="getExportDate" resultType="com.acmed.his.model.DrugDict">
 
-      SELECT id ,name ,goodsname ,drugformname,manufacturername,spec from t_b_drugdict where removed = '0'
+      SELECT id ,name ,pinyin,goodsname ,goodspinyin , drugformname,manufacturername,spec ,serialnum from t_b_drugdict
+        where removed = '0'
         <if test="@Ognl@isNotEmpty(category)">
             and category = #{category}
         </if>
+        order by serialnum ASC
     </select>
 
 
     <select id="filterDrug" resultType="com.acmed.his.model.DrugDict">
         select * from t_b_drugdict dict where dict.removed = '0' AND dict.id
         NOT IN (select dictid from t_b_drug where removed= '0' and orgCode = #{orgCode} AND dictid IS NOT NULL )
-        AND dict.id IN
+        AND dict.serialnum IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>

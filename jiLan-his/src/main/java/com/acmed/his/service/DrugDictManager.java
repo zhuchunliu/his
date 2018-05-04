@@ -7,6 +7,7 @@ import com.acmed.his.model.DrugDict;
 import com.acmed.his.pojo.mo.DrugDictMo;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.PinYinUtil;
+import com.acmed.his.util.UUIDUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +29,9 @@ public class DrugDictManager {
     @Autowired
     private BaseInfoManager baseInfoManager;
 
+    @Autowired
+    private CommonManager commonManager;
+
     public PageResult<DrugDict> getDrugDictList(String name, String category, Integer isHandle,Integer pageNum, Integer pageSize) {
         PageResult pageResult = new PageResult();
         Page page= PageHelper.startPage(pageNum,pageSize);
@@ -37,7 +41,7 @@ public class DrugDictManager {
         return pageResult;
     }
 
-    public void delDrugDict(Integer id) {
+    public void delDrugDict(String id) {
         DrugDict drug = drugDictMapper.selectByPrimaryKey(id);
         drug.setRemoved("1");
         drugDictMapper.updateByPrimaryKey(drug);
@@ -56,10 +60,12 @@ public class DrugDictManager {
                     drug.getConversion(),
                     null == drug.getUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getUnit().toString()).getDicItemName()
             ));
+            drug.setSerialNum(Integer.parseInt(commonManager.getNextVal("drugdict_serialnum")));
             drug.setIsHandle(1);
             drugDictMapper.updateByPrimaryKey(drug);
         } else {
             DrugDict drug = new DrugDict();
+            drug.setId(UUIDUtil.generate());
             BeanUtils.copyProperties(mo, drug);
             String categoryName = baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(), drug.getCategory().toString()).getDicItemName();
             drug.setSpec(String.format("%s%s/%s*%s/%s",
