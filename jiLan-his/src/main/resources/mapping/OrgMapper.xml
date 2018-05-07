@@ -28,6 +28,9 @@
         <if test="@Ognl@isNotEmpty(level)">
             and t1.level = #{level}
         </if>
+        <if test="@Ognl@isNotEmpty(isRecommend)">
+            and t1.isrecommend = #{isRecommend}
+        </if>
         <if test="@Ognl@isNotEmpty(orgName)">
             and t1.orgname like CONCAT('%',#{orgName},'%')
         </if>

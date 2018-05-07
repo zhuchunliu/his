@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -78,11 +79,11 @@ public class OrgApi {
     @GetMapping("/list")
     public ResponseResult<List<OrgVo>> getOrgList(@ApiParam("市区id null:获取所有的机构信息")@RequestParam(value = "city",required = false) Integer cityId,
                                                   @ApiParam("医院名称") @RequestParam(value="orgName",required = false) String orgName,
+                                                  @ApiParam("是否就医北上广医院  不传表示全部  1推荐") @RequestParam(value="isRecommend",required = false) String isRecommend,
                                                   @ApiParam("级别") @RequestParam(value="level",required = false)String level
     ){
         List<OrgVo> list = new ArrayList<>();
-        orgManager.getOrgList(cityId,orgName,level).forEach((obj)->{
-
+        orgManager.getOrgList(cityId,orgName,level,isRecommend).forEach((obj)->{
             OrgVo orgMo = new OrgVo();
             BeanUtils.copyProperties(obj,orgMo);
             list.add(orgMo);
