@@ -29,7 +29,7 @@ public class ManufacturerManager {
      * @param manufacturer 药品生产商参数
      * @return 0失败 1成功
      */
-    public int saveManufacturer(Manufacturer manufacturer, UserInfo userInfo){
+    public Manufacturer saveManufacturer(Manufacturer manufacturer, UserInfo userInfo){
         Integer id = manufacturer.getId();
         manufacturer.setPinYin(PinYinUtil.getPinYinHeadChar(manufacturer.getName()));
         if (id == null){
@@ -39,13 +39,13 @@ public class ManufacturerManager {
             Manufacturer manufacturer1 = manufacturerMapper.selectByPrimaryKey(id);
             if (manufacturer1 == null){
                 //id 不存在
-                return 0;
+                return null;
             }else {
                 manufacturer.setOrgCode(userInfo.getOrgCode());
                 manufacturerMapper.updateByPrimaryKeySelective(manufacturer);
             }
         }
-        return manufacturer.getId();
+        return manufacturer;
     }
 
     /**
@@ -63,7 +63,16 @@ public class ManufacturerManager {
      * @return List<Manufacturer>
      */
     public List<Manufacturer> getManufacturerLikeName(String name,UserInfo userInfo){
-        return manufacturerMapper.selectByManufacture(name,userInfo.getOrgCode());
+        return manufacturerMapper.getManufacturerLikeName(name,userInfo.getOrgCode());
+    }
+
+    /**
+     * 根据药品生产商名字模糊查询
+     * @param name 生产商名字
+     * @return List<Manufacturer>
+     */
+    public List<Manufacturer> getManufacturerEqualName(String name,UserInfo userInfo){
+        return manufacturerMapper.getManufacturerEqualName(name,userInfo.getOrgCode());
     }
 
     /**
@@ -76,7 +85,7 @@ public class ManufacturerManager {
         Integer pageNum = pageBase.getPageNum();
         Integer pageSize = pageBase.getPageSize();
         PageHelper.startPage(pageNum,pageSize);
-        List<Manufacturer> manufacturers = manufacturerMapper.selectByManufacture(pageBase.getParam(),userInfo.getOrgCode());
+        List<Manufacturer> manufacturers = manufacturerMapper.getManufacturerLikeName(pageBase.getParam(),userInfo.getOrgCode());
         PageInfo<Manufacturer> manufacturerPageInfo = new PageInfo<>(manufacturers);
         pageResult.setPageNum(pageNum);
         pageResult.setPageSize(pageSize);

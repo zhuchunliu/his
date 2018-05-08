@@ -7,6 +7,7 @@ import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.zhangyao.ZYDrug;
+import com.acmed.his.pojo.mo.DrugImportMo;
 import com.acmed.his.pojo.mo.DrugMo;
 import com.acmed.his.pojo.mo.DrugQueryMo;
 import com.acmed.his.pojo.mo.DrugZYQueryMo;
@@ -18,28 +19,33 @@ import com.acmed.his.service.DrugManager;
 import com.acmed.his.service.ZhangYaoManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
-import com.acmed.his.util.PageBase;
-import com.acmed.his.util.PageResult;
-import com.acmed.his.util.ResponseResult;
-import com.acmed.his.util.ResponseUtil;
+import com.acmed.his.support.WithoutToken;
+import com.acmed.his.util.*;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.formula.functions.T;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -54,6 +60,9 @@ import java.util.Optional;
 @RequestMapping("/drug")
 @RestController
 public class DrugApi {
+
+    private Logger logger = LoggerFactory.getLogger(DrugDictApi.class);
+
     @Autowired
     private DrugManager drugManager;
 
@@ -65,8 +74,6 @@ public class DrugApi {
 
     @Autowired
     private ZhangYaoManager zhangYaoManager;
-
-
 
     @ApiOperation(value = "药品信息列表")
     @PostMapping("/list")
@@ -193,9 +200,9 @@ public class DrugApi {
     }
 
 
-    @ApiOperation(value = "药品导入")
+    @ApiOperation(value = "导入-来源药品字典")
     @PostMapping("/import")
-    public ResponseResult importDrug(@RequestParam("file") MultipartFile file ,
+    public ResponseResult importDrugByDict(@RequestParam("file") MultipartFile file ,
                            @AccessToken AccessInfo info) throws IOException{
         String name = file.getOriginalFilename();
         if(!name.contains(".")){
@@ -227,6 +234,80 @@ public class DrugApi {
         return ResponseUtil.setSuccessResult();
 
     }
+
+
+    @ApiOperation("导出-模板")
+    @GetMapping("/export/templet")
+    @WithoutToken
+    public void getTemplet(HttpServletResponse response) throws Exception{
+        Workbook book = drugManager.getTemplet();
+        try {
+            response.setHeader("content-Type", "application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("药品模板.xls", "utf-8"));
+
+            book.write(response.getOutputStream());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            logger.error(ex.getMessage(),ex);
+            ex.printStackTrace();
+        }finally {
+            book.close();
+        }
+    }
+
+    @ApiOperation(value = "导入-来源药品信息")
+    @PostMapping("/import/templet")
+    public ResponseResult importDrug(@RequestParam("file") MultipartFile file ,
+                                     @AccessToken AccessInfo info) throws IOException{
+        String name = file.getOriginalFilename();
+        if(!name.contains(".")){
+            throw new BaseException(StatusCode.FAIL,"请上传正确的Excel文件");
+        }
+        String suffix = name.substring(name.lastIndexOf(".")+1,name.length());
+        if(!suffix.equalsIgnoreCase("xlsx") &&
+                !suffix.equalsIgnoreCase("xls")){
+            throw new BaseException(StatusCode.FAIL,"请上传正确的Excel文件");
+        }
+        Workbook book = null;
+        if(suffix.equalsIgnoreCase("xlsx")){
+            book = new XSSFWorkbook(file.getInputStream());
+        }else{
+            book = new HSSFWorkbook(file.getInputStream());
+        }
+        Sheet sheet = book.getSheetAt(0);
+        if(1 == sheet.getLastRowNum()){
+            return ResponseUtil.setSuccessResult();
+        }
+
+
+        List<DrugImportMo> list = Lists.newArrayList();
+        for(int index =2; index <= sheet.getLastRowNum();index ++){
+            DrugImportMo mo = new DrugImportMo();
+            Row row = sheet.getRow(index);
+            mo.setName(this.getRowValue(row.getCell(0),String.class));
+            mo.setGoodsName(this.getRowValue(row.getCell(1),String.class));
+            mo.setCategoryName(this.getRowValue(row.getCell(2),String.class));
+            mo.setDrugFormName(this.getRowValue(row.getCell(3),String.class));
+            mo.setManufacturerName(this.getRowValue(row.getCell(4),String.class));
+            mo.setBarcode(this.getRowValue(row.getCell(5),String.class));
+            mo.setApprovalNumber(this.getRowValue(row.getCell(6),String.class));
+            mo.setUnitName(this.getRowValue(row.getCell(7),String.class));
+            mo.setMinUnitName(this.getRowValue(row.getCell(8),String.class));
+            mo.setConversion(this.getRowValue(row.getCell(9),Integer.class));
+            mo.setDose(this.getRowValue(row.getCell(10),Double.class));
+            mo.setDoseUnitName(this.getRowValue(row.getCell(11),String.class));
+            mo.setUseageName(this.getRowValue(row.getCell(12),String.class));
+            mo.setFrequencyName(this.getRowValue(row.getCell(13),String.class));
+            mo.setSingleDose(this.getRowValue(row.getCell(14),Double.class));
+            list.add(mo);
+
+        }
+
+        drugManager.importDrug(list, info.getUser());
+        return ResponseUtil.setSuccessResult();
+
+    }
+
 
     @ApiOperation(value = "更新药品信息")
     @PostMapping("/update")
@@ -264,6 +345,22 @@ public class DrugApi {
         PageResult<ZYDrug> pageResult = zhangYaoManager.getDrugList(pageBase);
         return ResponseUtil.setSuccessResult(pageResult);
 
+    }
+
+    private <T> T getRowValue(Cell cell, Class<T> clazz){
+        if(cell.getCellTypeEnum() == CellType.STRING){
+            return (T)cell.getStringCellValue();
+        }
+        if(cell.getCellTypeEnum() == CellType.NUMERIC){
+            if(clazz == Integer.class){
+                return (T)new Integer(Integer.parseInt(String.format("%.0f",cell.getNumericCellValue())));
+            }
+            if(clazz == Double.class){
+                return (T)new Double(cell.getNumericCellValue());
+            }
+            return (T)String.valueOf(new BigDecimal(cell.getNumericCellValue()));
+        }
+        return null;
     }
 
 }

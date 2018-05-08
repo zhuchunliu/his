@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
+
 
 /**
  * 药品库
@@ -32,6 +32,9 @@ public class Drug {
 
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
+
+    @ApiModelProperty("准字号")
+    private String approvalNumber;
 
     @ApiModelProperty("是否是国家基本药物  1 是 2 否")
     private Integer isEssential;

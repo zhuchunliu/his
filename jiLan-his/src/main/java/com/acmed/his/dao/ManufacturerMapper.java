@@ -10,5 +10,7 @@ import java.util.List;
  * Created by Darren on 2017-11-20
  **/
 public interface ManufacturerMapper extends TkMapper<Manufacturer>{
-    List<Manufacturer> selectByManufacture(@Param("name") String name, @Param("orgCode") Integer orgCode);
+    List<Manufacturer> getManufacturerLikeName(@Param("name") String name, @Param("orgCode") Integer orgCode);
+
+    List<Manufacturer> getManufacturerEqualName(@Param("name") String name, @Param("orgCode") Integer orgCode);
 }

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -36,9 +37,9 @@ public class ManufacturerApi {
     @PostMapping("save")
     public ResponseResult saveManufacturer(@RequestBody Manufacturer manufacturer,
                                            @AccessToken AccessInfo info){
-        ;
+        manufacturer = manufacturerManager.saveManufacturer(manufacturer,info.getUser());
         return ResponseUtil.setSuccessResult(ImmutableMap.of("id",
-                manufacturerManager.saveManufacturer(manufacturer,info.getUser())));
+                null == manufacturer || null == manufacturer.getId() ?0:1));
     }
 
     @ApiOperation(value = "根据id查询详情")
