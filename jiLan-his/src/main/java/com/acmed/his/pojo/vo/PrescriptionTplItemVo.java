@@ -55,6 +55,9 @@ public class PrescriptionTplItemVo {
     @ApiModelProperty("剂量单位名称")
     private String doseUnitName;
 
+    @ApiModelProperty("单次剂量单位名称")
+    private String singleDoseUnitName;
+
     @ApiModelProperty("单位类型 1：一级计价单位，2：二级计价单位")
     private Integer unitType;
 

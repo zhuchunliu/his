@@ -54,6 +54,9 @@ public class DrugListVo {
     @ApiModelProperty("剂量单位名称")
     private String doseUnitName;
 
+    @ApiModelProperty("单次剂量单位名称")
+    private String singleDoseUnitName;
+
     @ApiModelProperty("进价")
     private Double bid;
 

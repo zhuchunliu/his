@@ -262,6 +262,8 @@ public class TemplateApi {
                                 null == drug.getDoseUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getDoseUnit().toString()).getDicItemName());
                     }
                     vo.setDoseUnitName(null == drug.getDoseUnit()? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getDoseUnit().toString()).getDicItemName());
+                    vo.setSingleDoseUnitName(null == drug.getSingleDoseUnit()? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getSingleDoseUnit().toString()).getDicItemName());
+
                     vo.setRetailPrice(drug.getRetailPrice());
                     vo.setMinRetailPrice(drug.getMinRetailPrice());
                     vo.setMinUnitName(null == drug.getMinUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getMinUnit().toString()).getDicItemName());

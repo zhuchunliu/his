@@ -20,18 +20,18 @@ import com.acmed.his.service.ZhangYaoManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.support.WithoutToken;
-import com.acmed.his.util.*;
+import com.acmed.his.util.PageBase;
+import com.acmed.his.util.PageResult;
+import com.acmed.his.util.ResponseResult;
+import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -44,7 +44,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
@@ -124,6 +123,7 @@ public class DrugApi {
             vo.setUnitName(null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString()));
             vo.setMinUnitName(null==drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString()));
             vo.setDoseUnitName(null==drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+            vo.setSingleDoseUnitName(null == drug.getSingleDoseUnit()?"":unitItemName.get(drug.getSingleDoseUnit().toString()));
             vo.setUseageName(null == drug.getUseage()?"":useageName.get(drug.getUseage().toString()));
             vo.setPrescriptionTypeName(null == drug.getPrescriptionType()?"":prescriptionName.get(drug.getPrescriptionType().toString()));
             vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
@@ -299,6 +299,7 @@ public class DrugApi {
             mo.setUseageName(this.getRowValue(row.getCell(12),String.class));
             mo.setFrequencyName(this.getRowValue(row.getCell(13),String.class));
             mo.setSingleDose(this.getRowValue(row.getCell(14),Double.class));
+            mo.setSingleDoseUnitName(this.getRowValue(row.getCell(15),String.class));
             list.add(mo);
 
         }
@@ -330,6 +331,7 @@ public class DrugApi {
         vo.setDoseUnitName(null==drug.getDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
         vo.setUseageName(null==drug.getUseage()?"":baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(),drug.getUseage().toString()).getDicItemName());
         vo.setFrequencyName(null == drug.getFrequency()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),drug.getFrequency().toString()).getDicItemName());
+        vo.setSingleDoseUnitName(null == drug.getSingleDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(),drug.getSingleDoseUnit().toString()).getDicItemName());
 
         vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj->manufacturerMapper.selectByPrimaryKey(obj)).
                 map(obj->obj.getName()).orElse(""));

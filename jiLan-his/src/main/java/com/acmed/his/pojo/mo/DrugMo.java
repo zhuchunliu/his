@@ -82,6 +82,9 @@ public class DrugMo {
     @ApiModelProperty("单次用量")
     private Double singleDose;
 
+    @ApiModelProperty("单次剂量单位")
+    private Integer singleDoseUnit;
+
     @ApiModelProperty("适应症状")
     private String symptoms;
 

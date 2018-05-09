@@ -101,6 +101,7 @@ public class PreVo {
                 Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
                 if(null != drug) {
                     item.setDoseUnitName(Optional.ofNullable(drug.getDoseUnit()).map(unit->unitItemName.get(unit.toString())).orElse(""));
+                    item.setSingleDoseUnitName(Optional.ofNullable(drug.getSingleDoseUnit()).map(unit->unitItemName.get(unit.toString())).orElse(""));
                     item.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
                             map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
                     item.setUnitName(Optional.ofNullable(drug.getUnit()).map(unit->unitItemName.get(unit.toString())).orElse(""));
@@ -179,7 +180,7 @@ public class PreVo {
                     injectVo.setUnitName(null==drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
                     injectVo.setMinUnitName(null==drug.getMinUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit().toString()).getDicItemName());
                     injectVo.setDoseUnitName(null==drug.getDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
-
+                    injectVo.setSingleDoseUnitName(null==drug.getSingleDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getSingleDoseUnit().toString()).getDicItemName());
                 }
                 if(null != injectVo.getFrequency()){
                     injectVo.setFrequencyName(frequencyItemName.get(inject.getFrequency().toString()));
@@ -322,6 +323,9 @@ public class PreVo {
         @ApiModelProperty("剂量单位名称")
         private String doseUnitName;
 
+        @ApiModelProperty("单次剂量单位名称")
+        private String singleDoseUnitName;
+
         @ApiModelProperty("一级单位名称")
         private String unitName;
 
@@ -442,6 +446,9 @@ public class PreVo {
 
         @ApiModelProperty("剂量单位名称")
         private String doseUnitName;
+
+        @ApiModelProperty("单次剂量单位名称")
+        private String singleDoseUnitName;
 
         @ApiModelProperty("频率")
         private Integer frequency;

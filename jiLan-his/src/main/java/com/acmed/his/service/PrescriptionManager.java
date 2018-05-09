@@ -179,6 +179,7 @@ public class PrescriptionManager {
                 Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
                 if (null != drug) {
                     item.setDoseUnitName(Optional.ofNullable(drug.getDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
+                    item.setSingleDoseUnitName(Optional.ofNullable(drug.getSingleDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
                     item.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
                             map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
 

@@ -99,6 +99,8 @@ public class DispensingDetailVo {
                 medicalDetail.setMemo(item.getMemo());
                 medicalDetail.setRequirement(item.getRequirement());
                 medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+                medicalDetail.setSingleDoseUnitName(null == drug.getSingleDoseUnit()?"":unitItemName.get(drug.getSingleDoseUnit().toString()));
+
                 this.totalFee += medicalDetail.getPrice();
                 if(!map.containsKey(item.getGroupNum())){
                     map.put(item.getGroupNum(),new DispensingInfoVo(medicalDetail,null,null
@@ -251,6 +253,9 @@ public class DispensingDetailVo {
 
         @ApiModelProperty("剂量单位")
         private String doseUnitName;
+
+        @ApiModelProperty("单次剂量单位名称")
+        private String singleDoseUnitName;
 
         @ApiModelProperty("有效期")
         private String expiryDate;

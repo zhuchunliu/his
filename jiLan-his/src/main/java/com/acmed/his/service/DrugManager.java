@@ -3,38 +3,28 @@ package com.acmed.his.service;
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.DrugDictMapper;
 import com.acmed.his.dao.DrugMapper;
-import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.Drug;
 import com.acmed.his.model.DrugDict;
 import com.acmed.his.model.Manufacturer;
 import com.acmed.his.pojo.mo.DrugImportMo;
 import com.acmed.his.pojo.mo.DrugMo;
-import com.acmed.his.pojo.vo.DrugDictVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.PinYinUtil;
-import com.acmed.his.util.UUIDUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
-import org.apache.poi.xssf.usermodel.XSSFDataValidation;
-import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTDataValidation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -309,6 +299,7 @@ public class DrugManager {
             drug.setDoseUnit(unitItemName.get(mo.getDoseUnitName()));
             drug.setUseage(useageName.get(mo.getUseageName()));
             drug.setFrequency(frequencyName.get(mo.getFrequencyName()));
+            drug.setSingleDoseUnit(unitItemName.get(mo.getSingleDoseUnitName()));
 
             List<Manufacturer> manufacturerList = manufacturerManager.getManufacturerEqualName(mo.getManufacturerName(),info);
             if(null != manufacturerList && 0 != manufacturerList.size()){
@@ -459,7 +450,7 @@ public class DrugManager {
         // TODO Excel整数限制
         this.setDataValidate(book,sheet,9,Integer.class);
         this.setDataValidate(book,sheet,10,Double.class);
-        this.setDataValidate(book,sheet,14,Double.class);
+        this.setDataValidate(book,sheet,14,Integer.class);
         for(int index = 0; index < 16; index++ ) {
             sheet.setColumnWidth(index,4000);
         }

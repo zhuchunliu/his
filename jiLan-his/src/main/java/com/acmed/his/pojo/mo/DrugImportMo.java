@@ -54,7 +54,7 @@ public class DrugImportMo {
     @ApiModelProperty("单次用量")
     private Double singleDose;
 
-    @ApiModelProperty("药品规格")
-    private String spec;
+    @ApiModelProperty("单次剂量单位名称")
+    private String singleDoseUnitName;
 
 }

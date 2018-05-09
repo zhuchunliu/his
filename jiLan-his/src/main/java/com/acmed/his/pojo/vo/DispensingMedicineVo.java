@@ -96,6 +96,7 @@ public class DispensingMedicineVo {
                     medicalDetail.setManufacturerName(null == drug.getManufacturer()?"":manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
                     medicalDetail.setFrequencyName(null == item.getFrequency()?"":frequencyItemName.get(item.getFrequency().toString()));
                     medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+                    medicalDetail.setSingleDoseUnitName(null == drug.getSingleDoseUnit()?"":unitItemName.get(drug.getSingleDoseUnit().toString()));
                     this.totalFee += medicalDetail.getPrice();
                     childList.add(medicalDetail);
                 });
@@ -135,6 +136,9 @@ public class DispensingMedicineVo {
 
         @ApiModelProperty("剂量单位")
         private String doseUnitName;
+
+        @ApiModelProperty("单次剂量单位名称")
+        private String singleDoseUnitName;
 
         @ApiModelProperty("有效期")
         private String expiryDate;

@@ -60,7 +60,7 @@ public class DrugDictManager {
                     drug.getConversion(),
                     null == drug.getUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getUnit().toString()).getDicItemName()
             ));
-            drug.setSerialNum(Integer.parseInt(commonManager.getNextVal("drugdict_serialnum")));
+
             drug.setIsHandle(1);
             drugDictMapper.updateByPrimaryKey(drug);
         } else {
@@ -79,6 +79,7 @@ public class DrugDictManager {
             drug.setGoodsPinYin(Optional.ofNullable(drug.getGoodsName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             drug.setRemoved("0");
             drug.setIsHandle(1);
+            drug.setSerialNum(Integer.parseInt(commonManager.getNextVal("drugdict_serialnum")));
             drugDictMapper.insert(drug);
         }
     }

@@ -162,6 +162,7 @@ public class DrugDictApi {
         vo.setDoseUnitName(null == drug.getDoseUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getDoseUnit().toString()).getDicItemName());
         vo.setUseageName(null == drug.getUseage() ? "" : baseInfoManager.getDicItem(DicTypeEnum.USEAGE.getCode(), drug.getUseage().toString()).getDicItemName());
         vo.setFrequencyName(null == drug.getFrequency() ? "" : baseInfoManager.getDicItem(DicTypeEnum.DRUG_FREQUENCY.getCode(), drug.getFrequency().toString()).getDicItemName());
+        vo.setSingleDoseUnitName(null == drug.getSingleDoseUnit() ? "" : baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(), drug.getSingleDoseUnit().toString()).getDicItemName());
 
         vo.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).map(obj -> manufacturerMapper.selectByPrimaryKey(obj)).
                 map(obj -> obj.getName()).orElse(""));
