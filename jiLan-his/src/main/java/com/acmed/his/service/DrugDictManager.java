@@ -65,8 +65,8 @@ public class DrugDictManager {
             drugDictMapper.updateByPrimaryKey(drug);
         } else {
             DrugDict drug = new DrugDict();
-            drug.setId(UUIDUtil.generate());
             BeanUtils.copyProperties(mo, drug);
+            drug.setId(UUIDUtil.generate());
             String categoryName = baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(), drug.getCategory().toString()).getDicItemName();
             drug.setSpec(String.format("%s%s/%s*%s/%s",
                     drug.getDose(),
