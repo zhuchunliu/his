@@ -234,6 +234,13 @@ public class BaseInfoManager {
         return dicItemMapper.selectByExample(example);
     }
 
+    public List<DicItem> getDicItems(String dicTypeCode){
+        Example example = new Example(DicItem.class);
+        example.createCriteria().andEqualTo("dicTypeCode",dicTypeCode).andEqualTo("removed","0").andIsNotNull("dicItemName");
+        example.setOrderByClause("id ASC");
+        return dicItemMapper.selectByExample(example);
+    }
+
     public List<DicItem> getDicItemsByDicTypeCode(String dicTypeCode, UserInfo user) {
         return dicItemMapper.getDicItemsByDicTypeCode(dicTypeCode,user.getOrgCode());
     }

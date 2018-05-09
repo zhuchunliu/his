@@ -417,38 +417,33 @@ public class DrugManager {
             }
         }
 
-        List<DicItem> unitItmList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());
+        List<DicItem> unitItmList = baseInfoManager.getDicItems(DicTypeEnum.UNIT.getCode());
         String[] unit = new String[unitItmList.size()];
         for(int index =0; index < unitItmList.size(); index++){
-            if(StringUtils.isEmpty(unitItmList.get(index).getDicItemName()) || unitItmList.get(index).getRemoved().equals("1")) continue;
             unit[index] = unitItmList.get(index).getDicItemName();
         }
 
-        List<DicItem> drugFormList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FORM.getCode());
+        List<DicItem> drugFormList = baseInfoManager.getDicItems(DicTypeEnum.DRUG_FORM.getCode());
         String[] drugForm = new String[drugFormList.size()];
         for(int index =0; index < drugFormList.size(); index++){
-            if(StringUtils.isEmpty(drugFormList.get(index).getDicItemName()) || drugFormList.get(index).getRemoved().equals("1")) continue;
             drugForm[index] = drugFormList.get(index).getDicItemName();
         }
 
-        List<DicItem> categoryList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_CLASSIFICATION.getCode());
+        List<DicItem> categoryList = baseInfoManager.getDicItems(DicTypeEnum.DRUG_CLASSIFICATION.getCode());
         String[] category = new String[categoryList.size()];
         for(int index =0; index < categoryList.size(); index++){
-            if(StringUtils.isEmpty(categoryList.get(index).getDicItemName()) || categoryList.get(index).getRemoved().equals("1")) continue;
             category[index] = categoryList.get(index).getDicItemName();
         }
 
-        List<DicItem> useageList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.USEAGE.getCode());
+        List<DicItem> useageList = baseInfoManager.getDicItems(DicTypeEnum.USEAGE.getCode());
         String[] useage = new String[useageList.size()];
         for(int index =0; index < useageList.size(); index++){
-            if(StringUtils.isEmpty(useageList.get(index).getDicItemName())|| useageList.get(index).getRemoved().equals("1")) continue;
             useage[index] = useageList.get(index).getDicItemName();
         }
 
-        List<DicItem> frequencyList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.DRUG_FREQUENCY.getCode());
+        List<DicItem> frequencyList = baseInfoManager.getDicItems(DicTypeEnum.DRUG_FREQUENCY.getCode());
         String[] frequency = new String[frequencyList.size()];
         for(int index =0; index < frequencyList.size(); index++){
-            if(StringUtils.isEmpty(frequencyList.get(index).getDicItemName()) || frequencyList.get(index).getRemoved().equals("1")) continue;
             frequency[index] = frequencyList.get(index).getDicItemName();
         }
 
