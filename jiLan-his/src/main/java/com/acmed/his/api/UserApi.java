@@ -157,7 +157,8 @@ public class UserApi {
     @ApiOperation(value = "获取可访问菜单列表")
     @GetMapping("/menu")
     public ResponseResult<Set<MenuVo>> getMenu(@AccessToken AccessInfo info) {
-        List<Permission> source = permissionManager.getPermissionByUserId(info.getUserId());
+        List<Permission> source = permissionManager.getPermissionByUserId(info.getUserId(),
+                null == info.getUser().getOrgCode()?true:false);
         Set<MenuVo> set = new LinkedHashSet<MenuVo>();
         source.forEach(obj->{
             set.add(new MenuVo(obj));

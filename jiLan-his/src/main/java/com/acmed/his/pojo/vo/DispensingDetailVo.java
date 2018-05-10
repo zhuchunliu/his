@@ -24,6 +24,15 @@ public class DispensingDetailVo {
     @ApiModelProperty("费用合计")
     private Double totalFee = 0d;
 
+    @ApiModelProperty("主诉")
+    private String chiefComplaint;
+
+    @ApiModelProperty("诊断信息")
+    private String diagnosis;
+
+    @ApiModelProperty("医嘱")
+    private String advice;
+
     @ApiModelProperty("注射单")
     private List<List<InjectDetailVo>> injectList = Lists.newArrayList();
 
@@ -55,13 +64,18 @@ public class DispensingDetailVo {
     }
 
 
-    public DispensingDetailVo(Prescription prescription, List<PrescriptionItem> itemList,
+    public DispensingDetailVo(Prescription prescription,MedicalRecord medicalRecord, List<PrescriptionItem> itemList,
                                 List<Inspect> inspectList,List<Charge> chargeList,
                                 Map<String, List<PrescriptionItemStock>> stockMap,
                                 List<Inject> preInjectList,
                                 BaseInfoManager baseInfoManager, DrugMapper drugMapper,
                                 ManufacturerMapper manufacturerMapper) {
         this.prescriptionNo = prescription.getPrescriptionNo();
+        if(null != medicalRecord){
+            this.chiefComplaint = medicalRecord.getChiefComplaint();
+            this.diagnosis = medicalRecord.getDiagnosis();
+            this.advice = medicalRecord.getAdvice();
+        }
 
 
         List<DicItem> unitItemList = baseInfoManager.getDicItemsByDicTypeCode(DicTypeEnum.UNIT.getCode());

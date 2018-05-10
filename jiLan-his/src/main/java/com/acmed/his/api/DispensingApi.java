@@ -10,6 +10,7 @@ import com.acmed.his.pojo.mo.DispensingRefundMo;
 import com.acmed.his.pojo.vo.*;
 import com.acmed.his.service.BaseInfoManager;
 import com.acmed.his.service.DispensingManager;
+import com.acmed.his.service.MedicalRecordManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.*;
@@ -77,6 +78,9 @@ public class DispensingApi {
 
     @Autowired
     private InjectMapper injectMapper;
+
+    @Autowired
+    private MedicalRecordManager medicalRecordManager;
 
 
     @ApiOperation(value = "收支概况")
@@ -306,8 +310,8 @@ public class DispensingApi {
         example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
         example.orderBy("groupNum").orderBy("id");
         List<Inject> injectList = injectMapper.selectByExample(example);
-
-        return ResponseUtil.setSuccessResult(new DispensingDetailVo(prescription,itemList,inspectList,chargeList,
+        MedicalRecord medicalRecord = medicalRecordManager.getMedicalRecordByApplyId(prescription.getApplyId());
+        return ResponseUtil.setSuccessResult(new DispensingDetailVo(prescription,medicalRecord,itemList,inspectList,chargeList,
                 map,injectList,baseInfoManager,drugMapper,manufacturerMapper));
     }
 }

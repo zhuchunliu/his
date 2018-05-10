@@ -25,5 +25,5 @@ public interface PermissionMapper extends TkMapper<Permission> {
 
     List<Permission> getNeedFilterPermissionList();
 
-    List<Permission> getPermissionByUserId(@Param("uid") Integer uid);
+    List<Permission> getPermissionByUserId(@Param("uid") Integer uid,@Param("isAdmin") boolean isAdmin);
 }
