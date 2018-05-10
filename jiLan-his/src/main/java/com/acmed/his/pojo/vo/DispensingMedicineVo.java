@@ -28,6 +28,15 @@ public class DispensingMedicineVo {
     @ApiModelProperty("费用合计")
     private Double totalFee = 0d;
 
+    @ApiModelProperty("主诉")
+    private String chiefComplaint;
+
+    @ApiModelProperty("诊断信息")
+    private String diagnosis;
+
+    @ApiModelProperty("医嘱")
+    private String advice;
+
 
     public DispensingMedicineVo(){
 
@@ -36,12 +45,16 @@ public class DispensingMedicineVo {
     @ApiModelProperty("药品信息")
     private List<List<MedicalDetail>> detailList = Lists.newArrayList();
 
-    public DispensingMedicineVo(Prescription prescription, List<PrescriptionItem> itemList,
+    public DispensingMedicineVo(Prescription prescription,MedicalRecord medicalRecord, List<PrescriptionItem> itemList,
                                 Map<String, List<PrescriptionItemStock>> stockMap,
                                 BaseInfoManager baseInfoManager, DrugMapper drugMapper,
                                 ManufacturerMapper manufacturerMapper) {
         this.prescriptionNo = prescription.getPrescriptionNo();
-
+        if(null != medicalRecord){
+            this.chiefComplaint = medicalRecord.getChiefComplaint();
+            this.diagnosis = medicalRecord.getDiagnosis();
+            this.advice = medicalRecord.getAdvice();
+        }
         Map<String,List<PrescriptionItem>> itemMap = Maps.newHashMap();
         for(PrescriptionItem item : itemList){
             if(itemMap.containsKey(item.getGroupNum())){

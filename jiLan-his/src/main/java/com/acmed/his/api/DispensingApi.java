@@ -271,9 +271,9 @@ public class DispensingApi {
             map.put(obj.getId(),preItemStockMapper.selectByExample(stockExample));
         });
 
+        MedicalRecord medicalRecord = medicalRecordManager.getMedicalRecordByApplyId(prescription.getApplyId());
 
-
-        return ResponseUtil.setSuccessResult(new DispensingMedicineVo(prescription,itemList,map,baseInfoManager,drugMapper,manufacturerMapper));
+        return ResponseUtil.setSuccessResult(new DispensingMedicineVo(prescription,medicalRecord,itemList,map,baseInfoManager,drugMapper,manufacturerMapper));
     }
 
 

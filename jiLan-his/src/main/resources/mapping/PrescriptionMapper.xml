@@ -41,6 +41,7 @@
         JOIN t_p_s_user user on pre.createby = user.id
 
         <trim prefixOverrides="and" prefix="where">
+            and pre.fee != 0
             <if test="@Ognl@isNotEmpty(orgCode)">
                 and apply.orgcode = #{orgCode}
             </if>
