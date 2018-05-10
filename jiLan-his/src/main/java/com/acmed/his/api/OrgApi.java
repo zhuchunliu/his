@@ -190,10 +190,10 @@ public class OrgApi {
     }
 
 
-    @ApiOperation(value = "获取机构列表分頁  param 可以是机构名称")
+    @ApiOperation(value = "获取机构列表分頁(不包括就医北上广的医院)  param 可以是机构名称")
     @PostMapping("/listbyPage")
     public ResponseResult<PageResult<OrgDto>> getOrgList(@RequestBody PageBase<String> pageBase){
-        PageResult<OrgDto> orgDtoByPage = orgManager.getOrgDtoByPage(pageBase);
+        PageResult<OrgDto> orgDtoByPage = orgManager.getOrgDtoByPage(pageBase,"0");
         return ResponseUtil.setSuccessResult(orgDtoByPage);
     }
 
