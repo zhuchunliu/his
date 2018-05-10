@@ -51,6 +51,7 @@
                 t1.goodsPinYin like concat('%', #{name} , '%')
             )
         </if>
+        and (t1.num !=0 or (t1.num =0 and EXISTS(select id from t_b_drug_stock t2 where t2.drugid = t1.id )))
     </select>
 
 

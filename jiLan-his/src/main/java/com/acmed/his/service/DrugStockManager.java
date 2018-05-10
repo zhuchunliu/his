@@ -10,7 +10,9 @@ import com.acmed.his.pojo.vo.DrugStockVo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,9 +38,12 @@ public class DrugStockManager {
      * @param name
      * @param info
      */
-    public List<Drug> getStockList(Integer pageNum , Integer pageSize, String name, UserInfo info) {
-        PageHelper.startPage(pageNum,pageSize);
-        return drugMapper.getStockList(name,info.getOrgCode());
+    public PageResult<Drug> getStockList(Integer pageNum , Integer pageSize, String name, UserInfo info) {
+        PageResult<Drug> result = new PageResult<>();
+        Page page = PageHelper.startPage(pageNum,pageSize);
+        result.setData(drugMapper.getStockList(name,info.getOrgCode()));
+        result.setTotal(page.getTotal());
+        return result;
     }
 
     /**

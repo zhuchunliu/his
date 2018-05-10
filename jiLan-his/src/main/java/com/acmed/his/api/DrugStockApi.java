@@ -2,7 +2,6 @@ package com.acmed.his.api;
 
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.DrugMapper;
-import com.acmed.his.dao.DrugStockMapper;
 import com.acmed.his.dao.ManufacturerMapper;
 import com.acmed.his.model.DicItem;
 import com.acmed.his.model.Drug;
@@ -26,7 +25,6 @@ import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -68,9 +66,9 @@ public class DrugStockApi {
             dicItemName.put(obj.getDicItemCode(),obj.getDicItemName());
         });
 
-        List<Drug> list = drugStockManager.getStockList(page.getPageNum(),page.getPageSize(),page.getParam(),info.getUser());
+        PageResult<Drug> pageResult = drugStockManager.getStockList(page.getPageNum(),page.getPageSize(),page.getParam(),info.getUser());
         List<DrugStockVo> voList = Lists.newArrayList();
-        for(Drug drug:list){
+        for(Drug drug:pageResult.getData()){
             DrugStockVo vo = new DrugStockVo();
             BeanUtils.copyProperties(drug,vo);
 
@@ -104,10 +102,9 @@ public class DrugStockApi {
 
             voList.add(vo);
         }
-        Integer total = drugStockManager.getStockTotal(page.getParam(),info.getUser());
         PageResult result = new PageResult();
         result.setData(voList);
-        result.setTotal((long)total);
+        result.setTotal(pageResult.getTotal());
         return ResponseUtil.setSuccessResult(result);
     }
 
