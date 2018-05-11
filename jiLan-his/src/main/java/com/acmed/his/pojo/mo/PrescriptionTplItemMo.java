@@ -21,7 +21,7 @@ public class PrescriptionTplItemMo {
     public static class ItemMo {
 
         @ApiModelProperty("药品id")
-        private Integer drugId;
+        private String drugId;
 
         @ApiModelProperty("数量")
         private Integer num;

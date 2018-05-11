@@ -90,7 +90,7 @@ public class UserManager {
             example.createCriteria().orEqualTo("loginName",mo.getLoginName()).orEqualTo("mobile",mo.getLoginName());
             Integer id = Optional.ofNullable(userMapper.selectByExample(example)).
                     filter(obj->0!=obj.size()).map(obj->obj.get(0)).map(obj->obj.getId()).orElse(null);
-            if((null != id && null == mo.getId())  || (null != id && id != mo.getId())){
+            if((null != id && null == mo.getId())  || (null != id && id.intValue() != mo.getId().intValue())){
                 throw new BaseException(StatusCode.FAIL,"登录名不能重复");
             }
         }
@@ -100,7 +100,7 @@ public class UserManager {
             example.createCriteria().orEqualTo("mobile",mo.getMobile()).orEqualTo("loginName",mo.getMobile());
             Integer id = Optional.ofNullable(userMapper.selectByExample(example)).
                     filter(obj->0!=obj.size()).map(obj->obj.get(0)).map(obj->obj.getId()).orElse(null);
-            if((null != id && null == mo.getId())  || (null != id && id != mo.getId())){
+            if((null != id && null == mo.getId())  || (null != id && id.intValue() != mo.getId().intValue())){
                 throw new BaseException(StatusCode.FAIL,"手机号不能重复");
             }
         }

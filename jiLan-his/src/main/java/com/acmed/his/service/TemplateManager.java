@@ -2,7 +2,6 @@ package com.acmed.his.service;
 
 import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.*;
-import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.AdviceTplDto;
 import com.acmed.his.model.dto.DiagnosisTplDto;
@@ -14,7 +13,6 @@ import com.acmed.his.util.PinYinUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
-import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -368,7 +366,7 @@ public class TemplateManager {
 //    @Transactional
     public void importPrescriptTpl(String ids, UserInfo user) {
         List<Integer> tplIdList = Lists.newArrayList();
-        List<Integer> drugDictIdList = Lists.newArrayList();
+        List<String> drugDictIdList = Lists.newArrayList();
         try {
             for (String id : ids.split(",")) {
                 PrescriptionTpl tpl = prescriptionTplMapper.selectByPrimaryKey(Integer.parseInt(id));
@@ -400,7 +398,7 @@ public class TemplateManager {
                         drugDictIdList.add(item.getDrugId());
                     }
                     tplItem.setUnitType(1);
-                    tplItem.setDrugId(drugList.get(0).getId());
+                    tplItem.setDrugId(drugList.get(0).getId().toString());
                     prescriptionTplItemMapper.insert(tplItem);
 
                 }

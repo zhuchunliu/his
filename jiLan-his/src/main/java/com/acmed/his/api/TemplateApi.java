@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Created by Darren on 2017-11-20
@@ -226,6 +227,7 @@ public class TemplateApi {
         return ResponseUtil.setSuccessResult();
     }
 
+
     @ApiOperation(value = "获取处方配置详情")
     @GetMapping("/prescripTpl/detail")
     public ResponseResult getPrescripTplDetail(@ApiParam("模板主键") @RequestParam("id") Integer id,
@@ -238,8 +240,8 @@ public class TemplateApi {
             preTplItemMapper.selectByExample(example).forEach(obj->{
                 PrescriptionTplItemVo vo = new PrescriptionTplItemVo();
                 Drug drug = new Drug();
-                if(null != info.getUser().getOrgCode()){
-                    drug = drugManager.getDrugById(obj.getDrugId());
+                if(Pattern.compile("^[-\\+]?[\\d]*$").matcher(obj.getDrugId()).matches()){
+                    drug = drugManager.getDrugById(Integer.parseInt(obj.getDrugId()));
                 }else{//管理员读取药品字典表数据
                     DrugDict drugDict = drugDictMapper.selectByPrimaryKey(obj.getDrugId());
                     BeanUtils.copyProperties(drugDict,drug);
@@ -247,7 +249,6 @@ public class TemplateApi {
 
                 if(null == drug.getIsValid() || 1 == drug.getIsValid()) {//药品禁用的过滤掉
                     BeanUtils.copyProperties(obj, vo);
-                    vo.setDrugId(drug.getId());
                     vo.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));
                     vo.setCategory(drug.getCategory());
                     vo.setCategoryName(null == drug.getCategory() ? "" : baseInfoManager.getDicItem(DicTypeEnum.DRUG_CLASSIFICATION.getCode(), drug.getCategory().toString()).getDicItemName());
@@ -316,9 +317,8 @@ public class TemplateApi {
 
 
     public static void main(String[] args) {
-        double i = 10.5d;
-        int j = 3;
-        System.err.println((int)Math.floor(10.1d));
-        System.err.println((int)i/j+"  "+i%j);
+        String str ="12d3";
+        Object obj = str;
+        System.err.println(Pattern.compile("^[-\\+]?[\\d]*$").matcher(str).matches());
     }
 }

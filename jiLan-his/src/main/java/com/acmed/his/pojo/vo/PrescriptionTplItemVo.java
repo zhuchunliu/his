@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PrescriptionTplItemVo {
 
     @ApiModelProperty("药品id")
-    private Integer drugId;
+    private String drugId;
 
     @ApiModelProperty("药品名称")
     private String drugName;
