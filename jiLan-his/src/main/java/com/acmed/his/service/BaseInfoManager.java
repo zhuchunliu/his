@@ -11,6 +11,7 @@ import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.util.UUIDUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -130,6 +131,7 @@ public class BaseInfoManager {
      * @param dicItem 1成功
      * @return 0 失败
      */
+    @CacheEvict(value = "dicItem",allEntries = true)
     public String addDicItem(DicItem dicItem, UserInfo userInfo){
         DicItem dicItemParam = new DicItem();
         dicItemParam.setDicItemName(dicItem.getDicItemName());
@@ -151,7 +153,7 @@ public class BaseInfoManager {
             return dicItem1.getDicItemCode();
         }
     }
-
+    @CacheEvict(value = "dicItem",allEntries = true)
     public int updateDicItem(DicItem dicItem){
         DicItem dicItemParam = new DicItem();
         dicItemParam.setDicItemName(dicItem.getDicItemName());

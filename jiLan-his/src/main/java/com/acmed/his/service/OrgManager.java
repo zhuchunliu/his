@@ -88,7 +88,7 @@ public class OrgManager {
             userMo.setMobile(mo.getMobile());
             userMo.setLoginName(mo.getLoginName());
             userMo.setOrgCode(org.getOrgCode());
-            userMo.setUserName(mo.getManager());
+            userMo.setUserName(mo.getLinkMan());
             User save = userManager.save(userMo, userInfo);
             // 给用户设置管理员权限
             Role roleMo = new Role();
