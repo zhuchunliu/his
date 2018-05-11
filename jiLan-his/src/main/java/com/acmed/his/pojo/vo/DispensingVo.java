@@ -38,7 +38,7 @@ public class DispensingVo {
     @ApiModelProperty("费用")
     private Double fee;
 
-    @ApiModelProperty("状态 1:未收费、2:已收费[已付款未发药处方、已付款的检查处方]、3:部分退款、4：已退款、5：已完成")
+    @ApiModelProperty("状态 1:未收费、2:已收费[已付款未发药处方、已付款的检查处方]、3: 已退款、4：已完成、5：部分退款")
     private String status;
 
     @ApiModelProperty("是否包含药品 1:是，0:否")
