@@ -113,7 +113,7 @@ public class DispensingManager {
             payStatements.setSource("2");
             payStatements.setPrescriptionId(itemList.get(0).getPrescriptionId());
             payStatements.setApplyId(applyId.toString());
-            payStatements.setPatientId(prescription.getPatientId());
+            payStatements.setPatientId(apply.getPatientId());
             payStatements.setFee(new BigDecimal(drugFee));
             payStatements.setCreateAt(LocalDateTime.now().toString());
             payStatements.setCreateBy(userInfo.getId().toString());
@@ -137,7 +137,7 @@ public class DispensingManager {
             payStatements.setSource("3");
             payStatements.setPrescriptionId(inspectList.get(0).getPrescriptionId());
             payStatements.setApplyId(applyId.toString());
-            payStatements.setPatientId(prescription.getPatientId());
+            payStatements.setPatientId(apply.getPatientId());
             payStatements.setFee(new BigDecimal(inspectFee));
             payStatements.setCreateAt(LocalDateTime.now().toString());
             payStatements.setCreateBy(userInfo.getId().toString());
