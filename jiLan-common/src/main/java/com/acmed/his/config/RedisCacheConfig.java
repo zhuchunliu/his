@@ -46,6 +46,9 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
 //            redisConnectionFactory.setDatabase(0);
 //        }
         redisConnectionFactory.setDatabase(1);
+        if(environment.getActiveProfiles()[0].equalsIgnoreCase("re")){//线上环境
+            redisConnectionFactory.setDatabase(2);
+        }
         redisConnectionFactory.setHostName(ip);
         redisConnectionFactory.setPort(port);
         redisConnectionFactory.setPassword(password);

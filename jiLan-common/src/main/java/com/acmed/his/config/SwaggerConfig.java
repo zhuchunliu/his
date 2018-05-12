@@ -43,7 +43,8 @@ public class SwaggerConfig {
                 defaultValue("2NhkcDVnYVl3RshHMLVWeDJjUjV1MzMjNxQTM1ITNyUTMyQUQQ9lUFNVV").build());
         return new Docket(DocumentationType.SWAGGER_2).ignoredParameterTypes(AccessToken.class)
                 .globalOperationParameters(list)
-                .enable(environment.getActiveProfiles()[0].equalsIgnoreCase("pre")?false:true)
+                .enable((environment.getActiveProfiles()[0].equalsIgnoreCase("pre")||
+                        environment.getActiveProfiles()[0].equalsIgnoreCase("re"))?false:true)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.acmed"))
