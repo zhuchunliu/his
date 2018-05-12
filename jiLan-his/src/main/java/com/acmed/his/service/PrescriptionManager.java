@@ -316,6 +316,7 @@ public class PrescriptionManager {
 //            prescription.setIsDispensing("0");
             prescription.setCreateAt(LocalDateTime.now().toString());
             prescription.setCreateBy(userInfo.getId().toString());
+            prescription.setPatientId(apply.getPatientItemId());
             preMapper.insert(prescription);
         }else{
             prescription.setIsPaid("0");
@@ -517,7 +518,7 @@ public class PrescriptionManager {
             apply.setDoctorId(userInfo.getId());
             apply.setDoctorName(userInfo.getUserName());
             apply.setPatientItemId(patient.getId());
-            apply.setPatientId(patient.getId());
+            apply.setPatientId(patient.getPatientId());
             apply.setPatientName(patient.getPatientName());
             apply.setPinYin(PinYinUtil.getPinYinHeadChar(patient.getPatientName()));
             apply.setGender(patient.getGender());
