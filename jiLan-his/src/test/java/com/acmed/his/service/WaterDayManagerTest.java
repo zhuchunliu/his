@@ -32,7 +32,7 @@ public class WaterDayManagerTest {
 
     @Test
     public void paopi() throws ParseException {
-        waterDayManager.paopi("20180104");
+        waterDayManager.paopi("20180511");
     }
     @Test
     public void task() throws ParseException {
