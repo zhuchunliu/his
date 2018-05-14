@@ -38,8 +38,8 @@ public class BaseInfoManager {
     @Autowired
     private CommonManager commonManager;
 
-    public List<Area> bsgcitys(){
-        return areaMapper.bsgcitys();
+    public List<Area> bsgcitys(Integer pid){
+        return areaMapper.bsgcitys(pid);
     }
 
 

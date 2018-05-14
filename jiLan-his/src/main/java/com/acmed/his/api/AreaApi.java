@@ -67,7 +67,10 @@ public class AreaApi {
 
     @ApiOperation(value = "北上广城市列表")
     @GetMapping("/bsg")
-    public ResponseResult<List<Area>> bsg(){
-        return ResponseUtil.setSuccessResult(baseInfoManager.bsgcitys());
+    public ResponseResult<List<Area>> bsg(@ApiParam("上级id 不传默认为0") @RequestParam(value = "pid",required = false) Integer pid){
+        if (pid==null){
+            pid=0;
+        }
+        return ResponseUtil.setSuccessResult(baseInfoManager.bsgcitys(pid));
     }
 }
