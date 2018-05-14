@@ -32,6 +32,16 @@ public class ScheduleApplyVo {
         @ApiModelProperty("医生职称")
         private String dutyName;
 
+        @ApiModelProperty("性别")
+        private String gender;
+
+        @ApiModelProperty(value = "出生年月",hidden = true)
+        private String dateOfBirth;
+
+        @ApiModelProperty("年龄")
+        private Integer age;
+
+
         @ApiModelProperty("日期")
         private String date;
 

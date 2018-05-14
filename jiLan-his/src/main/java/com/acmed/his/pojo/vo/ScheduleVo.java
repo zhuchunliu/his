@@ -15,6 +15,9 @@ public class ScheduleVo {
     @ApiModelProperty("用户名")
     private String userName;
 
+    @ApiModelProperty("性别")
+    private String gender;
+
     @ApiModelProperty("头像")
     private String avatar;
 

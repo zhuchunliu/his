@@ -17,6 +17,9 @@ public class ScheduleDto {
     @ApiModelProperty("头像")
     private String avatar;
 
+    @ApiModelProperty("性别")
+    private String gender;
+
     @ApiModelProperty("开始时间")
     private String startTime;
 

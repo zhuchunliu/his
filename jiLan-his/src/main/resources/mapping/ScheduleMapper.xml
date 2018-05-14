@@ -11,7 +11,7 @@
     </select>
 
     <select id="getScheduleList" resultType="com.acmed.his.model.dto.ScheduleDto">
-        select  t1.username ,t1.avatar, IFNULL(t2.userid,t1.id) as userid, t2.*
+        select  t1.username ,t1.avatar, t1.gender,IFNULL(t2.userid,t1.id) as userid, t2.*
         from t_p_s_user t1 LEFT join t_b_schedule t2 on t1.id = t2.userid
         AND t2.starttime = #{startTime} and t2.endtime = #{endTime}
         WHERE t1.orgcode = #{orgCode} and t1.removed = '0' and t1.status = '1'
