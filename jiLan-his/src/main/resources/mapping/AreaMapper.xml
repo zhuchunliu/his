@@ -9,10 +9,24 @@
     </select>
 
     <select id="bsgcitys" resultType="com.acmed.his.model.Area">
-        SELECT
-        ta.*
-        FROM t_p_s_org torg
-        LEFT JOIN t_p_s_area ta ON ta.id = torg.city
-        WHERE torg.isrecommend = '1' AND torg.city IS NOT NULL AND torg.city != '' GROUP BY  ta.id
+        SELECT * FROM t_p_s_area
+        <if test="pid==0">
+             WHERE id in (SELECT
+            ta.pid
+            FROM t_p_s_org torg
+            LEFT JOIN t_p_s_area ta ON ta.id = torg.city
+            WHERE torg.isrecommend = '1' AND torg.city IS NOT NULL AND torg.city != '' GROUP BY  ta.pid)
+        </if>
+        <if test="pid!=0">
+            WHERE id in (
+
+            SELECT
+            ta.id
+            FROM t_p_s_org torg
+            LEFT JOIN t_p_s_area ta ON ta.id = torg.city AND ta.pid = #{pid}
+            WHERE torg.isrecommend = '1' AND torg.city IS NOT NULL AND torg.city != '' GROUP BY  ta.id)
+        </if>
+
+
     </select>
 </mapper>
