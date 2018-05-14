@@ -25,5 +25,5 @@ public interface AreaMapper extends TkMapper<Area> {
      * 北上广
      * @return 北上广支持城市列表
      */
-    List<Area> bsgcitys();
+    List<Area> bsgcitys(@Param("pid")Integer pid);
 }
