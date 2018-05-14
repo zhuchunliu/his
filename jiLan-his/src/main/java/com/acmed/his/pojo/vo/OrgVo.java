@@ -26,6 +26,8 @@ public class OrgVo {
 
     @ApiModelProperty("医疗机构类别：三级甲等,三级乙等.....")
     private String level;
+    @ApiModelProperty("医疗机构类别：三级甲等,三级乙等.....")
+    private String levelStr;
 
     @ApiModelProperty("联系人")
     private String linkMan;

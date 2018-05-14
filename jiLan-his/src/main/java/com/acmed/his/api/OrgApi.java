@@ -1,9 +1,7 @@
 package com.acmed.his.api;
 
-import com.acmed.his.model.Dept;
-import com.acmed.his.model.Org;
-import com.acmed.his.model.PatientItem;
-import com.acmed.his.model.User;
+import com.acmed.his.consts.DicTypeEnum;
+import com.acmed.his.model.*;
 import com.acmed.his.model.dto.OrgDto;
 import com.acmed.his.pojo.mo.BsgOrgMo;
 import com.acmed.his.pojo.mo.OrgMo;
@@ -51,6 +49,9 @@ public class OrgApi {
     @Autowired
     private UserManager userManager;
 
+    @Autowired
+    private BaseInfoManager baseInfoManager;
+
 
     @ApiOperation(value = "新增/编辑 机构信息")
     @PostMapping("/save")
@@ -62,15 +63,30 @@ public class OrgApi {
 
     @ApiOperation(value = "获取就医北上广机构列表")
     @GetMapping("/getBSGList")
-    public ResponseResult<List<OrgVo>> getBSGList(@ApiParam("市区id null:获取所有的机构信息")@RequestParam(value = "city",required = true) Integer cityId){
+    public ResponseResult<List<OrgVo>> getBSGList(@ApiParam("市区id null:获取所有的机构信息")@RequestParam(value = "city") Integer cityId,
+                                                  @ApiParam("医院名称") @RequestParam(value="orgName",required = false) String orgName,
+                                                  @ApiParam("级别") @RequestParam(value="level",required = false)String level){
         List<OrgVo> list = new ArrayList<>();
         Org org = new Org();
         org.setIsRecommend("1");
         org.setCity(cityId+"");
+        if (StringUtils.isNotEmpty(orgName)){
+            org.setOrgName(orgName);
+        }
+        if (StringUtils.isNotEmpty(level)){
+            org.setLevel(level);
+        }
+        List<DicItem> dicItems = baseInfoManager.getDicItems(DicTypeEnum.ORG_LEVEL.getCode());
         orgManager.getList(org).forEach((obj)->{
-
             OrgVo orgMo = new OrgVo();
             BeanUtils.copyProperties(obj,orgMo);
+            if (dicItems.size()!=0){
+                for (DicItem item : dicItems){
+                    if (item.getDicItemCode().equals(obj.getLevel())){
+                        orgMo.setLevelStr(item.getDicItemName());
+                    }
+                }
+            }
             list.add(orgMo);
         });
         return ResponseUtil.setSuccessResult(list);
