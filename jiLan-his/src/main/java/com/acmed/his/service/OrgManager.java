@@ -64,7 +64,21 @@ public class OrgManager {
      * @return
      */
     public List<Org> getList(Org org){
-        return orgMapper.select(org);
+        Example example = new Example(Org.class);
+        Example.Criteria criteria = example.createCriteria();
+        String city = org.getCity();
+        if (StringUtils.isNotEmpty(city)){
+            criteria.andEqualTo("city",city);
+        }
+        String orgName = org.getOrgName();
+        if (StringUtils.isNotEmpty(orgName)){
+            criteria.andLike("orgName","%"+orgName+"%");
+        }
+        String level = org.getLevel();
+        if (StringUtils.isNotEmpty(level)){
+            criteria.andEqualTo("level",level);
+        }
+        return orgMapper.selectByExample(example);
     }
 
     /**
