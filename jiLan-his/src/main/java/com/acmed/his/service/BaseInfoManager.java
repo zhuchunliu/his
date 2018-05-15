@@ -244,7 +244,11 @@ public class BaseInfoManager {
     }
 
     public List<DicItem> getDicItemsByDicTypeCode(String dicTypeCode, UserInfo user) {
-        return dicItemMapper.getDicItemsByDicTypeCode(dicTypeCode,user.getOrgCode());
+        Integer orgCode = null;
+        if (user!=null){
+            orgCode = user.getOrgCode();
+        }
+        return dicItemMapper.getDicItemsByDicTypeCode(dicTypeCode,orgCode);
     }
 
 
