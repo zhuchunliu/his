@@ -150,6 +150,7 @@ public class DispensingDetailVo {
                 medicalDetail.setManufacturerName(null == drug.getManufacturer()?"":manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
                 medicalDetail.setFrequencyName(null == item.getFrequency()?"":frequencyItemName.get(item.getFrequency().toString()));
                 medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+                medicalDetail.setSingleDoseUnitName(null == drug.getSingleDoseUnit()?"":unitItemName.get(drug.getSingleDoseUnit().toString()));
                 this.totalFee += medicalDetail.getPrice();
                 if(!map.containsKey(item.getGroupNum())){
                     map.put(item.getGroupNum(),new DispensingInfoVo(medicalDetail,null,null
@@ -213,6 +214,7 @@ public class DispensingDetailVo {
                     injectVo.setUnitName(null==drug.getUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getUnit().toString()).getDicItemName());
                     injectVo.setMinUnitName(null==drug.getMinUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getMinUnit().toString()).getDicItemName());
                     injectVo.setDoseUnitName(null==drug.getDoseUnit()?"":baseInfoManager.getDicItem(DicTypeEnum.UNIT.getCode(),drug.getDoseUnit().toString()).getDicItemName());
+                    injectVo.setSingleDoseUnitName(null == drug.getSingleDoseUnit()?"":unitItemName.get(drug.getSingleDoseUnit().toString()));
 
                 }
 
@@ -367,6 +369,9 @@ public class DispensingDetailVo {
 
         @ApiModelProperty("剂量单位名称")
         private String doseUnitName;
+
+        @ApiModelProperty("单次剂量单位名称")
+        private String singleDoseUnitName;
 
         @ApiModelProperty("频率")
         private Integer frequency;
