@@ -261,12 +261,22 @@ public class UserManager {
     }
 
 
+    @CacheEvict(value = "user",allEntries = true)
     public int updateUserDept(Integer deptId,String deptName){
         return userMapper.updateUserDept(deptId,deptName);
     }
 
+    @CacheEvict(value = "user",allEntries = true)
     public int updateUserOrg(Integer orgCode,String orgName){
         return userMapper.updateUserOrg(orgCode,orgName);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "user",key = "'user_cache_id_'+#result.id"),
+            @CacheEvict(value="user",key="'user_cache_openid_'+#result.openid",condition = "#result.openid ne null")
+    })
+    public User updateUser(User user) {
+        userMapper.updateByPrimaryKey(user);
+        return user;
+    }
 }

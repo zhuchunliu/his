@@ -120,7 +120,7 @@ public class OrgManager {
             roleVsPermissionMapper.init(add.getId());
         }else{
             Org org = orgMapper.selectByPrimaryKey(mo.getOrgCode());
-            BeanUtils.copyProperties(mo,org);
+            BeanUtils.copyProperties(mo,org,"manager");
             this.getOrgArea(org);
             org.setModifyAt(LocalDateTime.now().toString());
             org.setModifyBy(userInfo.getId().toString());
