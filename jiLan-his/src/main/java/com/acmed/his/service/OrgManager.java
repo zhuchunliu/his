@@ -78,6 +78,10 @@ public class OrgManager {
         if (StringUtils.isNotEmpty(level)){
             criteria.andEqualTo("level",level);
         }
+        String isRecommend = org.getIsRecommend();
+        if (StringUtils.isNotEmpty(isRecommend)){
+            criteria.andEqualTo("isRecommend",isRecommend);
+        }
         return orgMapper.selectByExample(example);
     }
 
