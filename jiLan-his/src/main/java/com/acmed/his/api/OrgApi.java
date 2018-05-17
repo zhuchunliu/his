@@ -63,13 +63,15 @@ public class OrgApi {
 
     @ApiOperation(value = "获取就医北上广机构列表")
     @GetMapping("/getBSGList")
-    public ResponseResult<List<OrgVo>> getBSGList(@ApiParam("市区id null:获取所有的机构信息")@RequestParam(value = "city") Integer cityId,
+    public ResponseResult<List<OrgVo>> getBSGList(@ApiParam("市区id null:获取所有的机构信息")@RequestParam(value = "city",required = false) Integer cityId,
                                                   @ApiParam("医院名称") @RequestParam(value="orgName",required = false) String orgName,
                                                   @ApiParam("级别") @RequestParam(value="level",required = false)String level){
         List<OrgVo> list = new ArrayList<>();
         Org org = new Org();
         org.setIsRecommend("1");
-        org.setCity(cityId+"");
+        if (cityId!=null){
+            org.setCity(cityId.toString());
+        }
         if (StringUtils.isNotEmpty(orgName)){
             org.setOrgName(orgName);
         }

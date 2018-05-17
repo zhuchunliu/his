@@ -66,20 +66,21 @@ public class OrgManager {
     public List<Org> getList(Org org){
         Example example = new Example(Org.class);
         Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("removed",0);
         String city = org.getCity();
-        if (StringUtils.isNotEmpty(city)){
+        if (StringUtils.isNotBlank(city)){
             criteria.andEqualTo("city",city);
         }
         String orgName = org.getOrgName();
-        if (StringUtils.isNotEmpty(orgName)){
+        if (StringUtils.isNotBlank(orgName)){
             criteria.andLike("orgName","%"+orgName+"%");
         }
         String level = org.getLevel();
-        if (StringUtils.isNotEmpty(level)){
+        if (StringUtils.isNotBlank(level)){
             criteria.andEqualTo("level",level);
         }
         String isRecommend = org.getIsRecommend();
-        if (StringUtils.isNotEmpty(isRecommend)){
+        if (StringUtils.isNotBlank(isRecommend)){
             criteria.andEqualTo("isRecommend",isRecommend);
         }
         return orgMapper.selectByExample(example);

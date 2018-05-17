@@ -2,6 +2,9 @@
         <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.AccompanyingOrderMapper">
+    <update id="updateToGuoqi">
+        UPDATE `his`.`accompanying_order` SET `status` = 20  WHERE `status` = 1 AND createat &lt;= #{time}
+    </update>
     <select id = "selectByAccompanyingOrder" resultType="com.acmed.his.model.AccompanyingOrder">
         SELECT * from accompanying_order t1
         <trim prefixOverrides="and" prefix="where">

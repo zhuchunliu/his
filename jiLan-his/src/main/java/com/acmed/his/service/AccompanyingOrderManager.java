@@ -8,8 +8,10 @@ import com.acmed.his.util.PageResult;
 import com.acmed.his.util.WaterCodeUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -24,11 +26,23 @@ import java.util.List;
  * @author jimson
  * @date 2017/12/22
  */
+@Slf4j
 @Service
 @Transactional
 public class AccompanyingOrderManager {
     @Autowired
     private AccompanyingOrderMapper accompanyingOrderMapper;
+
+    /**
+     * 定时清理过期订单
+     */
+    @Scheduled(cron = "0 */1 * * * ?")
+    @Transactional
+    public void tastguoqi(){
+        log.info("定时清理过期订单定时任务");
+        String time = LocalDateTime.now().plusHours(24).toString();
+        accompanyingOrderMapper.updateToGuoqi(time);
+    }
 
     /**
      * 创建就医北上广订单

@@ -23,4 +23,6 @@ public interface AccompanyingOrderMapper extends TkMapper<AccompanyingOrder> {
     List<AccompanyingOrder> selectByAccompanyingOrder(AccompanyingOrderMo accompanyingOrderMo);
 
     List<AccompanyingOrderCountDto> selectCountNumGroupByOrgCode(@Param("status") Integer status);
+
+    int updateToGuoqi(@Param("time") String time);
 }
