@@ -124,7 +124,7 @@ public class ApplyApi {
     public ResponseResult collection(@AccessToken AccessInfo info,
                                      @ApiParam("挂号单id") @RequestParam(value = "applyId" )String applyId){
         Apply applyById = applyManager.getApplyById(applyId);
-        return applyManager.pay(applyId,applyById.getFee(),"0",info.getUser());
+        return applyManager.pay(applyId,applyById.getFee(),"3",info.getUser());
     }
 
     @ApiOperation(value = "条件查询 医院使用")
