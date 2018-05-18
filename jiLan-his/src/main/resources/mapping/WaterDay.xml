@@ -48,7 +48,7 @@
                     SELECT tb0.orgcode,SUM(tb0.fee) alipaymoney,COUNT(tb0.id) alipaynum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY  tb0.orgcode
         ) as tb3 ON tb3.orgcode = tb1.orgcode
         LEFT JOIN (-- 现金 收入 和笔数
-                    SELECT tb0.orgcode,SUM(tb0.fee) xianjin,COUNT(tb0.id) xianjinnum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 0 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+                    SELECT tb0.orgcode,SUM(tb0.fee) xianjin,COUNT(tb0.id) xianjinnum FROM t_b_pay_statements tb0 WHERE  tb0.feetype = 3 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb4 ON tb4.orgcode = tb1.orgcode
         LEFT JOIN (-- 挂号 收入 和笔数
                     SELECT tb0.orgcode,COUNT(tb0.id) jiuzhennum ,SUM(tb0.fee) jiuzhenmoney  FROM t_b_pay_statements tb0 WHERE  tb0.source =1 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
@@ -87,7 +87,7 @@
                     SELECT tb0.orgcode,SUM(tb0.fee) alipayrefundmoney,COUNT(tb0.id) alipayrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 2 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb16 ON tb16.orgcode = tb1.orgcode
 				LEFT JOIN (-- 現金   退款   和笔数
-                    SELECT tb0.orgcode,SUM(tb0.fee) cashrefundmoney,COUNT(tb0.id) cashrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 0 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
+                    SELECT tb0.orgcode,SUM(tb0.fee) cashrefundmoney,COUNT(tb0.id) cashrefundnum FROM t_b_pay_refuse tb0 WHERE  tb0.feetype = 3 AND DATE(tb0.createat) = DATE(#{date}) GROUP BY tb0.orgcode
         ) as tb17 ON tb17.orgcode = tb1.orgcode
     </select>
 
@@ -243,7 +243,7 @@
             SELECT SUM(t0.fee) fee,t0.orgcode  FROM t_b_pay_statements t0 WHERE t0.source = 4 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
         ) AS t5 ON t5.orgcode = t1.orgcode
         LEFT JOIN (
-            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 0 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 3 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
         ) AS t6 ON t6.orgcode = t1.orgcode
         LEFT JOIN (
             SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_statements t0 WHERE t0.feetype = 1 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
@@ -264,7 +264,7 @@
             SELECT SUM(t0.fee) fee,t0.orgcode  FROM t_b_pay_refuse t0 WHERE t0.source = 4 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime}]]>
         ) AS t12 ON t12.orgcode = t1.orgcode
         LEFT JOIN (
-            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_refuse t0 WHERE t0.feetype = 0 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
+            SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_refuse t0 WHERE t0.feetype = 3 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
         ) AS t13 ON t13.orgcode = t1.orgcode
         LEFT JOIN (
             SELECT SUM(t0.fee) fee ,t0.orgcode FROM t_b_pay_refuse t0 WHERE t0.feetype = 1 AND t0.orgcode = #{orgCode} AND t0.createat <![CDATA[ >= ]]> #{startTime} AND t0.createat <![CDATA[ <= #{endTime} ]]>
