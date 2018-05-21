@@ -1,6 +1,5 @@
 package com.acmed.his.pojo.zy;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -8,7 +7,7 @@ import lombok.Data;
  * Created by Darren on 2018-04-10
  **/
 @Data
-public class ZYDrugObj {
+public class ZYDrugListVo {
 
     @ApiModelProperty("药店id")
     private String storeId;
@@ -26,14 +25,13 @@ public class ZYDrugObj {
     private String OTC;
 
     @ApiModelProperty("药品名")
-    private String cnName;
+    private String drugName;
 
     @ApiModelProperty("药品规格")
-    @JSONField(name = "spec")
-    private String form;
+    private String spec;
 
     @ApiModelProperty("生产厂家")
-    private String companyName;
+    private String manufacturerName;
 
     @ApiModelProperty("药品功效")
     private String indication;
@@ -42,13 +40,13 @@ public class ZYDrugObj {
     private String number;
 
     @ApiModelProperty("库存数")
-    private String storage;
+    private String num;
 
     @ApiModelProperty("药品图片")
     private String picPath;
 
     @ApiModelProperty("药品价格")
-    private String goodsPrice;
+    private String retailPrice;
 
     @ApiModelProperty("服务费")
     private String servicePrice;
@@ -61,5 +59,4 @@ public class ZYDrugObj {
 
     @ApiModelProperty("所在城市")
     private String city;
-
 }

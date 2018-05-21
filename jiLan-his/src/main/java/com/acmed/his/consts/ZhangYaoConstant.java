@@ -8,9 +8,15 @@ import java.util.Optional;
  **/
 public class ZhangYaoConstant {
 
-    private final static String DRUG_URL = "r=jizhi/search/index";//药品查询接口
+    private final static String DRUG_LIST_URL = "r=jizhi/search/index";//药品查询接口
+
+    private final static String DRUG_DETAIL_URL = "r=jizhi/goods/detail";//药品详情接口
+
+    private final static String STORE_URL ="r=jizhi/store/detail";//药店详情
 
     private final static String ORDER_QUERY_URL = "r=jizhi/order/query-order";//订单查询接口
+
+    private final static String CITY_URL ="r=jizhi/search/area";//地址列表
 
     /**
      * 获取药品信息
@@ -23,9 +29,9 @@ public class ZhangYaoConstant {
      * @param storeId 店铺id
      * @return
      */
-    public static String buildDrugUrl(String keyword,Integer start,Integer rows,Integer first,String lat,String lng,Double storeId){
+    public static String buildDrugListUrl(String keyword,Integer start,Integer rows,Integer first,String lat,String lng,String storeId){
         StringBuilder builder = new StringBuilder();
-        builder.append("?").append(DRUG_URL).
+        builder.append("?").append(DRUG_LIST_URL).
                 append(Optional.ofNullable(keyword).map(obj->"&keyword="+obj).orElse("")).
                 append(Optional.ofNullable(start).map(obj->"&start="+obj).orElse("")).
                 append(Optional.ofNullable(rows).map(obj->"&rows="+obj).orElse("")).
@@ -33,6 +39,34 @@ public class ZhangYaoConstant {
                 append(Optional.ofNullable(lat).map(obj->"&lat="+obj).orElse("")).
                 append(Optional.ofNullable(lng).map(obj->"&lng="+obj).orElse("")).
                 append(Optional.ofNullable(storeId).map(obj->"&storeId="+obj).orElse(""));
+        return builder.toString();
+    }
+
+    /**
+     * 获取药品详情
+     *
+     * @param storeId 药店id
+     * @param drugId 药品id
+     * @return
+     */
+    public static String buildDrugDetailUrl(String storeId,String drugId){
+        StringBuilder builder = new StringBuilder();
+        builder.append("?").append(DRUG_DETAIL_URL).
+                append(Optional.ofNullable(storeId).map(obj->"&storeId="+storeId).orElse("")).
+                append(Optional.ofNullable(drugId).map(obj->"&drugId="+drugId).orElse(""));
+        return builder.toString();
+    }
+
+    /**
+     * 获取药店详情
+     *
+     * @param storeId 药店id
+     * @return
+     */
+    public static String buildStoreDetailUrl(String storeId){
+        StringBuilder builder = new StringBuilder();
+        builder.append("?").append(STORE_URL).
+                append(Optional.ofNullable(storeId).map(obj->"&storeId="+storeId).orElse(""));
         return builder.toString();
     }
 
@@ -45,6 +79,19 @@ public class ZhangYaoConstant {
         StringBuilder builder = new StringBuilder();
         builder.append("?").append(ORDER_QUERY_URL).
                 append(Optional.ofNullable(orderSn).map(obj->"&orderSn="+obj).orElse(""));
+        return builder.toString();
+    }
+
+    /**
+     * 获取省市县信息
+     *
+     * @param areaId 省市县id
+     * @return
+     */
+    public static String buildCityUrl(String areaId){
+        StringBuilder builder = new StringBuilder();
+        builder.append("?").append(CITY_URL).
+                append(Optional.ofNullable(areaId).map(obj->"&areaId="+areaId).orElse(""));
         return builder.toString();
     }
 }

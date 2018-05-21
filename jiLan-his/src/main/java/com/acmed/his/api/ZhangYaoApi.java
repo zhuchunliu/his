@@ -5,8 +5,9 @@ import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Org;
 import com.acmed.his.model.zy.OrderItemDrugDto;
 import com.acmed.his.pojo.mo.DrugZYQueryMo;
-import com.acmed.his.pojo.vo.OrgVo;
 import com.acmed.his.pojo.zy.*;
+import com.acmed.his.pojo.zy.dto.ZYCityObj;
+import com.acmed.his.pojo.zy.dto.ZYStoreDetailObj;
 import com.acmed.his.service.OrgManager;
 import com.acmed.his.service.ZhangYaoManager;
 import com.acmed.his.support.AccessInfo;
@@ -45,8 +46,8 @@ public class ZhangYaoApi {
 
     @ApiOperation(value = "掌药药品信息列表")
     @PostMapping("/drug/list")
-    public ResponseResult<PageResult<ZYDrugVo>> getZYDrugList(@RequestBody(required = false) PageBase<DrugZYQueryMo> pageBase,
-                                                              @AccessToken AccessInfo info){
+    public ResponseResult<PageResult<ZYDrugListVo>> getDrugList(@RequestBody(required = false) PageBase<DrugZYQueryMo> pageBase,
+                                                                  @AccessToken AccessInfo info){
         if(null == pageBase.getParam() || StringUtils.isEmpty(pageBase.getParam().getName())){
             throw new BaseException(StatusCode.FAIL,"药品名称不能为空");
         }
@@ -60,18 +61,25 @@ public class ZhangYaoApi {
             throw new BaseException(StatusCode.FAIL,"经纬度不能为空");
         }
 
-        PageResult<ZYDrugVo> pageResult = zhangYaoManager.getDrugList(pageBase);
+        PageResult<ZYDrugListVo> pageResult = zhangYaoManager.getDrugList(pageBase);
         return ResponseUtil.setSuccessResult(pageResult);
 
     }
 
-    @ApiOperation(value = "掌药药品信息列表")
-    @PostMapping("/drug/detail")
-    public ResponseResult<PageResult<ZYDrugVo>> getZYDrugDetail(@Param("药店id") @RequestParam("storeId") String storeId,
-                                                                @Param("药品id") @RequestParam("drugId") String drugId){
+    @ApiOperation(value = "掌药药品详情")
+    @GetMapping("/drug/detail")
+    public ResponseResult<ZYDrugDetailVo> getDrugDetail(@Param("药店id") @RequestParam("storeId") String storeId,
+                                                          @Param("药品id") @RequestParam("drugId") String drugId){
+        ZYDrugDetailVo detail = zhangYaoManager.getDrugDetail(storeId,drugId);
+        return ResponseUtil.setSuccessResult(detail);
 
-        PageResult<ZYDrugVo> pageResult = zhangYaoManager.getDrugDetail(storeId,drugId);
-        return ResponseUtil.setSuccessResult(pageResult);
+    }
+
+    @ApiOperation(value = "掌药药店详情")
+    @GetMapping("/store/detail")
+    public ResponseResult<ZYStoreDetailObj> getStoreDetail(@Param("药店id") @RequestParam("storeId") String storeId){
+        ZYStoreDetailObj detail = zhangYaoManager.getStoreDetail(storeId);
+        return ResponseUtil.setSuccessResult(detail);
 
     }
 
@@ -145,6 +153,13 @@ public class ZhangYaoApi {
 
 
 
+    @ApiOperation(value = "获取省市县信息")
+    @GetMapping("/city")
+    public ResponseResult<List<ZYCityObj>> getCity(@Param("省市县id,默认0获取所有省") @RequestParam(value = "areaId",defaultValue = "0") String areaId){
+        List<ZYCityObj> list = zhangYaoManager.getCity(areaId);
+        return ResponseUtil.setSuccessResult(list);
+
+    }
 
 
 }

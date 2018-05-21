@@ -13,6 +13,10 @@ import com.acmed.his.model.zy.ZyOrderItem;
 import com.acmed.his.pojo.mo.DrugZYQueryMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.zy.*;
+import com.acmed.his.pojo.zy.dto.ZYCityObj;
+import com.acmed.his.pojo.zy.dto.ZYDrugDetailObj;
+import com.acmed.his.pojo.zy.dto.ZYDrugListObj;
+import com.acmed.his.pojo.zy.dto.ZYStoreDetailObj;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.UUIDUtil;
@@ -62,10 +66,10 @@ public class ZhangYaoManager {
      * 获取药品信息
      * @return
      */
-    public PageResult<ZYDrugVo> getDrugList(PageBase<DrugZYQueryMo> pageBase) {
+    public PageResult<ZYDrugListVo> getDrugList(PageBase<DrugZYQueryMo> pageBase) {
         StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
         DrugZYQueryMo mo = Optional.ofNullable(pageBase.getParam()).orElse(new DrugZYQueryMo());
-        builder.append(ZhangYaoConstant.buildDrugUrl(mo.getName(),(pageBase.getPageNum()-1)*pageBase.getPageSize(),pageBase.getPageSize(),3,
+        builder.append(ZhangYaoConstant.buildDrugListUrl(mo.getName(),(pageBase.getPageNum()-1)*pageBase.getPageSize(),pageBase.getPageSize(),3,
                 mo.getLat(),mo.getLng(),null));
         RestTemplate restTemplate = new RestTemplate();
         JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
@@ -73,10 +77,10 @@ public class ZhangYaoManager {
             PageResult result = new PageResult();
             result.setTotal(json.getJSONObject("data").getLong("totalCount"));
             JSONArray jsonArray = json.getJSONObject("data").getJSONArray("bigSearchList");
-            List<ZYDrugVo> drugList = Lists.newArrayList();
+            List<ZYDrugListVo> drugList = Lists.newArrayList();
             for(int i = 0;i<jsonArray.size();i++){
-                ZYDrugObj zyDrug = JSONObject.parseObject(jsonArray.getString(i),ZYDrugObj.class);
-                ZYDrugVo vo = new ZYDrugVo();
+                ZYDrugListObj zyDrug = JSONObject.parseObject(jsonArray.getString(i),ZYDrugListObj.class);
+                ZYDrugListVo vo = new ZYDrugListVo();
                 BeanUtils.copyProperties(zyDrug,vo);
                 vo.setSpec(zyDrug.getForm());
                 vo.setRetailPrice(zyDrug.getGoodsPrice());
@@ -94,8 +98,62 @@ public class ZhangYaoManager {
 
     }
 
-    public PageResult<ZYDrugVo> getDrugDetail(String storeId, String drugId) {
-        return null;
+    /**
+     * 获取药品详情
+     * @param storeId 店铺id
+     * @param drugId 药品id
+     * @return
+     */
+    public ZYDrugDetailVo getDrugDetail(String storeId, String drugId) {
+
+        StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
+        builder.append(ZhangYaoConstant.buildDrugDetailUrl(storeId,drugId));
+        RestTemplate restTemplate = new RestTemplate();
+        JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
+        if(json.get("code").equals("1")){
+            ZYDrugDetailObj obj = JSONObject.parseObject(json.getJSONObject("data").getJSONObject("drugInfo").toJSONString(),ZYDrugDetailObj.class);
+            List<String> drugPicList = JSONArray.parseArray(json.getJSONObject("data").getJSONArray("drugPicList").toJSONString(),String.class);
+            ZYDrugDetailObj.ZYDrugStoreDetailObj detailObj = JSONObject.parseObject(json.getJSONObject("data").getJSONObject("storeDetail").toJSONString(),ZYDrugDetailObj.ZYDrugStoreDetailObj.class);
+
+            ZYDrugDetailVo vo = new ZYDrugDetailVo();
+            BeanUtils.copyProperties(obj,vo);
+            vo.setDrugPicList(drugPicList);
+
+            vo.setSpec(obj.getForm());
+            vo.setApprovalNumber(obj.getNumber());
+            vo.setRetailPrice(obj.getGoodsPrice());
+            vo.setManufacturerName(obj.getCompanyName());
+
+            ZYDrugDetailVo.ZYDrugStoreDetailVo detailVo = new ZYDrugDetailVo.ZYDrugStoreDetailVo();
+            BeanUtils.copyProperties(detailObj,detailVo);
+            vo.setDrugStoreDetailVo(detailVo);
+
+            return vo;
+        }else{
+            logger.error("get zhangyao drug detail fail,msg: "+json.get("message")+"  ;the url is :"+builder.toString());
+            throw new BaseException(StatusCode.FAIL,"获取掌药药品详情信息失败");
+        }
+    }
+
+    /**
+     * 获取药店详情
+     * @param storeId
+     * @return
+     */
+    public ZYStoreDetailObj getStoreDetail(String storeId) {
+        StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
+        builder.append(ZhangYaoConstant.buildStoreDetailUrl(storeId));
+        RestTemplate restTemplate = new RestTemplate();
+        JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
+        if(json.get("code").equals("1")){
+            ZYStoreDetailObj obj = JSONObject.parseObject(json.getJSONObject("data").getJSONObject("storeDetail").toJSONString(),ZYStoreDetailObj.class);
+            return obj;
+        }else{
+            logger.error("get zhangyao store detail fail,msg: "+json.get("message")+"  ;the url is :"+builder.toString());
+            throw new BaseException(StatusCode.FAIL,"获取掌药药店详情信息失败");
+        }
+
+
     }
 
     /**
@@ -248,4 +306,22 @@ public class ZhangYaoManager {
     }
 
 
+    /**
+     * 获取地址列表信息
+     * @param areaId
+     * @return
+     */
+    public List<ZYCityObj> getCity(String areaId) {
+        StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
+        builder.append(ZhangYaoConstant.buildCityUrl(areaId));
+        RestTemplate restTemplate = new RestTemplate();
+        JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
+        if(json.get("code").equals("1")){
+            List<ZYCityObj> list = JSONArray.parseArray(json.getJSONArray("data").toJSONString(),ZYCityObj.class);
+            return list;
+        }else{
+            logger.error("get zhangyao city fail,msg: "+json.get("message")+"  ;the url is :"+builder.toString());
+            throw new BaseException(StatusCode.FAIL,"获取地址信息失败");
+        }
+    }
 }
