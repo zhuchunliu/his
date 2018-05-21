@@ -1,5 +1,5 @@
 server:
-  port: 9994
+  port: 8994
   context-path: /his
 spring:
   application:

@@ -94,6 +94,10 @@ public class ZhangYaoManager {
 
     }
 
+    public PageResult<ZYDrugVo> getDrugDetail(String storeId, String drugId) {
+        return null;
+    }
+
     /**
      * 获取未下单的处方
      * @param orgCode
@@ -242,4 +246,6 @@ public class ZhangYaoManager {
         zyOrder.setModifyBy(user.getId().toString());
         zyOrderMapper.updateByPrimaryKey(zyOrder);
     }
+
+
 }

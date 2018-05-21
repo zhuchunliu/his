@@ -65,6 +65,16 @@ public class ZhangYaoApi {
 
     }
 
+    @ApiOperation(value = "掌药药品信息列表")
+    @PostMapping("/drug/detail")
+    public ResponseResult<PageResult<ZYDrugVo>> getZYDrugDetail(@Param("药店id") @RequestParam("storeId") String storeId,
+                                                                @Param("药品id") @RequestParam("drugId") String drugId){
+
+        PageResult<ZYDrugVo> pageResult = zhangYaoManager.getDrugDetail(storeId,drugId);
+        return ResponseUtil.setSuccessResult(pageResult);
+
+    }
+
 
     @ApiOperation(value = "未下单的处方")
     @GetMapping("/unorder/list")

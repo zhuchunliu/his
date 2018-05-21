@@ -1,5 +1,6 @@
 package com.acmed.his.pojo.zy;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -28,6 +29,7 @@ public class ZYDrugObj {
     private String cnName;
 
     @ApiModelProperty("药品规格")
+    @JSONField(name = "spec")
     private String form;
 
     @ApiModelProperty("生产厂家")
