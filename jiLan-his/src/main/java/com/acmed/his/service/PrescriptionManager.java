@@ -344,12 +344,44 @@ public class PrescriptionManager {
                             continue;
                         }
                     }
+                    PrescriptionItem item = new PrescriptionItem();
+                    if(StringUtils.isNotEmpty(info.getStoreId())){//掌药药品信息
+                        item.setId(UUIDUtil.generate());
+                        item.setDrugId(info.getDrugId());
+                        item.setDrugName(info.getDrugName());
+                        item.setNum(Optional.ofNullable(info.getNum()).orElse(0));
+                        item.setRetailPrice(Optional.ofNullable(info.getRetailPrice()).orElse(0d));
+                        item.setFee(item.getNum()*item.getRetailPrice());
+                        item.setZyStoreId(info.getStoreId());
+                        item.setZyStoreName(info.getStoreName());
+                        item.setZyDrugSpec(info.getSpec());
+                        item.setZyManufacturerName(info.getManufacturerName());
+                        item.setIsOrder(0);
+
+                        item.setFrequency(info.getFrequency());
+                        item.setSingleDose(info.getSingleDose());
+                        item.setMemo(info.getMemo());
+                        item.setRequirement(pre.getRequirement());
+                        item.setRemark(pre.getRemark());
+
+
+                        item.setApplyId(apply.getId());
+                        item.setPrescriptionId(prescription.getId());
+                        item.setGroupNum(String.valueOf(i+1));
+                        item.setPayStatus(0);
+
+                        preItemMapper.insert(item);
+                        receivables += item.getFee();
+
+                        continue;
+                    }
+
                     Drug drug = drugMapper.selectByPrimaryKey(info.getDrugId());
                     if(null == drug){
                         continue;
                     }
                     contanisMedicine = true;
-                    PrescriptionItem item = new PrescriptionItem();
+
                     BeanUtils.copyProperties(info,item,"id");
                     item.setId(UUIDUtil.generate());
                     item.setDrugName(Optional.ofNullable(drug.getGoodsName()).orElse(drug.getName()));

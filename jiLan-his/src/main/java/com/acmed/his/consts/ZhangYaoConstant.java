@@ -23,7 +23,7 @@ public class ZhangYaoConstant {
      * @param storeId 店铺id
      * @return
      */
-    public static String buildDrugUrl(String keyword,Integer start,Integer rows,Integer first,Double lat,Double lng,Double storeId){
+    public static String buildDrugUrl(String keyword,Integer start,Integer rows,Integer first,String lat,String lng,Double storeId){
         StringBuilder builder = new StringBuilder();
         builder.append("?").append(DRUG_URL).
                 append(Optional.ofNullable(keyword).map(obj->"&keyword="+obj).orElse("")).

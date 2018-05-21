@@ -98,23 +98,36 @@ public class PreVo {
                 if(null != item.getFrequency()){
                     item.setFrequencyName(frequencyItemName.get(item.getFrequency().toString()));
                 }
-                Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
-                if(null != drug) {
-                    item.setDoseUnitName(Optional.ofNullable(drug.getDoseUnit()).map(unit->unitItemName.get(unit.toString())).orElse(""));
-                    item.setSingleDoseUnitName(Optional.ofNullable(drug.getSingleDoseUnit()).map(unit->unitItemName.get(unit.toString())).orElse(""));
-                    item.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
-                            map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
-                    item.setUnitName(Optional.ofNullable(drug.getUnit()).map(unit->unitItemName.get(unit.toString())).orElse(""));
-                    if(null != drug.getMinPriceUnitType()) {
-                        item.setMinOrDoseUnitName(1 == drug.getMinPriceUnitType() ?
-                                (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())) :
-                                (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
+
+                item.setItemId(obj.getId());
+
+
+                if(StringUtils.isNotEmpty(obj.getZyStoreId())){//掌药药品
+                    item.setManufacturerName(obj.getZyManufacturerName());
+                    item.setRetailPrice(obj.getRetailPrice());
+                    item.setDrugSpec(obj.getZyDrugSpec());
+                    item.setStoreId(obj.getZyStoreId());
+                    item.setStoreName(obj.getZyStoreName());
+                    item.setDrugName(obj.getDrugName());
+                }else {
+                    Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+                    if (null != drug) {
+                        item.setDoseUnitName(Optional.ofNullable(drug.getDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
+                        item.setSingleDoseUnitName(Optional.ofNullable(drug.getSingleDoseUnit()).map(unit->unitItemName.get(unit.toString())).orElse(""));
+                        item.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
+                                map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
+                        item.setUnitName(Optional.ofNullable(drug.getUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
+                        if (null != drug.getMinPriceUnitType()) {
+                            item.setMinOrDoseUnitName(1 == drug.getMinPriceUnitType() ?
+                                    (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())) :
+                                    (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
+                        }
+                        item.setDrugSpec(drug.getSpec());
+                        item.setMinUnitName(null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString()));
+                        item.setMinPriceUnitType(drug.getMinPriceUnitType());
+                        item.setRetailPrice(drug.getRetailPrice());
+                        item.setMinRetailPrice(drug.getMinRetailPrice());
                     }
-                    item.setItemId(obj.getId());
-                    item.setMinUnitName(null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString()));
-                    item.setMinPriceUnitType(drug.getMinPriceUnitType());
-                    item.setRetailPrice(drug.getRetailPrice());
-                    item.setMinRetailPrice(drug.getMinRetailPrice());
                 }
 
                 if(!map.containsKey(obj.getGroupNum())){
@@ -299,6 +312,9 @@ public class PreVo {
         @ApiModelProperty("药品id")
         private Integer drugId;
 
+        @ApiModelProperty("药品规格")
+        private String drugSpec;
+
         @ApiModelProperty("用药名称")
         private String drugName;
 
@@ -358,6 +374,12 @@ public class PreVo {
 
         @ApiModelProperty("总价")
         private Double totalFee;
+
+        @ApiModelProperty("药店id - 掌药")
+        private String storeId;
+
+        @ApiModelProperty("药店名称 - 掌药")
+        private String storeName;
     }
 
     @Data

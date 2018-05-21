@@ -80,4 +80,22 @@ public class PrescriptionItem {
 
     @ApiModelProperty("服药备注")
     private String remark;
+
+    @ApiModelProperty("药店id - 掌药")
+    private String zyStoreId;
+
+    @ApiModelProperty("药店名称 - 掌药")
+    private String zyStoreName;
+
+    @ApiModelProperty("药品类型 - 掌药")
+    private String zyDrugSpec;
+
+    @ApiModelProperty("药品厂家 - 掌药")
+    private String zyManufacturerName;
+
+    @ApiModelProperty("订单id - 掌药")
+    private String zyOrderId;
+
+    @ApiModelProperty("是否已经下单 null:不需要下单 0:否，1:是")
+    private Integer isOrder;
 }
