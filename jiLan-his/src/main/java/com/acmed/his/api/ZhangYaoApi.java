@@ -1,11 +1,13 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.StatusCode;
+import com.acmed.his.exceptions.BaseException;
+import com.acmed.his.model.Org;
 import com.acmed.his.model.zy.OrderItemDrugDto;
+import com.acmed.his.pojo.mo.DrugZYQueryMo;
 import com.acmed.his.pojo.vo.OrgVo;
-import com.acmed.his.pojo.zy.OrderItemDrugVo;
-import com.acmed.his.pojo.zy.ZYOrderDetailVo;
-import com.acmed.his.pojo.zy.ZyOrderQueryMo;
-import com.acmed.his.pojo.zy.ZyOrderVo;
+import com.acmed.his.pojo.zy.*;
+import com.acmed.his.service.OrgManager;
 import com.acmed.his.service.ZhangYaoManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -37,6 +39,31 @@ public class ZhangYaoApi {
 
     @Autowired
     private ZhangYaoManager zhangYaoManager;
+
+    @Autowired
+    private OrgManager orgManager;
+
+    @ApiOperation(value = "掌药药品信息列表")
+    @PostMapping("/drug/list")
+    public ResponseResult<PageResult<ZYDrugVo>> getZYDrugList(@RequestBody(required = false) PageBase<DrugZYQueryMo> pageBase,
+                                                              @AccessToken AccessInfo info){
+        if(null == pageBase.getParam() || StringUtils.isEmpty(pageBase.getParam().getName())){
+            throw new BaseException(StatusCode.FAIL,"药品名称不能为空");
+        }
+        if(StringUtils.isEmpty(pageBase.getParam().getLng()) || StringUtils.isEmpty(pageBase.getParam().getLat())){
+            Org org = orgManager.getOrgDetail(info.getUser().getOrgCode());
+            pageBase.getParam().setLng(org.getLng());
+            pageBase.getParam().setLat(org.getLat());
+        }
+
+        if(StringUtils.isEmpty(pageBase.getParam().getLng()) || StringUtils.isEmpty(pageBase.getParam().getLat())){
+            throw new BaseException(StatusCode.FAIL,"经纬度不能为空");
+        }
+
+        PageResult<ZYDrugVo> pageResult = zhangYaoManager.getDrugList(pageBase);
+        return ResponseUtil.setSuccessResult(pageResult);
+
+    }
 
 
     @ApiOperation(value = "未下单的处方")
@@ -105,6 +132,9 @@ public class ZhangYaoApi {
         zhangYaoManager.recepit(JSONObject.parseObject(param).getString("id"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
+
+
+
 
 
 }

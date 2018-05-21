@@ -76,8 +76,7 @@ public class DrugApi {
     @Autowired
     private ZhangYaoManager zhangYaoManager;
 
-    @Autowired
-    private OrgManager orgManager;
+
 
     @ApiOperation(value = "药品信息列表")
     @PostMapping("/list")
@@ -345,27 +344,7 @@ public class DrugApi {
 
 
 
-    @ApiOperation(value = "掌药药品信息列表")
-    @PostMapping("/zy/list")
-    public ResponseResult<PageResult<ZYDrugVo>> getZYDrugList(@RequestBody(required = false) PageBase<DrugZYQueryMo> pageBase,
-                                                              @AccessToken AccessInfo info){
-        if(null == pageBase.getParam() || StringUtils.isEmpty(pageBase.getParam().getName())){
-            throw new BaseException(StatusCode.FAIL,"药品名称不能为空");
-        }
-        if(StringUtils.isEmpty(pageBase.getParam().getLng()) || StringUtils.isEmpty(pageBase.getParam().getLat())){
-            Org org = orgManager.getOrgDetail(info.getUser().getOrgCode());
-            pageBase.getParam().setLng(org.getLng());
-            pageBase.getParam().setLat(org.getLat());
-        }
 
-        if(StringUtils.isEmpty(pageBase.getParam().getLng()) || StringUtils.isEmpty(pageBase.getParam().getLat())){
-            throw new BaseException(StatusCode.FAIL,"经纬度不能为空");
-        }
-
-        PageResult<ZYDrugVo> pageResult = zhangYaoManager.getDrugList(pageBase);
-        return ResponseUtil.setSuccessResult(pageResult);
-
-    }
 
     private <T> T getRowValue(Cell cell, Class<T> clazz){
         if(cell.getCellTypeEnum() == CellType.STRING){
