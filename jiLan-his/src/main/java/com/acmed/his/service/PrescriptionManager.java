@@ -581,9 +581,12 @@ public class PrescriptionManager {
        medicalRecord.setApplyId(apply.getId());
        if(StringUtils.isEmpty(medicalRecord.getId())){
            medicalRecord.setId(UUIDUtil.generate());
+           medicalRecord.setCreateBy(userInfo.getId().toString());
            recordMapper.insert(medicalRecord);
        }else{
-           recordMapper.updateByPrimaryKey(medicalRecord);
+           medicalRecord.setCreateBy(null);
+           medicalRecord.setModifyBy(userInfo.getId().toString());
+           recordMapper.updateByPrimaryKeySelective(medicalRecord);
        }
 
     }
