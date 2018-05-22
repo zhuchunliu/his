@@ -576,8 +576,8 @@ public class PrescriptionManager {
      */
     private void handleMedicalRecord(PreMo mo, Apply apply, UserInfo userInfo) {
        MedicalRecord medicalRecord = Optional.ofNullable(recordManager.getMedicalRecordByApplyId(apply.getId())).orElse(new MedicalRecord());
-       BeanUtils.copyProperties(mo.getRecord(),medicalRecord,"id");
-       BeanUtils.copyProperties(apply,medicalRecord,"id");
+       BeanUtils.copyProperties(mo.getRecord(),medicalRecord,"id","createBy");
+       BeanUtils.copyProperties(apply,medicalRecord,"id","createBy");
        medicalRecord.setApplyId(apply.getId());
        if(StringUtils.isEmpty(medicalRecord.getId())){
            medicalRecord.setId(UUIDUtil.generate());

@@ -39,7 +39,7 @@ public class ZhangYaoManagerTest {
     @Test
     public void getOrderDetail(){
 
-        ZYOrderDetailVo vo = zhangYaoManager.getOrderDetail("b0f86b08b9fa4024b3c07b15893d4d54BCQm");
-        System.err.println(vo);
+//        ZYOrderDetailVo vo = zhangYaoManager.getOrderDetail("b0f86b08b9fa4024b3c07b15893d4d54BCQm");
+//        System.err.println(vo);
     }
 }

@@ -18,6 +18,9 @@ public class ZhangYaoConstant {
 
     private final static String CITY_URL ="r=jizhi/search/area";//地址列表
 
+    private final static String EXPRESS_URL ="r=jizhi/search/express";//获取快递列表
+
+    private final static String LOGISTICS_URL ="r=jizhi/search/logistics";
     /**
      * 获取药品信息
      * @param keyword 搜索关键词
@@ -94,4 +97,32 @@ public class ZhangYaoConstant {
                 append(Optional.ofNullable(areaId).map(obj->"&areaId="+areaId).orElse(""));
         return builder.toString();
     }
+
+    /**
+     * 获取快递信息
+     *
+     * @param storeId 药店id
+     * @param provinceId 省份id
+     * @return
+     */
+    public static String buildExpressUrl(String storeId, String provinceId){
+        StringBuilder builder = new StringBuilder();
+        builder.append("?").append(EXPRESS_URL).
+                append(Optional.ofNullable(storeId).map(obj->"&storeId="+storeId).orElse("")).
+                append(Optional.ofNullable(provinceId).map(obj->"&provinceId="+provinceId).orElse(""));
+        return builder.toString();
+    }
+
+    /**
+     * 根据订单号获取物流信息
+     * @param orderSn
+     * @return
+     */
+    public static String buildLogisticsUrl(String orderSn){
+        StringBuilder builder = new StringBuilder();
+        builder.append("?").append(LOGISTICS_URL).
+                append(Optional.ofNullable(orderSn).map(obj->"&orderSn="+orderSn).orElse(""));
+        return builder.toString();
+    }
+
 }

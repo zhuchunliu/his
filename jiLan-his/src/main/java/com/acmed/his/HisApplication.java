@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -21,6 +22,7 @@ import org.springframework.web.filter.CorsFilter;
 @SpringBootApplication
 @EnableCaching
 @EnableScheduling
+@EnableAspectJAutoProxy(exposeProxy = true)
 @MapperScan(basePackages = "com.acmed.his.dao")
 public class HisApplication {
 
