@@ -5,10 +5,7 @@ import com.acmed.his.model.Apply;
 import com.acmed.his.model.MedicalRecord;
 import com.acmed.his.model.dto.MedicalReDto;
 import com.acmed.his.pojo.mo.MedicalRecordAddMo;
-import com.acmed.his.pojo.vo.MedicalRecordDetailVo;
-import com.acmed.his.pojo.vo.MedicalRecordDoctorVo;
-import com.acmed.his.pojo.vo.PrescriptionVo;
-import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.pojo.vo.*;
 import com.acmed.his.service.ApplyManager;
 import com.acmed.his.service.MedicalRecordManager;
 import com.acmed.his.service.PrescriptionManager;
@@ -47,7 +44,7 @@ public class MedicalRecordApi {
     private UserManager userManager;
 
     @Autowired
-    private PrescriptionManager prescriptionManager;
+    private PrescriptionManager preManager;
 
     @ApiOperation(value = "保存病例")
     @PostMapping("save")
@@ -103,10 +100,9 @@ public class MedicalRecordApi {
         if (medicalRecordById == null){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"病例不存在");
         }
-        List<PrescriptionVo> preByApply = prescriptionManager.getPreByApplyId(medicalRecordById.getApplyId());
         MedicalRecordDetailVo medicalRecordDetailVo = new MedicalRecordDetailVo();
         BeanUtils.copyProperties(medicalRecordById,medicalRecordDetailVo);
-        medicalRecordDetailVo.setPrescriptionVoList(preByApply);
+        medicalRecordDetailVo.setPrescriptionVoList(preManager.getPreDrug(medicalRecordById.getApplyId()));
         Integer doctorId = new Integer(medicalRecordById.getCreateBy());
         String userName = userManager.getUserDetail(doctorId).getUserName();
         medicalRecordDetailVo.setDoctorName(userName);
@@ -120,10 +116,9 @@ public class MedicalRecordApi {
         if (medicalRecordByApplyId == null){
             return ResponseUtil.setErrorMeg(StatusCode.ERROR_ORDER,"病例不存在");
         }
-        List<PrescriptionVo> preByApply = prescriptionManager.getPreByApplyId(medicalRecordByApplyId.getApplyId());
         MedicalRecordDetailVo medicalRecordDetailVo = new MedicalRecordDetailVo();
         BeanUtils.copyProperties(medicalRecordByApplyId,medicalRecordDetailVo);
-        medicalRecordDetailVo.setPrescriptionVoList(preByApply);
+        medicalRecordDetailVo.setPrescriptionVoList(preManager.getPreDrug(applyId));
         Integer doctorId = new Integer(medicalRecordByApplyId.getCreateBy());
         String userName = userManager.getUserDetail(doctorId).getUserName();
         medicalRecordDetailVo.setDoctorName(userName);

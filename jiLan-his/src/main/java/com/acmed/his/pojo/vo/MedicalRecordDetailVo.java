@@ -56,7 +56,7 @@ public class MedicalRecordDetailVo {
     private String remark;
 
     @ApiModelProperty("处方列表")
-    private List<PrescriptionVo> prescriptionVoList;
+    private List<PreDrugVo> prescriptionVoList;
 
     @ApiModelProperty("医生名字")
     private String doctorName;
