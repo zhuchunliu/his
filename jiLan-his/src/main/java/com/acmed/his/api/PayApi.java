@@ -270,7 +270,7 @@ public class PayApi {
                                 int i = applyManager.updateApply(apply);
                                 PayStatements payStatements = new PayStatements();
                                 payStatements.setId(UUIDUtil.generate32());
-                                payStatements.setFeeType("2");
+                                payStatements.setFeeType("1");
                                 payStatements.setOrgCode(applyById.getOrgCode());
                                 payStatements.setSource("1");
                                 payStatements.setApplyId(out_trade_no);
@@ -392,7 +392,7 @@ public class PayApi {
                         InsuranceOrder insuranceOrder = insuranceOrderManager.getById(out_trade_no);
                         if (insuranceOrder != null) {
                             if (StringUtils.isEmpty(insuranceOrder.getPayId())){
-                                insuranceOrder.setFeeType("2");
+                                insuranceOrder.setFeeType("1");
                                 insuranceOrder.setPayId(transaction_id);
                                 int i = insuranceOrderManager.update(insuranceOrder);
                                 if (i == 1) {
