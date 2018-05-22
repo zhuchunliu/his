@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ import java.util.Optional;
  * Created by Darren on 2018-04-10
  **/
 @Service
-public class ZhangYaoManager {
+public class ZhangYaoManager implements InitializingBean {
 
     private Logger logger = LoggerFactory.getLogger(ZhangYaoManager.class);
 
@@ -62,12 +63,19 @@ public class ZhangYaoManager {
     @Autowired
     private ZyOrderItemMapper zyOrderItemMapper;
 
+    private static String ZHANGYAO_URL = "zhangyao.url";
+
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.ZHANGYAO_URL = environment.getProperty("zhangyao.url");
+    }
     /**
      * 获取药品信息
      * @return
      */
     public PageResult<ZYDrugListVo> getDrugList(PageBase<DrugZYQueryMo> pageBase) {
-        StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
+        StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL);
         DrugZYQueryMo mo = Optional.ofNullable(pageBase.getParam()).orElse(new DrugZYQueryMo());
         builder.append(ZhangYaoConstant.buildDrugListUrl(mo.getName(),(pageBase.getPageNum()-1)*pageBase.getPageSize(),pageBase.getPageSize(),3,
                 mo.getLat(),mo.getLng(),null));
@@ -106,7 +114,7 @@ public class ZhangYaoManager {
      */
     public ZYDrugDetailVo getDrugDetail(String storeId, String drugId) {
 
-        StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
+        StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL);
         builder.append(ZhangYaoConstant.buildDrugDetailUrl(storeId,drugId));
         RestTemplate restTemplate = new RestTemplate();
         JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
@@ -141,7 +149,7 @@ public class ZhangYaoManager {
      * @return
      */
     public ZYStoreDetailObj getStoreDetail(String storeId) {
-        StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
+        StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL);
         builder.append(ZhangYaoConstant.buildStoreDetailUrl(storeId));
         RestTemplate restTemplate = new RestTemplate();
         JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
@@ -251,7 +259,7 @@ public class ZhangYaoManager {
     public ZYOrderDetailVo getOrderDetail(String orderId) {
         ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(orderId);
         if (null != zyOrder && StringUtils.isNotEmpty(zyOrder.getZyOrderSn())) {
-            StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
+            StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL);
             builder.append(ZhangYaoConstant.buildOrderQueryUrl(zyOrder.getZyOrderSn()));
             RestTemplate restTemplate = new RestTemplate();
             JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
@@ -312,7 +320,7 @@ public class ZhangYaoManager {
      * @return
      */
     public List<ZYCityObj> getCity(String areaId) {
-        StringBuilder builder = new StringBuilder(environment.getProperty("zhangyao.url"));
+        StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL);
         builder.append(ZhangYaoConstant.buildCityUrl(areaId));
         RestTemplate restTemplate = new RestTemplate();
         JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
@@ -324,4 +332,8 @@ public class ZhangYaoManager {
             throw new BaseException(StatusCode.FAIL,"获取地址信息失败");
         }
     }
+
+
+
+
 }

@@ -159,7 +159,7 @@
     </dependencies>
 
     <build>
-        <finalName>his-dev</finalName>
+        <finalName>his</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
