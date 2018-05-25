@@ -47,7 +47,8 @@ public enum StatusCode {
 	ERROR_APPLY_NUM_OUT (10028,"医生挂号达到上限"),
 	ERROR_FORBIDDEN(10029,"用户已经被禁用，请联系管理员"),
 	ERROR_OPENID_NULL(10030,"还未绑定微信"),
-	ERROR_OPENID_NEED_BIND(10031,"请绑定微信");
+	ERROR_OPENID_NEED_BIND(10031,"请绑定微信"),
+	ERROR_GEACCESSTOPENIDECORD(10032,"获取accesstoken异常");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StatusCode.class);
 

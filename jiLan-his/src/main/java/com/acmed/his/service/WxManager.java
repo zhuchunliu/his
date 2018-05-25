@@ -77,7 +77,7 @@ public class WxManager {
         String accessToken = json.getString("access_token");
         if (StringUtils.isEmpty(accessToken)){
             logger.error("微信获取accesstoken  异常"+info);
-            throw new BaseException(StatusCode.ERROR_GETOPENIDECORD);
+            throw new BaseException(StatusCode.ERROR_GEACCESSTOPENIDECORD);
         }
         redisTemplate.opsForValue().set(RedisKeyConstants.WX_BASE_ACCESS_TOKEN,accessToken);
         redisTemplate.expire(RedisKeyConstants.WX_BASE_ACCESS_TOKEN,100, TimeUnit.MINUTES);

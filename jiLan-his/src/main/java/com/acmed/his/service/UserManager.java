@@ -279,4 +279,10 @@ public class UserManager {
         userMapper.updateByPrimaryKey(user);
         return user;
     }
+
+    public List<User> getListByIds(List<Integer> ids){
+        Example example = new Example(User.class);
+        example.createCriteria().andIn("id",ids);
+        return userMapper.selectByExample(example);
+    }
 }
