@@ -31,7 +31,7 @@ public class WxMsgManagerTest {
     public void sendtplmsg() {
         WxTplMsg wxTplMsg = new WxTplMsg();
         wxTplMsg.setTouser("oTAaixA9X74whvto1wK4H-zn9wAY");
-        wxTplMsg.setTemplate_id("MjH5LSyxWWx-kyN3PnV6kWqt-s8TFvk3DjYsiwwnC4Y");
+        wxTplMsg.setTemplate_id("46GwUsQOFuJc3JPjOT0I_fqmCoVLwISPIDEWun__Eyc");
 
         WxTplMsg.DataBean dataBean = new WxTplMsg.DataBean();
         WxTplMsg.DataBean.FirstBean firstBean = new WxTplMsg.DataBean.FirstBean();
