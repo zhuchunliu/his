@@ -1,6 +1,6 @@
 package com.acmed.his.dao;
 
-import com.acmed.his.model.zy.ZyOrderItem;
+import com.acmed.his.model.ZyOrderItem;
 import com.acmed.his.util.TkMapper;
 
 /**

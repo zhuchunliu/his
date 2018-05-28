@@ -7,14 +7,13 @@ import com.acmed.his.dao.ZyOrderItemMapper;
 import com.acmed.his.dao.ZyOrderMapper;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.PrescriptionItem;
+import com.acmed.his.model.ZyOrder;
+import com.acmed.his.model.ZyOrderItem;
+import com.acmed.his.model.dto.ZyOrderItemDto;
 import com.acmed.his.model.zy.OrderItemDrugDto;
-import com.acmed.his.model.zy.ZyOrder;
-import com.acmed.his.model.zy.ZyOrderItem;
 import com.acmed.his.pojo.vo.UserInfo;
-import com.acmed.his.pojo.zy.ZYOrderDetailObj;
-import com.acmed.his.pojo.zy.ZYOrderDetailVo;
-import com.acmed.his.pojo.zy.ZyOrderQueryMo;
-import com.acmed.his.pojo.zy.ZyOrderVo;
+import com.acmed.his.pojo.zy.*;
+import com.acmed.his.service.CommonManager;
 import com.acmed.his.service.ZhangYaoManager;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
@@ -28,15 +27,14 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
@@ -63,14 +61,109 @@ public class ZhangYaoOrderManager {
     @Autowired
     private ZyOrderItemMapper zyOrderItemMapper;
 
+    @Autowired
+    private CommonManager commonManager;
+
     private static String ZHANGYAO_URL = "zhangyao.url";
 
     /**
-     * 获取未下单的处方
-     * @param orgCode
+     * 待支付订单
+     * @param info
      */
-    public List<OrderItemDrugDto> getUnOrder(Integer orgCode) {
-        return zhangYaoMapper.getUnOrder(orgCode);
+    public List<ZyOrderItemDto> getUnpaidList(UserInfo info) {
+
+        List<PrescriptionItem> itemList = zhangYaoMapper.getUnDismantleList(info.getOrgCode());
+        if(null != itemList){
+            synchronized ("orgcode_"+info.getOrgCode()){
+                // step1:根据药店分组
+                List<String> storeIdList = Lists.newArrayList();
+                Map<String,List<PrescriptionItem>> map = Maps.newHashMap();
+                itemList.forEach(item->{
+                    if(!map.containsKey(item.getZyStoreId())){
+                        map.put(item.getZyStoreId(),Lists.newArrayList());
+                    }
+                    map.get(item.getZyStoreId()).add(item);
+                    storeIdList.add(item.getZyStoreId());
+                });
+
+                List<ZyOrderItem> orderItemList = Lists.newArrayList();
+                List<ZyOrder> orderList = Lists.newArrayList();
+
+                //step2:根据分组找到待付款订单， 进行合并
+                List<ZyOrder> unpaidOrderList = zhangYaoMapper.getUnpaidOrder(info.getOrgCode(),storeIdList);
+                for(ZyOrder order : unpaidOrderList){
+                    for(PrescriptionItem item : map.get(order.getZyStoreId())){
+                        ZyOrderItem orderItem = this.getZyOrderItem(order,item);
+                        orderItemList.add(orderItem);
+                        order.setDrugFee(order.getDrugFee()+orderItem.getFee());
+                    }
+                    order.setFee(order.getDrugFee()+order.getExpressFee());
+                    zyOrderMapper.updateByPrimaryKey(order);
+                    map.remove(order.getZyStoreId());
+                }
+
+                //step3 建立新的订单
+                Iterator<String> iterator = map.keySet().iterator();
+                while (iterator.hasNext()){
+                    ZyOrder order = new ZyOrder();
+                    order.setId(UUIDUtil.generate());
+                    order.setZyStoreId(iterator.next());
+                    order.setOrderNo(LocalDate.now().toString()+
+                            commonManager.getFormatVal(info.getOrgCode() + LocalDate.now().toString(), "00000"));
+                    order.setPayStatus(0);
+                    order.setIsRecepit(0);
+                    order.setExpressFee(0d);
+                    order.setRemoved("0");
+                    order.setCreateAt(LocalDate.now().toString());
+                    order.setCreateBy(info.getId().toString());
+
+                    for(PrescriptionItem item : map.get(order.getZyStoreId())){
+                        ZyOrderItem orderItem = this.getZyOrderItem(order,item);
+                        orderItemList.add(orderItem);
+
+                        order.setZyStoreName(item.getZyStoreName());
+                        order.setDrugFee(order.getDrugFee()+orderItem.getFee());
+                    }
+                    order.setFee(order.getDrugFee()+order.getExpressFee());
+                    orderList.add(order);
+                }
+
+                //保存数据
+                zyOrderItemMapper.insertList(orderItemList);
+                zyOrderMapper.insertList(orderList);
+            }
+        }
+        return zhangYaoMapper.getUnpaidOrderItem(info.getOrgCode());
+
+    }
+
+    @Transactional
+    public void pay(List<ZYOrderPayMo> moList, UserInfo user) {
+        for(ZYOrderPayMo mo : moList){
+            ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(mo.getOrderId());
+            if(!zyOrder.getDrugFee().equals(mo.getDrugFee())){
+                throw new BaseException(StatusCode.FAIL,"订单已被更新，请重新刷新之后付款");
+            }
+            if(!zyOrder.getExpressId().equals(mo.getExpressId())){
+
+            }
+        }
+    }
+
+    private ZyOrderItem getZyOrderItem(ZyOrder order ,PrescriptionItem item){
+        ZyOrderItem orderItem = new ZyOrderItem();
+        orderItem.setId(UUIDUtil.generate());
+        orderItem.setOrderId(order.getId());
+        orderItem.setApplyId(item.getApplyId());
+        orderItem.setPreItemId(item.getId());
+        orderItem.setDrugId(item.getZyDrugId());
+        orderItem.setDrugName(item.getDrugName());
+        orderItem.setNum(item.getNum());
+        orderItem.setRetailPrice(item.getRetailPrice());
+        orderItem.setFee(item.getFee());
+        orderItem.setManufacturerName(item.getZyManufacturerName());
+        orderItem.setRemoved("0");
+        return orderItem;
     }
 
     /**
@@ -78,8 +171,8 @@ public class ZhangYaoOrderManager {
      * @param ids
      */
     @Transactional
-    public void order(String ids, UserInfo info) {
-        List<PrescriptionItem> itemList = zhangYaoMapper.getPreItemByIds(ids.split(","));
+    public void dismantle(String ids, UserInfo info) {
+
         Map<String,List<PrescriptionItem>> map = Maps.newHashMap();
         itemList.forEach(obj->{
             if(map.containsKey(obj.getZyStoreId())){
@@ -89,49 +182,40 @@ public class ZhangYaoOrderManager {
             }
         });
 
-
-
         Iterator iterator = map.keySet().iterator();
         while (iterator.hasNext()){
-            ((ZhangYaoOrderManager)AopContext.currentProxy()).handleOrderDetail(map.get(iterator.next()),info);
             List<PrescriptionItem> childList = map.get(iterator.next());
+            ZyOrder zyOrder = new ZyOrder();
+            zyOrder.setId(UUIDUtil.generate());
+            zyOrder.setOrgCode(info.getOrgCode());
+            zyOrder.setZyStoreId(childList.get(0).getZyStoreId());
+            zyOrder.setZyStoreName(childList.get(0).getZyStoreName());
+            zyOrder.setPayStatus(0);
+            zyOrder.setIsRecepit(0);
+            zyOrder.setCreateAt(LocalDateTime.now().toString());
+            zyOrder.setCreateBy(info.getId().toString());
 
+            zyOrderMapper.insert(zyOrder);
+
+            childList.forEach(obj->{
+                ZyOrderItem item = new ZyOrderItem();
+                item.setId(UUIDUtil.generate());
+                item.setItemId(obj.getId());
+                item.setOrderId(zyOrder.getId());
+                item.setDrugId(obj.getZyDrugId());
+                item.setDrugName(obj.getDrugName());
+                item.setNum(obj.getNum());
+                item.setRetailPrice(obj.getRetailPrice());
+                item.setFee(obj.getFee());
+                zyOrderItemMapper.insert(item);
+
+            });
         }
 
-        zhangYaoMapper.updateItemOrderStatus(ids.split(","));
-
-        //TODO 掌药下单待开发
+        zhangYaoMapper.updateItemDismantleStatus(ids.split(","));
 
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleOrderDetail(List<PrescriptionItem> list,UserInfo info){
-
-
-
-        ZyOrder zyOrder = new ZyOrder();
-        zyOrder.setId(UUIDUtil.generate());
-        zyOrder.setOrgCode(info.getOrgCode());
-        zyOrder.setZyStoreId(list.get(0).getZyStoreId());
-        zyOrder.setZyStoreName(list.get(0).getZyStoreName());
-        zyOrder.setPayStatus(0);
-        zyOrder.setIsRecepit(0);
-        zyOrder.setCreateAt(LocalDateTime.now().toString());
-        zyOrder.setCreateBy(info.getId().toString());
-
-        zyOrder.setZyOrderId("191882");//暂时写死，用于测试
-        zyOrder.setZyOrderSn("10102018032350539897");//暂时写死，用于测试
-        zyOrderMapper.insert(zyOrder);
-
-        list.forEach(obj->{
-            ZyOrderItem item = new ZyOrderItem();
-            item.setId(UUIDUtil.generate());
-            item.setItemId(obj.getId());
-            item.setOrderId(zyOrder.getId());
-            zyOrderItemMapper.insert(item);
-        });
-
-    }
 
     /**
      * 获取下单列表
@@ -223,4 +307,6 @@ public class ZhangYaoOrderManager {
         zyOrder.setModifyBy(user.getId().toString());
         zyOrderMapper.updateByPrimaryKey(zyOrder);
     }
+
+
 }

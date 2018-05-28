@@ -2,33 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.ZhangYaoMapper">
-    <select id="getUnOrder" resultType="com.acmed.his.model.zy.OrderItemDrugDto">
-        select item.id,item.zystoreid ,item.zystorename,item.zydrugspec ,item.zymanufacturername ,
-        item.drugname,item.num,item.retailprice,item.fee,
-        item.applyid,apply.clinicNo,apply.patientname,pre.createat as diagnosedate
+    <select id="getUnDismantleList" resultType="com.acmed.his.model.zy.OrderItemDrugDto">
+        select item.*
         from t_b_prescription_item item
         LEFT JOIN t_b_apply apply on item.applyid = apply.id
-        LEFT JOIN t_b_prescription pre on item.prescriptionid = pre.id
-        where item.zystoreid IS NOT null AND item.isorder = 0 AND item.paystatus =1 and apply.orgcode = #{orgCode}
-        ORDER BY apply.clinicno ASC
+        where item.zyorderstatus = 0 AND item.paystatus =1 and apply.orgcode = #{orgCode} AND apply.status = 1
     </select>
 
-    <select id="getPreItemByIds" resultType="com.acmed.his.model.PrescriptionItem">
-        select * from t_b_prescription_item WHERE id in
-        <foreach collection="ids" separator="," open="(" close=")" item="id">
-            #{id}
-        </foreach>
-        ORDER BY zystoreid ASC
-    </select>
 
-    <update id="updateItemOrderStatus">
+    <update id="updateItemDismantleStatus">
         update t_b_prescription_item set isorder =1 where id in
         <foreach collection="ids" separator="," open="(" close=")" item="id">
             #{id}
         </foreach>
     </update>
 
-    <select id="getOrderList" resultType="com.acmed.his.model.zy.ZyOrder">
+    <select id="getOrderList" resultType="com.acmed.his.model.ZyOrder">
         select * from t_zy_order where orgcode = #{orgCode}
         <if test="@Ognl@isNotEmpty(mo.name)">
             AND (zyordersn like concat('%', #{mo.name} , '%') or zystorename like concat('%', #{mo.name} , '%'))
@@ -50,5 +39,25 @@
         LEFT JOIN t_b_prescription pre on item.prescriptionid = pre.id
             where item.id in(select itemid from t_zy_order_item where orderid = #{orderId})
         ORDER BY apply.clinicno ASC
+    </select>
+
+
+    <select id="getUnpaidOrderItem" resultType="com.acmed.his.model.dto.ZyOrderItemDto">
+        select t1.id as itemId, t1.orderid, t1.applyid,
+        t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,
+        t2.orderno, t2.drugfee ,
+        t3.prescriptionno as prescriptionNo from t_zy_order_item t1
+        LEFT JOIN t_zy_order t2 on t1.orderid = t2.id
+        LEFT JOIN t_b_prescription t3 on t1.applyid = t3.applyid
+        where t1.removed = '0' and t1.removed = '0'
+        and t2.paystatus = 0 ORDER BY t2.orderno desc
+    </select>
+
+    <select id="getUnpaidOrder" resultType="com.acmed.his.model.ZyOrder">
+        select * from t_zy_order where paystatus = 0 and orgcode = #{orgCode}
+        and zystoreid in
+        <foreach collection="storeIdList" separator="," open="(" close=")" item="zyStoreId">
+            #{zyStoreId}
+        </foreach>
     </select>
 </mapper>

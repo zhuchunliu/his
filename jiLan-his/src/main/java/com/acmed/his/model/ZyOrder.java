@@ -1,9 +1,11 @@
-package com.acmed.his.model.zy;
+package com.acmed.his.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -19,8 +21,23 @@ public class ZyOrder {
     @ApiModelProperty("id 掌药订单id")
     private String id;
 
+    @ApiModelProperty("订单编号")
+    private String orderNo;
+
+    @ApiModelProperty("药品费用")
+    private Double drugFee;
+
+    @ApiModelProperty("快递费用")
+    private Double expressFee;
+
+    @ApiModelProperty("总费用")
+    private Double fee;
+
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
+
+    @ApiModelProperty("快递主键")
+    private String expressId;
 
     @ApiModelProperty("掌药订单id")
     private String zyOrderId;
@@ -42,6 +59,9 @@ public class ZyOrder {
 
     @ApiModelProperty("支付时间")
     private Integer payTime;
+
+    @ApiModelProperty("删除标识:0 未删除,1:删除")
+    private String removed;
 
     @ApiModelProperty("创建时间")
     private String createAt;

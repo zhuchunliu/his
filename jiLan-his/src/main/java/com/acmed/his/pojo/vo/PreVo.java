@@ -109,6 +109,7 @@ public class PreVo {
                     item.setStoreId(obj.getZyStoreId());
                     item.setStoreName(obj.getZyStoreName());
                     item.setDrugName(obj.getDrugName());
+                    item.setDrugId(obj.getZyDrugId());
                 }else {
                     Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
                     if (null != drug) {

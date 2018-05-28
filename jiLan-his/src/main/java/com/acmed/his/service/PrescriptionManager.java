@@ -347,16 +347,16 @@ public class PrescriptionManager {
                     PrescriptionItem item = new PrescriptionItem();
                     if(StringUtils.isNotEmpty(info.getStoreId())){//掌药药品信息
                         item.setId(UUIDUtil.generate());
-                        item.setDrugId(info.getDrugId());
                         item.setDrugName(info.getDrugName());
                         item.setNum(Optional.ofNullable(info.getNum()).orElse(0));
                         item.setRetailPrice(Optional.ofNullable(info.getRetailPrice()).orElse(0d));
                         item.setFee(item.getNum()*item.getRetailPrice());
+                        item.setZyDrugId(info.getDrugId());
                         item.setZyStoreId(info.getStoreId());
                         item.setZyStoreName(info.getStoreName());
                         item.setZyDrugSpec(info.getSpec());
                         item.setZyManufacturerName(info.getManufacturerName());
-                        item.setIsOrder(0);
+                        item.setZyOrderStatus(0);
 
                         item.setFrequency(info.getFrequency());
                         item.setSingleDose(info.getSingleDose());

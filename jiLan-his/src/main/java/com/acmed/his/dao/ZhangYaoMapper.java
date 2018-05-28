@@ -2,7 +2,8 @@ package com.acmed.his.dao;
 
 import com.acmed.his.model.PrescriptionItem;
 import com.acmed.his.model.zy.OrderItemDrugDto;
-import com.acmed.his.model.zy.ZyOrder;
+import com.acmed.his.model.ZyOrder;
+import com.acmed.his.model.dto.ZyOrderItemDto;
 import com.acmed.his.pojo.zy.ZyOrderQueryMo;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,24 +14,18 @@ import java.util.List;
  **/
 public interface ZhangYaoMapper {
     /**
-     * 未下单的处方单
+     * 未拆分的处方单
      * @param orgCode
      */
-    List<OrderItemDrugDto> getUnOrder(@Param("orgCode") Integer orgCode);
+    List<PrescriptionItem> getUnDismantleList(@Param("orgCode") Integer orgCode);
+
 
     /**
-     * 根据处方详情主键获取处方信息
-     * @param ids
-     * @return
-     */
-    List<PrescriptionItem> getPreItemByIds(@Param("ids") String[] ids);
-
-    /**
-     * 更新处方详情下单状态
+     * 更新处方详情拆单状态
      *
      * @param ids
      */
-    void updateItemOrderStatus(@Param("ids") String[] ids);
+    void updateItemDismantleStatus(@Param("ids") String[] ids);
 
     /**
      * 下单列表
@@ -46,4 +41,19 @@ public interface ZhangYaoMapper {
      * @return
      */
     List<OrderItemDrugDto> getOrderItemList(@Param("orderId") String orderId);
+
+    /**
+     * 获取待支付订单详情
+     * @param orgCode
+     * @return
+     */
+    List<ZyOrderItemDto> getUnpaidOrderItem(Integer orgCode);
+
+    /**
+     * 根据药店，获取待支付的订单
+     * @param orgCode
+     * @param storeIdList
+     * @return
+     */
+    List<ZyOrder> getUnpaidOrder(@Param("orgCode") Integer orgCode, @Param("storeIdList") List<String> storeIdList);
 }
