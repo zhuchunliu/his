@@ -10,7 +10,6 @@ import com.acmed.his.model.PrescriptionItem;
 import com.acmed.his.model.ZyOrder;
 import com.acmed.his.model.ZyOrderItem;
 import com.acmed.his.model.dto.ZyOrderItemDto;
-import com.acmed.his.model.zy.OrderItemDrugDto;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.zy.*;
 import com.acmed.his.service.CommonManager;
@@ -173,46 +172,46 @@ public class ZhangYaoOrderManager {
     @Transactional
     public void dismantle(String ids, UserInfo info) {
 
-        Map<String,List<PrescriptionItem>> map = Maps.newHashMap();
-        itemList.forEach(obj->{
-            if(map.containsKey(obj.getZyStoreId())){
-                map.get(obj.getZyStoreId()).add(obj);
-            }else{
-                map.put(obj.getZyStoreId(), Lists.newArrayList(obj));
-            }
-        });
-
-        Iterator iterator = map.keySet().iterator();
-        while (iterator.hasNext()){
-            List<PrescriptionItem> childList = map.get(iterator.next());
-            ZyOrder zyOrder = new ZyOrder();
-            zyOrder.setId(UUIDUtil.generate());
-            zyOrder.setOrgCode(info.getOrgCode());
-            zyOrder.setZyStoreId(childList.get(0).getZyStoreId());
-            zyOrder.setZyStoreName(childList.get(0).getZyStoreName());
-            zyOrder.setPayStatus(0);
-            zyOrder.setIsRecepit(0);
-            zyOrder.setCreateAt(LocalDateTime.now().toString());
-            zyOrder.setCreateBy(info.getId().toString());
-
-            zyOrderMapper.insert(zyOrder);
-
-            childList.forEach(obj->{
-                ZyOrderItem item = new ZyOrderItem();
-                item.setId(UUIDUtil.generate());
-                item.setItemId(obj.getId());
-                item.setOrderId(zyOrder.getId());
-                item.setDrugId(obj.getZyDrugId());
-                item.setDrugName(obj.getDrugName());
-                item.setNum(obj.getNum());
-                item.setRetailPrice(obj.getRetailPrice());
-                item.setFee(obj.getFee());
-                zyOrderItemMapper.insert(item);
-
-            });
-        }
-
-        zhangYaoMapper.updateItemDismantleStatus(ids.split(","));
+//        Map<String,List<PrescriptionItem>> map = Maps.newHashMap();
+//        itemList.forEach(obj->{
+//            if(map.containsKey(obj.getZyStoreId())){
+//                map.get(obj.getZyStoreId()).add(obj);
+//            }else{
+//                map.put(obj.getZyStoreId(), Lists.newArrayList(obj));
+//            }
+//        });
+//
+//        Iterator iterator = map.keySet().iterator();
+//        while (iterator.hasNext()){
+//            List<PrescriptionItem> childList = map.get(iterator.next());
+//            ZyOrder zyOrder = new ZyOrder();
+//            zyOrder.setId(UUIDUtil.generate());
+//            zyOrder.setOrgCode(info.getOrgCode());
+//            zyOrder.setZyStoreId(childList.get(0).getZyStoreId());
+//            zyOrder.setZyStoreName(childList.get(0).getZyStoreName());
+//            zyOrder.setPayStatus(0);
+//            zyOrder.setIsRecepit(0);
+//            zyOrder.setCreateAt(LocalDateTime.now().toString());
+//            zyOrder.setCreateBy(info.getId().toString());
+//
+//            zyOrderMapper.insert(zyOrder);
+//
+//            childList.forEach(obj->{
+//                ZyOrderItem item = new ZyOrderItem();
+//                item.setId(UUIDUtil.generate());
+//                item.setItemId(obj.getId());
+//                item.setOrderId(zyOrder.getId());
+//                item.setDrugId(obj.getZyDrugId());
+//                item.setDrugName(obj.getDrugName());
+//                item.setNum(obj.getNum());
+//                item.setRetailPrice(obj.getRetailPrice());
+//                item.setFee(obj.getFee());
+//                zyOrderItemMapper.insert(item);
+//
+//            });
+//        }
+//
+//        zhangYaoMapper.updateItemDismantleStatus(ids.split(","));
 
     }
 
@@ -239,13 +238,7 @@ public class ZhangYaoOrderManager {
 
     }
 
-    /**
-     * 订单处方详情
-     * @param orderId
-     */
-    public List<OrderItemDrugDto> getOrderItemList(String orderId) {
-        return zhangYaoMapper.getOrderItemList(orderId);
-    }
+
 
     /**
      * 获取掌药订单详情

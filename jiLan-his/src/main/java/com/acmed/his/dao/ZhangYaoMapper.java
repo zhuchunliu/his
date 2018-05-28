@@ -1,7 +1,6 @@
 package com.acmed.his.dao;
 
 import com.acmed.his.model.PrescriptionItem;
-import com.acmed.his.model.zy.OrderItemDrugDto;
 import com.acmed.his.model.ZyOrder;
 import com.acmed.his.model.dto.ZyOrderItemDto;
 import com.acmed.his.pojo.zy.ZyOrderQueryMo;
@@ -35,12 +34,7 @@ public interface ZhangYaoMapper {
     List<ZyOrder> getOrderList(@Param("mo") ZyOrderQueryMo zyOrderMo, @Param("orgCode") Integer orgCode);
 
 
-    /**
-     * 获取下单的药品详情
-     * @param id
-     * @return
-     */
-    List<OrderItemDrugDto> getOrderItemList(@Param("orderId") String orderId);
+
 
     /**
      * 获取待支付订单详情

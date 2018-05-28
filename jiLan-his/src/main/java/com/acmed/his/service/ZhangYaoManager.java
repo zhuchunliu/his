@@ -266,6 +266,7 @@ public class ZhangYaoManager implements InitializingBean {
         if(null != isDefault){
             criteria.andEqualTo("isDefault","1");
         }
-        example.setOrderByClause();
+//        example.setOrderByClause();
+        return null;
     }
 }
