@@ -236,6 +236,7 @@ public class TemplateApi {
         if(prescriptionTpl.getCategory().equals("1")){//药品处方
             Example example = new Example(PrescriptionTplItem.class);
             example.createCriteria().andEqualTo("tplId",id);
+            example.orderBy("sn").asc();
             List<PrescriptionTplItemVo> list = Lists.newArrayList();
             preTplItemMapper.selectByExample(example).forEach(obj->{
                 PrescriptionTplItemVo vo = new PrescriptionTplItemVo();
@@ -281,6 +282,7 @@ public class TemplateApi {
         }else{//检查处方
             Example example = new Example(InspectTpl.class);
             example.createCriteria().andEqualTo("tplId",id);
+            example.orderBy("sn").asc();
             List<InspectTplVo> list = Lists.newArrayList();
             inspectTplMapper.selectByExample(example).forEach(obj->{
                 InspectTplVo vo = new InspectTplVo();

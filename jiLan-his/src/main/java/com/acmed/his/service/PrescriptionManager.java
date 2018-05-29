@@ -106,19 +106,19 @@ public class PrescriptionManager {
 
         Example example = new Example(Charge.class);
         example.createCriteria().andEqualTo("applyId",applyId);
-        example.orderBy("id").asc();
+        example.orderBy("sn").asc();
         List<Charge> chargeList = chargeMapper.selectByExample(example);
 
         example = new Example(Inspect.class);
         example.createCriteria().andEqualTo("applyId",applyId);
-        example.orderBy("id").asc();
+        example.orderBy("sn").asc();
         List<Inspect> preInspectList = inspectMapper.selectByExample(example);
 
         Prescription prescription = preMapper.getPreByApply(applyId).get(0);
 
         example = new Example(PrescriptionItem.class);
         example.createCriteria().andEqualTo("applyId",applyId);
-        example.orderBy("id").asc();
+        example.orderBy("sn").asc();
         List<PrescriptionItem> preItemList = preItemMapper.selectByExample(example);
 
 //        Patient patient = patientManager.getPatientById(prescription.getPatientId());
@@ -335,9 +335,13 @@ public class PrescriptionManager {
             Double receivables = 0.0d;
             Double receipts = 0.0d;
             if(null != pre.getItemList()) {
-                for (PreMo.ItemMo info : pre.getItemList()) {
+//                for (PreMo.ItemMo info : pre.getItemList()) {
+                for (int index =0; index < pre.getItemList().size(); index++) {
+                    PreMo.ItemMo info = pre.getItemList().get(index);
                     if(StringUtils.isNotEmpty(info.getItemId())){
                         PrescriptionItem item = preItemMapper.selectByPrimaryKey(info.getItemId());
+                        item.setSn(index);
+                        preItemMapper.updateByPrimaryKey(item);
                         if(null != item && 1 == item.getPayStatus()) {
                             receivables += item.getFee();
                             receipts += item.getFee();
@@ -345,6 +349,11 @@ public class PrescriptionManager {
                         }
                     }
                     PrescriptionItem item = new PrescriptionItem();
+                    item.setSn(index);
+                    item.setCreateAt(prescription.getCreateAt());
+                    item.setCreateBy(prescription.getCreateBy());
+                    item.setModifyAt(prescription.getModifyAt());
+                    item.setModifyBy(prescription.getModifyBy());
                     if(StringUtils.isNotEmpty(info.getStoreId())){//掌药药品信息
                         item.setId(UUIDUtil.generate());
                         item.setDrugName(info.getDrugName());
@@ -369,6 +378,7 @@ public class PrescriptionManager {
                         item.setPrescriptionId(prescription.getId());
                         item.setGroupNum(String.valueOf(i+1));
                         item.setPayStatus(0);
+                        item.setSn(index);
 
                         preItemMapper.insert(item);
                         receivables += item.getFee();
@@ -392,6 +402,7 @@ public class PrescriptionManager {
                     item.setDrugCode(drug.getDrugCode());
                     item.setMinPriceUnitType(drug.getMinPriceUnitType());
                     item.setPayStatus(0);
+
                     if(info.getUnitType() == 1) {
                         item.setBid(Optional.ofNullable(drug.getBid()).orElse(0d));//存当前进价
                         item.setRetailPrice(Optional.ofNullable(drug.getRetailPrice()).orElse(0d));//存当前零售价
@@ -416,9 +427,14 @@ public class PrescriptionManager {
             }
 
             if(null != pre.getInspectList()) {
-                for (PreMo.InspectMo info : pre.getInspectList()) {
+//                for (PreMo.InspectMo info : pre.getInspectList()) {
+                for (int index =0; index < pre.getInspectList().size(); index++) {
+                    PreMo.InspectMo info = pre.getInspectList().get(index);
+
                     if(StringUtils.isNotEmpty(info.getInspectId())){
                         Inspect inspect = inspectMapper.selectByPrimaryKey(info.getInspectId());
+                        inspect.setSn(index);
+                        inspectMapper.updateByPrimaryKey(inspect);
                         if(null != inspect && 1 == inspect.getPayStatus()) {
                             receivables += inspect.getFee();
                             receipts += inspect.getFee();
@@ -428,6 +444,7 @@ public class PrescriptionManager {
                     Inspect inspect = new Inspect();
                     BeanUtils.copyProperties(prescription,inspect,"id");
                     BeanUtils.copyProperties(info, inspect);
+                    inspect.setSn(index);
                     inspect.setId(UUIDUtil.generate());
                     inspect.setPrescriptionId(prescription.getId());
                     inspect.setApplyId(apply.getId());
@@ -444,9 +461,14 @@ public class PrescriptionManager {
             }
 
             if(null != pre.getChargeList()) {
-                for (PreMo.ChargeMo info : pre.getChargeList()) {
+//                for (PreMo.ChargeMo info : pre.getChargeList()) {
+                for (int index =0; index < pre.getChargeList().size(); index++) {
+
+                    PreMo.ChargeMo info = pre.getChargeList().get(index);
                     if(StringUtils.isNotEmpty(info.getChargeId())){
                         Charge charge = chargeMapper.selectByPrimaryKey(info.getChargeId());
+                        charge.setSn(index);
+                        chargeMapper.updateByPrimaryKey(charge);
                         if(null != charge && 1 == charge.getPayStatus()) {
                             receivables += charge.getFee();
                             receipts += charge.getFee();
@@ -455,6 +477,7 @@ public class PrescriptionManager {
                     }
                     Charge charge = new Charge();
                     BeanUtils.copyProperties(prescription,charge,"id");
+                    charge.setSn(index);
                     charge.setId(UUIDUtil.generate());
                     charge.setApplyId(apply.getId());
                     charge.setPrescriptionId(prescription.getId());

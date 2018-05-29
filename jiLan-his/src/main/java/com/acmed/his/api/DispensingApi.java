@@ -262,6 +262,7 @@ public class DispensingApi {
 
         Example example = new Example(PrescriptionItem.class);
         example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.orderBy("sn").asc();
         List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
 
         Map<String,List<PrescriptionItemStock>> map = Maps.newHashMap();
@@ -288,14 +289,17 @@ public class DispensingApi {
 
         Example example = new Example(PrescriptionItem.class);
         example.createCriteria().andEqualTo("applyId",applyId);
+        example.orderBy("sn").asc();
         List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
 
         example = new Example(Inspect.class);
         example.createCriteria().andEqualTo("applyId",applyId);
+        example.orderBy("sn").asc();
         List<Inspect> inspectList = inspectMapper.selectByExample(example);
 
         example = new Example(Charge.class);
         example.createCriteria().andEqualTo("applyId",applyId);
+        example.orderBy("sn").asc();
         List<Charge> chargeList = chargeMapper.selectByExample(example);
 
         Map<String,List<PrescriptionItemStock>> map = Maps.newHashMap();

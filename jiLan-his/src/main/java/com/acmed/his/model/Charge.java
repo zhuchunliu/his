@@ -56,6 +56,9 @@ public class Charge {
     @ApiModelProperty("备注")
     private String remark;
 
+    @ApiModelProperty("序号")
+    private Integer sn;
+
     @ApiModelProperty("创建时间")
     private String createAt;
 

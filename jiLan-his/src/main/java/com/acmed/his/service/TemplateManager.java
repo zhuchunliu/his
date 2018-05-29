@@ -312,12 +312,13 @@ public class TemplateManager {
 
         prescriptionTplItemMapper.deleteByTplId(mo.getTplId());
         if(null != mo.getList() && 0 != mo.getList().size()) {
-            mo.getList().forEach((obj) -> {
+            for(int index =0; index < mo.getList().size(); index ++) {
                 PrescriptionTplItem item = new PrescriptionTplItem();
-                BeanUtils.copyProperties(obj, item);
+                BeanUtils.copyProperties(mo.getList().get(index), item);
                 item.setTplId(mo.getTplId());
+                item.setSn(index);
                 prescriptionTplItemMapper.insert(item);
-            });
+            }
         }
         return true;
     }
@@ -326,12 +327,13 @@ public class TemplateManager {
     public boolean savInspectTpl(InspectTplMo mo) {
         inspectTplMapper.deleteByTplId(mo.getTplId());
         if(null != mo.getList() && 0 != mo.getList().size()) {
-            mo.getList().forEach(obj -> {
+            for(int index=0; index < mo.getList().size(); index ++) {
                 InspectTpl inspectTpl = new InspectTpl();
-                BeanUtils.copyProperties(obj, inspectTpl);
+                BeanUtils.copyProperties(mo.getList().get(index), inspectTpl);
                 inspectTpl.setTplId(mo.getTplId());
+                inspectTpl.setSn(index);
                 inspectTplMapper.insert(inspectTpl);
-            });
+            }
         }
         return true;
     }

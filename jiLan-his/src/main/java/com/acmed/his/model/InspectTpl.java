@@ -37,4 +37,7 @@ public class InspectTpl {
 
     @ApiModelProperty("备注")
     private String memo;
+
+    @ApiModelProperty("序号")
+    private Integer sn;
 }

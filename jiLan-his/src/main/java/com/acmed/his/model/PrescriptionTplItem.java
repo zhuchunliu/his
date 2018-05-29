@@ -43,4 +43,7 @@ public class PrescriptionTplItem {
 
     @ApiModelProperty("备注")
     private String memo;
+
+    @ApiModelProperty("序号")
+    private Integer sn;
 }

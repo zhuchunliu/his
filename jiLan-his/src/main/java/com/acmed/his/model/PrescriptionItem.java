@@ -81,6 +81,21 @@ public class PrescriptionItem {
     @ApiModelProperty("服药备注")
     private String remark;
 
+    @ApiModelProperty("序号")
+    private Integer sn;
+
+    @ApiModelProperty("创建时间")
+    private String createAt;
+
+    @ApiModelProperty("修改时间")
+    private String modifyAt;
+
+    @ApiModelProperty("创建用户")
+    private String createBy;
+
+    @ApiModelProperty("修改用户")
+    private String modifyBy;
+
     @ApiModelProperty("药品id - 掌药")
     private Integer zyDrugId;
 
