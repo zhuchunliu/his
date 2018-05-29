@@ -39,7 +39,6 @@ public class AccompanyingOrderManager {
     @Scheduled(cron = "0 */1 * * * ?")
     @Transactional
     public void tastguoqi(){
-        log.info("定时清理过期订单定时任务");
         String time = LocalDateTime.now().plusHours(24).toString();
         accompanyingOrderMapper.updateToGuoqi(time);
     }
