@@ -14,6 +14,7 @@ import com.acmed.his.util.TokenUtil;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -35,10 +36,12 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
 
     private RedisTemplate redisTemplate;
     private UserManager userManager;
+    private Environment environment;
 
     public AccessTokenInterceptor(ApplicationContext applicationContext) {
         this.redisTemplate = applicationContext.getBean("stringRedisTemplate",RedisTemplate.class);
         this.userManager = applicationContext.getBean(UserManager.class);
+        this.environment = applicationContext.getBean(Environment.class);
     }
 
     private static final ImmutableSet<String> ignore;
@@ -68,10 +71,12 @@ public class AccessTokenInterceptor implements HandlerInterceptor {
                 .map(TokenUtil::getFromToken).map(ResponseResult::getResult)
                 .map(val ->(RequestToken)val).map(RequestToken::getLoginid).orElse(null);
 
-        HashOperations<String, Object, Object> hash = redisTemplate.opsForHash();
-        Map<Object, Object> map = hash.entries(String.format(RedisKeyConstants.USERKEY_PRE, loginId));
-        if(null == map || !map.containsKey(RedisKeyConstants.USERTOKEN_PRE) || !map.get(RedisKeyConstants.USERTOKEN_PRE).equals(token)){//token不存在或过期
-            throw new BaseException(StatusCode.ERROR_TOKEN);
+        if(!this.environment.getActiveProfiles()[0].equalsIgnoreCase("dev")) {//开发环境跳过
+            HashOperations<String, Object, Object> hash = redisTemplate.opsForHash();
+            Map<Object, Object> map = hash.entries(String.format(RedisKeyConstants.USERKEY_PRE, loginId));
+            if (null == map || !map.containsKey(RedisKeyConstants.USERTOKEN_PRE) || !map.get(RedisKeyConstants.USERTOKEN_PRE).equals(token)) {//token不存在或过期
+                throw new BaseException(StatusCode.ERROR_TOKEN);
+            }
         }
 
         if(loginId.startsWith("USER_PAD")) {//刷新token有效期

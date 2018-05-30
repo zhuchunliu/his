@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.ZyOrderItemMapper">
+    <delete id="deleteByOrderId">
+        DELETE FROM t_zy_order_item where orderid = #{orderId}
+    </delete>
+
+    <delete id="deleteById">
+        DELETE FROM t_zy_order_item where id = #{id}
+    </delete>
+</mapper>

@@ -51,7 +51,7 @@ public class ZyOrder {
     @ApiModelProperty("药店名称 - 掌药")
     private String zyStoreName;
 
-    @ApiModelProperty("支付状态 0:未支付,1:已支付,2:已退款")
+    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:已退款")
     private Integer payStatus;
 
     @ApiModelProperty("是否已经收到药 0:否；1:是")

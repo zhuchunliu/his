@@ -69,7 +69,7 @@ public class ZhangYaoApi {
             throw new BaseException(StatusCode.FAIL,"经纬度不能为空");
         }
 
-        PageResult<ZYDrugListVo> pageResult = zhangYaoManager.getDrugList(pageBase);
+        PageResult<ZYDrugListVo> pageResult = zhangYaoManager.getDrugList(pageBase,info.getUser());
         return ResponseUtil.setSuccessResult(pageResult);
 
     }
@@ -83,20 +83,12 @@ public class ZhangYaoApi {
 
     }
 
-    @ApiOperation(value = "掌药药店详情")
-    @GetMapping("/store/detail")
-    public ResponseResult<ZYStoreDetailObj> getStoreDetail(@Param("药店id") @RequestParam("storeId") String storeId){
-        ZYStoreDetailObj detail = zhangYaoManager.getStoreDetail(storeId);
-        return ResponseUtil.setSuccessResult(detail);
 
-    }
-
-
-    @ApiOperation(value = "待支付订单")
-    @GetMapping("/unpaid/list")
-    public ResponseResult<List<UnpaidOrderVo>> getUnpaidList(@RequestBody(required = false) PageBase<String> pageBase,
+    @ApiOperation(value = "待提交订单")
+    @GetMapping("/unsubmit/list")
+    public ResponseResult<List<UnpaidOrderVo>> getUnSubmitOrder(@Param("订单号,或者药品名称") @RequestParam(value = "name",required = false) String name,
                                                              @AccessToken AccessInfo info){
-        List<ZyOrderItemDto> dtoList = orderManager.getUnpaidList(info.getUser());
+        List<ZyOrderItemDto> dtoList = orderManager.getUnSubmitOrder(info.getUser(),name);
         Map<String,List<ZyOrderItemDto>> map = Maps.newHashMap();
         for(ZyOrderItemDto dto: dtoList){
             if(!map.containsKey(dto.getOrderId())){
@@ -125,16 +117,25 @@ public class ZhangYaoApi {
         return ResponseUtil.setSuccessResult(list);
     }
 
-
-
-    @ApiOperation(value = "付费")
-    @PostMapping("/pay")
-    public ResponseResult pay(@RequestBody List<ZYOrderPayMo> mo,
-                              @AccessToken AccessInfo info){
-
-        orderManager.pay(mo,info.getUser());
+    @ApiOperation(value = "删除待提交订单")
+    @DeleteMapping("/unsubmit/del")
+    public ResponseResult<List<UnpaidOrderVo>> delUnSubmitOrder(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
+                                                                @Param("详情主键") @RequestParam(value = "itemId",required = false) String itemId,
+                                                               @AccessToken AccessInfo info){
+        orderManager.delUnSubmitOrder(info.getUser(),orderId,itemId);
         return ResponseUtil.setSuccessResult();
     }
+
+
+
+//    @ApiOperation(value = "付费")
+//    @PostMapping("/pay")
+//    public ResponseResult pay(@RequestBody List<ZYOrderPayMo> mo,
+//                              @AccessToken AccessInfo info){
+//
+//        orderManager.pay(mo,info.getUser());
+//        return ResponseUtil.setSuccessResult();
+//    }
 
 
 
@@ -207,17 +208,17 @@ public class ZhangYaoApi {
 
     @ApiOperation(value = "获取快递地址")
     @GetMapping("/address/list")
-    public ResponseResult<ZYLogisticsObj> getAddressList(@Param("是否是默认地址 0:否；1:是") @RequestParam(value = "isDefault") Integer isDefault,
+    public ResponseResult<ZYLogisticsObj> getAddressList(@Param("是否只查默认地址 0:否；1:是; 默认0,即所有地址信息") @RequestParam(required = false,defaultValue = "0") Integer isOnlyDefault,
                                                          @AccessToken AccessInfo info){
-        List<ZyAddress> zyAddresses = zhangYaoManager.getAddressList(isDefault,info.getUser());
-        return ResponseUtil.setSuccessResult();
+        List<ZyAddress> list = zhangYaoManager.getAddressList(isOnlyDefault,info.getUser());
+        return ResponseUtil.setSuccessResult(list);
 
     }
 
-    @ApiOperation(value ="获取快递地址")
-    @GetMapping("/address/save")
-    public ResponseResult<ZYLogisticsObj> saveAddress(@RequestBody ZyAddressMo mo,
-                                                      @AccessToken AccessInfo info){
+    @ApiOperation(value ="保存快递地址")
+    @PostMapping("/address/save")
+    public ResponseResult saveAddress(@RequestBody ZyAddressMo mo,
+                                      @AccessToken AccessInfo info){
         zhangYaoManager.saveAddress(mo,info.getUser());
         return ResponseUtil.setSuccessResult();
 
@@ -241,6 +242,14 @@ public class ZhangYaoApi {
                                      @AccessToken AccessInfo info){
         zhangYaoManager.delAddress(id,info.getUser());
         return ResponseUtil.setSuccessResult();
+
+    }
+
+    @ApiOperation(value = "掌药药店详情",hidden = true)
+    @GetMapping("/store/detail")
+    public ResponseResult<ZYStoreDetailObj> getStoreDetail(@Param("药店id") @RequestParam("storeId") String storeId){
+        ZYStoreDetailObj detail = zhangYaoManager.getStoreDetail(storeId);
+        return ResponseUtil.setSuccessResult(detail);
 
     }
 

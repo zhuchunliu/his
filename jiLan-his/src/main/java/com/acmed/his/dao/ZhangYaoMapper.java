@@ -7,6 +7,7 @@ import com.acmed.his.pojo.zy.ZyOrderQueryMo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Darren on 2018-04-11
@@ -18,13 +19,28 @@ public interface ZhangYaoMapper {
      */
     List<PrescriptionItem> getUnDismantleList(@Param("orgCode") Integer orgCode);
 
+    /**
+     * 根据药店，获取待提交的订单
+     * @param orgCode
+     * @param storeIdList
+     * @return
+     */
+    List<ZyOrder> getUnSubmitOrder(@Param("orgCode") Integer orgCode, @Param("storeIdList") List<String> storeIdList);
+
 
     /**
-     * 更新处方详情拆单状态
+     * 获取待提交的订单详情
+     * @param orgCode
+     * @return
+     */
+    List<ZyOrderItemDto> getUnSubmitOrderItem(@Param("orgCode") Integer orgCode,@Param("name")String name);
+
+    /**
+     * 更新处方详情为拆单状态
      *
      * @param ids
      */
-    void updateItemDismantleStatus(@Param("ids") String[] ids);
+    void updateItemDismantleStatus(@Param("ids") List<String> ids);
 
     /**
      * 下单列表
@@ -36,18 +52,14 @@ public interface ZhangYaoMapper {
 
 
 
-    /**
-     * 获取待支付订单详情
-     * @param orgCode
-     * @return
-     */
-    List<ZyOrderItemDto> getUnpaidOrderItem(Integer orgCode);
+
+
 
     /**
-     * 根据药店，获取待支付的订单
+     * 统计每个药被使用情况
+     * @param drugIdList
      * @param orgCode
-     * @param storeIdList
      * @return
      */
-    List<ZyOrder> getUnpaidOrder(@Param("orgCode") Integer orgCode, @Param("storeIdList") List<String> storeIdList);
+    List<Map<String,Object>> statisDrugUsed(@Param("drugIdList") List<Integer> drugIdList, @Param("orgCode") Integer orgCode);
 }

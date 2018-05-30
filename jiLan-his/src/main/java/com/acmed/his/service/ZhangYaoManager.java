@@ -2,9 +2,9 @@ package com.acmed.his.service;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.ZhangYaoConstant;
+import com.acmed.his.dao.ZhangYaoMapper;
 import com.acmed.his.dao.ZyAddressMapper;
 import com.acmed.his.exceptions.BaseException;
-import com.acmed.his.model.User;
 import com.acmed.his.model.ZyAddress;
 import com.acmed.his.pojo.mo.DrugZYQueryMo;
 import com.acmed.his.pojo.vo.UserInfo;
@@ -17,21 +17,21 @@ import com.acmed.his.util.PageResult;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import tk.mybatis.mapper.entity.Example;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -46,6 +46,9 @@ public class ZhangYaoManager implements InitializingBean {
     private Environment environment;
 
     @Autowired
+    private ZhangYaoMapper zhangYaoMapper;
+
+    @Autowired
     private ZyAddressMapper addressMapper;
 
     private static String ZHANGYAO_URL = null;
@@ -58,7 +61,7 @@ public class ZhangYaoManager implements InitializingBean {
      * 获取药品信息
      * @return
      */
-    public PageResult<ZYDrugListVo> getDrugList(PageBase<DrugZYQueryMo> pageBase) {
+    public PageResult<ZYDrugListVo> getDrugList(PageBase<DrugZYQueryMo> pageBase,UserInfo info) {
         StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL);
         DrugZYQueryMo mo = Optional.ofNullable(pageBase.getParam()).orElse(new DrugZYQueryMo());
         builder.append(ZhangYaoConstant.buildDrugListUrl(mo.getName(),(pageBase.getPageNum()-1)*pageBase.getPageSize(),pageBase.getPageSize(),3,
@@ -70,17 +73,29 @@ public class ZhangYaoManager implements InitializingBean {
             result.setTotal(json.getJSONObject("data").getLong("totalCount"));
             JSONArray jsonArray = json.getJSONObject("data").getJSONArray("bigSearchList");
             List<ZYDrugListVo> drugList = Lists.newArrayList();
+            List<Integer> drugIdList = Lists.newArrayList();
             for(int i = 0;i<jsonArray.size();i++){
                 ZYDrugListObj zyDrug = JSONObject.parseObject(jsonArray.getString(i),ZYDrugListObj.class);
                 ZYDrugListVo vo = new ZYDrugListVo();
                 BeanUtils.copyProperties(zyDrug,vo);
                 vo.setSpec(zyDrug.getForm());
                 vo.setRetailPrice(zyDrug.getGoodsPrice());
-                vo.setNum(zyDrug.getStorage());
                 vo.setManufacturerName(zyDrug.getCompanyName());
                 vo.setDrugName(zyDrug.getCnName());
+                drugIdList.add(vo.getDrugId());
                 drugList.add(vo);
             }
+
+            //获取每个药被使用次数
+            List<Map<String,Object>> useList = zhangYaoMapper.statisDrugUsed(drugIdList,info.getOrgCode());
+            Map<String,Integer> useMap = Maps.newHashMap();
+            for(Map<String,Object> map : useList){
+                useMap.put(map.get("zydrugid").toString(),
+                        Optional.ofNullable(map.get("num")).map(String::valueOf).map(Integer::parseInt).orElse(0));
+            }
+
+            drugList.forEach(obj->obj.setUseNum(useMap.get(obj.getDrugId().toString())));
+
             result.setData(drugList);
             return result;
         }else{
@@ -115,10 +130,7 @@ public class ZhangYaoManager implements InitializingBean {
             vo.setRetailPrice(obj.getGoodsPrice());
             vo.setManufacturerName(obj.getCompanyName());
 
-            ZYDrugDetailVo.ZYDrugStoreDetailVo detailVo = new ZYDrugDetailVo.ZYDrugStoreDetailVo();
-            BeanUtils.copyProperties(detailObj,detailVo);
-            vo.setDrugStoreDetailVo(detailVo);
-
+            vo.setCity(null != detailObj?detailObj.getCity():"");
             return vo;
         }else{
             logger.error("get zhangyao drug detail fail,msg: "+json.get("message")+"  ;the url is :"+builder.toString());
@@ -218,12 +230,14 @@ public class ZhangYaoManager implements InitializingBean {
         if(null == mo.getId()){
             ZyAddress zyAddress = new ZyAddress();
             BeanUtils.copyProperties(mo,zyAddress);
+            zyAddress.setOrgCode(user.getOrgCode());
             zyAddress.setRemoved("0");
             zyAddress.setCreateBy(user.getId().toString());
             zyAddress.setCreateAt(LocalDateTime.now().toString());
             addressMapper.insert(zyAddress);
         }else{
             ZyAddress zyAddress = addressMapper.selectByPrimaryKey(mo.getId());
+            BeanUtils.copyProperties(mo,zyAddress);
             zyAddress.setModifyBy(user.getId().toString());
             zyAddress.setModifyAt(LocalDateTime.now().toString());
             addressMapper.updateByPrimaryKey(zyAddress);
@@ -262,11 +276,12 @@ public class ZhangYaoManager implements InitializingBean {
     public List<ZyAddress> getAddressList(Integer isDefault, UserInfo user) {
         Example example = new Example(ZyAddress.class);
         example.excludeProperties("orgCode","removed","createAt","modifyAt","createBy","modifyBy");
-        Example.Criteria criteria = example.createCriteria().andEqualTo("removed","0");
-        if(null != isDefault){
+        Example.Criteria criteria = example.createCriteria().andEqualTo("removed","0").
+                andEqualTo("orgCode",user.getOrgCode());
+        if(null != isDefault && 1 == isDefault){
             criteria.andEqualTo("isDefault","1");
         }
-//        example.setOrderByClause();
-        return null;
+        example.orderBy("isDefault").desc().orderBy("createAt").desc();
+        return addressMapper.selectByExample(example);
     }
 }

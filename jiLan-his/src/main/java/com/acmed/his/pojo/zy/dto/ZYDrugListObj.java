@@ -1,7 +1,5 @@
 package com.acmed.his.pojo.zy.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -21,7 +19,7 @@ public class ZYDrugListObj {
     private String storeName;
 
     @ApiModelProperty("药品id")
-    private String drugId;
+    private Integer drugId;
 
     @ApiModelProperty("是否为OTC药品 0为非otc药品 1为otc药品")
     private String OTC;

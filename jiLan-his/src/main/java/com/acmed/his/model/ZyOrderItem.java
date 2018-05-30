@@ -2,6 +2,7 @@ package com.acmed.his.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.annotation.NameStyle;
 
 import javax.persistence.GeneratedValue;
@@ -48,6 +49,9 @@ public class ZyOrderItem {
 
     @ApiModelProperty("药品厂家 - 掌药")
     private String manufacturerName;
+
+    @ApiModelProperty("待支付展示状态：0:正常，1:新增的，2:被删除的")
+    private Integer status;
 
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;

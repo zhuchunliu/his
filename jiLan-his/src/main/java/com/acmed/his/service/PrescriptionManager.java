@@ -311,7 +311,7 @@ public class PrescriptionManager {
             BeanUtils.copyProperties(apply,prescription);
             prescription.setId(UUIDUtil.generate());
             prescription.setApplyId(apply.getId());
-            prescription.setPrescriptionNo(apply.getId()+commonManager.getNextVal("Org"+apply.getId()));
+            prescription.setPrescriptionNo("P"+LocalDate.now().toString().replaceAll("-","")+commonManager.getFormatVal("Org"+LocalDate.now().toString(),"000000"));
             prescription.setIsPaid("0");
 //            prescription.setIsDispensing("0");
             prescription.setCreateAt(LocalDateTime.now().toString());

@@ -32,8 +32,8 @@ public class ZhangYaoManagerTest {
         pageBase.setParam(mo);
         pageBase.setPageNum(1);
         pageBase.setPageSize(2);
-        PageResult pageResult = zhangYaoManager.getDrugList(pageBase);
-        System.err.println(pageResult);
+//        PageResult pageResult = zhangYaoManager.getDrugList(pageBase);
+//        System.err.println(pageResult);
     }
 
     @Test
