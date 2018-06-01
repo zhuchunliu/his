@@ -121,8 +121,7 @@ public class PrescriptionManager {
         example.orderBy("sn").asc();
         List<PrescriptionItem> preItemList = preItemMapper.selectByExample(example);
 
-//        Patient patient = patientManager.getPatientById(prescription.getPatientId());
-//        PatientItem patientItem = patientItemManager.getByPatientId(patient.getId(),userInfo.getOrgCode());
+        PatientItem patientItem = patientItemManager.getById(prescription.getPatientId());
 
         example = new Example(MedicalRecord.class);
         example.createCriteria().andEqualTo("applyId",prescription.getApplyId());
@@ -134,7 +133,7 @@ public class PrescriptionManager {
         example.orderBy("groupNum").orderBy("id");
         List<Inject> injectList = injectMapper.selectByExample(example);
 
-        return new PreVo(prescription,preInspectList,chargeList,preItemList,null,medicalRecord,injectList,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
+        return new PreVo(prescription,preInspectList,chargeList,preItemList,patientItem,medicalRecord,injectList,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
     }
 
 

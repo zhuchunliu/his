@@ -20,7 +20,9 @@ public class ZhangYaoConstant {
 
     private final static String EXPRESS_URL ="r=jizhi/search/express";//获取快递列表
 
-    private final static String LOGISTICS_URL ="r=jizhi/search/logistics";
+    private final static String LOGISTICS_URL ="r=jizhi/search/logistics";//物流地址
+
+    private final static String ORDER_URL = "?r=jizhi/order/place";//下单地址
     /**
      * 获取药品信息
      * @param keyword 搜索关键词
@@ -122,6 +124,17 @@ public class ZhangYaoConstant {
         StringBuilder builder = new StringBuilder();
         builder.append("?").append(LOGISTICS_URL).
                 append(Optional.ofNullable(orderSn).map(obj->"&orderSn="+orderSn).orElse(""));
+        return builder.toString();
+    }
+
+    /**
+     * 下单地址
+     *
+     * @return
+     */
+    public static String buildOrderUrl(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("?").append(ORDER_URL);
         return builder.toString();
     }
 

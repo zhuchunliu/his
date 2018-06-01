@@ -19,35 +19,35 @@ public class ZYOrderPostObj {
     private String deliverId;
 
     @ApiModelProperty("订单总金额（商品总额+运费）包邮或者到店自提无需加上邮费,后台会重新计算总额然后和传入的总额进行比对")
-    private Double total;
+    private String total;
 
     @ApiModelProperty("快递id")
-    private Double expId;
+    private String expId;
 
     @ApiModelProperty("省份id")
-    private Double provinceId;
+    private String provinceId;
 
     @ApiModelProperty("市id")
-    private Double areaId;
+    private String areaId;
 
     @ApiModelProperty("省市区")
-    private Double areaInfo;
+    private String areaInfo;
 
     @ApiModelProperty("详细地址")
-    private Double address;
+    private String address;
 
     @ApiModelProperty("收件人姓名")
-    private Double trueName;
+    private String trueName;
 
     @ApiModelProperty("收件人手机号")
-    private Double mobPhone;
+    private String mobPhone;
 
     @ApiModelProperty("下单药品")
     private List<ZYOrderPostDetailObj> drugList;
 
 
     @Data
-    public class ZYOrderPostDetailObj{
+    public static class ZYOrderPostDetailObj{
         @ApiModelProperty("药品主键")
         private Integer drugId;
 

@@ -31,8 +31,8 @@ public class PreVo {
     @ApiModelProperty("处方集合")
     private List<PrescriptVo> PreList = new ArrayList<>();
 
-//    @ApiModelProperty("患者信息")
-//    private PatientVo patient = new PatientVo();
+    @ApiModelProperty("患者信息")
+    private PatientVo patient = new PatientVo();
 
     @ApiModelProperty("病例")
     private MedicalRecordVo record = new MedicalRecordVo();
@@ -54,22 +54,22 @@ public class PreVo {
         this.id = prescription.getId();
         this.applyId = prescription.getApplyId();
 
-//        if(null != patientItem) {
-//            this.patient.setPatientId(patientItem.getPatientId());
-//            this.patient.setUserName(patientItem.getPatientName());
-//            this.patient.setGender(patientItem.getGender());
-//            this.patient.setDateOfBirth(patientItem.getDateOfBirth());
-//            this.patient.setMobile(patientItem.getMobile());
-//            this.patient.setAddress(patientItem.getAddress());
-//            this.patient.setAnaphylaxis(patientItem.getAnaphylaxis());
-//            this.patient.setIdCard(patientItem.getIdCard());
-//            this.patient.setSocialCard(patientItem.getSocialCard());
-//            if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
-//                this.patient.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
-//            } else {
-//                this.patient.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
-//            }
-//        }
+        if(null != patientItem) {
+            this.patient.setPatientId(patientItem.getPatientId());
+            this.patient.setUserName(patientItem.getPatientName());
+            this.patient.setGender(patientItem.getGender());
+            this.patient.setDateOfBirth(patientItem.getDateOfBirth());
+            this.patient.setMobile(patientItem.getMobile());
+            this.patient.setAddress(patientItem.getAddress());
+            this.patient.setAnaphylaxis(patientItem.getAnaphylaxis());
+            this.patient.setIdCard(patientItem.getIdCard());
+            this.patient.setSocialCard(patientItem.getSocialCard());
+            if (StringUtils.isNotEmpty(patientItem.getIdCard())) {
+                this.patient.setAge(DateTimeUtil.getAge(patientItem.getIdCard()));
+            } else {
+                this.patient.setAge(Optional.ofNullable(patientItem.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
+            }
+        }
 
 
         BeanUtils.copyProperties(medicalRecord,record);

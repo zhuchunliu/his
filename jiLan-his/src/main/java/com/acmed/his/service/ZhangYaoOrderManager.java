@@ -15,6 +15,7 @@ import com.acmed.his.model.dto.ZyOrderItemUnpaidDto;
 import com.acmed.his.model.dto.ZyOrderItemUnsubmitDto;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.zy.*;
+import com.acmed.his.pojo.zy.dto.ZYOrderPostObj;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.UUIDUtil;
@@ -31,8 +32,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -279,10 +285,55 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
             //setp3:给掌药提交数据,并验证
 
-
         }
         return null;
     }
+
+    /**
+     * 给掌药下单
+     * @param orderMap
+     * @param orderItemMap
+     */
+    public void postRemoteOrder(Map<String,ZyOrder> orderMap,Map<String,List<ZyOrderItem>> orderItemMap){
+        List<ZYOrderPostObj> objList = Lists.newArrayList();
+        for(String orderId : orderMap.keySet()){
+            ZyOrder order = orderMap.get(orderId);
+            ZYOrderPostObj obj = new ZYOrderPostObj();
+            obj.setStoreId(order.getZyStoreId());
+            obj.setDeliverId("45");
+            obj.setTotal(order.getFee().toString());
+            obj.setExpId(order.getExpressId());
+            obj.setProvinceId(order.getProvinceId());
+            obj.setAreaId(order.getCityId());
+            obj.setAreaInfo(order.getCountyId());
+            obj.setAddress(order.getAddress());
+            obj.setTrueName(order.getRecipient());
+            obj.setMobPhone(order.getPhone());
+            List<ZYOrderPostObj.ZYOrderPostDetailObj> drugList =Lists.newArrayList();
+
+            for(ZyOrderItem orderItem : orderItemMap.get(orderId)){
+                ZYOrderPostObj.ZYOrderPostDetailObj detailObj = new ZYOrderPostObj.ZYOrderPostDetailObj();
+                detailObj.setDrugId(orderItem.getDrugId());
+                detailObj.setDrugNum(orderItem.getNum());
+                drugList.add(detailObj);
+            }
+            obj.setDrugList(drugList);
+            objList.add(obj);
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+
+//        HttpEntity entity = new HttpEntity<>();
+//        entity
+//
+//        RestTemplate restTemplate = new RestTemplate();
+//        JSONObject json = restTemplate.exchange(ZhangYaoConstant.buildOrderUrl(), JSONObject.class);
+
+    }
+
+
 
 
     /**
