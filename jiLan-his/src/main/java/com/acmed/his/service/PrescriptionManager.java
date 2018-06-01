@@ -340,9 +340,9 @@ public class PrescriptionManager {
                     PreMo.ItemMo info = pre.getItemList().get(index);
                     if(StringUtils.isNotEmpty(info.getItemId())){
                         PrescriptionItem item = preItemMapper.selectByPrimaryKey(info.getItemId());
-                        item.setSn(index);
-                        preItemMapper.updateByPrimaryKey(item);
                         if(null != item && 1 == item.getPayStatus()) {
+                            item.setSn(index);
+                            preItemMapper.updateByPrimaryKey(item);
                             receivables += item.getFee();
                             receipts += item.getFee();
                             continue;
@@ -433,9 +433,9 @@ public class PrescriptionManager {
 
                     if(StringUtils.isNotEmpty(info.getInspectId())){
                         Inspect inspect = inspectMapper.selectByPrimaryKey(info.getInspectId());
-                        inspect.setSn(index);
-                        inspectMapper.updateByPrimaryKey(inspect);
                         if(null != inspect && 1 == inspect.getPayStatus()) {
+                            inspect.setSn(index);
+                            inspectMapper.updateByPrimaryKey(inspect);
                             receivables += inspect.getFee();
                             receipts += inspect.getFee();
                             continue;
@@ -467,9 +467,9 @@ public class PrescriptionManager {
                     PreMo.ChargeMo info = pre.getChargeList().get(index);
                     if(StringUtils.isNotEmpty(info.getChargeId())){
                         Charge charge = chargeMapper.selectByPrimaryKey(info.getChargeId());
-                        charge.setSn(index);
-                        chargeMapper.updateByPrimaryKey(charge);
                         if(null != charge && 1 == charge.getPayStatus()) {
+                            charge.setSn(index);
+                            chargeMapper.updateByPrimaryKey(charge);
                             receivables += charge.getFee();
                             receipts += charge.getFee();
                             continue;
