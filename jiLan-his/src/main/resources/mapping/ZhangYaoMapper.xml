@@ -17,10 +17,10 @@
         </foreach>
     </select>
 
-    <select id="getUnSubmitOrderItem" resultType="com.acmed.his.model.dto.ZyOrderItemDto">
+    <select id="getUnSubmitOrderItem" resultType="com.acmed.his.model.dto.ZyOrderItemUnsubmitDto">
         select t1.id as itemId, t1.orderid, t1.applyid,
         t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,
-        t2.orderno, t2.drugfee ,
+        t2.orderno, t2.drugfee ,t2.zyStoreId as storeId,
         t3.prescriptionno as prescriptionNo
         from t_zy_order_item t1
         LEFT JOIN t_zy_order t2 on t1.orderid = t2.id
@@ -42,33 +42,6 @@
             #{id}
         </foreach>
     </update>
-
-    <select id="getOrderList" resultType="com.acmed.his.model.ZyOrder">
-        select * from t_zy_order where orgcode = #{orgCode}
-        <if test="@Ognl@isNotEmpty(mo.name)">
-            AND (zyordersn like concat('%', #{mo.name} , '%') or zystorename like concat('%', #{mo.name} , '%'))
-        </if>
-        <if test="@Ognl@isNotEmpty(mo.payStatus)">
-            AND paystatus = #{mo.payStatus}
-        </if>
-        <if test="@Ognl@isNotEmpty(mo.isRecepit)">
-            AND isrecepit = #{mo.isRecepit}
-        </if>
-    </select>
-
-    <!--<select id="getOrderItemList" resultType="com.acmed.his.model.zy.OrderItemDrugDto">-->
-        <!--select item.id,item.zystoreid ,item.zystorename,item.zydrugspec ,item.zymanufacturername ,-->
-        <!--item.drugname,item.num,item.retailprice,item.fee,-->
-        <!--item.applyid,apply.clinicNo,apply.patientname,pre.createat as diagnosedate-->
-        <!--from t_b_prescription_item item-->
-        <!--LEFT JOIN t_b_apply apply on item.applyid = apply.id-->
-        <!--LEFT JOIN t_b_prescription pre on item.prescriptionid = pre.id-->
-            <!--where item.id in(select itemid from t_zy_order_item where orderid = #{orderId})-->
-        <!--ORDER BY apply.clinicno ASC-->
-    <!--</select>-->
-
-
-
 
 
 

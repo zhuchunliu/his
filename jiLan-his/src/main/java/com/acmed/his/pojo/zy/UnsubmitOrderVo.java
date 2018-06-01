@@ -6,10 +6,10 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * Created by Darren on 2018-06-01
+ * Created by Darren on 2018-04-12
  **/
-public class UnpaidOrderVo {
-
+@Data
+public class UnsubmitOrderVo {
     @ApiModelProperty("订单id")
     private String orderId;
 
@@ -23,10 +23,10 @@ public class UnpaidOrderVo {
     private Double drugFee;
 
 
-    private List<UnpaidOrderVo.UnpaidDetailVo> detailVoList;
+    private List<UnsubmitDetailVo> detailVoList;
 
     @Data
-    public static class UnpaidDetailVo{
+    public static class UnsubmitDetailVo{
 
         @ApiModelProperty("详情id")
         private String itemId;

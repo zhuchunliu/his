@@ -7,7 +7,7 @@ import lombok.Data;
  * Created by Darren on 2018-05-23
  **/
 @Data
-public class ZyOrderItemDto{
+public class ZyOrderItemUnsubmitDto {
 
     @ApiModelProperty("订单id")
     private String orderId;
@@ -18,6 +18,8 @@ public class ZyOrderItemDto{
     @ApiModelProperty("药品费用")
     private Double drugFee;
 
+    @ApiModelProperty("药店id")
+    private String storeId;
 
     @ApiModelProperty("详情id")
     private String itemId;

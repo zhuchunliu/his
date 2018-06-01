@@ -11,11 +11,10 @@ import com.acmed.his.model.PrescriptionItem;
 import com.acmed.his.model.ZyAddress;
 import com.acmed.his.model.ZyOrder;
 import com.acmed.his.model.ZyOrderItem;
-import com.acmed.his.model.dto.ZyOrderItemDto;
+import com.acmed.his.model.dto.ZyOrderItemUnpaidDto;
+import com.acmed.his.model.dto.ZyOrderItemUnsubmitDto;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.zy.*;
-import com.acmed.his.service.CommonManager;
-import com.acmed.his.service.ZhangYaoManager;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.UUIDUtil;
@@ -81,7 +80,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
      * @param info
      */
     @Transactional
-    public List<ZyOrderItemDto> getUnSubmitOrder(UserInfo info,String name) {
+    public List<ZyOrderItemUnsubmitDto> getUnSubmitOrder(UserInfo info, String name) {
 
         List<PrescriptionItem> itemList = zhangYaoMapper.getUnDismantleList(info.getOrgCode());
         List<String> itemIdList = Lists.newArrayList();
@@ -286,90 +285,27 @@ public class ZhangYaoOrderManager  implements InitializingBean {
     }
 
 
-
-
     /**
-     * 获取下单列表
-     * @param pageBase
-     * @param info
+     * 获取待支付列表
+     * @param user
+     * @param name
      * @return
      */
-    public PageResult getOrderList(PageBase<ZyOrderQueryMo> pageBase, UserInfo info) {
-        Page page= PageHelper.startPage(pageBase.getPageNum(),pageBase.getPageSize());
-        List<ZyOrder> source = zhangYaoMapper.getOrderList(Optional.ofNullable(pageBase.getParam()).orElse(new ZyOrderQueryMo()),info.getOrgCode());
-        List<ZyOrderVo> list = Lists.newArrayList();
-        source.forEach(obj->{
-            ZyOrderVo vo = new ZyOrderVo();
-            BeanUtils.copyProperties(obj,vo);
-            list.add(vo);
-        });
-        PageResult pageResult = new PageResult();
-        pageResult.setData(list);
-        pageResult.setTotal(page.getTotal());
-        return pageResult;
+    public List<ZyOrderItemUnpaidDto> getUnpaidOrder(UserInfo user, String name) {
 
+        return zhangYaoMapper.getUnpaidOrder(user.getOrgCode(),name);
     }
-
-    //    @Transactional
-//    public void pay(List<ZYOrderSubmitPayMo> moList, UserInfo user) {
-//        for(ZYOrderSubmitPayMo mo : moList){
-//            ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(mo.getOrderId());
-//            if(!zyOrder.getDrugFee().equals(mo.getDrugFee())){
-//                throw new BaseException(StatusCode.FAIL,"订单已被更新，请重新刷新之后付款");
-//            }
-//            if(!zyOrder.getExpressId().equals(mo.getExpressId())){
-//
-//            }
-//        }
-//    }
 
 
     /**
-     * 获取掌药订单详情
+     * 删除待支付详情
+     * @param user
      * @param orderId
+     * @param itemId
      */
-    public ZYOrderDetailVo getOrderDetail(String orderId) {
-        ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(orderId);
-        if (null != zyOrder && StringUtils.isNotEmpty(zyOrder.getZyOrderSn())) {
-            StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL);
-            builder.append(ZhangYaoConstant.buildOrderQueryUrl(zyOrder.getZyOrderSn()));
-            RestTemplate restTemplate = new RestTemplate();
-            JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
-            if (json.get("code").equals("1")) {
-                ZYOrderDetailObj obj = new ZYOrderDetailObj();
-                JSONObject data = json.getJSONObject("data");
-                obj.setOrderId(data.getString("orderId"));
-                obj.setOrderSn(data.getString("orderSn"));
-                obj.setPayAmount(data.getString("payAmount"));
-                obj.setPayTime(data.getString("payTime"));
-                obj.setOrderState(data.getString("orderState"));
-                obj.setPhone(data.getString("phone"));
-
-                JSONArray jsonArray = data.getJSONArray("goodsList");
-                List<ZYOrderDetailObj.ZYOrderDetailItem> list = Lists.newArrayList();
-
-                List<ZYOrderDetailVo.ZYOrderDetailItemVo> voList = Lists.newArrayList();
-
-                for(int i = 0;i<jsonArray.size();i++) {
-                    ZYOrderDetailObj.ZYOrderDetailItem item = JSONObject.parseObject(jsonArray.getString(i), ZYOrderDetailObj.ZYOrderDetailItem.class);
-                    list.add(item);
-                    ZYOrderDetailVo.ZYOrderDetailItemVo itemVo = new ZYOrderDetailVo.ZYOrderDetailItemVo();
-                    BeanUtils.copyProperties(item,itemVo);
-                    voList.add(itemVo);
-                }
-                obj.setGoodsList(list);
-
-                ZYOrderDetailVo vo = new ZYOrderDetailVo();
-                BeanUtils.copyProperties(obj, vo,"goodsList");
-                vo.setGoodsList(voList);
-                return vo;
-            }else {
-                logger.error("get zhangyao drug fail,msg: " + json.get("message") + "  ;the url is :" + builder.toString());
-                throw new BaseException(StatusCode.FAIL, "获取掌药药品信息失败");
-            }
-        }
-        return null;
+    public void delUnpaidOrder(UserInfo user, String orderId, String itemId) {
     }
+
 
 
     /**

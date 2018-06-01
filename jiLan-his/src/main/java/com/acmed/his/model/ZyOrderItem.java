@@ -50,7 +50,7 @@ public class ZyOrderItem {
     @ApiModelProperty("药品厂家 - 掌药")
     private String manufacturerName;
 
-    @ApiModelProperty("待支付展示状态：0:正常，1:新增的，2:被删除的")
+    @ApiModelProperty("待支付展示状态：0:正常，1:新增的，2:被删除的，4:不展示的")
     private Integer status;
 
     @ApiModelProperty("删除标识:0 未删除,1:删除")
