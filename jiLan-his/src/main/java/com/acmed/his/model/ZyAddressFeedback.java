@@ -10,56 +10,50 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * Created by Darren on 2018-05-24
+ * Created by Darren on 2018-05-31
  **/
 @Data
-@Table(name = "t_zy_address")
+@Table(name = "t_zy_address_feedback")
 @NameStyle
-public class ZyAddress {
+public class ZyAddressFeedback {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty("id")
     private Integer id;
 
-    @ApiModelProperty("医疗机构编码")
-    private Integer orgCode;
+    @ApiModelProperty("收货人姓名")
+    private String trueName;
 
     @ApiModelProperty("省份id")
     private String provinceId;
 
-    @ApiModelProperty("省份名称")
-    private String provinceName;
-
-    @ApiModelProperty("省份名称")
+    @ApiModelProperty("市id")
     private String cityId;
 
-    @ApiModelProperty("省份名称")
-    private String cityName;
+    @ApiModelProperty("县id")
+    private String areaId;
 
-    @ApiModelProperty("县主键")
-    private String countyId;
-
-    @ApiModelProperty("县名称")
-    private String countyName;
+    @ApiModelProperty("省市县")
+    private String areaInfo;
 
     @ApiModelProperty("详细地址")
     private String address;
 
-    @ApiModelProperty("收件人")
-    private String recipient;
+    @ApiModelProperty("收货人电话")
+    private String mobPhone;
 
-    @ApiModelProperty("邮编编码")
-    private String zipCode;
+    @ApiModelProperty("配送费用")
+    private String shippingFee;
 
-    @ApiModelProperty("电话")
-    private String phone;
+    @ApiModelProperty("配送方式")
+    private String shippingName;
 
-    @ApiModelProperty("是否是默认地址 0:否；1:是")
-    private Integer isDefault;
+    @ApiModelProperty("运费减免金额")
+    private String shippingMinusFee;
 
-    @ApiModelProperty("删除标识:0 未删除,1:删除")
-    private String removed;
+    @ApiModelProperty("用户选择的快递方式")
+    private String expRemark;
 
     @ApiModelProperty("创建时间")
     private String createAt;

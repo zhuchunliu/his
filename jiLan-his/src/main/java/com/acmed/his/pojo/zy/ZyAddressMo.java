@@ -39,6 +39,9 @@ public class ZyAddressMo {
     @ApiModelProperty("收件人")
     private String recipient;
 
+    @ApiModelProperty("邮编编码")
+    private String zipCode;
+
     @ApiModelProperty("电话")
     private String phone;
 }

@@ -9,4 +9,32 @@
     <delete id="deleteById">
         DELETE FROM t_zy_order_item where id = #{id}
     </delete>
+
+    <select id="getItemByOrderIdExclueRemove" resultType="com.acmed.his.model.ZyOrderItem">
+        SELECT * from t_zy_order_item where orderid = #{orderId} and removed = '0'
+    </select>
+
+    <update id="updateNormalStatus">
+        UPDATE t_zy_order_item set status = 0 where orderid = #{orderId} and removed = '0'
+        and id in
+        <foreach collection="itemIdList" item="itemId" open="(" close=")" separator=",">
+            #{itemId}
+        </foreach>
+    </update>
+
+    <update id="updateAddStatus">
+        UPDATE t_zy_order_item set status = 1 where orderid = #{orderId} and removed = '0'
+        and id not in
+        <foreach collection="itemIdList" item="itemId" open="(" close=")" separator=",">
+            #{itemId}
+        </foreach>
+    </update>
+
+    <update id="updateRemoveStatus">
+        UPDATE t_zy_order_item set status = 2 where orderid = #{orderId} and removed = '1'
+        and id in
+        <foreach collection="itemIdList" item="itemId" open="(" close=")" separator=",">
+            #{itemId}
+        </foreach>
+    </update>
 </mapper>

@@ -13,6 +13,7 @@ import com.acmed.his.pojo.zy.dto.ZYLogisticsObj;
 import com.acmed.his.pojo.zy.dto.ZYStoreDetailObj;
 import com.acmed.his.service.OrgManager;
 import com.acmed.his.service.ZhangYaoManager;
+import com.acmed.his.service.ZhangYaoOrderManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.PageBase;
@@ -128,20 +129,23 @@ public class ZhangYaoApi {
 
 
 
-//    @ApiOperation(value = "付费")
-//    @PostMapping("/pay")
-//    public ResponseResult pay(@RequestBody List<ZYOrderPayMo> mo,
-//                              @AccessToken AccessInfo info){
-//
-//        orderManager.pay(mo,info.getUser());
-//        return ResponseUtil.setSuccessResult();
-//    }
+    @ApiOperation(value = "下单")
+    @PostMapping("/submit")
+    public ResponseResult pay(@RequestBody ZYOrderSubmitPayMo mo,
+                              @AccessToken AccessInfo info){
+
+        Integer status = orderManager.submit(mo,info.getUser());
+        if(-1 == status){
+            throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
+        }
+        return ResponseUtil.setSuccessResult();
+    }
 
 
 
 
-//    @ApiOperation(value = "已经下单列表")
-//    @PostMapping("/order/list")
+//    @ApiOperation(value = "待支付列表")
+//    @PostMapping("/unpay/list")
 //    public ResponseResult<List<ZyOrderVo>> getOrderList(@RequestBody(required = false) PageBase<ZyOrderQueryMo> pageBase,
 //                                                        @AccessToken AccessInfo info){
 //        pageBase = Optional.ofNullable(pageBase).orElse(new PageBase<>());
@@ -206,16 +210,16 @@ public class ZhangYaoApi {
 
     }
 
-    @ApiOperation(value = "获取快递地址")
+    @ApiOperation(value = "获取收件地址")
     @GetMapping("/address/list")
-    public ResponseResult<ZYLogisticsObj> getAddressList(@Param("是否只查默认地址 0:否；1:是; 默认0,即所有地址信息") @RequestParam(required = false,defaultValue = "0") Integer isOnlyDefault,
+    public ResponseResult<ZyAddress> getAddressList(@Param("是否只查默认地址 0:否；1:是; 默认0,即所有地址信息") @RequestParam(required = false,defaultValue = "0") Integer isOnlyDefault,
                                                          @AccessToken AccessInfo info){
         List<ZyAddress> list = zhangYaoManager.getAddressList(isOnlyDefault,info.getUser());
         return ResponseUtil.setSuccessResult(list);
 
     }
 
-    @ApiOperation(value ="保存快递地址")
+    @ApiOperation(value ="保存收件地址")
     @PostMapping("/address/save")
     public ResponseResult saveAddress(@RequestBody ZyAddressMo mo,
                                       @AccessToken AccessInfo info){
@@ -236,7 +240,7 @@ public class ZhangYaoApi {
 
     }
 
-    @ApiOperation(value = "删除快递地址信息")
+    @ApiOperation(value = "删除收件地址信息")
     @DeleteMapping("/address/del")
     public ResponseResult delAddress(@Param("地址主键") @RequestParam(value = "id") Integer id,
                                      @AccessToken AccessInfo info){

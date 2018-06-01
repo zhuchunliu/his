@@ -36,6 +36,39 @@ public class ZyOrder {
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
 
+    @ApiModelProperty("地址主键")
+    private Integer addressId;
+
+    @ApiModelProperty("省份id")
+    private String provinceId;
+
+    @ApiModelProperty("省份名称")
+    private String provinceName;
+
+    @ApiModelProperty("省份名称")
+    private String cityId;
+
+    @ApiModelProperty("省份名称")
+    private String cityName;
+
+    @ApiModelProperty("县主键")
+    private String countyId;
+
+    @ApiModelProperty("县名称")
+    private String countyName;
+
+    @ApiModelProperty("详细地址")
+    private String address;
+
+    @ApiModelProperty("收件人")
+    private String recipient;
+
+    @ApiModelProperty("邮编编码")
+    private String zipCode;
+
+    @ApiModelProperty("电话")
+    private String phone;
+
     @ApiModelProperty("快递主键")
     private String expressId;
 

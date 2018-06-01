@@ -1,12 +1,14 @@
-package com.acmed.his.api;
+package com.acmed.his.service;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.ZhangYaoConstant;
 import com.acmed.his.dao.ZhangYaoMapper;
+import com.acmed.his.dao.ZyAddressMapper;
 import com.acmed.his.dao.ZyOrderItemMapper;
 import com.acmed.his.dao.ZyOrderMapper;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.PrescriptionItem;
+import com.acmed.his.model.ZyAddress;
 import com.acmed.his.model.ZyOrder;
 import com.acmed.his.model.ZyOrderItem;
 import com.acmed.his.model.dto.ZyOrderItemDto;
@@ -27,12 +29,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,7 +47,7 @@ import java.util.Optional;
  * Created by Darren on 2018-05-22
  **/
 @Service
-public class ZhangYaoOrderManager {
+public class ZhangYaoOrderManager  implements InitializingBean {
 
     private Logger logger = LoggerFactory.getLogger(ZhangYaoManager.class);
 
@@ -62,9 +64,17 @@ public class ZhangYaoOrderManager {
     private ZyOrderItemMapper zyOrderItemMapper;
 
     @Autowired
+    private ZyAddressMapper zyAddressMapper;
+
+    @Autowired
     private CommonManager commonManager;
 
-    private static String ZHANGYAO_URL = "zhangyao.url";
+    private static String ZHANGYAO_URL = null;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.ZHANGYAO_URL = environment.getProperty("zhangyao.url");
+    }
 
     /**
      * 待提交订单
@@ -113,7 +123,7 @@ public class ZhangYaoOrderManager {
                     order.setId(UUIDUtil.generate());
                     order.setZyStoreId(iterator.next());
                     order.setOrgCode(info.getOrgCode());
-                    order.setOrderNo(LocalDate.now().toString()+
+                    order.setOrderNo(LocalDate.now().toString().replaceAll("-","")+
                             commonManager.getFormatVal(info.getOrgCode() + LocalDate.now().toString(), "00000"));
                     order.setPayStatus(0);
                     order.setIsRecepit(0);
@@ -177,18 +187,7 @@ public class ZhangYaoOrderManager {
 
 
 
-    @Transactional
-    public void pay(List<ZYOrderPayMo> moList, UserInfo user) {
-        for(ZYOrderPayMo mo : moList){
-            ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(mo.getOrderId());
-            if(!zyOrder.getDrugFee().equals(mo.getDrugFee())){
-                throw new BaseException(StatusCode.FAIL,"订单已被更新，请重新刷新之后付款");
-            }
-            if(!zyOrder.getExpressId().equals(mo.getExpressId())){
 
-            }
-        }
-    }
 
     private ZyOrderItem getZyOrderItem(ZyOrder order ,PrescriptionItem item){
         ZyOrderItem orderItem = new ZyOrderItem();
@@ -206,55 +205,87 @@ public class ZhangYaoOrderManager {
         return orderItem;
     }
 
+
     /**
      * 下单
-     * @param ids
+     * @param mo
+     * @param info
      */
     @Transactional
-    public void dismantle(String ids, UserInfo info) {
+    public Integer submit(ZYOrderSubmitPayMo mo, UserInfo info) {
 
-//        Map<String,List<PrescriptionItem>> map = Maps.newHashMap();
-//        itemList.forEach(obj->{
-//            if(map.containsKey(obj.getZyStoreId())){
-//                map.get(obj.getZyStoreId()).add(obj);
-//            }else{
-//                map.put(obj.getZyStoreId(), Lists.newArrayList(obj));
-//            }
-//        });
-//
-//        Iterator iterator = map.keySet().iterator();
-//        while (iterator.hasNext()){
-//            List<PrescriptionItem> childList = map.get(iterator.next());
-//            ZyOrder zyOrder = new ZyOrder();
-//            zyOrder.setId(UUIDUtil.generate());
-//            zyOrder.setOrgCode(info.getOrgCode());
-//            zyOrder.setZyStoreId(childList.get(0).getZyStoreId());
-//            zyOrder.setZyStoreName(childList.get(0).getZyStoreName());
-//            zyOrder.setPayStatus(0);
-//            zyOrder.setIsRecepit(0);
-//            zyOrder.setCreateAt(LocalDateTime.now().toString());
-//            zyOrder.setCreateBy(info.getId().toString());
-//
-//            zyOrderMapper.insert(zyOrder);
-//
-//            childList.forEach(obj->{
-//                ZyOrderItem item = new ZyOrderItem();
-//                item.setId(UUIDUtil.generate());
-//                item.setItemId(obj.getId());
-//                item.setOrderId(zyOrder.getId());
-//                item.setDrugId(obj.getZyDrugId());
-//                item.setDrugName(obj.getDrugName());
-//                item.setNum(obj.getNum());
-//                item.setRetailPrice(obj.getRetailPrice());
-//                item.setFee(obj.getFee());
-//                zyOrderItemMapper.insert(item);
-//
-//            });
-//        }
-//
-//        zhangYaoMapper.updateItemDismantleStatus(ids.split(","));
+        ZyAddress zyAddress = zyAddressMapper.selectByPrimaryKey(mo.getAddressId());
+        StringBuilder builder = new StringBuilder();
+        synchronized ((Object)info.getOrgCode().intValue()) {
 
+            //step1: 校验是否被提交
+            Map<String,ZyOrder> orderMap = Maps.newHashMap();
+            for(ZYOrderSubmitPayMo.ZYOrderSubmitPayDetailMo detailMo : mo.getDetailMoList()){
+                ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(detailMo.getOrderId());
+                orderMap.put(zyOrder.getId(),zyOrder);
+
+                if(0 != zyOrder.getPayStatus()){//订单已经被人提交
+                    builder.append(","+zyOrder.getOrderNo());
+                }
+            }
+            if(StringUtils.isNotEmpty(builder.toString())){
+                throw new BaseException(StatusCode.FAIL,builder.toString().substring(1)+"订单已被提交,请勿重复提交订单");
+            }
+
+            //step2:校验数据是否正确
+            Map<String,List<ZyOrderItem>> orderItemMap = Maps.newHashMap();
+            boolean flag = true;
+            for(ZYOrderSubmitPayMo.ZYOrderSubmitPayDetailMo detailMo : mo.getDetailMoList()){
+                List<ZyOrderItem> itemList = zyOrderItemMapper.getItemByOrderIdExclueRemove(detailMo.getOrderId());
+                orderItemMap.put(detailMo.getOrderId(),itemList);
+
+                List<String> itemIdList = Lists.newArrayList();
+                itemList.forEach(obj->itemIdList.add(obj.getId()));
+
+                ZyOrder zyOrder = orderMap.get(detailMo.getOrderId());
+
+                zyOrder.setAddressId(zyAddress.getId());
+                zyOrder.setProvinceId(zyAddress.getProvinceId());
+                zyOrder.setProvinceName(zyAddress.getProvinceName());
+                zyOrder.setCityId(zyAddress.getCityId());
+                zyOrder.setCityName(zyAddress.getCityName());
+                zyOrder.setCountyId(zyAddress.getCountyId());
+                zyOrder.setCountyName(zyAddress.getCountyName());
+                zyOrder.setAddress(zyAddress.getAddress());
+                zyOrder.setRecipient(zyAddress.getRecipient());
+                zyOrder.setZipCode(zyAddress.getZipCode());
+                zyOrder.setPhone(zyAddress.getPhone());
+
+                zyOrder.setExpressId(detailMo.getExpressId());
+                zyOrder.setExpressFee(detailMo.getExpressFee());
+                zyOrder.setFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
+                zyOrder.setPayStatus(1);
+                zyOrder.setModifyBy(info.getId().toString());
+                zyOrder.setModifyAt(LocalDateTime.now().toString());
+                zyOrderMapper.updateByPrimaryKey(zyOrder);
+
+                if(!detailMo.getItemIdList().containsAll(itemIdList) || !itemIdList.containsAll(detailMo.getItemIdList())){
+                    flag = false;
+                    zyOrderItemMapper.updateNormalStatus(zyOrder.getId(),detailMo.getItemIdList());//过滤掉removed=1,设置成正常状态
+                    zyOrderItemMapper.updateAddStatus(zyOrder.getId(),detailMo.getItemIdList());//过滤掉当前的详情,设置成新增状态
+                    zyOrderItemMapper.updateRemoveStatus(zyOrder.getId(),detailMo.getItemIdList());//过滤removed=1,设置成删除状态
+                }else{
+                    zyOrderItemMapper.updateNormalStatus(zyOrder.getId(),detailMo.getItemIdList());
+                }
+            }
+            if(!flag){
+//                throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
+                return -1;
+            }
+
+            //setp3:给掌药提交数据,并验证
+
+
+        }
+        return null;
     }
+
+
 
 
     /**
@@ -279,6 +310,18 @@ public class ZhangYaoOrderManager {
 
     }
 
+    //    @Transactional
+//    public void pay(List<ZYOrderSubmitPayMo> moList, UserInfo user) {
+//        for(ZYOrderSubmitPayMo mo : moList){
+//            ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(mo.getOrderId());
+//            if(!zyOrder.getDrugFee().equals(mo.getDrugFee())){
+//                throw new BaseException(StatusCode.FAIL,"订单已被更新，请重新刷新之后付款");
+//            }
+//            if(!zyOrder.getExpressId().equals(mo.getExpressId())){
+//
+//            }
+//        }
+//    }
 
 
     /**
