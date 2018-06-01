@@ -34,7 +34,7 @@ public class InsuranceOrderManager {
     /**
      * 每日跑批
      */
-    @Scheduled(cron = "0 0 2 * * ?")
+    //@Scheduled(cron = "0 0 2 * * ?")
     public void task(){
         Integer property = Integer.valueOf(environment.getProperty("insurance.price"));
         LocalDateTime now = LocalDateTime.now();
