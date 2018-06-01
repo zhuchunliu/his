@@ -11,6 +11,9 @@ import com.acmed.his.pojo.mo.FZWOrderMo;
 import com.acmed.his.util.ResponseUtil;
 import com.acmed.his.util.UUIDUtil;
 import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.weaver.ast.Var;
@@ -169,10 +172,12 @@ public class FZWOrderManager {
         hmap.put("z_content",fzwOrder.getRemark());
         hmap.put("order_num",fzwOrder.getId());
         HttpEntity<String> formEntity = new HttpEntity<String>(JSONUtils.toJSONString(hmap), headers);
-        String result = restTemplate.postForObject("http://www.4000663363.com/index.php/consultation/personala", formEntity, String.class);
-        System.err.println(result);
-        HashMap<String,String> parse = (HashMap<String, String>) JSONUtils.parse(result);
-        if (StringUtils.equals("true",parse.get("success"))){
+        JSONObject json = restTemplate.postForObject("http://www.4000663363.com/index.php/consultation/personala", formEntity, JSONObject.class);
+        System.err.println(json);
+        System.err.println(json.get("success"));
+
+
+        if (StringUtils.equals("true",json.get("success").toString())){
             return true;
         }else {
             log.error("订单支付成功，发送fzw失败，订单号{}",fzwOrder.getId());
