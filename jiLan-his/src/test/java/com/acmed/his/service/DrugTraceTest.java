@@ -12,7 +12,6 @@ import static com.sun.btrace.BTraceUtils.println;
 public class DrugTraceTest {
 
 
-<<<<<<< Updated upstream
 //    @OnMethod(clazz = "com.acmed.his.api.DrugApi",method = "getDrugList",location =
 //    @Location(value = Kind.CALL, clazz = "/com.acmed.his.service.*/", method = "/.*/",where = Where.AFTER))
 //    public static void getDrugList(@ProbeClassName String className, @ProbeMethodName String methodName,
@@ -22,15 +21,6 @@ public class DrugTraceTest {
 //    ){
 //        println(className+" : "+methodName);
 //        println(instance+" "+method+"   "+duration+"****");
-=======
-    @OnMethod(clazz = "com.acmed.his.api.DrugApi",method = "getDrugList",
-            location = @Location(value = Kind.CALL,clazz = "/.*/",method = "/.*/",where = Where.AFTER))
-    public static void getDrugList(@ProbeClassName String className, @ProbeMethodName String methodName,
-                                   @TargetInstance Object instance,@TargetMethodOrField String method,
-                                   @Duration long duration){
-        println(className+" : "+methodName+" ***");
-        println("instance: "+instance+" method: "+method+" duration: "+duration);
->>>>>>> Stashed changes
 //        println(value+"====");
 //    }
 
