@@ -7,7 +7,7 @@ import lombok.Data;
  * Created by Darren on 2018-05-24
  **/
 @Data
-public class ZyAddressMo {
+public class ZYAddressMo {
 
     @ApiModelProperty("id null:新增; not null:编辑")
     private Integer id;

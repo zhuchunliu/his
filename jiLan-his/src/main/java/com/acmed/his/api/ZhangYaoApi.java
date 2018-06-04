@@ -4,6 +4,7 @@ import com.acmed.his.constants.StatusCode;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Org;
 import com.acmed.his.model.ZyAddress;
+import com.acmed.his.model.dto.ZyOrderItemHistoryDto;
 import com.acmed.his.model.dto.ZyOrderItemUnpaidDto;
 import com.acmed.his.model.dto.ZyOrderItemUnsubmitDto;
 import com.acmed.his.pojo.mo.DrugZYQueryMo;
@@ -155,9 +156,51 @@ public class ZhangYaoApi {
 
     @ApiOperation(value = "删除待提交订单",hidden = true)
     @DeleteMapping("/unpaid/del")
-    public ResponseResult<List<UnsubmitOrderVo>> delUnpaidOrder(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
+    public ResponseResult delUnpaidOrder(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
                                                                   @Param("详情主键") @RequestParam(value = "itemId",required = false) String itemId,
                                                                   @AccessToken AccessInfo info){
+        orderManager.delUnpaidOrder(info.getUser(),orderId,itemId);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "历史订单")
+    @GetMapping("/history/list")
+    public ResponseResult<List<HistoryOrderVo>> getHistoryOrder(ZYHistoryMo mo,
+                                                              @AccessToken AccessInfo info){
+        List<ZyOrderItemHistoryDto> dtoList = orderManager.getHistoryOrder(info.getUser(),null == mo?new ZYHistoryMo():mo);
+        Map<String,List<ZyOrderItemHistoryDto>> map = Maps.newHashMap();
+        for(ZyOrderItemHistoryDto dto: dtoList){
+            if(!map.containsKey(dto.getOrderId())){
+                map.put(dto.getOrderId(),Lists.newArrayList());
+            }
+            map.get(dto.getOrderId()).add(dto);
+        }
+
+        List<HistoryOrderVo> list = Lists.newArrayList();
+        Iterator iterator = map.keySet().iterator();
+        while (iterator.hasNext()){
+            List<ZyOrderItemHistoryDto> childList = map.get(iterator.next());
+            HistoryOrderVo vo = new HistoryOrderVo();
+            BeanUtils.copyProperties(childList.get(0),vo);
+
+            List<HistoryOrderVo.HistoryOrderDetailVo> detailVoList = Lists.newArrayList();
+            for(ZyOrderItemHistoryDto dto : childList){
+                HistoryOrderVo.HistoryOrderDetailVo detailVo = new HistoryOrderVo.HistoryOrderDetailVo();
+                BeanUtils.copyProperties(dto,detailVo);
+                detailVoList.add(detailVo);
+            }
+            vo.setDetailVoList(detailVoList);
+            list.add(vo);
+        }
+
+        return ResponseUtil.setSuccessResult(list);
+    }
+
+    @ApiOperation(value = "删除历史订单",hidden = true)
+    @DeleteMapping("/history/del")
+    public ResponseResult delHistoryOrder(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
+                                                                @Param("详情主键") @RequestParam(value = "itemId",required = false) String itemId,
+                                                                @AccessToken AccessInfo info){
         orderManager.delUnpaidOrder(info.getUser(),orderId,itemId);
         return ResponseUtil.setSuccessResult();
     }
@@ -215,7 +258,7 @@ public class ZhangYaoApi {
 
     @ApiOperation(value ="保存收件地址")
     @PostMapping("/address/save")
-    public ResponseResult saveAddress(@RequestBody ZyAddressMo mo,
+    public ResponseResult saveAddress(@RequestBody ZYAddressMo mo,
                                       @AccessToken AccessInfo info){
         zhangYaoManager.saveAddress(mo,info.getUser());
         return ResponseUtil.setSuccessResult();

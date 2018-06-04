@@ -8,7 +8,7 @@ import lombok.Data;
  * Created by Darren on 2018-04-12
  **/
 @Data
-public class ZyOrderVo {
+public class ZYOrderVo {
     @ApiModelProperty("id 掌药订单id")
     private String id;
 

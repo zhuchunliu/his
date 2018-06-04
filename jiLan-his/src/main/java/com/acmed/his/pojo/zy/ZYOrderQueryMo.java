@@ -7,7 +7,7 @@ import lombok.Data;
  * Created by Darren on 2018-04-12
  **/
 @Data
-public class ZyOrderQueryMo {
+public class ZYOrderQueryMo {
     @ApiModelProperty("掌药订单号,药店名称")
     private String name;
 

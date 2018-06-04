@@ -10,7 +10,7 @@ import com.acmed.his.pojo.mo.DrugZYQueryMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.zy.ZYDrugDetailVo;
 import com.acmed.his.pojo.zy.ZYDrugListVo;
-import com.acmed.his.pojo.zy.ZyAddressMo;
+import com.acmed.his.pojo.zy.ZYAddressMo;
 import com.acmed.his.pojo.zy.dto.*;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
@@ -221,7 +221,7 @@ public class ZhangYaoManager implements InitializingBean {
     }
 
     @Transactional
-    public void saveAddress(ZyAddressMo mo, UserInfo user) {
+    public void saveAddress(ZYAddressMo mo, UserInfo user) {
 
         if(1 == mo.getIsDefault()){//设为默认地址
             addressMapper.cancelAllDefault(user.getOrgCode());

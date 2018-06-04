@@ -31,7 +31,7 @@ public class ZyOrder {
     private Double expressFee;
 
     @ApiModelProperty("总费用")
-    private Double fee;
+    private Double totalFee;
 
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
@@ -72,6 +72,9 @@ public class ZyOrder {
     @ApiModelProperty("快递主键")
     private String expressId;
 
+    @ApiModelProperty("快递名称")
+    private String expressName;
+
     @ApiModelProperty("掌药订单id")
     private String zyOrderId;
 
@@ -90,8 +93,11 @@ public class ZyOrder {
     @ApiModelProperty("是否已经收到药 0:否；1:是")
     private Integer isRecepit;
 
+    @ApiModelProperty("提交时间")
+    private String submitTime;
+
     @ApiModelProperty("支付时间")
-    private Integer payTime;
+    private String payTime;
 
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;

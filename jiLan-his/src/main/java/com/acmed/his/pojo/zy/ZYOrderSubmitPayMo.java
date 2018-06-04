@@ -29,6 +29,9 @@ public class ZYOrderSubmitPayMo {
         @ApiModelProperty("快递费用")
         private Double expressFee;
 
+        @ApiModelProperty("快递名称")
+        private String expressName;
+
         @ApiModelProperty("详情主键")
         private List<String> itemIdList;
     }

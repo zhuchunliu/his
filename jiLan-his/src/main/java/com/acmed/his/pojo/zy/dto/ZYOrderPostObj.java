@@ -28,6 +28,9 @@ public class ZYOrderPostObj {
     private String provinceId;
 
     @ApiModelProperty("市id")
+    private String cityId;
+
+    @ApiModelProperty("市id")
     private String areaId;
 
     @ApiModelProperty("省市区")

@@ -22,7 +22,7 @@ public class ZhangYaoConstant {
 
     private final static String LOGISTICS_URL ="r=jizhi/search/logistics";//物流地址
 
-    private final static String ORDER_URL = "?r=jizhi/order/place";//下单地址
+    private final static String ORDER_URL = "r=jizhi/order/place";//下单地址
     /**
      * 获取药品信息
      * @param keyword 搜索关键词

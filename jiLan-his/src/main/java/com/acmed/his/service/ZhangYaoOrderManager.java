@@ -11,6 +11,7 @@ import com.acmed.his.model.PrescriptionItem;
 import com.acmed.his.model.ZyAddress;
 import com.acmed.his.model.ZyOrder;
 import com.acmed.his.model.ZyOrderItem;
+import com.acmed.his.model.dto.ZyOrderItemHistoryDto;
 import com.acmed.his.model.dto.ZyOrderItemUnpaidDto;
 import com.acmed.his.model.dto.ZyOrderItemUnsubmitDto;
 import com.acmed.his.pojo.vo.UserInfo;
@@ -19,6 +20,7 @@ import com.acmed.his.pojo.zy.dto.ZYOrderPostObj;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.UUIDUtil;
+import com.alibaba.druid.support.spring.stat.annotation.Stat;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
@@ -35,6 +37,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -116,7 +119,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                         zyOrderItemMapper.insert(orderItem);
                         order.setDrugFee(order.getDrugFee()+orderItem.getFee());
                     }
-                    order.setFee(order.getDrugFee()+order.getExpressFee());
+                    order.setTotalFee(order.getDrugFee()+order.getExpressFee());
                     zyOrderMapper.updateByPrimaryKey(order);
                     map.remove(order.getZyStoreId());
                 }
@@ -143,7 +146,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                         order.setZyStoreName(item.getZyStoreName());
                         order.setDrugFee(Optional.ofNullable(order.getDrugFee()).orElse(0d)+orderItem.getFee());
                     }
-                    order.setFee(order.getDrugFee()+order.getExpressFee());
+                    order.setTotalFee(order.getDrugFee()+order.getExpressFee());
                     zyOrderMapper.insert(order);
                 }
 
@@ -171,6 +174,8 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                     throw new BaseException(StatusCode.FAIL,"订单已经被提交,禁止删除");
                 }
                 zyOrder.setRemoved("1");
+                zyOrder.setDrugFee(0d);
+                zyOrder.setTotalFee(0d);
                 zyOrder.setModifyAt(LocalDateTime.now().toString());
                 zyOrder.setModifyBy(info.getId().toString());
                 zyOrderMapper.updateByPrimaryKey(zyOrder);
@@ -185,6 +190,9 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                     throw new BaseException(StatusCode.FAIL,"订单已经被提交,禁止删除");
                 }
                 zyOrderItemMapper.deleteById(itemId);
+                zyOrder.setDrugFee(zyOrder.getDrugFee()-item.getFee());
+                zyOrder.setTotalFee(zyOrder.getTotalFee()-item.getFee());
+                zyOrderMapper.updateByPrimaryKey(zyOrder);
             }
         }
 
@@ -263,7 +271,9 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
                 zyOrder.setExpressId(detailMo.getExpressId());
                 zyOrder.setExpressFee(detailMo.getExpressFee());
-                zyOrder.setFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
+                zyOrder.setExpressName(detailMo.getExpressName());
+                zyOrder.setSubmitTime(LocalDateTime.now().toString());
+                zyOrder.setTotalFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
                 zyOrder.setPayStatus(1);
                 zyOrder.setModifyBy(info.getId().toString());
                 zyOrder.setModifyAt(LocalDateTime.now().toString());
@@ -284,6 +294,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             }
 
             //setp3:给掌药提交数据,并验证
+            this.postRemoteOrder(orderMap,orderItemMap);
 
         }
         return null;
@@ -301,11 +312,12 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             ZYOrderPostObj obj = new ZYOrderPostObj();
             obj.setStoreId(order.getZyStoreId());
             obj.setDeliverId("45");
-            obj.setTotal(order.getFee().toString());
+            obj.setTotal(order.getTotalFee().toString());
             obj.setExpId(order.getExpressId());
             obj.setProvinceId(order.getProvinceId());
-            obj.setAreaId(order.getCityId());
-            obj.setAreaInfo(order.getCountyId());
+            obj.setCityId(order.getCityId());
+            obj.setAreaId(order.getCountyId());
+            obj.setAreaInfo(order.getProvinceName()+"-"+order.getCityName()+"-"+order.getCountyName());
             obj.setAddress(order.getAddress());
             obj.setTrueName(order.getRecipient());
             obj.setMobPhone(order.getPhone());
@@ -322,15 +334,43 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 
-//        HttpEntity entity = new HttpEntity<>();
-//        entity
-//
-//        RestTemplate restTemplate = new RestTemplate();
-//        JSONObject json = restTemplate.exchange(ZhangYaoConstant.buildOrderUrl(), JSONObject.class);
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String,Object>();
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.addAll(objList);
+        map.add("dataList",jsonArray.toJSONString());
 
+        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(map,httpHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<JSONObject> json = restTemplate.postForEntity(this.ZHANGYAO_URL+ZhangYaoConstant.buildOrderUrl(),httpEntity, JSONObject.class);
+
+        if(200 != json.getStatusCodeValue()){
+            logger.error("下单数据: "+jsonArray.toJSONString());
+            logger.error("返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
+        }
+        if(1 !=json.getBody().getInteger("code")){
+            logger.error("下单数据: "+jsonArray.toJSONString());
+            logger.error("返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
+        }
+    }
+
+    public static void main(String[] args) {
+        String json = "[{\"address\":\"中节能\",\"areaId\":\"320586\",\"areaInfo\":\"江苏省-苏州市-工业园区\",\"cityId\":\"320500\",\"deliverId\":\"45\",\"drugList\":[{\"drugId\":214459,\"drugNum\":5},{\"drugId\":214459,\"drugNum\":3}],\"expId\":\"418\",\"mobPhone\":\"119\",\"provinceId\":\"320000\",\"storeId\":\"349671\",\"total\":\"248.0\",\"trueName\":\"张三林\"},{\"address\":\"中节能\",\"areaId\":\"320586\",\"areaInfo\":\"江苏省-苏州市-工业园区\",\"cityId\":\"320500\",\"deliverId\":\"45\",\"drugList\":[{\"drugId\":7343,\"drugNum\":3},{\"drugId\":7343,\"drugNum\":5}],\"expId\":\"3512\",\"mobPhone\":\"119\",\"provinceId\":\"320000\",\"storeId\":\"349996\",\"total\":\"125.0\",\"trueName\":\"张三林\"}]";
+        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String,Object>();
+        map.add("dataList",json);
+
+        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(map,httpHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<JSONObject> result = restTemplate.postForEntity("http://presapi.lkhealth.net/index.php?r=jizhi/order/place"
+                ,httpEntity, JSONObject.class);
+        System.err.println(result);
     }
 
 
@@ -358,6 +398,15 @@ public class ZhangYaoOrderManager  implements InitializingBean {
     }
 
 
+    /**
+     * 获取历史订单
+     * @param user
+     * @param mo
+     * @return
+     */
+    public List<ZyOrderItemHistoryDto> getHistoryOrder(UserInfo user, ZYHistoryMo mo) {
+        return zhangYaoMapper.getHistoryOrder(user.getOrgCode(), mo);
+    }
 
     /**
      * 确认发药
