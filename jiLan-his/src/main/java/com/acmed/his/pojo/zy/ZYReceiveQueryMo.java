@@ -9,9 +9,8 @@ import org.apache.commons.lang3.StringUtils;
  * Created by Darren on 2018-06-04
  **/
 @Data
-public class ZYHistoryMo {
-
-    @ApiModelProperty("订单号,或者药品名称")
+public class ZYReceiveQueryMo {
+    @ApiModelProperty("订单号,快递号")
     private String name;
 
     @ApiModelProperty("开始时间")

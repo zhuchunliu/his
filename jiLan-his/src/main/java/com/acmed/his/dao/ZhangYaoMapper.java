@@ -3,9 +3,11 @@ package com.acmed.his.dao;
 import com.acmed.his.model.PrescriptionItem;
 import com.acmed.his.model.ZyOrder;
 import com.acmed.his.model.dto.ZyOrderItemHistoryDto;
+import com.acmed.his.model.dto.ZyOrderItemReceiveDto;
 import com.acmed.his.model.dto.ZyOrderItemUnpaidDto;
 import com.acmed.his.model.dto.ZyOrderItemUnsubmitDto;
-import com.acmed.his.pojo.zy.ZYHistoryMo;
+import com.acmed.his.pojo.zy.ZYHistoryQueryMo;
+import com.acmed.his.pojo.zy.ZYReceiveQueryMo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -67,5 +69,13 @@ public interface ZhangYaoMapper {
      * @param mo
      * @return
      */
-    List<ZyOrderItemHistoryDto> getHistoryOrder(@Param("orgCode") Integer orgCode, @Param("mo") ZYHistoryMo mo);
+    List<ZyOrderItemHistoryDto> getHistoryOrder(@Param("orgCode") Integer orgCode, @Param("mo") ZYHistoryQueryMo mo);
+
+    /**
+     * 获取收货列表
+     * @param orgCode
+     * @param mo
+     * @return
+     */
+    List<ZyOrderItemReceiveDto> getReceiveOrder(@Param("orgCode") Integer orgCode, @Param("mo") ZYReceiveQueryMo mo);
 }

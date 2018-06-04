@@ -4,13 +4,16 @@ import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.ZhangYaoConstant;
 import com.acmed.his.dao.ZhangYaoMapper;
 import com.acmed.his.dao.ZyAddressMapper;
+import com.acmed.his.dao.ZyOrderMapper;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.ZyAddress;
+import com.acmed.his.model.ZyOrder;
 import com.acmed.his.pojo.mo.DrugZYQueryMo;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.zy.ZYDrugDetailVo;
 import com.acmed.his.pojo.zy.ZYDrugListVo;
 import com.acmed.his.pojo.zy.ZYAddressMo;
+import com.acmed.his.pojo.zy.ZYLogisticsVo;
 import com.acmed.his.pojo.zy.dto.*;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
@@ -18,6 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -51,6 +55,9 @@ public class ZhangYaoManager implements InitializingBean {
     @Autowired
     private ZyAddressMapper addressMapper;
 
+    @Autowired
+    private ZyOrderMapper zyOrderMapper;
+
     private static String ZHANGYAO_URL = null;
 
     @Override
@@ -64,7 +71,7 @@ public class ZhangYaoManager implements InitializingBean {
     public PageResult<ZYDrugListVo> getDrugList(PageBase<DrugZYQueryMo> pageBase,UserInfo info) {
         StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL);
         DrugZYQueryMo mo = Optional.ofNullable(pageBase.getParam()).orElse(new DrugZYQueryMo());
-        builder.append(ZhangYaoConstant.buildDrugListUrl(mo.getName(),(pageBase.getPageNum()-1)*pageBase.getPageSize(),pageBase.getPageSize(),3,
+        builder.append(ZhangYaoConstant.buildDrugListUrl(mo.getName(),(pageBase.getPageNum()-1)*pageBase.getPageSize(),pageBase.getPageSize(),mo.getType(),
                 mo.getLat(),mo.getLng(),null));
         RestTemplate restTemplate = new RestTemplate();
         JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
@@ -201,11 +208,19 @@ public class ZhangYaoManager implements InitializingBean {
 
     /**
      * 获取物流信息
-     * @param orderSn
+     * @param orderId 订单主键
      * @return
      */
-    public ZYLogisticsObj getLogistics(String orderSn) {
-        StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL).append(ZhangYaoConstant.buildLogisticsUrl(orderSn));
+    public ZYLogisticsVo getLogistics(String orderId) {
+        ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(orderId);
+
+        ZYLogisticsVo vo = new ZYLogisticsVo();
+        BeanUtils.copyProperties(zyOrder,vo);
+
+        if(StringUtils.isEmpty(zyOrder.getZyOrderSn())){
+            return vo;
+        }
+        StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL).append(ZhangYaoConstant.buildLogisticsUrl(zyOrder.getZyOrderSn()));
         RestTemplate restTemplate = new RestTemplate();
         JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
         if(json.get("code").equals("1")){
@@ -213,7 +228,8 @@ public class ZhangYaoManager implements InitializingBean {
             List<ZYLogisticsObj.ZYLogisticsDetailObj> list = JSONArray.parseArray(json.getJSONObject("data").getJSONObject("logisticsInfo").
                     getJSONArray("processList").toJSONString(),ZYLogisticsObj.ZYLogisticsDetailObj.class);
             obj.setDetailObjList(list);
-            return obj;
+            BeanUtils.copyProperties(obj,vo);
+            return vo;
         }else{
             logger.error("get zhangyao logistics fail,msg: "+json.get("message")+"  ;the url is :"+builder.toString());
             throw new BaseException(StatusCode.FAIL,"获取物流信息失败");

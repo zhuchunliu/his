@@ -41,6 +41,9 @@ public class ZyOrderItem {
     @ApiModelProperty("数量")
     private Integer num;
 
+    @ApiModelProperty("收货数量")
+    private Integer receiveNum;
+
     @ApiModelProperty("零售价")
     private Double retailPrice;
 

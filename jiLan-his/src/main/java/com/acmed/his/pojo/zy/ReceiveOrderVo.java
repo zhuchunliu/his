@@ -9,12 +9,15 @@ import java.util.List;
  * Created by Darren on 2018-06-04
  **/
 @Data
-public class HistoryOrderVo {
+public class ReceiveOrderVo {
     @ApiModelProperty("订单id")
     private String orderId;
 
     @ApiModelProperty("订单编号")
     private String orderNo;
+
+    @ApiModelProperty("快递单号")
+    private String expressNo;
 
     @ApiModelProperty("药店id")
     private String storeId;
@@ -31,14 +34,11 @@ public class HistoryOrderVo {
     @ApiModelProperty("提交时间")
     private String submitTime;
 
-    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:已退款,4:已经取消")
-    private Integer payStatus;
 
-
-    private List<HistoryOrderVo.HistoryOrderDetailVo> detailVoList;
+    private List<ReceiveOrderVo.ReceiveOrderDetailVo> detailVoList;
 
     @Data
-    public static class HistoryOrderDetailVo{
+    public static class ReceiveOrderDetailVo{
 
         @ApiModelProperty("详情id")
         private String itemId;

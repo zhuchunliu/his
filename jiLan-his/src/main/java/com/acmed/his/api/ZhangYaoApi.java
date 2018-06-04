@@ -164,12 +164,12 @@ public class ZhangYaoApi {
     }
 
     @ApiOperation(value = "历史订单")
-    @GetMapping("/history/list")
-    public ResponseResult<List<HistoryOrderVo>> getHistoryOrder(ZYHistoryMo mo,
+    @PostMapping("/history/list")
+    public ResponseResult<PageResult<HistoryOrderVo>> getHistoryOrder(@Param("分页条件")@RequestBody(required = false) PageBase<ZYHistoryQueryMo> mo,
                                                               @AccessToken AccessInfo info){
-        List<ZyOrderItemHistoryDto> dtoList = orderManager.getHistoryOrder(info.getUser(),null == mo?new ZYHistoryMo():mo);
+        PageResult<ZyOrderItemHistoryDto> result = orderManager.getHistoryOrder(info.getUser(),mo == null?new PageBase<>():mo);
         Map<String,List<ZyOrderItemHistoryDto>> map = Maps.newHashMap();
-        for(ZyOrderItemHistoryDto dto: dtoList){
+        for(ZyOrderItemHistoryDto dto: result.getData()){
             if(!map.containsKey(dto.getOrderId())){
                 map.put(dto.getOrderId(),Lists.newArrayList());
             }
@@ -192,33 +192,21 @@ public class ZhangYaoApi {
             vo.setDetailVoList(detailVoList);
             list.add(vo);
         }
+        PageResult<HistoryOrderVo> pageResult = new PageResult<>();
+        pageResult.setData(list);
+        pageResult.setTotal(result.getTotal());
 
-        return ResponseUtil.setSuccessResult(list);
+        return ResponseUtil.setSuccessResult(result);
     }
 
-    @ApiOperation(value = "删除历史订单",hidden = true)
+    @ApiOperation(value = "删除历史订单")
     @DeleteMapping("/history/del")
     public ResponseResult delHistoryOrder(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
-                                                                @Param("详情主键") @RequestParam(value = "itemId",required = false) String itemId,
                                                                 @AccessToken AccessInfo info){
-        orderManager.delUnpaidOrder(info.getUser(),orderId,itemId);
+        orderManager.delHistoryOrder(info.getUser(),orderId);
         return ResponseUtil.setSuccessResult();
     }
 
-
-
-
-
-    @ApiOperation(value = "确认收货")
-    @PostMapping("/recepit")
-    public ResponseResult recepit(@ApiParam("{\"id\":},id：掌药订单id") @RequestBody String param,
-                                  @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-            return ResponseUtil.setParamEmptyError("id");
-        }
-        orderManager.recepit(JSONObject.parseObject(param).getString("id"),info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
 
 
 
@@ -241,8 +229,9 @@ public class ZhangYaoApi {
 
     @ApiOperation(value = "获取物流信息")
     @GetMapping("/logistics")
-    public ResponseResult<ZYLogisticsObj> getLogistics(@Param("订单号") @RequestParam(value = "orderSn") String orderSn){
-        ZYLogisticsObj obj = zhangYaoManager.getLogistics(orderSn);
+    public ResponseResult<ZYLogisticsVo> getLogistics(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId){
+        ZYLogisticsVo obj = zhangYaoManager.getLogistics(orderId);
+
         return ResponseUtil.setSuccessResult(obj);
 
     }

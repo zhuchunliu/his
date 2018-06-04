@@ -20,23 +20,21 @@ import com.acmed.his.pojo.zy.dto.ZYOrderPostObj;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.UUIDUtil;
-import com.alibaba.druid.support.spring.stat.annotation.Stat;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -404,22 +402,29 @@ public class ZhangYaoOrderManager  implements InitializingBean {
      * @param mo
      * @return
      */
-    public List<ZyOrderItemHistoryDto> getHistoryOrder(UserInfo user, ZYHistoryMo mo) {
-        return zhangYaoMapper.getHistoryOrder(user.getOrgCode(), mo);
+    public PageResult<ZyOrderItemHistoryDto> getHistoryOrder(UserInfo user, PageBase<ZYHistoryQueryMo> mo) {
+        Page page = PageHelper.startPage(mo.getPageNum(),mo.getPageSize());
+        List<ZyOrderItemHistoryDto> list = zhangYaoMapper.getHistoryOrder(user.getOrgCode(), Optional.ofNullable(mo.getParam()).orElse(new ZYHistoryQueryMo()));
+        PageResult<ZyOrderItemHistoryDto> result = new PageResult<>();
+        result.setData(list);
+        result.setTotal(page.getTotal());
+        return result;
     }
 
     /**
-     * 确认发药
-     * @param id
+     * 删除历史订单
      * @param user
+     * @param orderId
      */
-    public void recepit(String id, UserInfo user) {
-        ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(id);
-        zyOrder.setIsRecepit(1);
+    public void delHistoryOrder(UserInfo user, String orderId) {
+        ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(orderId);
+        zyOrder.setPayStatus(4);
         zyOrder.setModifyAt(LocalDateTime.now().toString());
         zyOrder.setModifyBy(user.getId().toString());
         zyOrderMapper.updateByPrimaryKey(zyOrder);
     }
+
+
 
 
 

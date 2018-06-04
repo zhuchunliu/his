@@ -82,7 +82,7 @@
         select t1.id as itemId, t1.orderid, t1.applyid,
         t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,
         t2.orderno, t2.drugfee , t2.expressfee as expressFee, t2.totalfee as totalFee,
-        t2.submittime as submitTime,t2.zyStoreId as storeId,
+        t2.submittime as submitTime,t2.zyStoreId as storeId,t2.paystatus,
         t3.prescriptionno as prescriptionNo
         from t_zy_order_item t1
         LEFT JOIN t_zy_order t2 on t1.orderid = t2.id
@@ -94,6 +94,30 @@
             UNION ALL
             select td.id from t_zy_order_item tm LEFT JOIN t_zy_order td ON tm.orderid = td.id
             where tm.drugName like concat('%', #{mo.name} , '%') and td.paystatus = 0)
+        </if>
+        <if test="@Ognl@isNotEmpty(mo.startTime) ">
+            and t2.submittime >= #{mo.startTime}
+        </if>
+        <if test="@Ognl@isNotEmpty(mo.endTime) ">
+            and t2.submittime >= #{mo.endTime}
+        </if>
+        ORDER BY t2.orderno desc
+    </select>
+
+    <select id="getReceiveOrder" resultType="com.acmed.his.model.dto.ZyOrderItemReceiveDto">
+        select t1.id as itemId, t1.orderid, t1.applyid,
+        t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,
+        t2.orderno, t2.drugfee , t2.expressfee as expressFee, t2.totalfee as totalFee,
+        t2.submittime as submitTime,t2.zyStoreId as storeId,t2.paystatus,
+        t3.prescriptionno as prescriptionNo
+        from t_zy_order_item t1
+        LEFT JOIN t_zy_order t2 on t1.orderid = t2.id
+        LEFT JOIN t_b_prescription t3 on t1.applyid = t3.applyid
+        where t1.removed = '0' and t1.removed = '0' and t2.orgcode = #{orgCode}
+        and t2.paystatus = 2 and t2.isrecepit = 0
+        <if test="@Ognl@isNotEmpty(mo.name) ">
+            and (t2.orderno like concat('%', #{mo.name} , '%') OR
+              t2.expressno like concat('%', #{mo.name} , '%'))
         </if>
         <if test="@Ognl@isNotEmpty(mo.startTime) ">
             and t2.submittime >= #{mo.startTime}

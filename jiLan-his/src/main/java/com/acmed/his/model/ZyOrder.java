@@ -75,6 +75,9 @@ public class ZyOrder {
     @ApiModelProperty("快递名称")
     private String expressName;
 
+    @ApiModelProperty("快递单号")
+    private String expressNo;
+
     @ApiModelProperty("掌药订单id")
     private String zyOrderId;
 
@@ -87,7 +90,7 @@ public class ZyOrder {
     @ApiModelProperty("药店名称 - 掌药")
     private String zyStoreName;
 
-    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:已退款")
+    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:已退款,4:已经取消")
     private Integer payStatus;
 
     @ApiModelProperty("是否已经收到药 0:否；1:是")
