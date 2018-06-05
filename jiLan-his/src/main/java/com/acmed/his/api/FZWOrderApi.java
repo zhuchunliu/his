@@ -1,5 +1,6 @@
 package com.acmed.his.api;
 
+import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.model.fzw.FZWOrder;
 import com.acmed.his.model.fzw.FZWServicePackage;
@@ -12,16 +13,22 @@ import com.acmed.his.support.AccessToken;
 import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * FZWOrderApi
@@ -35,6 +42,10 @@ import java.util.List;
 public class FZWOrderApi {
     @Autowired
     private FZWOrderManager fzwOrderManager;
+
+    @Autowired
+    @Qualifier(value="stringRedisTemplate")
+    private RedisTemplate redisTemplate;
 
     @WithoutToken
     @ApiOperation(value = "服务包列表")
@@ -95,5 +106,43 @@ public class FZWOrderApi {
     }
 
 
+    @WithoutToken
+    @ApiOperation(value = "医院列表")
+    @GetMapping("hospitalList")
+    public ResponseResult hospitalList(){
+        String list = Optional.ofNullable(redisTemplate.opsForValue().get(RedisKeyConstants.FZW_HOSPITAL_LIST)).map(obj->obj.toString()).
+                orElse(null);
+        if (StringUtils.isNotEmpty(list)){
+            return ResponseUtil.setSuccessResult(list);
+        }
+
+        RestTemplate restTemplate = new RestTemplate();
+        list = restTemplate.getForObject("http://www.4000663363.com/index.php/ajax/mechan", String.class);
+
+        redisTemplate.opsForValue().set(RedisKeyConstants.FZW_HOSPITAL_LIST,list);
+        redisTemplate.expire(RedisKeyConstants.FZW_HOSPITAL_LIST,60, TimeUnit.MINUTES);
+
+
+        return ResponseUtil.setSuccessResult(list);
+    }
+
+    @WithoutToken
+    @ApiOperation(value = "医生列表")
+    @GetMapping("doctorList")
+    public ResponseResult doctorList(){
+
+        String list = Optional.ofNullable(redisTemplate.opsForValue().get(RedisKeyConstants.FZW_DOCTOR_LIST)).map(obj->obj.toString()).
+                orElse(null);
+        if (StringUtils.isNotEmpty(list)){
+            return ResponseUtil.setSuccessResult(list);
+        }
+
+        RestTemplate restTemplate = new RestTemplate();
+        list = restTemplate.getForObject("http://www.4000663363.com/index.php/ajax/team", String.class);
+        redisTemplate.opsForValue().set(RedisKeyConstants.FZW_DOCTOR_LIST,list);
+        redisTemplate.expire(RedisKeyConstants.FZW_DOCTOR_LIST,60, TimeUnit.MINUTES);
+
+        return ResponseUtil.setSuccessResult(list);
+    }
 
 }
