@@ -1,5 +1,6 @@
 package com.acmed.his.api;
 
+import com.acmed.his.model.dto.ZyDispenseOrderDetailDto;
 import com.acmed.his.model.dto.ZyDispenseOrderDto;
 import com.acmed.his.model.dto.ZyOrderItemReceiveDto;
 import com.acmed.his.pojo.zy.*;
@@ -107,8 +108,8 @@ public class ZhangYaoReceiveApi {
 
     @ApiOperation(value = "患者发药")
     @GetMapping("/dispense/detail")
-    public ResponseResult<List<ZyDispenseOrderDto>> getDispenseDetail(@ApiParam("订单主键") @RequestParam String applyId,
-                                                                     @AccessToken AccessInfo info) {
+    public ResponseResult<List<ZyDispenseOrderDetailDto>> getDispenseDetail(@ApiParam("订单主键") @RequestParam String applyId,
+                                                                            @AccessToken AccessInfo info) {
         return ResponseUtil.setSuccessResult(receiveManager.getDispenseDetail(applyId));
     }
 

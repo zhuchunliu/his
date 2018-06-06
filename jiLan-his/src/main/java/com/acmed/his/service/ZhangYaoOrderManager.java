@@ -14,6 +14,7 @@ import com.acmed.his.pojo.zy.ZYHistoryQueryMo;
 import com.acmed.his.pojo.zy.ZYOrderSubmitPayMo;
 import com.acmed.his.pojo.zy.dto.ZYOrderGetObj;
 import com.acmed.his.pojo.zy.dto.ZYOrderPostObj;
+import com.acmed.his.pojo.zy.dto.ZYPayObj;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
 import com.acmed.his.util.UUIDUtil;
@@ -42,10 +43,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by Darren on 2018-05-22
@@ -229,7 +227,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
      * @param info
      */
     @Transactional
-    public Integer submit(ZYOrderSubmitPayMo mo, UserInfo info) {
+    public String submit(ZYOrderSubmitPayMo mo, UserInfo info) {
 
 
         StringBuilder builder = new StringBuilder();
@@ -263,6 +261,8 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             //step2:校验数据是否正确
             Map<String,List<ZyOrderItem>> orderItemMap = Maps.newHashMap();
             boolean flag = true;
+            String groupNum = "GM_"+commonManager.getNextVal("zyGroupNum");
+            String submitTime = LocalDateTime.now().toString();
             for(ZYOrderSubmitPayMo.ZYOrderSubmitPayDetailMo detailMo : mo.getDetailMoList()){
                 List<ZyOrderItem> itemList = zyOrderItemMapper.getItemByOrderIdExclueRemove(detailMo.getOrderId());
                 orderItemMap.put(detailMo.getOrderId(),itemList);
@@ -277,9 +277,10 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 zyOrder.setExpressId(detailMo.getExpressId());
                 zyOrder.setExpressFee(detailMo.getExpressFee());
                 zyOrder.setExpressName(detailMo.getExpressName());
-                zyOrder.setSubmitTime(LocalDateTime.now().toString());
+                zyOrder.setSubmitTime(submitTime);
                 zyOrder.setTotalFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
                 zyOrder.setPayStatus(1);
+                zyOrder.setGroupNum(groupNum);
                 zyOrder.setModifyBy(info.getId().toString());
                 zyOrder.setModifyAt(LocalDateTime.now().toString());
                 zyOrderMapper.updateByPrimaryKey(zyOrder);
@@ -291,14 +292,60 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 }
             }
             if(!flag){//保存成功，但是返回错误信息
-                return -1;
+                return String.valueOf(false);
             }
 
             //setp3:给掌药提交数据,并验证，验证成功保存数据库
             this.postRemoteOrder(orderMap,orderItemMap,info);
 
+            //step4:支付
+            return this.pay(mo.getFeeType(),orderMap);
+
         }
-        return null;
+    }
+
+    /**
+     *
+     * @param feeType 1:微信，2:支付宝
+     * @param orderMap
+     */
+    private String pay(Integer feeType,Map<String, ZyOrder> orderMap) {
+
+        List<String> list = Lists.newArrayList();
+        Double totalFee = 0d;
+        for(String orderId : orderMap.keySet()){
+            list.add(orderMap.get(orderId).getZyOrderId());
+            totalFee += orderMap.get(orderId).getTotalFee();
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String,Object>();
+        paramMap.add("orderIds", list.toArray());
+        paramMap.add("payType",feeType);
+
+        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(paramMap,httpHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<JSONObject> json = restTemplate.postForEntity("http://presapi.lkhealth.net/index.php"+ZhangYaoConstant.buildPayUrl(),httpEntity, JSONObject.class);
+
+        if(200 != json.getStatusCodeValue()){
+            logger.error("支付数据: "+paramMap);
+            logger.error("支付返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
+        }
+        if(1 !=json.getBody().getInteger("code")){
+            logger.error("支付数据: "+paramMap);
+            logger.error("支付返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
+        }
+        ZYPayObj zyPayObj = json.getBody().getJSONObject("data").getObject("backInfo",ZYPayObj.class);
+        if(zyPayObj.getPayPrice().doubleValue() != totalFee){
+            logger.error("支付金额不匹配");
+            logger.error("支付数据: "+paramMap);
+            logger.error("支付返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
+        }
+        return zyPayObj.getCodeUrl();
     }
 
     /**
@@ -376,13 +423,13 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             if(null == getObj || null == getObj.getAddressInfo()
                     || null == getObj.getOrderDetail() || 0 == getObj.getOrderDetail().size()){
                 logger.error("下单数据: "+jsonArray.toJSONString());
-                logger.error("返回值："+json);
+                logger.error("下单返回值："+json);
                 throw new BaseException(StatusCode.FAIL,"下单失败");
             }
             //细节比较暂时不做，只做金额验证，直接记录数据库
             if(Double.parseDouble(getObj.getOrderInfo().getOrderAmount()) != order.getTotalFee().doubleValue()){
                 logger.error("下单数据: "+jsonArray.toJSONString());
-                logger.error("返回值："+json);
+                logger.error("下单返回值："+json);
                 logger.error("金额计算有误");
                 throw new BaseException(StatusCode.FAIL,"下单失败");
             }
@@ -394,50 +441,52 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
             ZyOrderFeedback zyOrderFeedback = new ZyOrderFeedback();
             BeanUtils.copyProperties(getObj.getOrderInfo(),zyOrderFeedback);
-            zyOrderFeedback.setCreateAt(info.getId().toString());
-            zyOrderFeedback.setCreateBy(LocalDateTime.now().toString());
+            zyOrderFeedback.setCreateAt(LocalDateTime.now().toString());
+            zyOrderFeedback.setCreateBy(info.getId().toString());
             zyOrderFeedbackMapper.insert(zyOrderFeedback);
 
             ZyAddressFeedback zyAddressFeedback = new ZyAddressFeedback();
             BeanUtils.copyProperties(getObj.getAddressInfo(),zyAddressFeedback);
-            zyAddressFeedback.setCreateAt(info.getId().toString());
-            zyAddressFeedback.setCreateBy(LocalDateTime.now().toString());
+            zyAddressFeedback.setCreateAt(LocalDateTime.now().toString());
+            zyAddressFeedback.setCreateBy(info.getId().toString());
             zyAddressFeedbackMapper.insert(zyAddressFeedback);
 
             for(int index =0; index < getObj.getOrderDetail().size(); index++){
                 ZyOrderItemFeedback zyOrderItemFeedback = new ZyOrderItemFeedback();
                 BeanUtils.copyProperties(getObj.getOrderDetail().get(index),zyOrderItemFeedback);
-                zyOrderItemFeedback.setCreateAt(info.getId().toString());
-                zyOrderItemFeedback.setCreateBy(LocalDateTime.now().toString());
+                zyOrderItemFeedback.setCreateAt(LocalDateTime.now().toString());
+                zyOrderItemFeedback.setCreateBy(info.getId().toString());
                 zyOrderItemFeedbackMapper.insert(zyOrderItemFeedback);
             }
-
-
         }
+
 
     }
 
     public static void main(String[] args) {
-        String info = "[{\"address\":\"中节能\",\"areaId\":\"320586\",\"areaInfo\":\"江苏省-苏州市-工业园区\",\"cityId\":\"320500\",\"deliverId\":\"45\",\"drugList\":[{\"drugId\":214459,\"drugNum\":5},{\"drugId\":214459,\"drugNum\":3}],\"expId\":\"418\",\"mobPhone\":\"119\",\"provinceId\":\"320000\",\"storeId\":\"349671\",\"total\":\"248.0\",\"trueName\":\"张三林\"},{\"address\":\"中节能\",\"areaId\":\"320586\",\"areaInfo\":\"江苏省-苏州市-工业园区\",\"cityId\":\"320500\",\"deliverId\":\"45\",\"drugList\":[{\"drugId\":7343,\"drugNum\":3},{\"drugId\":7343,\"drugNum\":5}],\"expId\":\"3512\",\"mobPhone\":\"119\",\"provinceId\":\"320000\",\"storeId\":\"349996\",\"total\":\"125.0\",\"trueName\":\"张三林\"}]";
         HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String,Object>();
-        map.add("dataList",info);
+        MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String,Object>();
+        List<String> list = Lists.newArrayList("193202","193203");
+        paramMap.add("orderIds", list.toArray());
+        paramMap.add("payType","2");
 
-        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(map,httpHeaders);
+        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(paramMap,httpHeaders);
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<JSONObject> json = restTemplate.postForEntity("http://presapi.lkhealth.net/index.php?r=jizhi/order/place"
-                ,httpEntity, JSONObject.class);
-        JSONArray array = json.getBody().getJSONArray("data");
-        List<ZYOrderGetObj> list = Lists.newArrayList();
-        for(int index = 0; index < array.size(); index++){
-            ZYOrderGetObj obj = array.getObject(index,ZYOrderGetObj.class);
-            list.add(obj);
-            System.out.println(obj);
+        ResponseEntity<JSONObject> json = restTemplate.postForEntity("http://presapi.lkhealth.net/index.php"+ZhangYaoConstant.buildPayUrl(),httpEntity, JSONObject.class);
+        if(200 != json.getStatusCodeValue()){
+//            logger.error("支付数据: "+paramMap);
+//            logger.error("支付返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
         }
-        System.err.println();
+        if(1 !=json.getBody().getInteger("code")){
+//            logger.error("支付数据: "+paramMap);
+//            logger.error("支付返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
+        }
+        ZYPayObj zyPayObj = json.getBody().getJSONObject("data").getObject("backInfo",ZYPayObj.class);
+        System.err.println(zyPayObj);
     }
 
 
@@ -454,6 +503,17 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         return zhangYaoMapper.getUnpaidOrder(user.getOrgCode(),name);
     }
 
+    /**
+     * 获取待支付列表
+     * @param user
+     * @param name
+     * @return
+     */
+    public List<ZyOrderItemUnpaidDto> getUnpaidDetail(UserInfo user, String name) {
+
+        return zhangYaoMapper.getUnpaidDetail(user.getOrgCode(),name);
+    }
+
 
     /**
      * 删除待支付详情
@@ -462,6 +522,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
      * @param itemId
      */
     public void delUnpaidOrder(UserInfo user, String orderId, String itemId) {
+//        return zhangYaoMapper.getUnpaidOrder(user.getOrgCode(),name);
     }
 
 

@@ -23,6 +23,7 @@ import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
@@ -136,15 +137,15 @@ public class ZhangYaoApi {
     public ResponseResult pay(@RequestBody ZYOrderSubmitPayMo mo,
                               @AccessToken AccessInfo info){
 
-        Integer status = orderManager.submit(mo,info.getUser());
-        if(-1 == status){
+        String url = orderManager.submit(mo,info.getUser());
+        if(url.equalsIgnoreCase("false")){
             throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
         }
-        return ResponseUtil.setSuccessResult();
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("url",url));
     }
 
 
-    @ApiOperation(value = "待支付订单",hidden = true)
+    @ApiOperation(value = "待支付订单")
     @GetMapping("/unpaid/list")
     public ResponseResult<List<UnpaidOrderVo>> getUnpaidOrder(@Param("订单号,或者药品名称") @RequestParam(value = "name",required = false) String name,
                                                                   @AccessToken AccessInfo info){
@@ -154,12 +155,34 @@ public class ZhangYaoApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "删除待提交订单",hidden = true)
+    @ApiOperation(value = "待支付订单详情列表")
+    @GetMapping("/unpaid/detail")
+    public ResponseResult<List<UnpaidOrderVo>> getUnpaidDetail(@Param("订单号,或者药品名称") @RequestParam(value = "name",required = false) String name,
+                                                              @AccessToken AccessInfo info){
+        List<ZyOrderItemUnpaidDto> dtoList = orderManager.getUnpaidDetail(info.getUser(),name);
+
+
+        return ResponseUtil.setSuccessResult();
+    }
+
+
+
+    @ApiOperation(value = "删除待提交订单")
     @DeleteMapping("/unpaid/del")
     public ResponseResult delUnpaidOrder(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
                                                                   @Param("详情主键") @RequestParam(value = "itemId",required = false) String itemId,
                                                                   @AccessToken AccessInfo info){
         orderManager.delUnpaidOrder(info.getUser(),orderId,itemId);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "删除待提交订单")
+    @GetMapping("/unpaid/detail/list")
+    public ResponseResult<List<UnpaidOrderVo>> delUnpaidOrderDetail(@Param("订单号,或者药品名称") @RequestParam(value = "name",required = false) String name,
+                                                                        @AccessToken AccessInfo info){
+        List<ZyOrderItemUnpaidDto> dtoList = orderManager.getUnpaidOrder(info.getUser(),name);
+
+
         return ResponseUtil.setSuccessResult();
     }
 

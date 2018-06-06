@@ -108,6 +108,9 @@ public class ZyOrder {
     @ApiModelProperty("删除标识:0 未删除,1:删除")
     private String removed;
 
+    @ApiModelProperty("组号")
+    private String groupNum;
+
     @ApiModelProperty("创建时间")
     private String createAt;
 

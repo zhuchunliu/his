@@ -36,11 +36,6 @@
         ORDER BY t2.orderno desc
     </select>
 
-
-
-
-
-
     <select id="statisDrugUsed" resultType="java.util.Map">
         select zydrugid,count(1) as num from t_b_prescription_item t1
         LEFT JOIN t_b_prescription t2 on t1.prescriptionid = t2.id
@@ -53,7 +48,26 @@
     </select>
 
 
-    <select id="getUnpaidOrder" resultType="com.acmed.his.model.dto.ZyOrderItemUnsubmitDto">
+    <select id="getUnpaidOrder" resultType="com.acmed.his.model.dto.ZyOrderItemUnpaidDto">
+        select t1.id as itemId, t1.orderid, t1.applyid,
+        t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,
+        t2.orderno, t2.drugfee ,t2.zyStoreId as storeId,
+        t3.prescriptionno as prescriptionNo
+        from t_zy_order_item t1
+        LEFT JOIN t_zy_order t2 on t1.orderid = t2.id
+        LEFT JOIN t_b_prescription t3 on t1.applyid = t3.applyid
+        where t1.removed = '0' and t1.removed = '0' and t2.orgcode = #{orgCode}
+        and t2.paystatus = 0
+        <if test="@Ognl@isNotEmpty(name) ">
+            and t2.id in (select id from t_zy_order where orderno like concat('%', #{name} , '%')
+            UNION ALL
+            select td.id from t_zy_order_item tm LEFT JOIN t_zy_order td ON tm.orderid = td.id
+            where tm.drugName like concat('%', #{name} , '%') and td.paystatus = 0)
+        </if>
+        ORDER BY t2.orderno desc
+    </select>
+
+    <select id="getUnpaidDetail" resultType="com.acmed.his.model.dto.ZyOrderItemUnpaidDetailDto">
         select t1.id as itemId, t1.orderid, t1.applyid,
         t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,
         t2.orderno, t2.drugfee ,t2.zyStoreId as storeId,

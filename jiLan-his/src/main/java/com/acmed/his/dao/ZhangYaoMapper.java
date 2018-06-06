@@ -47,6 +47,7 @@ public interface ZhangYaoMapper {
      */
     List<Map<String,Object>> statisDrugUsed(@Param("drugIdList") List<Integer> drugIdList, @Param("orgCode") Integer orgCode);
 
+
     /**
      * 待支付详情列表
      * @param orgCode
@@ -54,6 +55,14 @@ public interface ZhangYaoMapper {
      * @return
      */
     List<ZyOrderItemUnpaidDto> getUnpaidOrder(Integer orgCode, String name);
+
+    /**
+     * 待支付详情列表
+     * @param orgCode
+     * @param name
+     * @return
+     */
+    List<ZyOrderItemUnpaidDto> getUnpaidDetail(Integer orgCode, String name);
 
     /**
      * 获取历史订单
