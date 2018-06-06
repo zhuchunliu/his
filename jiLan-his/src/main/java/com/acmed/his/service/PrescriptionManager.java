@@ -329,6 +329,7 @@ public class PrescriptionManager {
 
         Double price = 0d;
         boolean contanisMedicine = false;
+        boolean isZhangYaoOrder = false;//是否是掌药订单
         for(int i=0; i< mo.getPreList().size(); i++){
             PreMo.PrescriptMo pre = mo.getPreList().get(i);
             Double receivables = 0.0d;
@@ -337,6 +338,9 @@ public class PrescriptionManager {
 //                for (PreMo.ItemMo info : pre.getItemList()) {
                 for (int index =0; index < pre.getItemList().size(); index++) {
                     PreMo.ItemMo info = pre.getItemList().get(index);
+                    if(StringUtils.isNotEmpty(info.getStoreId())){
+                        isZhangYaoOrder = true;
+                    }
                     if(StringUtils.isNotEmpty(info.getItemId())){
                         PrescriptionItem item = preItemMapper.selectByPrimaryKey(info.getItemId());
                         if(null != item && 1 == item.getPayStatus()) {
@@ -354,6 +358,7 @@ public class PrescriptionManager {
                     item.setModifyAt(prescription.getModifyAt());
                     item.setModifyBy(prescription.getModifyBy());
                     if(StringUtils.isNotEmpty(info.getStoreId())){//掌药药品信息
+                        isZhangYaoOrder = true;
                         item.setId(UUIDUtil.generate());
                         item.setDrugName(info.getDrugName());
                         item.setNum(Optional.ofNullable(info.getNum()).orElse(0));
@@ -508,6 +513,7 @@ public class PrescriptionManager {
         }
 
         prescription.setIsDispensing(contanisMedicine?"0":"2");
+        prescription.setIsZyDispensing(isZhangYaoOrder?0:2);
         prescription.setFee(price);
         preMapper.updateByPrimaryKey(prescription);
         return prescription;

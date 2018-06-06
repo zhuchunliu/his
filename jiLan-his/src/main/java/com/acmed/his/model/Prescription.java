@@ -56,6 +56,9 @@ public class Prescription {
     @ApiModelProperty("是否发药 0:否；1:是 ，2：不用发药")
     private String isDispensing;
 
+    @ApiModelProperty("掌药订单是否发药0:否，1:是，2:不用发药")
+    private Integer isZyDispensing;
+
     @ApiModelProperty("创建时间")
     private String createAt;
 

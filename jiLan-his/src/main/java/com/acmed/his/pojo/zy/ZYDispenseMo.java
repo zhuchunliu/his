@@ -6,15 +6,13 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Created by Darren on 2018-06-04
+ * Created by Darren on 2018-06-05
  **/
 @Data
-public class ZYReceiveQueryMo {
-    @ApiModelProperty("订单号,快递号")
-    private String name;
+public class ZYDispenseMo {
 
-    @ApiModelProperty("0:未收货，1：已经收货，默认0")
-    private Integer isRecepit = 0;
+    @ApiModelProperty("null:全部 ,0:已完成，1:待收货,2：已发放")
+    private Integer status = 0;
 
     @ApiModelProperty("开始时间")
     private String startTime;

@@ -2,10 +2,8 @@ package com.acmed.his.dao;
 
 import com.acmed.his.model.PrescriptionItem;
 import com.acmed.his.model.ZyOrder;
-import com.acmed.his.model.dto.ZyOrderItemHistoryDto;
-import com.acmed.his.model.dto.ZyOrderItemReceiveDto;
-import com.acmed.his.model.dto.ZyOrderItemUnpaidDto;
-import com.acmed.his.model.dto.ZyOrderItemUnsubmitDto;
+import com.acmed.his.model.dto.*;
+import com.acmed.his.pojo.zy.ZYDispenseMo;
 import com.acmed.his.pojo.zy.ZYHistoryQueryMo;
 import com.acmed.his.pojo.zy.ZYReceiveQueryMo;
 import org.apache.ibatis.annotations.Param;
@@ -39,12 +37,6 @@ public interface ZhangYaoMapper {
      */
     List<ZyOrderItemUnsubmitDto> getUnSubmitOrderItem(@Param("orgCode") Integer orgCode, @Param("name")String name);
 
-    /**
-     * 更新处方详情为拆单状态
-     *
-     * @param ids
-     */
-    void updateItemDismantleStatus(@Param("ids") List<String> ids);
 
 
     /**
@@ -78,4 +70,49 @@ public interface ZhangYaoMapper {
      * @return
      */
     List<ZyOrderItemReceiveDto> getReceiveOrder(@Param("orgCode") Integer orgCode, @Param("mo") ZYReceiveQueryMo mo);
+
+    /**
+     *
+     * 获取患者发放列表
+     * @param orgCode
+     * @param zyDispenseMo
+     * @return
+     */
+    List<ZyDispenseOrderDto> getDispenseOrder(@Param("orgCode") Integer orgCode, @Param("mo") ZYDispenseMo zyDispenseMo);
+
+
+    /**
+     * 获取收货详情
+     *
+     * @param applyId
+     * @return
+     */
+    List<ZyDispenseOrderDetailDto> getDispenseDetail(@Param("applyId") String applyId);
+
+    /**
+     * 更新处方详情为拆单状态
+     *
+     * @param ids
+     */
+    void updatePreItemStatusByIds(@Param("ids") List<String> ids,@Param("zyOrderStatus") Integer zyOrderStatus);
+
+
+    /**
+     * 根据掌药订单id设置处方单状态
+     *
+     * @param orderId
+     * @param zyOrderStatus
+     */
+    void updatePreItemStatusByOrderId(@Param("orderId") String orderId, @Param("zyOrderStatus") Integer zyOrderStatus);
+
+    /**
+     * 根据处方id设置处方单状态
+     *
+     * @param id
+     * @param zyOrderStatus
+     */
+    void updatePreItemStatusById(@Param("id") String id, @Param("zyOrderStatus") Integer zyOrderStatus);
+
+
+
 }

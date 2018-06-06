@@ -36,12 +36,7 @@
         ORDER BY t2.orderno desc
     </select>
 
-    <update id="updateItemDismantleStatus">
-        update t_b_prescription_item set zyOrderStatus =1 where id in
-        <foreach collection="ids" separator="," open="(" close=")" item="id">
-            #{id}
-        </foreach>
-    </update>
+
 
 
 
@@ -105,16 +100,17 @@
     </select>
 
     <select id="getReceiveOrder" resultType="com.acmed.his.model.dto.ZyOrderItemReceiveDto">
-        select t1.id as itemId, t1.orderid, t1.applyid,
-        t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,
-        t2.orderno, t2.drugfee , t2.expressfee as expressFee, t2.totalfee as totalFee,
-        t2.submittime as submitTime,t2.zyStoreId as storeId,t2.paystatus,
-        t3.prescriptionno as prescriptionNo
+        select t1.id as itemId, t1.orderid,
+        t1.drugname, t1.num,t1.receivenum, t1.retailprice, t1.fee, t1.manufacturername,
+        t2.orderno, t2.expressno, t2.submittime, t2.recepitstatus,
+        t3.prescriptionno as prescriptionNo,
+        t4.patientname
         from t_zy_order_item t1
         LEFT JOIN t_zy_order t2 on t1.orderid = t2.id
         LEFT JOIN t_b_prescription t3 on t1.applyid = t3.applyid
+        LEFT JOIN t_b_patient_item t4 on t3.patientid = t4.id
         where t1.removed = '0' and t1.removed = '0' and t2.orgcode = #{orgCode}
-        and t2.paystatus = 2 and t2.isrecepit = 0
+        and t2.paystatus = 2
         <if test="@Ognl@isNotEmpty(mo.name) ">
             and (t2.orderno like concat('%', #{mo.name} , '%') OR
               t2.expressno like concat('%', #{mo.name} , '%'))
@@ -125,6 +121,82 @@
         <if test="@Ognl@isNotEmpty(mo.endTime) ">
             and t2.submittime >= #{mo.endTime}
         </if>
-        ORDER BY t2.orderno desc
+        <if test="1 == mo.isRecepit">
+            and t2.recepitstatus =1
+        </if>
+        <if test="0 == mo.isRecepit">
+            and t2.recepitstatus !=1
+        </if>
+        ORDER BY
+        <if test="0 == mo.isRecepit">
+            field(recepitstatus,0,2,-1),
+        </if>
+        t2.orderno desc
     </select>
+
+    <select id="getDispenseOrder" resultType="com.acmed.his.model.dto.ZyDispenseOrderDto">
+        SELECT * FROM (
+            <if test="@Ognl@isNotEmpty(mo.status) and mo.status == 0">
+                select t2.gender,t2.patientname,t2.age,t2.mobile,t1.applyid,t1.createat as submittime,0 as status from t_b_prescription t1
+                JOIN t_b_patient_item t2 on t1.patientid = t2.id
+                where t1.iszydispensing = 0 and t1.orgcode = #{orgCode} and t1.id in
+                    (select prescriptionid from t_b_prescription_item where zyorderstatus is not null and zyorderstatus in (0,1,2))
+            </if>
+            <if test="@Ognl@isEmpty(mo.status) ">
+              UNION ALL
+            </if>
+            <if test="@Ognl@isNotEmpty(mo.status) and mo.status == 1">
+                select t2.gender,t2.patientname,t2.age,t2.mobile,t1.applyid,t1.createat as submittime,1 as status from t_b_prescription t1
+                JOIN t_b_patient_item t2 on t1.patientid = t2.id
+                where t1.iszydispensing = 0 and t1.orgcode = #{orgCode} and t1.id in
+                        (select prescriptionid from t_b_prescription_item where zyorderstatus = 4
+                            and prescriptionid not in
+                            (select prescriptionid from t_b_prescription_item where zyorderstatus is not null and zyorderstatus in (0,1,2)))
+            </if>
+            <if test="@Ognl@isEmpty(mo.status) ">
+              UNION ALL
+            </if>
+            <if test="@Ognl@isNotEmpty(mo.status) and mo.status == 2">
+                select t2.gender,t2.patientname,t2.age,t2.mobile,t1.applyid,t1.createat as submittime,2 as status from t_b_prescription t1
+                JOIN t_b_patient_item t2 on t1.patientid = t2.id
+                where t1.iszydispensing = 1 and t1.orgcode = #{orgCode}
+            </if>
+        )tt
+        <if test="@Ognl@isNotEmpty(mo.startTime) ">
+            and t2.submittime >= #{mo.startTime}
+        </if>
+        <if test="@Ognl@isNotEmpty(mo.endTime) ">
+            and t2.submittime >= #{mo.endTime}
+        </if>
+        ORDER BY FIELD(tt.`status` ,1,0,2),tt.submittime DESC
+    </select>
+
+    <select id="getDispenseDetail" resultType="com.acmed.his.model.dto.ZyDispenseOrderDetailDto">
+        select t1.drugname,t1.zymanufacturername as manufacturername,t1.retailprice,t1.num,t1.fee,
+        CASE t1.zyorderstatus WHEN 4 THEN 1 ELSE 0 END status,
+        t2.orderid,t3.expressname,t3.expressno
+        from t_b_prescription_item t1
+        LEFT JOIN t_zy_order_item t2 on t1.id = t2.preitemid
+        LEFT JOIN t_zy_order t3 on t2.orderid = t3.id
+        where t1.applyid = #{applyId} and zyorderstatus != 3;
+    </select>
+
+
+    <update id="updatePreItemStatusByIds">
+        update t_b_prescription_item set zyOrderStatus = #{zyOrderStatus} where id in
+        <foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updatePreItemStatusByOrderId">
+        update t_b_prescription_item set zyorderstatus = #{zyOrderStatus} where id in
+        (
+        select preitemid from t_zy_order_item where orderid = #{orderId}
+        )
+    </update>
+
+    <update id="updatePreItemStatusById">
+        update t_b_prescription_item set zyorderstatus = #{zyOrderStatus} where id = #{id}
+    </update>
 </mapper>

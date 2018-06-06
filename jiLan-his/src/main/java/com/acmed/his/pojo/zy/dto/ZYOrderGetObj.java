@@ -21,31 +21,32 @@ public class ZYOrderGetObj {
     public class ZYOrderGetOrderInfoObj{
 
         @ApiModelProperty("订单id")
-        private String order_id;
+        private String orderId;
 
         @ApiModelProperty("订单号")
-        private String order_sn;
+        private String orderSn;
 
         @ApiModelProperty("药店id")
-        private String store_id;
+        private String storeId;
 
         @ApiModelProperty("药店名")
-        private String store_name;
-
-        @ApiModelProperty("下单时间")
-        private String add_time;
-
-        @ApiModelProperty("订单总金额")
-        private String order_amount;
-
-        @ApiModelProperty("订单状态 10-未付款 20-已付款")
-        private String order_state;
-
-        @ApiModelProperty("支付方式 1-微信 2-支付宝")
-        private String payment_id;
+        private String storeName;
 
         @ApiModelProperty("药店电话")
-        private String storeTel;
+        private String storePhone;
+
+        @ApiModelProperty("下单时间")
+        private String addTime;
+
+        @ApiModelProperty("订单总金额")
+        private String orderAmount;
+
+        @ApiModelProperty("订单状态 10-未付款 20-已付款")
+        private String orderState;
+
+        @ApiModelProperty("支付方式 1-微信 2-支付宝")
+        private String paymentId;
+
 
     }
 

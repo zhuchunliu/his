@@ -114,6 +114,6 @@ public class PrescriptionItem {
     @ApiModelProperty("订单id - 掌药")
     private String zyOrderId;
 
-    @ApiModelProperty("下单状态 null:不需要下单 0:未拆单，1:已经拆单,2:已经下单")
+    @ApiModelProperty("下单状态 null:不需要下单 0:未拆单，1:已经拆单,2:已经下单,3:取消下单,4:已收货")
     private Integer zyOrderStatus;
 }

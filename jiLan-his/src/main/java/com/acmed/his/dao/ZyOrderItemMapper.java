@@ -49,4 +49,6 @@ public interface ZyOrderItemMapper extends TkMapper<ZyOrderItem> {
      * @param itemIdList
      */
     void updateRemoveStatus(@Param("orderId") String orderId, @Param("itemIdList") List<String> itemIdList);
+
+
 }

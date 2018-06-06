@@ -14,38 +14,32 @@ public class ZyOrderItemReceiveDto {
     @ApiModelProperty("订单编号")
     private String orderNo;
 
-    @ApiModelProperty("药品费用")
-    private Double drugFee;
-
-    @ApiModelProperty("快递费用")
-    private Double expressFee;
-
-    @ApiModelProperty("总费用")
-    private Double totalFee;
+    @ApiModelProperty("快递单号")
+    private String expressNo;
 
     @ApiModelProperty("提交时间")
     private String submitTime;
 
-    @ApiModelProperty("药店id")
-    private String storeId;
-
-    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:已退款,4:已经取消")
-    private Integer payStatus;
+    @ApiModelProperty("收货状态 -1：不可收货，无物流信息, 0:待收货；1:已经收货；2:缺货")
+    private Integer recepitStatus;
 
     @ApiModelProperty("详情id")
     private String itemId;
 
-    @ApiModelProperty("挂号主键")
-    private String applyId;
-
     @ApiModelProperty("处方编号,医疗机构id+排序")
     private String prescriptionNo;
+
+    @ApiModelProperty("患者姓名")
+    private String patientName;
 
     @ApiModelProperty("用药名称")
     private String drugName;
 
     @ApiModelProperty("数量")
     private Integer num;
+
+    @ApiModelProperty("收货数量")
+    private Integer receiveNum;
 
     @ApiModelProperty("零售价")
     private Double retailPrice;

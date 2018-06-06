@@ -132,7 +132,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                     order.setOrderNo(LocalDate.now().toString().replaceAll("-","")+
                             commonManager.getFormatVal(info.getOrgCode() + LocalDate.now().toString(), "00000"));
                     order.setPayStatus(0);
-                    order.setIsRecepit(0);
+                    order.setRecepitStatus(-1);
                     order.setExpressFee(0d);
                     order.setRemoved("0");
                     order.setCreateAt(LocalDate.now().toString());
@@ -149,7 +149,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 }
 
                 //step4: 更新订单状态为已拆单状态
-                zhangYaoMapper.updateItemDismantleStatus(itemIdList);
+                zhangYaoMapper.updatePreItemStatusByIds(itemIdList,1);
 
             }
         }
@@ -177,8 +177,8 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 zyOrder.setModifyAt(LocalDateTime.now().toString());
                 zyOrder.setModifyBy(info.getId().toString());
                 zyOrderMapper.updateByPrimaryKey(zyOrder);
-
                 zyOrderItemMapper.deleteByOrderId(orderId);
+                zhangYaoMapper.updatePreItemStatusByOrderId(orderId,3);//设定t_b_prescription_item为取消状态
             }
 
             if (StringUtils.isNotEmpty(itemId)) {
@@ -191,6 +191,8 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 zyOrder.setDrugFee(zyOrder.getDrugFee()-item.getFee());
                 zyOrder.setTotalFee(zyOrder.getTotalFee()-item.getFee());
                 zyOrderMapper.updateByPrimaryKey(zyOrder);
+
+                zhangYaoMapper.updatePreItemStatusById(item.getPreItemId(),3);//设定t_b_prescription_item为取消状态
             }
         }
 

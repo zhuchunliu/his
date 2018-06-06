@@ -19,21 +19,17 @@ public class ReceiveOrderVo {
     @ApiModelProperty("快递单号")
     private String expressNo;
 
-    @ApiModelProperty("药店id")
-    private String storeId;
-
-    @ApiModelProperty("药品费用")
-    private Double drugFee;
-
-    @ApiModelProperty("快递费用")
-    private Double expressFee;
-
-    @ApiModelProperty("总费用")
-    private Double totalFee;
-
     @ApiModelProperty("提交时间")
     private String submitTime;
 
+    @ApiModelProperty("药品总数量")
+    private Integer totalNum;
+
+    @ApiModelProperty("药品总数量")
+    private Integer missingNum;
+
+    @ApiModelProperty("收货状态 -1：不可收货，无物流信息, 0:待收货；1:已经收货；2:缺货")
+    private Integer recepitStatus;
 
     private List<ReceiveOrderVo.ReceiveOrderDetailVo> detailVoList;
 
@@ -42,9 +38,6 @@ public class ReceiveOrderVo {
 
         @ApiModelProperty("详情id")
         private String itemId;
-
-        @ApiModelProperty("挂号主键")
-        private String applyId;
 
         @ApiModelProperty("处方编号,医疗机构id+排序")
         private String prescriptionNo;
@@ -55,6 +48,9 @@ public class ReceiveOrderVo {
         @ApiModelProperty("数量")
         private Integer num;
 
+        @ApiModelProperty("收货数量")
+        private Integer receiveNum;
+
         @ApiModelProperty("零售价")
         private Double retailPrice;
 
@@ -63,5 +59,8 @@ public class ReceiveOrderVo {
 
         @ApiModelProperty("药品厂家 - 掌药")
         private String manufacturerName;
+
+        @ApiModelProperty("患者姓名")
+        private String patientName;
     }
 }
