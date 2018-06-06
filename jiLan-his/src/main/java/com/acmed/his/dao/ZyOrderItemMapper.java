@@ -30,13 +30,6 @@ public interface ZyOrderItemMapper extends TkMapper<ZyOrderItem> {
     List<ZyOrderItem> getItemByOrderIdExclueRemove(@Param("orderId") String orderId);
 
     /**
-     * 过滤掉删除状态的明细，设置成正常状态0
-     * @param orderId
-     * @param itemIdList
-     */
-    void updateNormalStatus(@Param("orderId") String orderId, @Param("itemIdList") List<String> itemIdList);
-
-    /**
      * 过滤删除状态的明细，设置成被删除状态2
      * @param orderId
      * @param itemIdList

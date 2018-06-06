@@ -28,6 +28,9 @@ public class ZyOrderItemFeedback {
     @ApiModelProperty("药品id")
     private String goodsId;
 
+    @ApiModelProperty("药品名称")
+    private String goodsName;
+
     @ApiModelProperty("规格")
     private String specInfo;
 

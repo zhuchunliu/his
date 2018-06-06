@@ -22,6 +22,9 @@ public class ZyAddressFeedback {
     @ApiModelProperty("id")
     private Integer id;
 
+    @ApiModelProperty("订单id")
+    private String orderId;
+
     @ApiModelProperty("收货人姓名")
     private String trueName;
 
@@ -45,6 +48,9 @@ public class ZyAddressFeedback {
 
     @ApiModelProperty("配送费用")
     private String shippingFee;
+
+    @ApiModelProperty("配送方式id")
+    private String shippingId;
 
     @ApiModelProperty("配送方式")
     private String shippingName;

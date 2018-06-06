@@ -11,8 +11,38 @@ import java.util.List;
 @Data
 public class ZYOrderSubmitPayMo {
 
-    @ApiModelProperty("地址id")
-    private Integer addressId;
+    @ApiModelProperty("省份id")
+    private String provinceId;
+
+    @ApiModelProperty("省份名称")
+    private String provinceName;
+
+    @ApiModelProperty("省份名称")
+    private String cityId;
+
+    @ApiModelProperty("省份名称")
+    private String cityName;
+
+    @ApiModelProperty("县主键")
+    private String countyId;
+
+    @ApiModelProperty("县名称")
+    private String countyName;
+
+    @ApiModelProperty("详细地址")
+    private String address;
+
+    @ApiModelProperty("收件人")
+    private String recipient;
+
+    @ApiModelProperty("邮编编码")
+    private String zipCode;
+
+    @ApiModelProperty("电话")
+    private String phone;
+
+    @ApiModelProperty("付费方式 1:微信，2:支付宝")
+    private Integer feeType;
 
     @ApiModelProperty("详情")
     private List<ZYOrderSubmitPayDetailMo> detailMoList;

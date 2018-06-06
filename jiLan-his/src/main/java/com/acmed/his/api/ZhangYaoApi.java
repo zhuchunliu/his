@@ -245,7 +245,7 @@ public class ZhangYaoApi {
 
     }
 
-    @ApiOperation(value ="保存收件地址")
+    @ApiOperation(value ="保存收件地址",hidden = true)
     @PostMapping("/address/save")
     public ResponseResult saveAddress(@RequestBody ZYAddressMo mo,
                                       @AccessToken AccessInfo info){
@@ -254,7 +254,7 @@ public class ZhangYaoApi {
 
     }
 
-    @ApiOperation(value ="设置默认地址信息")
+    @ApiOperation(value ="设置默认地址信息",hidden = true)
     @PostMapping("/address/default")
     public ResponseResult<ZYLogisticsObj> setDefaultAddress(@ApiParam("{\"id\":\"\"} id：地址主键") @RequestBody String param,
                                                       @AccessToken AccessInfo info){
@@ -266,7 +266,7 @@ public class ZhangYaoApi {
 
     }
 
-    @ApiOperation(value = "删除收件地址信息")
+    @ApiOperation(value = "删除收件地址信息",hidden = true)
     @DeleteMapping("/address/del")
     public ResponseResult delAddress(@Param("地址主键") @RequestParam(value = "id") Integer id,
                                      @AccessToken AccessInfo info){

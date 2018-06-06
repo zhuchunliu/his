@@ -34,6 +34,9 @@ public class ZyOrderFeedback {
     @ApiModelProperty("药店名")
     private String storeName;
 
+    @ApiModelProperty("药店电话")
+    private String storePhone;
+
     @ApiModelProperty("下单时间")
     private String addTime;
 
@@ -45,9 +48,6 @@ public class ZyOrderFeedback {
 
     @ApiModelProperty("支付方式 1-微信 2-支付宝")
     private String paymentId;
-
-    @ApiModelProperty("药店电话")
-    private String storeTel;
 
     @ApiModelProperty("创建时间")
     private String createAt;

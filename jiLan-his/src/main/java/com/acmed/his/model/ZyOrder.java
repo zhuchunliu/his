@@ -93,6 +93,9 @@ public class ZyOrder {
     @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:已退款,4:已经取消")
     private Integer payStatus;
 
+    @ApiModelProperty("付费方式 1:微信，2:支付宝")
+    private Integer feeType;
+
     @ApiModelProperty("收货状态 -1：不可收货，无物流信息, 0:待收货；1:已经收货；2:缺货")
     private Integer recepitStatus;
 

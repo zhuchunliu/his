@@ -2,20 +2,17 @@ package com.acmed.his.service;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.consts.ZhangYaoConstant;
-import com.acmed.his.dao.ZhangYaoMapper;
-import com.acmed.his.dao.ZyAddressMapper;
-import com.acmed.his.dao.ZyOrderItemMapper;
-import com.acmed.his.dao.ZyOrderMapper;
+import com.acmed.his.dao.*;
 import com.acmed.his.exceptions.BaseException;
-import com.acmed.his.model.PrescriptionItem;
-import com.acmed.his.model.ZyAddress;
-import com.acmed.his.model.ZyOrder;
-import com.acmed.his.model.ZyOrderItem;
+import com.acmed.his.model.*;
 import com.acmed.his.model.dto.ZyOrderItemHistoryDto;
 import com.acmed.his.model.dto.ZyOrderItemUnpaidDto;
 import com.acmed.his.model.dto.ZyOrderItemUnsubmitDto;
 import com.acmed.his.pojo.vo.UserInfo;
-import com.acmed.his.pojo.zy.*;
+import com.acmed.his.pojo.zy.ZYAddressMo;
+import com.acmed.his.pojo.zy.ZYHistoryQueryMo;
+import com.acmed.his.pojo.zy.ZYOrderSubmitPayMo;
+import com.acmed.his.pojo.zy.dto.ZYOrderGetObj;
 import com.acmed.his.pojo.zy.dto.ZYOrderPostObj;
 import com.acmed.his.util.PageBase;
 import com.acmed.his.util.PageResult;
@@ -24,12 +21,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -41,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,16 +62,25 @@ public class ZhangYaoOrderManager  implements InitializingBean {
     private ZhangYaoMapper zhangYaoMapper;
 
     @Autowired
+    private ZhangYaoManager zhangYaoManager;
+
+    @Autowired
     private ZyOrderMapper zyOrderMapper;
 
     @Autowired
     private ZyOrderItemMapper zyOrderItemMapper;
 
     @Autowired
-    private ZyAddressMapper zyAddressMapper;
+    private CommonManager commonManager;
 
     @Autowired
-    private CommonManager commonManager;
+    private ZyOrderFeedbackMapper zyOrderFeedbackMapper;
+
+    @Autowired
+    private ZyOrderItemFeedbackMapper zyOrderItemFeedbackMapper;
+
+    @Autowired
+    private ZyAddressFeedbackMapper zyAddressFeedbackMapper;
 
     private static String ZHANGYAO_URL = null;
 
@@ -198,10 +205,6 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
     }
 
-
-
-
-
     private ZyOrderItem getZyOrderItem(ZyOrder order ,PrescriptionItem item){
         ZyOrderItem orderItem = new ZyOrderItem();
         orderItem.setId(UUIDUtil.generate());
@@ -213,6 +216,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         orderItem.setNum(item.getNum());
         orderItem.setRetailPrice(item.getRetailPrice());
         orderItem.setFee(item.getFee());
+        orderItem.setStatus(0);
         orderItem.setManufacturerName(item.getZyManufacturerName());
         orderItem.setRemoved("0");
         return orderItem;
@@ -227,9 +231,20 @@ public class ZhangYaoOrderManager  implements InitializingBean {
     @Transactional
     public Integer submit(ZYOrderSubmitPayMo mo, UserInfo info) {
 
-        ZyAddress zyAddress = zyAddressMapper.selectByPrimaryKey(mo.getAddressId());
+
         StringBuilder builder = new StringBuilder();
         synchronized ((Object)info.getOrgCode().intValue()) {
+
+            //step0:处理地址信息
+            List<ZyAddress> addressList = zhangYaoManager.getAddressList(1,info);
+            ZYAddressMo zyAddressMo = new ZYAddressMo();
+            BeanUtils.copyProperties(mo,zyAddressMo,"id");
+            zyAddressMo.setIsDefault(1);
+            if(null != addressList){
+                zyAddressMo.setId(addressList.get(0).getId());
+            }
+            ZyAddress zyAddress = zhangYaoManager.saveAddress(zyAddressMo,info);
+
 
             //step1: 校验是否被提交
             Map<String,ZyOrder> orderMap = Maps.newHashMap();
@@ -256,18 +271,8 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 itemList.forEach(obj->itemIdList.add(obj.getId()));
 
                 ZyOrder zyOrder = orderMap.get(detailMo.getOrderId());
-
+                BeanUtils.copyProperties(mo,zyOrder);//设置地址信息
                 zyOrder.setAddressId(zyAddress.getId());
-                zyOrder.setProvinceId(zyAddress.getProvinceId());
-                zyOrder.setProvinceName(zyAddress.getProvinceName());
-                zyOrder.setCityId(zyAddress.getCityId());
-                zyOrder.setCityName(zyAddress.getCityName());
-                zyOrder.setCountyId(zyAddress.getCountyId());
-                zyOrder.setCountyName(zyAddress.getCountyName());
-                zyOrder.setAddress(zyAddress.getAddress());
-                zyOrder.setRecipient(zyAddress.getRecipient());
-                zyOrder.setZipCode(zyAddress.getZipCode());
-                zyOrder.setPhone(zyAddress.getPhone());
 
                 zyOrder.setExpressId(detailMo.getExpressId());
                 zyOrder.setExpressFee(detailMo.getExpressFee());
@@ -281,20 +286,16 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
                 if(!detailMo.getItemIdList().containsAll(itemIdList) || !itemIdList.containsAll(detailMo.getItemIdList())){
                     flag = false;
-                    zyOrderItemMapper.updateNormalStatus(zyOrder.getId(),detailMo.getItemIdList());//过滤掉removed=1,设置成正常状态
                     zyOrderItemMapper.updateAddStatus(zyOrder.getId(),detailMo.getItemIdList());//过滤掉当前的详情,设置成新增状态
                     zyOrderItemMapper.updateRemoveStatus(zyOrder.getId(),detailMo.getItemIdList());//过滤removed=1,设置成删除状态
-                }else{
-                    zyOrderItemMapper.updateNormalStatus(zyOrder.getId(),detailMo.getItemIdList());
                 }
             }
-            if(!flag){
-//                throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
+            if(!flag){//保存成功，但是返回错误信息
                 return -1;
             }
 
-            //setp3:给掌药提交数据,并验证
-            this.postRemoteOrder(orderMap,orderItemMap);
+            //setp3:给掌药提交数据,并验证，验证成功保存数据库
+            this.postRemoteOrder(orderMap,orderItemMap,info);
 
         }
         return null;
@@ -305,7 +306,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
      * @param orderMap
      * @param orderItemMap
      */
-    public void postRemoteOrder(Map<String,ZyOrder> orderMap,Map<String,List<ZyOrderItem>> orderItemMap){
+    public void postRemoteOrder(Map<String,ZyOrder> orderMap,Map<String,List<ZyOrderItem>> orderItemMap,UserInfo info){
         List<ZYOrderPostObj> objList = Lists.newArrayList();
         for(String orderId : orderMap.keySet()){
             ZyOrder order = orderMap.get(orderId);
@@ -335,12 +336,12 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String,Object>();
+        MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String,Object>();
         JSONArray jsonArray = new JSONArray();
         jsonArray.addAll(objList);
-        map.add("dataList",jsonArray.toJSONString());
+        paramMap.add("dataList",jsonArray.toJSONString());
 
-        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(map,httpHeaders);
+        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(paramMap,httpHeaders);
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<JSONObject> json = restTemplate.postForEntity(this.ZHANGYAO_URL+ZhangYaoConstant.buildOrderUrl(),httpEntity, JSONObject.class);
@@ -355,22 +356,88 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             logger.error("返回值："+json);
             throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
         }
+
+        JSONArray array = json.getBody().getJSONArray("data");
+        Map<String,ZYOrderGetObj> orderGetObjMap = Maps.newHashMap();
+        for(int index = 0; index < array.size(); index++){
+            ZYOrderGetObj obj = array.getObject(index,ZYOrderGetObj.class);
+            orderGetObjMap.put(obj.getOrderInfo().getStoreId(),obj);
+        }
+        //验证数据是否准确
+        if(orderGetObjMap.size() != orderMap.size()){
+            logger.error("下单数据: "+jsonArray.toJSONString());
+            logger.error("返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败");
+        }
+
+        for(String orderId : orderMap.keySet()) {
+            ZyOrder order = orderMap.get(orderId);
+            ZYOrderGetObj getObj = orderGetObjMap.get(order.getZyStoreId());
+            if(null == getObj || null == getObj.getAddressInfo()
+                    || null == getObj.getOrderDetail() || 0 == getObj.getOrderDetail().size()){
+                logger.error("下单数据: "+jsonArray.toJSONString());
+                logger.error("返回值："+json);
+                throw new BaseException(StatusCode.FAIL,"下单失败");
+            }
+            //细节比较暂时不做，只做金额验证，直接记录数据库
+            if(Double.parseDouble(getObj.getOrderInfo().getOrderAmount()) != order.getTotalFee().doubleValue()){
+                logger.error("下单数据: "+jsonArray.toJSONString());
+                logger.error("返回值："+json);
+                logger.error("金额计算有误");
+                throw new BaseException(StatusCode.FAIL,"下单失败");
+            }
+
+            order.setZyOrderId(getObj.getOrderInfo().getOrderId());
+            order.setZyOrderSn(getObj.getOrderInfo().getOrderSn());
+            order.setPayStatus(1);
+            zyOrderMapper.updateByPrimaryKey(order);
+
+            ZyOrderFeedback zyOrderFeedback = new ZyOrderFeedback();
+            BeanUtils.copyProperties(getObj.getOrderInfo(),zyOrderFeedback);
+            zyOrderFeedback.setCreateAt(info.getId().toString());
+            zyOrderFeedback.setCreateBy(LocalDateTime.now().toString());
+            zyOrderFeedbackMapper.insert(zyOrderFeedback);
+
+            ZyAddressFeedback zyAddressFeedback = new ZyAddressFeedback();
+            BeanUtils.copyProperties(getObj.getAddressInfo(),zyAddressFeedback);
+            zyAddressFeedback.setCreateAt(info.getId().toString());
+            zyAddressFeedback.setCreateBy(LocalDateTime.now().toString());
+            zyAddressFeedbackMapper.insert(zyAddressFeedback);
+
+            for(int index =0; index < getObj.getOrderDetail().size(); index++){
+                ZyOrderItemFeedback zyOrderItemFeedback = new ZyOrderItemFeedback();
+                BeanUtils.copyProperties(getObj.getOrderDetail().get(index),zyOrderItemFeedback);
+                zyOrderItemFeedback.setCreateAt(info.getId().toString());
+                zyOrderItemFeedback.setCreateBy(LocalDateTime.now().toString());
+                zyOrderItemFeedbackMapper.insert(zyOrderItemFeedback);
+            }
+
+
+        }
+
     }
 
     public static void main(String[] args) {
-        String json = "[{\"address\":\"中节能\",\"areaId\":\"320586\",\"areaInfo\":\"江苏省-苏州市-工业园区\",\"cityId\":\"320500\",\"deliverId\":\"45\",\"drugList\":[{\"drugId\":214459,\"drugNum\":5},{\"drugId\":214459,\"drugNum\":3}],\"expId\":\"418\",\"mobPhone\":\"119\",\"provinceId\":\"320000\",\"storeId\":\"349671\",\"total\":\"248.0\",\"trueName\":\"张三林\"},{\"address\":\"中节能\",\"areaId\":\"320586\",\"areaInfo\":\"江苏省-苏州市-工业园区\",\"cityId\":\"320500\",\"deliverId\":\"45\",\"drugList\":[{\"drugId\":7343,\"drugNum\":3},{\"drugId\":7343,\"drugNum\":5}],\"expId\":\"3512\",\"mobPhone\":\"119\",\"provinceId\":\"320000\",\"storeId\":\"349996\",\"total\":\"125.0\",\"trueName\":\"张三林\"}]";
+        String info = "[{\"address\":\"中节能\",\"areaId\":\"320586\",\"areaInfo\":\"江苏省-苏州市-工业园区\",\"cityId\":\"320500\",\"deliverId\":\"45\",\"drugList\":[{\"drugId\":214459,\"drugNum\":5},{\"drugId\":214459,\"drugNum\":3}],\"expId\":\"418\",\"mobPhone\":\"119\",\"provinceId\":\"320000\",\"storeId\":\"349671\",\"total\":\"248.0\",\"trueName\":\"张三林\"},{\"address\":\"中节能\",\"areaId\":\"320586\",\"areaInfo\":\"江苏省-苏州市-工业园区\",\"cityId\":\"320500\",\"deliverId\":\"45\",\"drugList\":[{\"drugId\":7343,\"drugNum\":3},{\"drugId\":7343,\"drugNum\":5}],\"expId\":\"3512\",\"mobPhone\":\"119\",\"provinceId\":\"320000\",\"storeId\":\"349996\",\"total\":\"125.0\",\"trueName\":\"张三林\"}]";
         HttpHeaders httpHeaders = new HttpHeaders();
 //        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String,Object>();
-        map.add("dataList",json);
+        map.add("dataList",info);
 
         HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(map,httpHeaders);
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<JSONObject> result = restTemplate.postForEntity("http://presapi.lkhealth.net/index.php?r=jizhi/order/place"
+        ResponseEntity<JSONObject> json = restTemplate.postForEntity("http://presapi.lkhealth.net/index.php?r=jizhi/order/place"
                 ,httpEntity, JSONObject.class);
-        System.err.println(result);
+        JSONArray array = json.getBody().getJSONArray("data");
+        List<ZYOrderGetObj> list = Lists.newArrayList();
+        for(int index = 0; index < array.size(); index++){
+            ZYOrderGetObj obj = array.getObject(index,ZYOrderGetObj.class);
+            list.add(obj);
+            System.out.println(obj);
+        }
+        System.err.println();
     }
 
 

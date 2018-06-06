@@ -83,7 +83,10 @@ public class ZhangYaoReceiveApi {
             list.add(vo);
         }
 
-        return ResponseUtil.setSuccessResult(list);
+        PageResult<ReceiveOrderVo> pageResult = new PageResult<ReceiveOrderVo>();
+        pageResult.setTotal(result.getTotal());
+        pageResult.setData(list);
+        return ResponseUtil.setSuccessResult(pageResult);
     }
 
 
@@ -97,7 +100,7 @@ public class ZhangYaoReceiveApi {
 
     @ApiOperation(value = "患者发药")
     @PostMapping("/dispense/list")
-    public ResponseResult<List<ZyDispenseOrderDto>> getDispenseOrder(@RequestBody(required = false) PageBase<ZYDispenseMo> pageBase,
+    public ResponseResult<PageResult<ZyDispenseOrderDto>> getDispenseOrder(@RequestBody(required = false) PageBase<ZYDispenseMo> pageBase,
                                                                      @AccessToken AccessInfo info) {
         return ResponseUtil.setSuccessResult(receiveManager.getDispenseOrder(null == pageBase?new PageBase<>():pageBase,info.getUser()));
     }

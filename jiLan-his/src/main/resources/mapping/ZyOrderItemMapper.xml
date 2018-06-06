@@ -14,13 +14,6 @@
         SELECT * from t_zy_order_item where orderid = #{orderId} and removed = '0'
     </select>
 
-    <update id="updateNormalStatus">
-        UPDATE t_zy_order_item set status = 0 where orderid = #{orderId} and removed = '0'
-        and id in
-        <foreach collection="itemIdList" item="itemId" open="(" close=")" separator=",">
-            #{itemId}
-        </foreach>
-    </update>
 
     <update id="updateAddStatus">
         UPDATE t_zy_order_item set status = 1 where orderid = #{orderId} and removed = '0'

@@ -237,28 +237,30 @@ public class ZhangYaoManager implements InitializingBean {
     }
 
     @Transactional
-    public void saveAddress(ZYAddressMo mo, UserInfo user) {
+    public ZyAddress saveAddress(ZYAddressMo mo, UserInfo user) {
 
         if(1 == mo.getIsDefault()){//设为默认地址
             addressMapper.cancelAllDefault(user.getOrgCode());
         }
 
+        ZyAddress zyAddress = null;
         if(null == mo.getId()){
-            ZyAddress zyAddress = new ZyAddress();
+            zyAddress = new ZyAddress();
             BeanUtils.copyProperties(mo,zyAddress);
             zyAddress.setOrgCode(user.getOrgCode());
             zyAddress.setRemoved("0");
             zyAddress.setCreateBy(user.getId().toString());
             zyAddress.setCreateAt(LocalDateTime.now().toString());
             addressMapper.insert(zyAddress);
+
         }else{
-            ZyAddress zyAddress = addressMapper.selectByPrimaryKey(mo.getId());
+            zyAddress = addressMapper.selectByPrimaryKey(mo.getId());
             BeanUtils.copyProperties(mo,zyAddress);
             zyAddress.setModifyBy(user.getId().toString());
             zyAddress.setModifyAt(LocalDateTime.now().toString());
             addressMapper.updateByPrimaryKey(zyAddress);
         }
-
+        return zyAddress;
     }
 
     /**
@@ -291,7 +293,7 @@ public class ZhangYaoManager implements InitializingBean {
 
     public List<ZyAddress> getAddressList(Integer isDefault, UserInfo user) {
         Example example = new Example(ZyAddress.class);
-        example.excludeProperties("orgCode","removed","createAt","modifyAt","createBy","modifyBy");
+//        example.excludeProperties("orgCode","removed","createAt","modifyAt","createBy","modifyBy");
         Example.Criteria criteria = example.createCriteria().andEqualTo("removed","0").
                 andEqualTo("orgCode",user.getOrgCode());
         if(null != isDefault && 1 == isDefault){

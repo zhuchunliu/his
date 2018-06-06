@@ -11,14 +11,14 @@ import java.util.List;
 @Data
 public class ZYOrderGetObj {
 
-    private ZYOrderGetOrderInfoObj orderInfoObj;
+    private ZYOrderGetOrderInfoObj orderInfo;
 
-    private ZYOrderGetAddressInfoObj addressInfoObj;
+    private ZYOrderGetAddressInfoObj addressInfo;
 
-    private List<ZYOrderGetOrderDetailObj> orderDetailObjList;
+    private List<ZYOrderGetOrderDetailObj> orderDetail;
 
     @Data
-    public class ZYOrderGetOrderInfoObj{
+    public static class ZYOrderGetOrderInfoObj{
 
         @ApiModelProperty("订单id")
         private String orderId;
@@ -51,63 +51,72 @@ public class ZYOrderGetObj {
     }
 
     @Data
-    public class ZYOrderGetAddressInfoObj{
+    public static class ZYOrderGetAddressInfoObj{
+
+        @ApiModelProperty("订单id")
+        private String orderId;
 
         @ApiModelProperty("收货人姓名")
-        private String true_name;
+        private String trueName;
 
         @ApiModelProperty("省份id")
-        private String province_id;
+        private String provinceId;
 
         @ApiModelProperty("市id")
-        private String city_id;
+        private String cityId;
 
         @ApiModelProperty("县id")
-        private String area_id;
+        private String areaId;
 
         @ApiModelProperty("省市县")
-        private String area_info;
+        private String areaInfo;
 
         @ApiModelProperty("详细地址")
         private String address;
 
         @ApiModelProperty("收货人电话")
-        private String mob_phone;
+        private String mobPhone;
 
         @ApiModelProperty("配送费用")
-        private String shipping_fee;
+        private String shippingFee;
+
+        @ApiModelProperty("配送方式id")
+        private String shippingId;
 
         @ApiModelProperty("配送方式")
-        private String shipping_name;
+        private String shippingName;
 
         @ApiModelProperty("运费减免金额")
-        private String shipping_minus_fee;
+        private String shippingMinusFee;
 
         @ApiModelProperty("用户选择的快递方式")
-        private String exp_remark;
+        private String expRemark;
 
     }
 
     @Data
-    public class ZYOrderGetOrderDetailObj{
+    public static class ZYOrderGetOrderDetailObj{
 
         @ApiModelProperty("订单id")
-        private String order_id;
+        private String orderId;
 
         @ApiModelProperty("药品id")
-        private String goods_id;
+        private String goodsId;
+
+        @ApiModelProperty("药品名称")
+        private String goodsName;
 
         @ApiModelProperty("规格")
-        private String spec_info;
+        private String specInfo;
 
         @ApiModelProperty("药品价格")
-        private String goods_price;
+        private String goodsPrice;
 
         @ApiModelProperty("药品数量")
-        private String goods_num;
+        private String goodsNum;
 
         @ApiModelProperty("药品图片")
-        private String goods_image;
+        private String goodsImage;
 
     }
 }
