@@ -124,14 +124,7 @@ public class ZhangYaoReceiveApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "发货回调")
-    @PostMapping("/callback")
-    @WithoutToken
-    public ResponseResult callback(@RequestBody ZYCallbackMo mo){
-        logger.info("callback info : "+mo);
-        receiveManager.callback(mo);
-        return ResponseUtil.setSuccessResult();
-    }
+
 
 
 }

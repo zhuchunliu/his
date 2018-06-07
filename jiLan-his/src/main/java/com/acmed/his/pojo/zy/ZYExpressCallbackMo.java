@@ -7,10 +7,10 @@ import lombok.Data;
  * Created by Darren on 2018-06-05
  **/
 @Data
-public class ZYCallbackMo {
+public class ZYExpressCallbackMo {
     @ApiModelProperty("掌药快递单号")
     private String expressNo;
 
-    @ApiModelProperty("掌药订单号")
-    private String orderSn;
+    @ApiModelProperty("掌药订单id")
+    private String orderId;
 }

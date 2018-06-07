@@ -90,8 +90,11 @@ public class ZyOrder {
     @ApiModelProperty("药店名称 - 掌药")
     private String zyStoreName;
 
-    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:已退款,4:已经取消")
+    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:付费失败,4:已退款,5:已经取消")
     private Integer payStatus;
+
+    @ApiModelProperty("支付反馈信息")
+    private String payRemark;
 
     @ApiModelProperty("付费方式 1:微信，2:支付宝")
     private Integer feeType;

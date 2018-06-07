@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.acmed.his.dao.ZyOrderMapper">
+    <update id="updateZyOrderPayStatus">
+        update t_zy_order set payStatus = #{payStatus},payRemark = #{payRemark}
+        where zyOrderId IN
+        <foreach collection="zyOrderIds" item="zyOrderId" open="(" close=")" separator=",">
+            #{zyOrderId}
+        </foreach>
+    </update>
+</mapper>

@@ -231,8 +231,6 @@ public class ZhangYaoApi {
     }
 
 
-
-
     @ApiOperation(value = "获取省市县信息")
     @GetMapping("/city")
     public ResponseResult<List<ZYCityObj>> getCity(@Param("省市县id,默认0获取所有省") @RequestParam(value = "areaId",defaultValue = "0") String areaId){

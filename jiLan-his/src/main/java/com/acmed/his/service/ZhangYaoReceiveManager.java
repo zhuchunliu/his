@@ -11,7 +11,6 @@ import com.acmed.his.model.dto.ZyDispenseOrderDetailDto;
 import com.acmed.his.model.dto.ZyDispenseOrderDto;
 import com.acmed.his.model.dto.ZyOrderItemReceiveDto;
 import com.acmed.his.pojo.vo.UserInfo;
-import com.acmed.his.pojo.zy.ZYCallbackMo;
 import com.acmed.his.pojo.zy.ZYDispenseMo;
 import com.acmed.his.pojo.zy.ZYReceiveMo;
 import com.acmed.his.pojo.zy.ZYReceiveQueryMo;
@@ -23,7 +22,6 @@ import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -96,21 +94,7 @@ public class ZhangYaoReceiveManager {
         return result;
     }
 
-    /**
-     * 发货回调
-     * @param mo
-     */
-    public void callback(ZYCallbackMo mo) {
-        Example example = new Example(ZyOrder.class);
-        example.createCriteria().andEqualTo("zyOrderSn",mo.getOrderSn());
-        List<ZyOrder> list = zyOrderMapper.selectByExample(example);
-        if(null != list){
-            ZyOrder zyOrder = list.get(0);
-            zyOrder.setRecepitStatus(0);
-            zyOrder.setExpressNo(mo.getExpressNo());
-            zyOrderMapper.updateByPrimaryKey(zyOrder);
-        }
-    }
+
 
     /**
      * 获取发药列表
