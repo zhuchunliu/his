@@ -5,6 +5,7 @@ import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.Org;
 import com.acmed.his.model.ZyAddress;
 import com.acmed.his.model.dto.ZyOrderItemHistoryDto;
+import com.acmed.his.model.dto.ZyOrderItemUnpaidDetailDto;
 import com.acmed.his.model.dto.ZyOrderItemUnpaidDto;
 import com.acmed.his.model.dto.ZyOrderItemUnsubmitDto;
 import com.acmed.his.pojo.mo.DrugZYQueryMo;
@@ -146,43 +147,62 @@ public class ZhangYaoApi {
 
 
     @ApiOperation(value = "待支付订单")
-    @GetMapping("/unpaid/list")
-    public ResponseResult<List<UnpaidOrderVo>> getUnpaidOrder(@Param("订单号,或者药品名称") @RequestParam(value = "name",required = false) String name,
+    @PostMapping("/unpaid/list")
+    public ResponseResult<PageResult<ZyOrderItemUnpaidDto>> getUnpaidOrder(@RequestBody(required = false) PageBase<ZYUnpaidQueryMo> pageBase,
                                                                   @AccessToken AccessInfo info){
-        List<ZyOrderItemUnpaidDto> dtoList = orderManager.getUnpaidOrder(info.getUser(),name);
 
-
-        return ResponseUtil.setSuccessResult();
+        return ResponseUtil.setSuccessResult(orderManager.getUnpaidOrder(null == pageBase ? new PageBase<ZYUnpaidQueryMo>():pageBase,info.getUser()));
     }
 
     @ApiOperation(value = "待支付订单详情列表")
     @GetMapping("/unpaid/detail")
     public ResponseResult<List<UnpaidOrderVo>> getUnpaidDetail(@Param("订单号,或者药品名称") @RequestParam(value = "name",required = false) String name,
-                                                              @AccessToken AccessInfo info){
-        List<ZyOrderItemUnpaidDto> dtoList = orderManager.getUnpaidDetail(info.getUser(),name);
+                                                               @Param("组号") @RequestParam(value = "groupNum") String groupNum){
+        List<ZyOrderItemUnpaidDetailDto> dtoList= orderManager.getUnpaidDetail(groupNum,name);
+        Map<String,List<ZyOrderItemUnpaidDetailDto>> map = Maps.newHashMap();
+        for(ZyOrderItemUnpaidDetailDto dto: dtoList){
+            if(!map.containsKey(dto.getOrderId())){
+                map.put(dto.getOrderId(),Lists.newArrayList());
+            }
+            map.get(dto.getOrderId()).add(dto);
+        }
 
+        List<UnpaidOrderVo> list = Lists.newArrayList();
+        Iterator iterator = map.keySet().iterator();
+        while (iterator.hasNext()){
+            List<ZyOrderItemUnpaidDetailDto> childList = map.get(iterator.next());
+            UnpaidOrderVo vo = new UnpaidOrderVo();
+            BeanUtils.copyProperties(childList.get(0),vo);
 
-        return ResponseUtil.setSuccessResult();
+            List<UnpaidOrderVo.UnpaidDetailVo> detailVoList = Lists.newArrayList();
+            for(ZyOrderItemUnpaidDetailDto dto : childList){
+                UnpaidOrderVo.UnpaidDetailVo detailVo = new UnpaidOrderVo.UnpaidDetailVo();
+                BeanUtils.copyProperties(dto,detailVo);
+                detailVoList.add(detailVo);
+            }
+            vo.setDetailVoList(detailVoList);
+            list.add(vo);
+        }
+
+        return ResponseUtil.setSuccessResult(list);
     }
 
 
 
     @ApiOperation(value = "删除待提交订单")
     @DeleteMapping("/unpaid/del")
-    public ResponseResult delUnpaidOrder(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
-                                                                  @Param("详情主键") @RequestParam(value = "itemId",required = false) String itemId,
+    public ResponseResult delUnpaidOrder(@Param("组号") @RequestParam(value = "groupNum") String groupNum,
                                                                   @AccessToken AccessInfo info){
-        orderManager.delUnpaidOrder(info.getUser(),orderId,itemId);
+        orderManager.delUnpaidOrder(info.getUser(),groupNum);
         return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "删除待提交订单")
-    @GetMapping("/unpaid/detail/list")
-    public ResponseResult<List<UnpaidOrderVo>> delUnpaidOrderDetail(@Param("订单号,或者药品名称") @RequestParam(value = "name",required = false) String name,
-                                                                        @AccessToken AccessInfo info){
-        List<ZyOrderItemUnpaidDto> dtoList = orderManager.getUnpaidOrder(info.getUser(),name);
-
-
+    @DeleteMapping("/unpaid/detail/del")
+    public ResponseResult<List<UnpaidOrderVo>> delUnpaidOrderDetail(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
+                                                                    @Param("详情主键") @RequestParam(value = "itemId",required = false) String itemId,
+                                                                    @AccessToken AccessInfo info){
+        orderManager.delUnpaidOrderDetail(orderId,itemId,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 

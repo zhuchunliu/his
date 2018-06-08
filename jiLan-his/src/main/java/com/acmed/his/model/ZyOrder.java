@@ -69,6 +69,9 @@ public class ZyOrder {
     @ApiModelProperty("电话")
     private String phone;
 
+    @ApiModelProperty("全地址")
+    private String fullAddress;
+
     @ApiModelProperty("快递主键")
     private String expressId;
 

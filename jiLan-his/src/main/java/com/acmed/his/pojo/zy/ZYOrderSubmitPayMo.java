@@ -65,4 +65,8 @@ public class ZYOrderSubmitPayMo {
         @ApiModelProperty("详情主键")
         private List<String> itemIdList;
     }
+
+    public static void main(String[] args) {
+        System.err.println(String.format("%s%s%s%s%s%s%s",1,2,3,4,null,6,7,8));
+    }
 }

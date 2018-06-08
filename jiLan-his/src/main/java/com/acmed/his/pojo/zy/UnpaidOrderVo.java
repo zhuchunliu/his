@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * Created by Darren on 2018-06-01
  **/
+@Data
 public class UnpaidOrderVo {
 
     @ApiModelProperty("订单id")

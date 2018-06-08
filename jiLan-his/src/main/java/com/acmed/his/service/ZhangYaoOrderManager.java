@@ -6,12 +6,14 @@ import com.acmed.his.dao.*;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.ZyOrderItemHistoryDto;
+import com.acmed.his.model.dto.ZyOrderItemUnpaidDetailDto;
 import com.acmed.his.model.dto.ZyOrderItemUnpaidDto;
 import com.acmed.his.model.dto.ZyOrderItemUnsubmitDto;
 import com.acmed.his.pojo.vo.UserInfo;
 import com.acmed.his.pojo.zy.ZYAddressMo;
 import com.acmed.his.pojo.zy.ZYHistoryQueryMo;
 import com.acmed.his.pojo.zy.ZYOrderSubmitPayMo;
+import com.acmed.his.pojo.zy.ZYUnpaidQueryMo;
 import com.acmed.his.pojo.zy.dto.ZYOrderGetObj;
 import com.acmed.his.pojo.zy.dto.ZYOrderPostObj;
 import com.acmed.his.pojo.zy.dto.ZYPayObj;
@@ -272,6 +274,13 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
                 ZyOrder zyOrder = orderMap.get(detailMo.getOrderId());
                 BeanUtils.copyProperties(mo,zyOrder);//设置地址信息
+                zyOrder.setFullAddress(String.format("%s%s%s%s%s%s%s",Optional.ofNullable(mo.getProvinceName()).orElse(""),
+                        Optional.ofNullable(mo.getCityName()).orElse(""),
+                        Optional.ofNullable(mo.getCountyName()).orElse(""),
+                        Optional.ofNullable(mo.getAddress()).orElse(""),
+                        Optional.ofNullable(mo.getRecipient()).orElse(""),
+                        Optional.ofNullable(mo.getPhone()).orElse(""),
+                        Optional.ofNullable(mo.getZipCode()).orElse("")));
                 zyOrder.setAddressId(zyAddress.getId());
 
                 zyOrder.setExpressId(detailMo.getExpressId());
@@ -495,34 +504,92 @@ public class ZhangYaoOrderManager  implements InitializingBean {
     /**
      * 获取待支付列表
      * @param user
-     * @param name
+     * @param pageBase
      * @return
      */
-    public List<ZyOrderItemUnpaidDto> getUnpaidOrder(UserInfo user, String name) {
-
-        return zhangYaoMapper.getUnpaidOrder(user.getOrgCode(),name);
+    public PageResult<ZyOrderItemUnpaidDto> getUnpaidOrder(PageBase<ZYUnpaidQueryMo> pageBase,UserInfo user) {
+        Page page = PageHelper.startPage(pageBase.getPageNum(),pageBase.getPageSize());
+        List<ZyOrderItemUnpaidDto> list = zhangYaoMapper.getUnpaidOrder(Optional.ofNullable(pageBase.getParam()).orElse(new ZYUnpaidQueryMo()), user.getOrgCode());
+        PageResult<ZyOrderItemUnpaidDto> result = new PageResult<>();
+        result.setData(list);
+        result.setTotal(page.getTotal());
+        return  result;
     }
 
     /**
      * 获取待支付列表
-     * @param user
+     * @param groupNum
      * @param name
      * @return
      */
-    public List<ZyOrderItemUnpaidDto> getUnpaidDetail(UserInfo user, String name) {
+    public List<ZyOrderItemUnpaidDetailDto> getUnpaidDetail(String groupNum, String name) {
 
-        return zhangYaoMapper.getUnpaidDetail(user.getOrgCode(),name);
+        return zhangYaoMapper.getUnpaidDetail(groupNum,name);
     }
 
 
     /**
      * 删除待支付详情
-     * @param user
+     * @param info
+     * @param groupNum
+     */
+    @Transactional
+    public void delUnpaidOrder(UserInfo info, String groupNum) {
+        Example example = new Example(ZyOrder.class);
+        example.createCriteria().andEqualTo("groupNum",groupNum);
+        List<ZyOrder> list = zyOrderMapper.selectByExample(example);
+        for(ZyOrder zyOrder : list) {
+
+            if (2 == zyOrder.getPayStatus()) {
+                throw new BaseException(StatusCode.FAIL, "订单已经被支付,禁止删除");
+            }
+            zyOrder.setRemoved("1");
+            zyOrder.setDrugFee(0d);
+            zyOrder.setTotalFee(0d);
+            zyOrder.setModifyAt(LocalDateTime.now().toString());
+            zyOrder.setModifyBy(info.getId().toString());
+            zyOrderMapper.updateByPrimaryKey(zyOrder);
+            zyOrderItemMapper.deleteByOrderId(zyOrder.getId());
+            zhangYaoMapper.updatePreItemStatusByOrderId(zyOrder.getId(), 3);//设定t_b_prescription_item为取消状态
+        }
+    }
+
+    /**
+     * 删除待支付订单信息
+     *
      * @param orderId
      * @param itemId
+     * @param info
      */
-    public void delUnpaidOrder(UserInfo user, String orderId, String itemId) {
-//        return zhangYaoMapper.getUnpaidOrder(user.getOrgCode(),name);
+    public void delUnpaidOrderDetail(String orderId, String itemId,UserInfo info) {
+        if (StringUtils.isNotEmpty(orderId)) {
+            ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(orderId);
+            if(2 == zyOrder.getPayStatus()){
+                throw new BaseException(StatusCode.FAIL,"订单已经被支付,禁止删除");
+            }
+            zyOrder.setRemoved("1");
+            zyOrder.setDrugFee(0d);
+            zyOrder.setTotalFee(0d);
+            zyOrder.setModifyAt(LocalDateTime.now().toString());
+            zyOrder.setModifyBy(info.getId().toString());
+            zyOrderMapper.updateByPrimaryKey(zyOrder);
+            zyOrderItemMapper.deleteByOrderId(orderId);
+            zhangYaoMapper.updatePreItemStatusByOrderId(orderId,3);//设定t_b_prescription_item为取消状态
+        }
+
+        if (StringUtils.isNotEmpty(itemId)) {
+            ZyOrderItem item = zyOrderItemMapper.selectByPrimaryKey(itemId);
+            ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(item.getOrderId());
+            if(2 == zyOrder.getPayStatus()){
+                throw new BaseException(StatusCode.FAIL,"订单已经被支付,禁止删除");
+            }
+            zyOrderItemMapper.deleteById(itemId);
+            zyOrder.setDrugFee(zyOrder.getDrugFee()-item.getFee());
+            zyOrder.setTotalFee(zyOrder.getTotalFee()-item.getFee());
+            zyOrderMapper.updateByPrimaryKey(zyOrder);
+
+            zhangYaoMapper.updatePreItemStatusById(item.getPreItemId(),3);//设定t_b_prescription_item为取消状态
+        }
     }
 
 
@@ -553,8 +620,6 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         zyOrder.setModifyBy(user.getId().toString());
         zyOrderMapper.updateByPrimaryKey(zyOrder);
     }
-
-
 
 
 

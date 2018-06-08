@@ -25,7 +25,7 @@
         from t_zy_order_item t1
         LEFT JOIN t_zy_order t2 on t1.orderid = t2.id
         LEFT JOIN t_b_prescription t3 on t1.applyid = t3.applyid
-        where t1.removed = '0' and t1.removed = '0' and t2.orgcode = #{orgCode}
+        where t1.removed = '0' and t2.removed = '0' and t2.orgcode = #{orgCode}
         and t2.paystatus = 0
         <if test="@Ognl@isNotEmpty(name) ">
             and t2.id in (select id from t_zy_order where orderno like concat('%', #{name} , '%')
@@ -49,34 +49,32 @@
 
 
     <select id="getUnpaidOrder" resultType="com.acmed.his.model.dto.ZyOrderItemUnpaidDto">
-        select t1.id as itemId, t1.orderid, t1.applyid,
-        t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,
-        t2.orderno, t2.drugfee ,t2.zyStoreId as storeId,
-        t3.prescriptionno as prescriptionNo
-        from t_zy_order_item t1
-        LEFT JOIN t_zy_order t2 on t1.orderid = t2.id
-        LEFT JOIN t_b_prescription t3 on t1.applyid = t3.applyid
-        where t1.removed = '0' and t1.removed = '0' and t2.orgcode = #{orgCode}
-        and t2.paystatus = 0
-        <if test="@Ognl@isNotEmpty(name) ">
-            and t2.id in (select id from t_zy_order where orderno like concat('%', #{name} , '%')
-            UNION ALL
-            select td.id from t_zy_order_item tm LEFT JOIN t_zy_order td ON tm.orderid = td.id
-            where tm.drugName like concat('%', #{name} , '%') and td.paystatus = 0)
+        select t1.submittime,t2.username,sum(t1.totalfee) as totalfee,t1.groupnum,
+          t1.provincename,t1.cityname,t1.countyname,t1.address,t1.recipient,t1.zipcode,t1.phone
+        from t_zy_order t1 LEFT JOIN t_p_s_user t2 on t1.modifyby = t2.id
+        where (t1.paystatus = 1 or t1.paystatus = 3) and t1.orgcode = #{orgCode} and t1.removed = '0'
+        <if test="@Ognl@isNotEmpty(mo.startTime) ">
+            and t1.submittime >= #{mo.startTime}
         </if>
-        ORDER BY t2.orderno desc
+        <if test="@Ognl@isNotEmpty(mo.endTime) ">
+            and t1.submittime >= #{mo.endTime}
+        </if>
+        <if test="@Ognl@isNotEmpty(mo.name) ">
+            and t1.fulladdress like concat('%', #{mo.name} , '%')
+        </if>
+        group by groupnum
+        order by t1.submittime desc
     </select>
 
     <select id="getUnpaidDetail" resultType="com.acmed.his.model.dto.ZyOrderItemUnpaidDetailDto">
         select t1.id as itemId, t1.orderid, t1.applyid,
-        t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,
+        t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,t1.status,
         t2.orderno, t2.drugfee ,t2.zyStoreId as storeId,
         t3.prescriptionno as prescriptionNo
         from t_zy_order_item t1
         LEFT JOIN t_zy_order t2 on t1.orderid = t2.id
         LEFT JOIN t_b_prescription t3 on t1.applyid = t3.applyid
-        where t1.removed = '0' and t1.removed = '0' and t2.orgcode = #{orgCode}
-        and t2.paystatus = 0
+        where t1.status != 4 and t2.groupnum = #{groupNum}
         <if test="@Ognl@isNotEmpty(name) ">
             and t2.id in (select id from t_zy_order where orderno like concat('%', #{name} , '%')
             UNION ALL

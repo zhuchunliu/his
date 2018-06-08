@@ -6,6 +6,7 @@ import com.acmed.his.model.dto.*;
 import com.acmed.his.pojo.zy.ZYDispenseMo;
 import com.acmed.his.pojo.zy.ZYHistoryQueryMo;
 import com.acmed.his.pojo.zy.ZYReceiveQueryMo;
+import com.acmed.his.pojo.zy.ZYUnpaidQueryMo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -49,20 +50,19 @@ public interface ZhangYaoMapper {
 
 
     /**
-     * 待支付详情列表
+     * 待支付列表
      * @param orgCode
-     * @param name
+     * @param mo
      * @return
      */
-    List<ZyOrderItemUnpaidDto> getUnpaidOrder(Integer orgCode, String name);
+    List<ZyOrderItemUnpaidDto> getUnpaidOrder(@Param("mo") ZYUnpaidQueryMo mo, @Param("orgCode") Integer orgCode);
 
     /**
      * 待支付详情列表
-     * @param orgCode
      * @param name
      * @return
      */
-    List<ZyOrderItemUnpaidDto> getUnpaidDetail(Integer orgCode, String name);
+    List<ZyOrderItemUnpaidDetailDto> getUnpaidDetail(@Param("groupNum") String groupNum, @Param("name") String name);
 
     /**
      * 获取历史订单
