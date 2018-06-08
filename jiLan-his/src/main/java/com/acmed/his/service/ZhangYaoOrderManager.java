@@ -236,15 +236,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         synchronized ((Object)info.getOrgCode().intValue()) {
 
             //step0:处理地址信息
-            List<ZyAddress> addressList = zhangYaoManager.getAddressList(1,info);
-            ZYAddressMo zyAddressMo = new ZYAddressMo();
-            BeanUtils.copyProperties(mo,zyAddressMo,"id");
-            zyAddressMo.setIsDefault(1);
-            if(null != addressList){
-                zyAddressMo.setId(addressList.get(0).getId());
-            }
-            ZyAddress zyAddress = zhangYaoManager.saveAddress(zyAddressMo,info);
-
+            ZyAddress zyAddress = this.handleAddress(mo,info);
 
             //step1: 校验是否被提交
             Map<String,ZyOrder> orderMap = Maps.newHashMap();
@@ -313,6 +305,88 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         }
     }
 
+
+
+    @Transactional
+    public String unpaidSubmit(ZYOrderSubmitPayMo mo, UserInfo info) {
+        StringBuilder builder = new StringBuilder();
+
+        //step0:处理地址信息
+        ZyAddress zyAddress = this.handleAddress(mo,info);
+
+        //step1: 校验是否被提交
+        Map<String,ZyOrder> orderMap = Maps.newHashMap();
+        for(ZYOrderSubmitPayMo.ZYOrderSubmitPayDetailMo detailMo : mo.getDetailMoList()){
+            ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(detailMo.getOrderId());
+            orderMap.put(zyOrder.getId(),zyOrder);
+
+            if(1 != zyOrder.getPayStatus() && 3 != zyOrder.getPayStatus()){//订单非待支付和退款状态，不允许支付
+                builder.append(","+zyOrder.getOrderNo());
+            }
+        }
+        if(StringUtils.isNotEmpty(builder.toString())){
+            throw new BaseException(StatusCode.FAIL,builder.toString().substring(1)+"订单已被提交,请勿重复提交订单");
+        }
+
+        //step2:校验数据是否正确
+        Map<String,List<ZyOrderItem>> orderItemMap = Maps.newHashMap();
+
+        String groupNum = "GM_"+commonManager.getNextVal("zyGroupNum");
+        String submitTime = LocalDateTime.now().toString();
+        for(ZYOrderSubmitPayMo.ZYOrderSubmitPayDetailMo detailMo : mo.getDetailMoList()){
+            List<ZyOrderItem> itemList = zyOrderItemMapper.getItemByOrderIdExclueRemove(detailMo.getOrderId());
+            orderItemMap.put(detailMo.getOrderId(),itemList);
+
+            List<String> itemIdList = Lists.newArrayList();
+            itemList.forEach(obj->itemIdList.add(obj.getId()));
+
+            ZyOrder zyOrder = orderMap.get(detailMo.getOrderId());
+            BeanUtils.copyProperties(mo,zyOrder);//设置地址信息
+            zyOrder.setFullAddress(String.format("%s%s%s%s%s%s%s",Optional.ofNullable(mo.getProvinceName()).orElse(""),
+                    Optional.ofNullable(mo.getCityName()).orElse(""),
+                    Optional.ofNullable(mo.getCountyName()).orElse(""),
+                    Optional.ofNullable(mo.getAddress()).orElse(""),
+                    Optional.ofNullable(mo.getRecipient()).orElse(""),
+                    Optional.ofNullable(mo.getPhone()).orElse(""),
+                    Optional.ofNullable(mo.getZipCode()).orElse("")));
+            zyOrder.setAddressId(zyAddress.getId());
+
+            zyOrder.setExpressId(detailMo.getExpressId());
+            zyOrder.setExpressFee(detailMo.getExpressFee());
+            zyOrder.setExpressName(detailMo.getExpressName());
+            zyOrder.setSubmitTime(submitTime);
+            zyOrder.setTotalFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
+            zyOrder.setPayStatus(1);
+            zyOrder.setGroupNum(groupNum);
+            zyOrder.setModifyBy(info.getId().toString());
+            zyOrder.setModifyAt(LocalDateTime.now().toString());
+            zyOrderMapper.updateByPrimaryKey(zyOrder);
+
+            if(!detailMo.getItemIdList().containsAll(itemIdList) || !itemIdList.containsAll(detailMo.getItemIdList())){
+                throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
+            }
+        }
+
+        //setp3:给掌药提交数据,并验证，验证成功保存数据库
+        this.postRemoteOrder(orderMap,orderItemMap,info);
+
+        //step4:支付
+        return this.pay(mo.getFeeType(),orderMap);
+
+    }
+
+    private ZyAddress handleAddress(ZYOrderSubmitPayMo mo, UserInfo info) {
+        List<ZyAddress> addressList = zhangYaoManager.getAddressList(1,info);
+        ZYAddressMo zyAddressMo = new ZYAddressMo();
+        BeanUtils.copyProperties(mo,zyAddressMo,"id");
+        zyAddressMo.setIsDefault(1);
+        if(null != addressList){
+            zyAddressMo.setId(addressList.get(0).getId());
+        }
+        ZyAddress zyAddress = zhangYaoManager.saveAddress(zyAddressMo,info);
+        return zyAddress;
+    }
+
     /**
      *
      * @param feeType 1:微信，2:支付宝
@@ -335,7 +409,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(paramMap,httpHeaders);
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<JSONObject> json = restTemplate.postForEntity("http://presapi.lkhealth.net/index.php"+ZhangYaoConstant.buildPayUrl(),httpEntity, JSONObject.class);
+        ResponseEntity<JSONObject> json = restTemplate.postForEntity(this.ZHANGYAO_URL+ZhangYaoConstant.buildPayUrl(),httpEntity, JSONObject.class);
 
         if(200 != json.getStatusCodeValue()){
             logger.error("支付数据: "+paramMap);
@@ -450,6 +524,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
             ZyOrderFeedback zyOrderFeedback = new ZyOrderFeedback();
             BeanUtils.copyProperties(getObj.getOrderInfo(),zyOrderFeedback);
+            zyOrderFeedback.setHisOrderId(orderId);
             zyOrderFeedback.setCreateAt(LocalDateTime.now().toString());
             zyOrderFeedback.setCreateBy(info.getId().toString());
             zyOrderFeedbackMapper.insert(zyOrderFeedback);

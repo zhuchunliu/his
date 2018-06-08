@@ -20,11 +20,20 @@ public class ZyOrderItemUnpaidDto {
     @ApiModelProperty("操作人")
     private String userName;
 
+    @ApiModelProperty("省份id")
+    private String provinceId;
+
     @ApiModelProperty("省份名称")
     private String provinceName;
 
+    @ApiModelProperty("城市id")
+    private String cityId;
+
     @ApiModelProperty("省份名称")
     private String cityName;
+
+    @ApiModelProperty("县主键")
+    private String countyId;
 
     @ApiModelProperty("县名称")
     private String countyName;

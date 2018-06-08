@@ -22,7 +22,10 @@ public class ZyOrderFeedback {
     @ApiModelProperty("id")
     private Integer id;
 
-    @ApiModelProperty("订单id")
+    @ApiModelProperty("his订单id")
+    private String hisOrderId;
+
+    @ApiModelProperty("掌药订单id")
     private String orderId;
 
     @ApiModelProperty("订单号")

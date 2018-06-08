@@ -2,11 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.acmed.his.dao.ZyOrderMapper">
+
+    <update id="updateZyOrderFeedBack">
+        update t_zy_order_feedback set orderstate = #{orderstate}
+        where orderid IN
+        <foreach collection="zyOrderIds" item="zyOrderId" open="(" close=")" separator=",">
+            #{zyOrderId}
+        </foreach>
+    </update>
+
+    <update id="updateZyOrderId">
+        update t_zy_order t1 set zyorderid =
+        (
+        select orderid from t_zy_order_feedback where hisorderid = t1.id and orderid in
+        <foreach collection="zyOrderIds" item="zyOrderId" open="(" close=")" separator=",">
+            #{zyOrderId}
+        </foreach>
+        )
+    </update>
+
     <update id="updateZyOrderPayStatus">
-        update t_zy_order set payStatus = #{payStatus},payRemark = #{payRemark}
+        update t_zy_order set payStatus = #{payStatus},payRemark = #{payRemark},removed = '0'
         where zyOrderId IN
         <foreach collection="zyOrderIds" item="zyOrderId" open="(" close=")" separator=",">
             #{zyOrderId}
         </foreach>
     </update>
+
+    <update id="updateZyOrderItem">
+        update t_zy_order_item set removed = 0,`status` = 0  where removed = 1
+        and drugid in (select goodsid from t_zy_order_item_feedback where orderid in
+            <foreach collection="zyOrderIds" item="zyOrderId" open="(" close=")" separator=",">
+                #{zyOrderId}
+            </foreach>
+        )
+        and orderid in (select hisorderid from t_zy_order_feedback where orderid in
+            <foreach collection="zyOrderIds" item="zyOrderId" open="(" close=")" separator=",">
+                #{zyOrderId}
+            </foreach>
+        )
+    </update>
+
+    <select id="getPushUserId" resultType="java.util.Map">
+        select DISTINCT createby as userId from t_zy_order_feedback where orderid in
+        <foreach collection="zyOrderIds" item="zyOrderId" open="(" close=")" separator=",">
+            #{zyOrderId}
+        </foreach>
+    </select>
+
+
 </mapper>

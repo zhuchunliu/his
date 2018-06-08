@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,6 +63,23 @@ public class ZhangYaoCallbackApi {
             return ResponseUtil.setErrorMeg(StatusCode.FAIL,"payStatus只能为0和1");
         }
         callbackManager.updateZyOrderPayStatus(mo);
+        new Thread(() -> {
+            callbackManager.pushMsg(mo);
+        }).start();
+
         return ResponseUtil.setSuccessResult();
     }
+
+    /**
+     * 返回掌药支付结果
+     * @param info
+     * @return
+     * @throws Exception
+     */
+    @SendToUser(value = "/information")
+    public String information(String info) {
+        System.err.println(info);//支付结果
+        return info;
+    }
+
 }

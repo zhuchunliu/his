@@ -45,10 +45,10 @@ public class ZyOrder {
     @ApiModelProperty("省份名称")
     private String provinceName;
 
-    @ApiModelProperty("省份名称")
+    @ApiModelProperty("城市id")
     private String cityId;
 
-    @ApiModelProperty("省份名称")
+    @ApiModelProperty("城市名称")
     private String cityName;
 
     @ApiModelProperty("县主键")

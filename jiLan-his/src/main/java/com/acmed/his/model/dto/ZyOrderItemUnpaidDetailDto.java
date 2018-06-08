@@ -17,8 +17,18 @@ public class ZyOrderItemUnpaidDetailDto {
     @ApiModelProperty("药品费用")
     private Double drugFee;
 
+    @ApiModelProperty("快递费用")
+    private Double expressFee;
+
     @ApiModelProperty("药店id")
     private String storeId;
+
+    @ApiModelProperty("快递主键")
+    private String expressId;
+
+    @ApiModelProperty("快递名称")
+    private String expressName;
+
 
     @ApiModelProperty("详情id")
     private String itemId;

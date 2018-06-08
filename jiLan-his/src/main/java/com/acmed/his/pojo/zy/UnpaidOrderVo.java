@@ -23,6 +23,15 @@ public class UnpaidOrderVo {
     @ApiModelProperty("药品费用")
     private Double drugFee;
 
+    @ApiModelProperty("快递费用")
+    private Double expressFee;
+
+    @ApiModelProperty("快递主键")
+    private String expressId;
+
+    @ApiModelProperty("快递名称")
+    private String expressName;
+
 
     private List<UnpaidOrderVo.UnpaidDetailVo> detailVoList;
 

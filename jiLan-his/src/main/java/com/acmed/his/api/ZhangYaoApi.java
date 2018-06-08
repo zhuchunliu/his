@@ -135,10 +135,22 @@ public class ZhangYaoApi {
 
     @ApiOperation(value = "下单")
     @PostMapping("/submit")
-    public ResponseResult pay(@RequestBody ZYOrderSubmitPayMo mo,
+    public ResponseResult submit(@RequestBody ZYOrderSubmitPayMo mo,
                               @AccessToken AccessInfo info){
 
         String url = orderManager.submit(mo,info.getUser());
+        if(url.equalsIgnoreCase("false")){
+            throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
+        }
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("url",url));
+    }
+
+    @ApiOperation(value = "待支付下单")
+    @PostMapping("/unpaid/submit")
+    public ResponseResult unpaidSubmit(@RequestBody ZYOrderSubmitPayMo mo,
+                              @AccessToken AccessInfo info){
+
+        String url = orderManager.unpaidSubmit(mo,info.getUser());
         if(url.equalsIgnoreCase("false")){
             throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
         }
@@ -189,7 +201,7 @@ public class ZhangYaoApi {
 
 
 
-    @ApiOperation(value = "删除待提交订单")
+    @ApiOperation(value = "删除待支付订单")
     @DeleteMapping("/unpaid/del")
     public ResponseResult delUnpaidOrder(@Param("组号") @RequestParam(value = "groupNum") String groupNum,
                                                                   @AccessToken AccessInfo info){
@@ -197,7 +209,7 @@ public class ZhangYaoApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "删除待提交订单")
+    @ApiOperation(value = "删除待支付订单")
     @DeleteMapping("/unpaid/detail/del")
     public ResponseResult<List<UnpaidOrderVo>> delUnpaidOrderDetail(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
                                                                     @Param("详情主键") @RequestParam(value = "itemId",required = false) String itemId,

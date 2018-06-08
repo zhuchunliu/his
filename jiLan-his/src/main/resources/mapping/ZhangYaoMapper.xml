@@ -50,7 +50,8 @@
 
     <select id="getUnpaidOrder" resultType="com.acmed.his.model.dto.ZyOrderItemUnpaidDto">
         select t1.submittime,t2.username,sum(t1.totalfee) as totalfee,t1.groupnum,
-          t1.provincename,t1.cityname,t1.countyname,t1.address,t1.recipient,t1.zipcode,t1.phone
+          t1.provinceid, t1.provincename,t1.cityid,t1.cityname,t1.countyid,t1.countyname,
+          t1.address,t1.recipient,t1.zipcode,t1.phone
         from t_zy_order t1 LEFT JOIN t_p_s_user t2 on t1.modifyby = t2.id
         where (t1.paystatus = 1 or t1.paystatus = 3) and t1.orgcode = #{orgCode} and t1.removed = '0'
         <if test="@Ognl@isNotEmpty(mo.startTime) ">
@@ -69,7 +70,7 @@
     <select id="getUnpaidDetail" resultType="com.acmed.his.model.dto.ZyOrderItemUnpaidDetailDto">
         select t1.id as itemId, t1.orderid, t1.applyid,
         t1.drugname, t1.num, t1.retailprice, t1.fee, t1.manufacturername,t1.status,
-        t2.orderno, t2.drugfee ,t2.zyStoreId as storeId,
+        t2.orderno, t2.drugfee ,t2.zyStoreId as storeId,t2.expressid,t2.expressname,t2.expressfee,
         t3.prescriptionno as prescriptionNo
         from t_zy_order_item t1
         LEFT JOIN t_zy_order t2 on t1.orderid = t2.id

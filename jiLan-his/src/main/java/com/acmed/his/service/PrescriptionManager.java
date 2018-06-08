@@ -175,20 +175,27 @@ public class PrescriptionManager {
                 if (null != obj.getFrequency()) {
                     item.setFrequencyName(null == obj.getFrequency()?"":frequencyItemName.get(obj.getFrequency().toString()));
                 }
-                Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
-                if (null != drug) {
-                    item.setDoseUnitName(Optional.ofNullable(drug.getDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
-                    item.setSingleDoseUnitName(Optional.ofNullable(drug.getSingleDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
-                    item.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
-                            map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
 
-                    if(null != obj.getNum() && 0 != obj.getNum()){
-                        if(1 == obj.getUnitType()) {
-                            item.setNumName(obj.getNum() + (null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString())));
-                        }else if(1 == obj.getMinPriceUnitType()){
-                            item.setNumName(obj.getNum()+(null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
-                        }else{
-                            item.setNumName(obj.getNum()+(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
+                if(StringUtils.isNotEmpty(obj.getZyStoreId())){//掌药药品
+                    item.setManufacturerName(obj.getZyManufacturerName());
+                    item.setDrugName(obj.getDrugName());
+                    item.setDrugId(obj.getZyDrugId());
+                }else {
+                    Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+                    if (null != drug) {
+                        item.setDoseUnitName(Optional.ofNullable(drug.getDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
+                        item.setSingleDoseUnitName(Optional.ofNullable(drug.getSingleDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
+                        item.setManufacturerName(Optional.ofNullable(drug.getManufacturer()).
+                                map(manu -> manufacturerMapper.selectByPrimaryKey(manu)).map(manu -> manu.getName()).orElse(""));
+
+                        if (null != obj.getNum() && 0 != obj.getNum()) {
+                            if (1 == obj.getUnitType()) {
+                                item.setNumName(obj.getNum() + (null == drug.getUnit() ? "" : unitItemName.get(drug.getUnit().toString())));
+                            } else if (1 == obj.getMinPriceUnitType()) {
+                                item.setNumName(obj.getNum() + (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())));
+                            } else {
+                                item.setNumName(obj.getNum() + (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
+                            }
                         }
                     }
                 }
