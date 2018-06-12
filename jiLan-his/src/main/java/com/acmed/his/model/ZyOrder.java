@@ -33,6 +33,12 @@ public class ZyOrder {
     @ApiModelProperty("总费用")
     private Double totalFee;
 
+    @ApiModelProperty("实际支付费用")
+    private Double actualFee;
+
+    @ApiModelProperty("店铺满fullReduceFee免邮")
+    private Double fullReduceFee;
+
     @ApiModelProperty("医疗机构编码")
     private Integer orgCode;
 
@@ -93,11 +99,14 @@ public class ZyOrder {
     @ApiModelProperty("药店名称 - 掌药")
     private String zyStoreName;
 
-    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:付费失败,4:已退款,5:已经取消")
+    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:付费失败,4:退款中,5：已退款，6：退款失败，7:已经取消")
     private Integer payStatus;
 
     @ApiModelProperty("支付反馈信息")
     private String payRemark;
+
+    @ApiModelProperty("退款备注")
+    private String refundRemark;
 
     @ApiModelProperty("付费方式 1:微信，2:支付宝")
     private Integer feeType;

@@ -1,10 +1,11 @@
 -- 一级菜单
 insert into t_p_s_permission(percode,pername,sn) values('kbjz','看病就诊',1) ;
-insert into t_p_s_permission(percode,pername,sn) values('sffy','收费发药',2) ;
-insert into t_p_s_permission(percode,pername,sn) values('ypjxc','药品进销存',3) ;
-insert into t_p_s_permission(percode,pername,sn) values('sjtj','数据统计',4) ;
-insert into t_p_s_permission(percode,pername,sn) values('xtsz','系统设置',5) ;
-insert into t_p_s_permission(percode,pername,sn) values('jybsg','就医北上广',6) ;
+insert into t_p_s_permission(percode,pername,sn) values('yyf','云药房',2) ;
+insert into t_p_s_permission(percode,pername,sn) values('sffy','收费发药',3) ;
+insert into t_p_s_permission(percode,pername,sn) values('ypjxc','药品进销存',4) ;
+insert into t_p_s_permission(percode,pername,sn) values('sjtj','数据统计',5) ;
+insert into t_p_s_permission(percode,pername,sn) values('xtsz','系统设置',6) ;
+insert into t_p_s_permission(percode,pername,sn) values('jybsg','就医北上广',7) ;
 
 
 -- 二级菜单
@@ -12,6 +13,11 @@ insert into t_p_s_permission(percode,pername,sn,pid) select 'mzlb','门诊列表
 insert into t_p_s_permission(percode,pername,sn,pid) select 'yspb','医生排班',2, id from t_p_s_permission where percode = 'kbjz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'ghlb','挂号列表',3, id from t_p_s_permission where percode = 'kbjz' ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'hzk','患者库',4,	id from t_p_s_permission where percode = 'kbjz' ;
+
+insert into t_p_s_permission(percode,pername,sn,pid) select 'yyfdd','云药房订单',1, id from t_p_s_permission where percode = 'yyf' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'shqr','收货确认',2, id from t_p_s_permission where percode = 'yyf' ;
+insert into t_p_s_permission(percode,pername,sn,pid) select 'hzff','患者发放',3,	id from t_p_s_permission where percode = 'yyf' ;
+
 
 insert into t_p_s_permission(percode,pername,sn,pid) select 'sffy','收费发药',1, id from t_p_s_permission where percode = 'sffy' and pid is NULL ;
 insert into t_p_s_permission(percode,pername,sn,pid) select 'ypls','药品零售',2, id from t_p_s_permission where percode = 'sffy' and pid is NULL ;

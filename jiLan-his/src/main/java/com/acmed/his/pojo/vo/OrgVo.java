@@ -80,4 +80,7 @@ public class OrgVo {
 
     @ApiModelProperty("医院图片")
     private String imgUrl;
+
+    @ApiModelProperty("是否开启掌药功能 0:否，1:是")
+    private Integer zyStatus;
 }

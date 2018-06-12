@@ -39,6 +39,9 @@ public class ZYDrugListObj {
     @ApiModelProperty("国药准字号")
     private String number;
 
+    @ApiModelProperty("药品单位名称")
+    private String unit;
+
     @ApiModelProperty("库存数")
     private String storage;
 

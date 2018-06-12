@@ -26,6 +26,9 @@ public class UnpaidOrderVo {
     @ApiModelProperty("快递费用")
     private Double expressFee;
 
+    @ApiModelProperty("店铺满fullReduceFee免邮")
+    private Double fullReduceFee;
+
     @ApiModelProperty("快递主键")
     private String expressId;
 

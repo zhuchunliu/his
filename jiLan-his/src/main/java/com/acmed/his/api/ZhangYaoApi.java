@@ -138,11 +138,11 @@ public class ZhangYaoApi {
     public ResponseResult submit(@RequestBody ZYOrderSubmitPayMo mo,
                               @AccessToken AccessInfo info){
 
-        String url = orderManager.submit(mo,info.getUser());
-        if(url.equalsIgnoreCase("false")){
+        Map<String,Object> map = orderManager.submit(mo,info.getUser());
+        if(map.get("url").toString().equalsIgnoreCase("false")){
             throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
         }
-        return ResponseUtil.setSuccessResult(ImmutableMap.of("url",url));
+        return ResponseUtil.setSuccessResult(map);
     }
 
     @ApiOperation(value = "待支付下单")
@@ -150,11 +150,7 @@ public class ZhangYaoApi {
     public ResponseResult unpaidSubmit(@RequestBody ZYOrderSubmitPayMo mo,
                               @AccessToken AccessInfo info){
 
-        String url = orderManager.unpaidSubmit(mo,info.getUser());
-        if(url.equalsIgnoreCase("false")){
-            throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
-        }
-        return ResponseUtil.setSuccessResult(ImmutableMap.of("url",url));
+        return ResponseUtil.setSuccessResult(orderManager.unpaidSubmit(mo,info.getUser()));
     }
 
 
@@ -251,7 +247,7 @@ public class ZhangYaoApi {
         pageResult.setData(list);
         pageResult.setTotal(result.getTotal());
 
-        return ResponseUtil.setSuccessResult(result);
+        return ResponseUtil.setSuccessResult(pageResult);
     }
 
     @ApiOperation(value = "删除历史订单")
@@ -259,6 +255,17 @@ public class ZhangYaoApi {
     public ResponseResult delHistoryOrder(@Param("订单主键") @RequestParam(value = "orderId",required = false) String orderId,
                                                                 @AccessToken AccessInfo info){
         orderManager.delHistoryOrder(info.getUser(),orderId);
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "退款")
+    @PostMapping("/refund")
+    public ResponseResult refund(@ApiParam("{\"orderId\":\"\"} orderId：订单主键") @RequestBody String param,
+                                          @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("orderId")){
+            return ResponseUtil.setParamEmptyError("orderId");
+        }
+        orderManager.refund(info.getUser(),JSONObject.parseObject(param).get("orderId").toString());
         return ResponseUtil.setSuccessResult();
     }
 
@@ -273,10 +280,10 @@ public class ZhangYaoApi {
 
     @ApiOperation(value = "获取快递信息")
     @GetMapping("/express")
-    public ResponseResult<List<ZYExpressObj>> getExpress(@Param("药店id") @RequestParam(value = "storeId") String storeId,
+    public ResponseResult<ZYExpressObj> getExpress(@Param("药店id") @RequestParam(value = "storeId") String storeId,
                                                          @Param("省份id") @RequestParam(value = "provinceId") String provinceId){
-        List<ZYExpressObj> list = zhangYaoManager.getExpress(storeId,provinceId);
-        return ResponseUtil.setSuccessResult(list);
+        ZYExpressObj obj = zhangYaoManager.getExpress(storeId,provinceId);
+        return ResponseUtil.setSuccessResult(obj);
 
     }
 

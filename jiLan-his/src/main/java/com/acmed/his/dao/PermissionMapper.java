@@ -19,11 +19,12 @@ public interface PermissionMapper extends TkMapper<Permission> {
 
     Integer hasMenu(@Param("uid") String uid, @Param("perCode") String perCode);
 
-    List<Permission> getBasePermission();
+    List<Permission> getBasePermission(@Param("filterZy") Boolean filterZy);
 
     List<Permission> getPermissionByPid(@Param("pid") Integer pid,@Param("orgCode") Integer orgCode);
 
     List<Permission> getNeedFilterPermissionList();
 
-    List<Permission> getPermissionByUserId(@Param("uid") Integer uid,@Param("isAdmin") boolean isAdmin);
+    List<Permission> getPermissionByUserId(@Param("uid") Integer uid,@Param("isAdmin") boolean isAdmin,
+                                           @Param("filterZy") boolean filterZy);
 }

@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -229,7 +230,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
      * @param info
      */
     @Transactional
-    public String submit(ZYOrderSubmitPayMo mo, UserInfo info) {
+    public Map<String,Object> submit(ZYOrderSubmitPayMo mo, UserInfo info) {
 
 
         StringBuilder builder = new StringBuilder();
@@ -257,6 +258,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             boolean flag = true;
             String groupNum = "GM_"+commonManager.getNextVal("zyGroupNum");
             String submitTime = LocalDateTime.now().toString();
+            Double reduceFee = 0d;//优惠费用
             for(ZYOrderSubmitPayMo.ZYOrderSubmitPayDetailMo detailMo : mo.getDetailMoList()){
                 List<ZyOrderItem> itemList = zyOrderItemMapper.getItemByOrderIdExclueRemove(detailMo.getOrderId());
                 orderItemMap.put(detailMo.getOrderId(),itemList);
@@ -277,15 +279,22 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
                 zyOrder.setExpressId(detailMo.getExpressId());
                 zyOrder.setExpressFee(detailMo.getExpressFee());
+                zyOrder.setFullReduceFee(detailMo.getFullReduceFee());
                 zyOrder.setExpressName(detailMo.getExpressName());
                 zyOrder.setSubmitTime(submitTime);
                 zyOrder.setTotalFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
+                if(null != zyOrder.getFullReduceFee() && zyOrder.getDrugFee() >= zyOrder.getFullReduceFee()){
+                    zyOrder.setActualFee(zyOrder.getDrugFee());
+                }else{
+                    zyOrder.setActualFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
+                }
                 zyOrder.setPayStatus(1);
                 zyOrder.setGroupNum(groupNum);
                 zyOrder.setModifyBy(info.getId().toString());
                 zyOrder.setModifyAt(LocalDateTime.now().toString());
                 zyOrderMapper.updateByPrimaryKey(zyOrder);
 
+                reduceFee += zyOrder.getTotalFee() - zyOrder.getActualFee();
                 if(!detailMo.getItemIdList().containsAll(itemIdList) || !itemIdList.containsAll(detailMo.getItemIdList())){
                     flag = false;
                     zyOrderItemMapper.updateAddStatus(zyOrder.getId(),detailMo.getItemIdList());//过滤掉当前的详情,设置成新增状态
@@ -293,22 +302,23 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 }
             }
             if(!flag){//保存成功，但是返回错误信息
-                return String.valueOf(false);
+                return ImmutableMap.of("url","false");
             }
 
             //setp3:给掌药提交数据,并验证，验证成功保存数据库
             this.postRemoteOrder(orderMap,orderItemMap,info);
 
             //step4:支付
-            return this.pay(mo.getFeeType(),orderMap);
-
+            String url = this.pay(mo.getFeeType(),orderMap);
+            return ImmutableMap.of("url",url,"reduceFee",reduceFee);
         }
+
     }
 
 
 
     @Transactional
-    public String unpaidSubmit(ZYOrderSubmitPayMo mo, UserInfo info) {
+    public Map<String,Object> unpaidSubmit(ZYOrderSubmitPayMo mo, UserInfo info) {
         StringBuilder builder = new StringBuilder();
 
         //step0:处理地址信息
@@ -333,6 +343,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
         String groupNum = "GM_"+commonManager.getNextVal("zyGroupNum");
         String submitTime = LocalDateTime.now().toString();
+        Double reduceFee = 0d;//优惠费用
         for(ZYOrderSubmitPayMo.ZYOrderSubmitPayDetailMo detailMo : mo.getDetailMoList()){
             List<ZyOrderItem> itemList = zyOrderItemMapper.getItemByOrderIdExclueRemove(detailMo.getOrderId());
             orderItemMap.put(detailMo.getOrderId(),itemList);
@@ -356,12 +367,18 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             zyOrder.setExpressName(detailMo.getExpressName());
             zyOrder.setSubmitTime(submitTime);
             zyOrder.setTotalFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
+            if(null != zyOrder.getFullReduceFee() && zyOrder.getDrugFee() >= zyOrder.getFullReduceFee()){
+                zyOrder.setActualFee(zyOrder.getDrugFee());
+            }else{
+                zyOrder.setActualFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
+            }
             zyOrder.setPayStatus(1);
             zyOrder.setGroupNum(groupNum);
             zyOrder.setModifyBy(info.getId().toString());
             zyOrder.setModifyAt(LocalDateTime.now().toString());
             zyOrderMapper.updateByPrimaryKey(zyOrder);
 
+            reduceFee += zyOrder.getTotalFee() - zyOrder.getActualFee();
             if(!detailMo.getItemIdList().containsAll(itemIdList) || !itemIdList.containsAll(detailMo.getItemIdList())){
                 throw new BaseException(StatusCode.FAIL,"订单提交失败，数据已被刷新，请到待支付重新提交");
             }
@@ -371,8 +388,8 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         this.postRemoteOrder(orderMap,orderItemMap,info);
 
         //step4:支付
-        return this.pay(mo.getFeeType(),orderMap);
-
+        String url = this.pay(mo.getFeeType(),orderMap);
+        return ImmutableMap.of("url",url,"reduceFee",reduceFee);
     }
 
     private ZyAddress handleAddress(ZYOrderSubmitPayMo mo, UserInfo info) {
@@ -398,7 +415,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         Double totalFee = 0d;
         for(String orderId : orderMap.keySet()){
             list.add(orderMap.get(orderId).getZyOrderId());
-            totalFee += orderMap.get(orderId).getTotalFee();
+            totalFee += orderMap.get(orderId).getActualFee();
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -443,7 +460,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             ZYOrderPostObj obj = new ZYOrderPostObj();
             obj.setStoreId(order.getZyStoreId());
             obj.setDeliverId("45");
-            obj.setTotal(order.getTotalFee().toString());
+            obj.setTotal(order.getActualFee().toString());
             obj.setExpId(order.getExpressId());
             obj.setProvinceId(order.getProvinceId());
             obj.setCityId(order.getCityId());
@@ -476,12 +493,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<JSONObject> json = restTemplate.postForEntity(this.ZHANGYAO_URL+ZhangYaoConstant.buildOrderUrl(),httpEntity, JSONObject.class);
 
-        if(200 != json.getStatusCodeValue()){
-            logger.error("下单数据: "+jsonArray.toJSONString());
-            logger.error("返回值："+json);
-            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
-        }
-        if(1 !=json.getBody().getInteger("code")){
+        if(200 != json.getStatusCodeValue() || 1 !=json.getBody().getInteger("code")){
             logger.error("下单数据: "+jsonArray.toJSONString());
             logger.error("返回值："+json);
             throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
@@ -510,7 +522,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 throw new BaseException(StatusCode.FAIL,"下单失败");
             }
             //细节比较暂时不做，只做金额验证，直接记录数据库
-            if(Double.parseDouble(getObj.getOrderInfo().getOrderAmount()) != order.getTotalFee().doubleValue()){
+            if(Double.parseDouble(getObj.getOrderInfo().getOrderAmount()) != order.getActualFee().doubleValue()){
                 logger.error("下单数据: "+jsonArray.toJSONString());
                 logger.error("下单返回值："+json);
                 logger.error("金额计算有误");
@@ -547,31 +559,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
     }
 
-    public static void main(String[] args) {
-        HttpHeaders httpHeaders = new HttpHeaders();
 
-        MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String,Object>();
-        List<String> list = Lists.newArrayList("193202","193203");
-        paramMap.add("orderIds", list.toArray());
-        paramMap.add("payType","2");
-
-        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(paramMap,httpHeaders);
-
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<JSONObject> json = restTemplate.postForEntity("http://presapi.lkhealth.net/index.php"+ZhangYaoConstant.buildPayUrl(),httpEntity, JSONObject.class);
-        if(200 != json.getStatusCodeValue()){
-//            logger.error("支付数据: "+paramMap);
-//            logger.error("支付返回值："+json);
-            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
-        }
-        if(1 !=json.getBody().getInteger("code")){
-//            logger.error("支付数据: "+paramMap);
-//            logger.error("支付返回值："+json);
-            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
-        }
-        ZYPayObj zyPayObj = json.getBody().getJSONObject("data").getObject("backInfo",ZYPayObj.class);
-        System.err.println(zyPayObj);
-    }
 
 
 
@@ -690,12 +678,65 @@ public class ZhangYaoOrderManager  implements InitializingBean {
      */
     public void delHistoryOrder(UserInfo user, String orderId) {
         ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(orderId);
-        zyOrder.setPayStatus(4);
+        zyOrder.setPayStatus(7);
         zyOrder.setModifyAt(LocalDateTime.now().toString());
         zyOrder.setModifyBy(user.getId().toString());
         zyOrderMapper.updateByPrimaryKey(zyOrder);
     }
 
 
+    /**
+     * 退款
+     * @param user
+     * @param orderId
+     */
+    @Transactional
+    public void refund(UserInfo user, String orderId) {
+        ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(orderId);
+        zyOrder.setPayStatus(4);//退款中
+        zyOrder.setModifyAt(LocalDateTime.now().toString());
+        zyOrder.setModifyBy(user.getId().toString());
+        zyOrderMapper.updateByPrimaryKey(zyOrder);
 
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String,Object>();
+        paramMap.add("orderId", zyOrder.getZyOrderId());
+
+        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(paramMap,httpHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<JSONObject> json = restTemplate.postForEntity(this.ZHANGYAO_URL+ZhangYaoConstant.buildRefundUrl(),httpEntity, JSONObject.class);
+        if(200 != json.getStatusCodeValue() || 1 !=json.getBody().getInteger("code")){
+            logger.error("退款数据: "+paramMap);
+            logger.error("退款返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"退款失败，请代会重试");
+        }
+    }
+
+    public static void main(String[] args) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String,Object>();
+        List<String> list = Lists.newArrayList("193202","193203");
+        paramMap.add("orderIds", list.toArray());
+        paramMap.add("payType","2");
+
+        HttpEntity<MultiValueMap<String,Object>> httpEntity = new HttpEntity<MultiValueMap<String,Object>>(paramMap,httpHeaders);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<JSONObject> json = restTemplate.postForEntity("http://presapi.lkhealth.net/index.php"+ZhangYaoConstant.buildPayUrl(),httpEntity, JSONObject.class);
+        if(200 != json.getStatusCodeValue()){
+//            logger.error("支付数据: "+paramMap);
+//            logger.error("支付返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
+        }
+        if(1 !=json.getBody().getInteger("code")){
+//            logger.error("支付数据: "+paramMap);
+//            logger.error("支付返回值："+json);
+            throw new BaseException(StatusCode.FAIL,"下单失败，请代会重试");
+        }
+        ZYPayObj zyPayObj = json.getBody().getJSONObject("data").getObject("backInfo",ZYPayObj.class);
+        System.err.println(zyPayObj);
+    }
 }

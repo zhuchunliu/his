@@ -108,12 +108,7 @@ public class PermissionManager {
      * @param uid
      * @return
      */
-    public List<Permission> getPermissionByUserId(Integer uid,boolean isAdmin) {
-        return permissionMapper.getPermissionByUserId(uid,isAdmin);
+    public List<Permission> getPermissionByUserId(Integer uid,boolean isAdmin,boolean filterZy) {
+        return permissionMapper.getPermissionByUserId(uid,isAdmin,filterZy);
     }
-    public List<Permission> getBasePermission(){
-        return permissionMapper.getBasePermission();
-    }
-
-
 }

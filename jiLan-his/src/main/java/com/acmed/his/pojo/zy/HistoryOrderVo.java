@@ -31,7 +31,7 @@ public class HistoryOrderVo {
     @ApiModelProperty("提交时间")
     private String submitTime;
 
-    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:已退款,4:已经取消")
+    @ApiModelProperty("支付状态 0:未提交,1:待支付,2:已支付,3:付费失败,4:退款中,5：已退款，6：退款失败，7:已经取消")
     private Integer payStatus;
 
 

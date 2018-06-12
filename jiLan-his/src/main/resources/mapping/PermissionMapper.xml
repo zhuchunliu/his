@@ -37,7 +37,11 @@
 </select>
 
     <select id="getBasePermission" resultType="com.acmed.his.model.Permission">
-      select * from t_p_s_permission where pid is null and hideflag = '0' order by sn asc
+      select * from t_p_s_permission where pid is null and hideflag = '0'
+      <if test="filterZy == true">
+          AND perCode != 'yyf'
+      </if>
+      order by sn asc
     </select>
 
     <select id="getPermissionByPid" resultType="com.acmed.his.model.Permission">
@@ -61,6 +65,9 @@
         where ur.uid = #{uid} and role.removed = '0' and role.isvalid = '1'
         <if test="isAdmin == false">
             and per.hideflag = 0
+        </if>
+        <if test="filterZy == true">
+            AND per.perCode not in ('yyf','yyfdd','shqr','hzff')
         </if>
         order by pid asc , sn asc
     </select>

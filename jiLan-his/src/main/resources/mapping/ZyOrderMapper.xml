@@ -51,4 +51,9 @@
     </select>
 
 
+    <update id="updateZyOrderRefundStatus">
+        update t_zy_order set paystatus = #{payStatus},refundremark = #{refundRemark}
+        where zyOrderid = #{zyOrderId}
+    </update>
+
 </mapper>

@@ -2,6 +2,7 @@ package com.acmed.his.pojo.zy;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by Darren on 2018-04-10
@@ -20,6 +21,9 @@ public class ZYDrugListVo {
 
     @ApiModelProperty("药品名")
     private String drugName;
+
+    @ApiModelProperty("药品单位名称")
+    private String unitName;
 
     @ApiModelProperty("生产厂家")
     private String manufacturerName;

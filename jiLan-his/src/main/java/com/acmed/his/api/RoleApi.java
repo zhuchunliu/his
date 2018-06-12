@@ -2,10 +2,12 @@ package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.dao.PermissionMapper;
+import com.acmed.his.model.Org;
 import com.acmed.his.model.Permission;
 import com.acmed.his.model.Role;
 import com.acmed.his.pojo.mo.RoleMo;
 import com.acmed.his.pojo.vo.RoleVsPermissionVo;
+import com.acmed.his.service.OrgManager;
 import com.acmed.his.service.RoleManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -39,6 +41,9 @@ public class RoleApi {
 
     @Autowired
     private PermissionMapper permissionMapper;
+
+    @Autowired
+    private OrgManager orgManager;
 
     @ApiOperation(value = "新增/编辑 角色信息")
     @PostMapping("/save")
@@ -112,8 +117,12 @@ public class RoleApi {
                 checkedList.add(obj.getId());
             });
         }
-
-        List<Permission> parentList = permissionMapper.getBasePermission();
+        boolean filterZy = false;
+        if(null != info.getUser().getOrgCode()){
+            Org org = orgManager.getOrgDetail(info.getUser().getOrgCode());
+            filterZy = (null != org.getZyStatus() && org.getZyStatus() == 1)?false:true;
+        }
+        List<Permission> parentList = permissionMapper.getBasePermission(filterZy);
 
         List<RoleVsPermissionVo> list = Lists.newArrayList();
         parentList.forEach(parent->{

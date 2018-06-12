@@ -89,6 +89,7 @@ public class ZhangYaoManager implements InitializingBean {
                 vo.setRetailPrice(zyDrug.getGoodsPrice());
                 vo.setManufacturerName(zyDrug.getCompanyName());
                 vo.setDrugName(zyDrug.getCnName());
+                vo.setUnitName(zyDrug.getUnit());
                 drugIdList.add(vo.getDrugId());
                 drugList.add(vo);
             }
@@ -193,13 +194,14 @@ public class ZhangYaoManager implements InitializingBean {
      * @param provinceId 省份id
      * @return
      */
-    public List<ZYExpressObj> getExpress(String storeId, String provinceId) {
+    public ZYExpressObj getExpress(String storeId, String provinceId) {
         StringBuilder builder = new StringBuilder(this.ZHANGYAO_URL).append(ZhangYaoConstant.buildExpressUrl(storeId,provinceId));
         RestTemplate restTemplate = new RestTemplate();
         JSONObject json = restTemplate.getForObject(builder.toString(), JSONObject.class);
         if(json.get("code").equals("1")){
-            List<ZYExpressObj> list = JSONArray.parseArray(json.getJSONObject("data").getJSONArray("expressList").toJSONString(),ZYExpressObj.class);
-            return list;
+            ZYExpressObj obj = json.getObject("data",ZYExpressObj.class);
+            obj.setFullPrice(json.getJSONObject("data").getDouble("fullPrice"));
+            return obj;
         }else{
             logger.error("get zhangyao express fail,msg: "+json.get("message")+"  ;the url is :"+builder.toString());
             throw new BaseException(StatusCode.FAIL,"获取快递信息失败");

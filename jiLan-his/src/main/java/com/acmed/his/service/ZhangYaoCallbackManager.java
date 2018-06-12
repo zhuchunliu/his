@@ -6,6 +6,7 @@ import com.acmed.his.dao.ZyOrderMapper;
 import com.acmed.his.model.ZyOrder;
 import com.acmed.his.pojo.zy.ZYExpressCallbackMo;
 import com.acmed.his.pojo.zy.ZYPayCallbackMo;
+import com.acmed.his.pojo.zy.ZYRefundCallbackMo;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,14 @@ public class ZhangYaoCallbackManager {
     }
 
     /**
+     * 退款回调
+     * @param mo
+     */
+    public void updateZyOrderRefundStatus(ZYRefundCallbackMo mo) {
+        zyOrderMapper.updateZyOrderRefundStatus(mo.getOrderId(),mo.getRefundStatus() == 1?5:6,mo.getRemark());
+    }
+
+    /**
      * 推送消息
      * @param mo
      */
@@ -86,6 +95,7 @@ public class ZhangYaoCallbackManager {
             }
         }
     }
+
 
 
 }

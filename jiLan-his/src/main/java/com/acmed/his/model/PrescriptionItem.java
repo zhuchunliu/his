@@ -108,6 +108,9 @@ public class PrescriptionItem {
     @ApiModelProperty("药品规格 - 掌药")
     private String zyDrugSpec;
 
+    @ApiModelProperty("药品单位名称 - 掌药")
+    private String zyDrugUnitName;
+
     @ApiModelProperty("药品厂家 - 掌药")
     private String zyManufacturerName;
 

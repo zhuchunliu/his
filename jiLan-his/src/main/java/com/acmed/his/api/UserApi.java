@@ -4,14 +4,12 @@ import com.acmed.his.constants.RedisKeyConstants;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.DicItem;
+import com.acmed.his.model.Org;
 import com.acmed.his.model.Permission;
 import com.acmed.his.model.User;
 import com.acmed.his.pojo.mo.OpenIdAndAccessToken;
 import com.acmed.his.pojo.vo.*;
-import com.acmed.his.service.BaseInfoManager;
-import com.acmed.his.service.PermissionManager;
-import com.acmed.his.service.UserManager;
-import com.acmed.his.service.WxManager;
+import com.acmed.his.service.*;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.*;
@@ -50,6 +48,9 @@ public class UserApi {
 
     @Autowired
     private WxManager wxManager;
+
+    @Autowired
+    private OrgManager orgManager;
 
     @Autowired
     @Qualifier(value="stringRedisTemplate")
@@ -157,8 +158,13 @@ public class UserApi {
     @ApiOperation(value = "获取可访问菜单列表")
     @GetMapping("/menu")
     public ResponseResult<Set<MenuVo>> getMenu(@AccessToken AccessInfo info) {
+        boolean filterZy = false;
+        if(null != info.getUser().getOrgCode()){
+            Org org = orgManager.getOrgDetail(info.getUser().getOrgCode());
+            filterZy = (null != org.getZyStatus() && org.getZyStatus() == 1)?false:true;
+        }
         List<Permission> source = permissionManager.getPermissionByUserId(info.getUserId(),
-                null == info.getUser().getOrgCode()?true:false);
+                null == info.getUser().getOrgCode()?true:false,filterZy);
         Set<MenuVo> set = new LinkedHashSet<MenuVo>();
         source.forEach(obj->{
             set.add(new MenuVo(obj));

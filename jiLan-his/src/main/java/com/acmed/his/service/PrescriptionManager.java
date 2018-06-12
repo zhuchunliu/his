@@ -180,6 +180,7 @@ public class PrescriptionManager {
                     item.setManufacturerName(obj.getZyManufacturerName());
                     item.setDrugName(obj.getDrugName());
                     item.setDrugId(obj.getZyDrugId());
+                    item.setNumName(obj.getNum()+Optional.ofNullable(obj.getZyDrugUnitName()).orElse(""));
                 }else {
                     Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
                     if (null != drug) {
@@ -376,6 +377,7 @@ public class PrescriptionManager {
                         item.setZyStoreName(info.getStoreName());
                         item.setZyDrugSpec(info.getSpec());
                         item.setZyManufacturerName(info.getManufacturerName());
+                        item.setZyDrugUnitName(info.getUnitName());
                         item.setZyOrderStatus(0);
 
                         item.setFrequency(info.getFrequency());

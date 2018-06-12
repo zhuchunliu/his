@@ -62,6 +62,9 @@ public class ZYOrderSubmitPayMo {
         @ApiModelProperty("快递名称")
         private String expressName;
 
+        @ApiModelProperty("店铺满fullPrice免邮")
+        private Double fullReduceFee;
+
         @ApiModelProperty("详情主键")
         private List<String> itemIdList;
     }

@@ -44,4 +44,13 @@ public interface ZyOrderMapper extends TkMapper<ZyOrder> {
      * @return
      */
     List<Map<String,Object>> getPushUserId(@Param("zyOrderIds") String[] orderIds);
+
+    /**
+     * 设置退款回调消息
+     * @param zyOrderId
+     * @param payStatus
+     * @param refundRemark
+     */
+    void updateZyOrderRefundStatus(@Param("zyOrderId") String zyOrderId, @Param("payStatus") Integer payStatus,
+                                   @Param("refundRemark") String refundRemark);
 }

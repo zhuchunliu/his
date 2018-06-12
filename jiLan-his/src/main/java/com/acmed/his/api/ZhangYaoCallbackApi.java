@@ -3,6 +3,7 @@ package com.acmed.his.api;
 import com.acmed.his.constants.StatusCode;
 import com.acmed.his.pojo.zy.ZYExpressCallbackMo;
 import com.acmed.his.pojo.zy.ZYPayCallbackMo;
+import com.acmed.his.pojo.zy.ZYRefundCallbackMo;
 import com.acmed.his.service.ZhangYaoCallbackManager;
 import com.acmed.his.support.WithoutToken;
 import com.acmed.his.util.ResponseResult;
@@ -37,7 +38,7 @@ public class ZhangYaoCallbackApi {
     @PostMapping("/express")
     @WithoutToken
     public ResponseResult express(@RequestBody ZYExpressCallbackMo mo){
-        logger.info("callback info : "+mo);
+        logger.info("express callback info : "+mo);
         if(StringUtils.isEmpty(mo.getExpressNo())){
             return ResponseUtil.setParamEmptyError("expressNo");
         }
@@ -52,7 +53,7 @@ public class ZhangYaoCallbackApi {
     @PostMapping("/pay")
     @WithoutToken
     public ResponseResult pay(@RequestBody ZYPayCallbackMo mo){
-        logger.info("callback info : "+mo);
+        logger.info("pay callback info : "+mo);
         if(null == mo.getOrderIds() || 0 == mo.getOrderIds().length){
             return ResponseUtil.setParamEmptyError("orderIds");
         }
@@ -66,6 +67,25 @@ public class ZhangYaoCallbackApi {
         new Thread(() -> {
             callbackManager.pushMsg(mo);
         }).start();
+
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "退款回调")
+    @PostMapping("/refund")
+    @WithoutToken
+    public ResponseResult refund(@RequestBody ZYRefundCallbackMo mo){
+        logger.info("refund callback info : "+mo);
+        if(StringUtils.isEmpty(mo.getOrderId())){
+            return ResponseUtil.setParamEmptyError("orderId");
+        }
+        if(null == mo.getRefundStatus()){
+            return ResponseUtil.setParamEmptyError("refundStatus");
+        }
+        if(mo.getRefundStatus() != 1 && mo.getRefundStatus() != 0 ){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"refundStatus只能为0和1");
+        }
+        callbackManager.updateZyOrderRefundStatus(mo);
 
         return ResponseUtil.setSuccessResult();
     }

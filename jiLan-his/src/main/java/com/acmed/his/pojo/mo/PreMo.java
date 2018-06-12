@@ -84,6 +84,9 @@ public class  PreMo {
         @ApiModelProperty("药品名称 -掌药")
         private String drugName;
 
+        @ApiModelProperty("药品单位名称 -掌药")
+        private String unitName;
+
         @ApiModelProperty("药店id - 掌药")
         private String storeId;
 

@@ -26,7 +26,7 @@ public class ZhangYaoConstant {
 
     private final static String PAY_URL = "r=jizhi/order/pay";//支付地址
 
-    private final static String REFUND_URL = "jizhi/order/refund";//退款地址
+    private final static String REFUND_URL = "r=jizhi/order/refund";//退款地址
     /**
      * 获取药品信息
      * @param keyword 搜索关键词

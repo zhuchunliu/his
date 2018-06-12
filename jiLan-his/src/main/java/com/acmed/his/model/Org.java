@@ -65,6 +65,9 @@ public class Org {
     @ApiModelProperty("状态：0禁用,1启用")
     private String status;
 
+    @ApiModelProperty("是否开启掌药功能 0:否，1:是")
+    private Integer zyStatus;
+
     @ApiModelProperty("经度")
     private String lng;
 
