@@ -13,6 +13,7 @@ import com.acmed.his.util.PinYinUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -54,7 +56,13 @@ public class TemplateManager {
     @Autowired
     private InspectTplMapper inspectTplMapper;
 
+    @Autowired
+    private ChiefComplaintTplMapper chiefComplaintTplMapper;
 
+
+    public List<Map<String,Object>> getDiagnosisTplList(UserInfo user) {
+        return diagnosisTplMapper.getDiagnosisTplList(user);
+    }
 
     /**
      * 获取诊断模板列表
@@ -62,10 +70,10 @@ public class TemplateManager {
      * @param query
      * @param pageSize
      */
-    public PageResult<DiagnosisTplDto> getDiagnosisTplList(TplQueryMo query, Integer pageNum, Integer pageSize , UserInfo userInfo){
+    public PageResult<DiagnosisTplDto> getDiagnosisPageList(TplQueryMo query, Integer pageNum, Integer pageSize , UserInfo userInfo){
         PageResult result = new PageResult();
         Page page = PageHelper.startPage(pageNum,pageSize);
-        result.setData(diagnosisTplMapper.getDiagnosisTplList(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
+        result.setData(diagnosisTplMapper.getDiagnosisPageList(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
                 Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
                 userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode()));
@@ -151,15 +159,6 @@ public class TemplateManager {
     }
 
     /**
-     * 获取医嘱模板详情
-     * @param id 诊断模板主键
-     * @return
-     */
-    public AdviceTpl getAdviceTpl(Integer id){
-        return adviceTplMapper.selectByPrimaryKey(id);
-    }
-
-    /**
      * 删除医嘱模板
      * @param id 诊断模板主键
      * @return
@@ -203,6 +202,84 @@ public class TemplateManager {
             adviceTpl.setModifyAt(LocalDateTime.now().toString());
             adviceTpl.setModifyBy(userInfo.getId().toString());
             adviceTplMapper.updateByPrimaryKey(adviceTpl);
+        }
+    }
+
+    /**
+     * 获取医嘱模板列表
+     * @return
+     */
+    public List<Map<String,Object>> getChiefComplaintTplList(UserInfo userInfo){
+        return chiefComplaintTplMapper.getChiefComplaintTplList(userInfo);
+    }
+
+    /**
+     * 获取医嘱模板列表
+     * @return
+     */
+    public PageResult<AdviceTplDto> getChiefComplaintTplPageList(TplQueryMo query, Integer pageNum, Integer pageSize , UserInfo userInfo){
+        PageResult result = new PageResult();
+        Page page = PageHelper.startPage(pageNum,pageSize);
+
+        result.setData(chiefComplaintTplMapper.getChiefComplaintTplPageList(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
+                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode()));
+        result.setTotal(page.getTotal());
+        return result;
+    }
+
+    public Integer getChiefComplaintDisableNum(TplQueryMo query, UserInfo userInfo){
+        return chiefComplaintTplMapper.getChiefComplaintTplTotal(Optional.ofNullable(query).map(obj->obj.getName()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsPublic()).orElse(null),
+                Optional.ofNullable(query).map(obj->obj.getIsValid()).orElse(null),
+                userInfo,DicTypeEnum.DIAGNOSIS_TPL.getCode());
+    }
+
+    /**
+     * 删除医嘱模板
+     * @param id 诊断模板主键
+     * @return
+     */
+    public void delChiefComplaintDetail(Integer id,UserInfo userInfo){
+        ChiefComplaintTpl chiefComplaintTpl = chiefComplaintTplMapper.selectByPrimaryKey(id);
+        chiefComplaintTpl.setModifyAt(LocalDateTime.now().toString());
+        chiefComplaintTpl.setModifyBy(userInfo.getId().toString());
+        chiefComplaintTpl.setRemoved("1");
+        chiefComplaintTplMapper.updateByPrimaryKey(chiefComplaintTpl);
+    }
+
+    public void switchChiefComplaintTpl(Integer id,UserInfo userInfo){
+        ChiefComplaintTpl chiefComplaintTpl = chiefComplaintTplMapper.selectByPrimaryKey(id);
+        chiefComplaintTpl.setModifyAt(LocalDateTime.now().toString());
+        chiefComplaintTpl.setModifyBy(userInfo.getId().toString());
+        chiefComplaintTpl.setIsValid(chiefComplaintTpl.getIsValid().equals("1")?"0":"1");
+        chiefComplaintTplMapper.updateByPrimaryKey(chiefComplaintTpl);
+    }
+
+
+
+    /**
+     * 新增/编辑 医嘱模板
+     * @param mo 医嘱模板
+     * @return
+     */
+    public void saveChiefComplaintTpl(ChiefComplaintTplMo mo, UserInfo userInfo){
+        if(null == mo.getId()){
+            ChiefComplaintTpl chiefComplaintTpl = new ChiefComplaintTpl();
+            BeanUtils.copyProperties(mo,chiefComplaintTpl);
+            chiefComplaintTpl.setCreateAt(LocalDateTime.now().toString());
+            chiefComplaintTpl.setCreateBy(userInfo.getId().toString());
+            chiefComplaintTpl.setOrgCode(userInfo.getOrgCode());
+            chiefComplaintTpl.setIsValid("1");
+            chiefComplaintTpl.setRemoved("0");
+            chiefComplaintTplMapper.insert(chiefComplaintTpl);
+        }else{
+            ChiefComplaintTpl chiefComplaintTpl = chiefComplaintTplMapper.selectByPrimaryKey(mo.getId());
+            BeanUtils.copyProperties(mo,chiefComplaintTpl);
+            chiefComplaintTpl.setModifyAt(LocalDateTime.now().toString());
+            chiefComplaintTpl.setModifyBy(userInfo.getId().toString());
+            chiefComplaintTplMapper.updateByPrimaryKey(chiefComplaintTpl);
         }
     }
 
@@ -422,4 +499,6 @@ public class TemplateManager {
         }
 
     }
+
+
 }

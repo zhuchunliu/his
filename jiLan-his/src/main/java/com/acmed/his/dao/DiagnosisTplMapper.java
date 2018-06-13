@@ -7,12 +7,15 @@ import com.acmed.his.util.TkMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Darren on 2017-11-20
  **/
 public interface DiagnosisTplMapper extends TkMapper<DiagnosisTpl>{
-    List<DiagnosisTplDto> getDiagnosisTplList(@Param("name") String name , @Param("isPublic") Integer isPublic,
+    List<Map<String,Object>> getDiagnosisTplList(@Param("userInfo") UserInfo userInfo);
+
+    List<DiagnosisTplDto> getDiagnosisPageList(@Param("name") String name , @Param("isPublic") Integer isPublic,
                                               @Param("isValid") String isValid, @Param("userInfo") UserInfo userInfo,
                                               @Param("dicTypeCode")String dicTypeCode);
 

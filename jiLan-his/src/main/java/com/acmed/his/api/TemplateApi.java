@@ -5,6 +5,7 @@ import com.acmed.his.consts.DicTypeEnum;
 import com.acmed.his.dao.*;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.AdviceTplDto;
+import com.acmed.his.model.dto.ChiefComplaintTplDto;
 import com.acmed.his.model.dto.DiagnosisTplDto;
 import com.acmed.his.model.dto.PrescriptionTplDto;
 import com.acmed.his.pojo.mo.*;
@@ -35,7 +36,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Darren on 2017-11-20
  **/
-@Api(tags = "模板信息",description = "诊断模板、医嘱模板、处方模板")
+@Api(tags = "模板信息",description = "诊断模板、主述模板、处方模板")
 @RestController
 @RequestMapping("/tpl")
 public class TemplateApi {
@@ -71,18 +72,24 @@ public class TemplateApi {
     @PostMapping("/diagnosis/save")
     public ResponseResult saveDiagnosisList(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody DiagnosisTplMo mo,
                                             @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(mo.getCategory())){
-            return ResponseUtil.setParamEmptyError("category");
-        }
+//        if(StringUtils.isEmpty(mo.getCategory())){
+//            return ResponseUtil.setParamEmptyError("category");
+//        }
         templateManager.saveDiagnosisTpl(mo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
     @ApiOperation(value = "诊断模板列表")
+    @GetMapping("/diagnosis/all")
+    public ResponseResult<Map<String,Object>> getDiagnosisList(@AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(templateManager.getDiagnosisTplList(info.getUser()));
+    }
+
+    @ApiOperation(value = "诊断模板列表-分页")
     @PostMapping("/diagnosis/list")
-    public ResponseResult<PageResult<DiagnosisTplDto>> getDiagnosisList(@RequestBody(required = false) PageBase<TplQueryMo> pageBase,
+    public ResponseResult<PageResult<DiagnosisTplDto>> getDiagnosisPageList(@RequestBody(required = false) PageBase<TplQueryMo> pageBase,
                                                                         @AccessToken AccessInfo info){
-        return ResponseUtil.setSuccessResult(templateManager.getDiagnosisTplList(pageBase.getParam(),pageBase.getPageNum(),
+        return ResponseUtil.setSuccessResult(templateManager.getDiagnosisPageList(pageBase.getParam(),pageBase.getPageNum(),
                 pageBase.getPageSize(),info.getUser()));
     }
 
@@ -115,51 +122,57 @@ public class TemplateApi {
     }
 
 
-    @ApiOperation(value = "新增/编辑 医嘱模板")
-    @PostMapping("/advice/save")
-    public ResponseResult saveAdviceTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody AdviceTplMo mo,
+    @ApiOperation(value = "新增/编辑 主述模板")
+    @PostMapping("/chiefComplaint/save")
+    public ResponseResult saveChiefComplaintTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody ChiefComplaintTplMo mo,
                                         @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(mo.getCategory())){
-            return ResponseUtil.setParamEmptyError("category");
-        }
-        templateManager.saveAdviceTpl(mo,info.getUser());
+//        if(StringUtils.isEmpty(mo.getCategory())){
+//            return ResponseUtil.setParamEmptyError("category");
+//        }
+        templateManager.saveChiefComplaintTpl(mo,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "医嘱模板列表")
-    @PostMapping("/advice/list")
-    public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceTplList(@RequestBody(required = false) PageBase<TplQueryMo> pageBase,
-                                                                        @AccessToken AccessInfo info){
-        return ResponseUtil.setSuccessResult(templateManager.getAdviceTplList(pageBase.getParam(),pageBase.getPageNum(),
+    @ApiOperation(value = "主述模板列表")
+    @GetMapping("/chiefComplaint/all")
+    public ResponseResult<Map<String,Object>> getChiefComplaintTplList(@AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(templateManager.getChiefComplaintTplList(info.getUser()));
+    }
+
+    @ApiOperation(value = "主述模板列表")
+    @PostMapping("/chiefComplaint/list")
+    public ResponseResult<PageResult<ChiefComplaintTplDto>> getChiefComplaintTplPageList(@RequestBody(required = false) PageBase<TplQueryMo> pageBase,
+                                                                                     @AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(templateManager.getChiefComplaintTplPageList(pageBase.getParam(),pageBase.getPageNum(),
                 pageBase.getPageSize(),info.getUser()));
     }
 
-    @ApiOperation(value = "医嘱模板-禁用数")
-    @GetMapping("/advice/disable/num")
-    public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceDisableNum(@AccessToken AccessInfo info){
+    @ApiOperation(value = "主述模板-禁用数")
+    @GetMapping("/chiefComplaint/disable/num")
+    public ResponseResult<PageResult<DiagnosisTplDto>> getChiefComplaintDisableNum(@AccessToken AccessInfo info){
         TplQueryMo mo = new TplQueryMo();
         mo.setIsValid("0");
-        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",templateManager.getAdviceTplTotal(mo,info.getUser())));
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",templateManager.getChiefComplaintDisableNum(mo,info.getUser())));
     }
 
 
-    @ApiOperation(value = "删除医嘱模板")
-    @DeleteMapping("/advice/del")
-    public ResponseResult delAdviceDetail(@ApiParam("模板主键") @RequestParam Integer id,
+    @ApiOperation(value = "删除主述模板")
+    @DeleteMapping("/chiefComplaint/del")
+    public ResponseResult delChiefComplaintDetail(@ApiParam("模板主键") @RequestParam Integer id,
                                           @AccessToken AccessInfo info){
 
-        templateManager.delAdviceTpl(id,info.getUser());
+        templateManager.delChiefComplaintDetail(id,info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "禁用/启用 医嘱模板")
-    @PostMapping("/advice/switch")
-    public ResponseResult switchAdviceTpl(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
-                                             @AccessToken AccessInfo info){
+    @ApiOperation(value = "禁用/启用 主述模板")
+    @PostMapping("/chiefComplaint/switch")
+    public ResponseResult switchChiefComplaintTpl(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
+                                          @AccessToken AccessInfo info){
         if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
             return ResponseUtil.setParamEmptyError("id");
         }
-        templateManager.switchAdviceTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+        templateManager.switchChiefComplaintTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
         return ResponseUtil.setSuccessResult();
     }
 
@@ -317,6 +330,54 @@ public class TemplateApi {
     }
 
 
+
+    //    @ApiOperation(value = "新增/编辑 医嘱模板",hidden = true)
+//    @PostMapping("/advice/save")
+//    public ResponseResult saveAdviceTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody AdviceTplMo mo,
+//                                        @AccessToken AccessInfo info){
+//        if(StringUtils.isEmpty(mo.getCategory())){
+//            return ResponseUtil.setParamEmptyError("category");
+//        }
+//        templateManager.saveAdviceTpl(mo,info.getUser());
+//        return ResponseUtil.setSuccessResult();
+//    }
+//
+//    @ApiOperation(value = "医嘱模板列表",hidden = true)
+//    @PostMapping("/advice/list")
+//    public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceTplList(@RequestBody(required = false) PageBase<TplQueryMo> pageBase,
+//                                                                        @AccessToken AccessInfo info){
+//        return ResponseUtil.setSuccessResult(templateManager.getAdviceTplList(pageBase.getParam(),pageBase.getPageNum(),
+//                pageBase.getPageSize(),info.getUser()));
+//    }
+//
+//    @ApiOperation(value = "医嘱模板-禁用数",hidden = true)
+//    @GetMapping("/advice/disable/num")
+//    public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceDisableNum(@AccessToken AccessInfo info){
+//        TplQueryMo mo = new TplQueryMo();
+//        mo.setIsValid("0");
+//        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",templateManager.getAdviceTplTotal(mo,info.getUser())));
+//    }
+//
+//
+//    @ApiOperation(value = "删除医嘱模板",hidden = true)
+//    @DeleteMapping("/advice/del")
+//    public ResponseResult delAdviceDetail(@ApiParam("模板主键") @RequestParam Integer id,
+//                                          @AccessToken AccessInfo info){
+//
+//        templateManager.delAdviceTpl(id,info.getUser());
+//        return ResponseUtil.setSuccessResult();
+//    }
+//
+//    @ApiOperation(value = "禁用/启用 医嘱模板",hidden = true)
+//    @PostMapping("/advice/switch")
+//    public ResponseResult switchAdviceTpl(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
+//                                          @AccessToken AccessInfo info){
+//        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+//            return ResponseUtil.setParamEmptyError("id");
+//        }
+//        templateManager.switchAdviceTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+//        return ResponseUtil.setSuccessResult();
+//    }
 
     public static void main(String[] args) {
         String str ="12d3";
