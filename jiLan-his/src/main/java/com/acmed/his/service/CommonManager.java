@@ -1,9 +1,13 @@
 package com.acmed.his.service;
 
 import com.acmed.his.dao.CommonMapper;
+import com.acmed.his.pojo.vo.UserInfo;
+import com.acmed.his.util.DateTimeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 /**
  * Created by Darren on 2017-11-20
@@ -52,6 +56,30 @@ public class CommonManager {
         }
 
         return code;
+    }
+
+    /**
+     * 获取处方编号
+     * @param orgCode
+     * @return
+     */
+    public String getPrescriptionNo(Integer orgCode){
+        return "P"+ LocalDate.now().toString().replaceAll("-","")+
+                this.getFormatVal("POrg"+ orgCode+LocalDate.now().toString(),"000000");
+
+    }
+
+    /**
+     * 获取门诊编号
+     * @param orgCode
+     * @return
+     */
+    public String getClinicNo(Integer orgCode,String appointmentTime){
+        if(StringUtils.isEmpty(appointmentTime)) {
+            return this.getFormatVal("AOrg" + orgCode + LocalDate.now().toString(), "000000");
+        }else{
+            return this.getFormatVal("AOrg" + orgCode + DateTimeUtil.parsetDate(appointmentTime).toString(), "000000");
+        }
     }
 
     public static void main(String[] args) {

@@ -6,6 +6,7 @@ import com.acmed.his.pojo.mo.PreMo;
 import com.acmed.his.pojo.vo.PreDrugVo;
 import com.acmed.his.pojo.vo.PreTitleVo;
 import com.acmed.his.pojo.vo.PreVo;
+import com.acmed.his.service.CommonManager;
 import com.acmed.his.service.FeeItemManager;
 import com.acmed.his.service.PrescriptionManager;
 import com.acmed.his.support.AccessInfo;
@@ -13,6 +14,7 @@ import com.acmed.his.support.AccessToken;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -20,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +37,17 @@ public class PrescriptionApi {
 
     @Autowired
     private PrescriptionManager preManager;
+
+    @Autowired
+    private CommonManager commonManager;
+
+    @ApiOperation(value = "获取门诊编号、处方编号")
+    @GetMapping("/getNo")
+    public ResponseResult getNo(@AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("prescriptionNo",
+                commonManager.getPrescriptionNo(info.getUser().getOrgCode()),
+                "clinicNo",commonManager.getClinicNo(info.getUser().getOrgCode(),null)));
+    }
 
     @ApiOperation(value = "保存处方")
     @PostMapping

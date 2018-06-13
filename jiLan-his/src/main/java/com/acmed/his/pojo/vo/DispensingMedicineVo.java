@@ -25,6 +25,9 @@ public class DispensingMedicineVo {
     @ApiModelProperty("处方编号")
     private String prescriptionNo;
 
+    @ApiModelProperty("挂号单号")
+    private String clinicNo;
+
     @ApiModelProperty("费用合计")
     private Double totalFee = 0d;
 
@@ -45,11 +48,12 @@ public class DispensingMedicineVo {
     @ApiModelProperty("药品信息")
     private List<List<MedicalDetail>> detailList = Lists.newArrayList();
 
-    public DispensingMedicineVo(Prescription prescription,MedicalRecord medicalRecord, List<PrescriptionItem> itemList,
+    public DispensingMedicineVo(Apply apply,Prescription prescription,MedicalRecord medicalRecord, List<PrescriptionItem> itemList,
                                 Map<String, List<PrescriptionItemStock>> stockMap,
                                 BaseInfoManager baseInfoManager, DrugMapper drugMapper,
                                 ManufacturerMapper manufacturerMapper) {
         this.prescriptionNo = prescription.getPrescriptionNo();
+        this.clinicNo = apply.getClinicNo();
         if(null != medicalRecord){
             this.chiefComplaint = medicalRecord.getChiefComplaint();
             this.diagnosis = medicalRecord.getDiagnosis();

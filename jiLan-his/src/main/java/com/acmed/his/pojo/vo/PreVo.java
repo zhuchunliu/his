@@ -28,6 +28,12 @@ public class PreVo {
     @ApiModelProperty("挂号主键")
     private String applyId;
 
+    @ApiModelProperty("处方编号")
+    private String prescriptionNo;
+
+    @ApiModelProperty("挂号单号")
+    private String clinicNo;
+
     @ApiModelProperty("处方集合")
     private List<PrescriptVo> PreList = new ArrayList<>();
 
@@ -44,7 +50,7 @@ public class PreVo {
 
     }
 
-    public PreVo(Prescription prescription, List<Inspect> preInspectist,
+    public PreVo(Apply apply,Prescription prescription, List<Inspect> preInspectist,
                  List<Charge> preChargeList, List<PrescriptionItem> preItemList, PatientItem patientItem,
                  MedicalRecord medicalRecord,List<Inject> preInjectList,
                  ManufacturerMapper manufacturerMapper, BaseInfoManager baseInfoManager, DrugMapper drugMapper, FeeItemManager feeItemManager) {
@@ -53,6 +59,8 @@ public class PreVo {
         }
         this.id = prescription.getId();
         this.applyId = prescription.getApplyId();
+        this.prescriptionNo = prescription.getPrescriptionNo();
+        this.clinicNo = apply.getClinicNo();
 
         if(null != patientItem) {
             this.patient.setPatientId(patientItem.getPatientId());

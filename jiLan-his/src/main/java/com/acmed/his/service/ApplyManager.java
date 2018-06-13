@@ -189,7 +189,8 @@ public class ApplyManager {
             if ("0".equals(apply.getIsPaid())){
                 apply.setIsPaid("1");
                 apply.setFeeType(feeType);
-                apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+//                apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+                apply.setClinicNo(commonManager.getClinicNo(userInfo.getOrgCode(), apply.getAppointmentTime()));
                 apply.setModifyBy(userInfo.getId().toString());
                 apply.setModifyAt(LocalDateTime.now().toString());
                 applyMapper.updateByPrimaryKey(apply);
@@ -510,7 +511,8 @@ public class ApplyManager {
             apply.setFee(fee);
             if (fee==0){
                 apply.setIsPaid("1");
-                apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+//                apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+                apply.setClinicNo(commonManager.getClinicNo(apply.getOrgCode(), apply.getAppointmentTime()));
             }
             apply.setPatientItemId(generatePatientItemId);
             int i1 = addApply(apply);
@@ -546,7 +548,8 @@ public class ApplyManager {
                 apply.setFee(fee);
                 if (fee==0){
                     apply.setIsPaid("1");
-                    apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+//                    apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+                    apply.setClinicNo(commonManager.getClinicNo(apply.getOrgCode(), apply.getAppointmentTime()));
                 }
                 apply.setAge(patientItem1.getAge());
                 apply.setIsFirst(0);
@@ -577,7 +580,8 @@ public class ApplyManager {
                 apply.setFee(fee);
                 if (fee==0){
                     apply.setIsPaid("1");
-                    apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+//                    apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+                    apply.setClinicNo(commonManager.getClinicNo(apply.getOrgCode(), apply.getAppointmentTime()));
                 }
                 apply.setAge(DateTimeUtil.getAge(mo.getIdcard()));
                 apply.setIsFirst(0);

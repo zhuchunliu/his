@@ -82,6 +82,9 @@ public class DispensingApi {
     @Autowired
     private MedicalRecordManager medicalRecordManager;
 
+    @Autowired
+    private ApplyMapper applyMapper;
+
 
     @ApiOperation(value = "收支概况")
     @GetMapping("/fee/survey")
@@ -274,7 +277,7 @@ public class DispensingApi {
 
         MedicalRecord medicalRecord = medicalRecordManager.getMedicalRecordByApplyId(prescription.getApplyId());
 
-        return ResponseUtil.setSuccessResult(new DispensingMedicineVo(prescription,medicalRecord,itemList,map,baseInfoManager,drugMapper,manufacturerMapper));
+        return ResponseUtil.setSuccessResult(new DispensingMedicineVo(applyMapper.selectByPrimaryKey(applyId),prescription,medicalRecord,itemList,map,baseInfoManager,drugMapper,manufacturerMapper));
     }
 
 
@@ -315,7 +318,7 @@ public class DispensingApi {
         example.orderBy("groupNum").orderBy("id");
         List<Inject> injectList = injectMapper.selectByExample(example);
         MedicalRecord medicalRecord = medicalRecordManager.getMedicalRecordByApplyId(prescription.getApplyId());
-        return ResponseUtil.setSuccessResult(new DispensingDetailVo(prescription,medicalRecord,itemList,inspectList,chargeList,
+        return ResponseUtil.setSuccessResult(new DispensingDetailVo(applyMapper.selectByPrimaryKey(applyId),prescription,medicalRecord,itemList,inspectList,chargeList,
                 map,injectList,baseInfoManager,drugMapper,manufacturerMapper));
     }
 }

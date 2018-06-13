@@ -21,6 +21,12 @@ public class  PreMo {
     @ApiModelProperty("是否完成 0:未完成，1：完成")
     private Integer isFinish;
 
+    @ApiModelProperty("处方编号")
+    private String prescriptionNo;
+
+    @ApiModelProperty("挂号单号")
+    private String clinicNo;
+
     @ApiModelProperty("处方集合")
     private List<PrescriptMo> PreList;
 

@@ -270,7 +270,8 @@ public class PayApi {
                             if (StringUtils.isEmpty(applyById.getIsPaid()) || StringUtils.equals("0",applyById.getIsPaid())){
                                 Apply apply = new Apply();
                                 apply.setId(out_trade_no);
-                                apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+//                                apply.setClinicNo(commonManager.getFormatVal(apply.getOrgCode() + "applyCode", "000000000"));
+                                apply.setClinicNo(commonManager.getClinicNo(apply.getOrgCode(), apply.getAppointmentTime()));
                                 apply.setIsPaid("1");
                                 int i = applyManager.updateApply(apply);
                                 PayStatements payStatements = new PayStatements();

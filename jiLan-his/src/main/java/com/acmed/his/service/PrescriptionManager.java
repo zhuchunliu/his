@@ -133,7 +133,7 @@ public class PrescriptionManager {
         example.orderBy("groupNum").orderBy("id");
         List<Inject> injectList = injectMapper.selectByExample(example);
 
-        return new PreVo(prescription,preInspectList,chargeList,preItemList,patientItem,medicalRecord,injectList,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
+        return new PreVo(applyMapper.selectByPrimaryKey(applyId),prescription,preInspectList,chargeList,preItemList,patientItem,medicalRecord,injectList,manufacturerMapper,baseInfoManager,drugMapper,feeItemManager);
     }
 
 
@@ -318,7 +318,7 @@ public class PrescriptionManager {
             BeanUtils.copyProperties(apply,prescription);
             prescription.setId(UUIDUtil.generate());
             prescription.setApplyId(apply.getId());
-            prescription.setPrescriptionNo("P"+LocalDate.now().toString().replaceAll("-","")+commonManager.getFormatVal("Org"+LocalDate.now().toString(),"000000"));
+//            prescription.setPrescriptionNo(commonManager.getPrescriptionNo(userInfo.getOrgCode()));
             prescription.setIsPaid("0");
 //            prescription.setIsDispensing("0");
             prescription.setCreateAt(LocalDateTime.now().toString());
@@ -599,7 +599,9 @@ public class PrescriptionManager {
             apply.setIsPaid("0");
             apply.setIsFirst(0);
             apply.setAppointmentTime(LocalDate.now().toString());
-            apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+//            apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
+//            apply.setClinicNo(commonManager.getClinicNo(apply.getOrgCode(), apply.getAppointmentTime()));
+            apply.setClinicNo(mo.getClinicNo());
             apply.setFee(userInfo.getApplyfee());//设置成用户配置的挂号费
             apply.setCreateAt(LocalDateTime.now().toString());
             apply.setCreateBy(userInfo.getId().toString());
