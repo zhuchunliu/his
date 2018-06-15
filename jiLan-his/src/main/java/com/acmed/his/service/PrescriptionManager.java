@@ -319,7 +319,11 @@ public class PrescriptionManager {
             prescription.setId(UUIDUtil.generate());
             prescription.setApplyId(apply.getId());
 //            prescription.setPrescriptionNo(commonManager.getPrescriptionNo(userInfo.getOrgCode()));
-            prescription.setPrescriptionNo(mo.getPrescriptionNo());
+            if(StringUtils.isEmpty(mo.getPrescriptionNo())){
+                prescription.setPrescriptionNo(commonManager.getPrescriptionNo(userInfo.getOrgCode()));
+            }else {
+                prescription.setPrescriptionNo(mo.getPrescriptionNo());
+            }
             prescription.setIsPaid("0");
 //            prescription.setIsDispensing("0");
             prescription.setCreateAt(LocalDateTime.now().toString());
@@ -602,7 +606,12 @@ public class PrescriptionManager {
             apply.setAppointmentTime(LocalDate.now().toString());
 //            apply.setClinicNo(commonManager.getFormatVal(userInfo.getOrgCode() + "applyCode", "000000000"));
 //            apply.setClinicNo(commonManager.getClinicNo(apply.getOrgCode(), apply.getAppointmentTime()));
-            apply.setClinicNo(mo.getClinicNo());
+//            apply.setClinicNo(mo.getClinicNo());
+            if(StringUtils.isEmpty(mo.getClinicNo())){
+                apply.setClinicNo(commonManager.getClinicNo(apply.getOrgCode(), apply.getAppointmentTime()));
+            }else {
+                apply.setClinicNo(mo.getClinicNo());
+            }
             apply.setFee(userInfo.getApplyfee());//设置成用户配置的挂号费
             apply.setCreateAt(LocalDateTime.now().toString());
             apply.setCreateBy(userInfo.getId().toString());
