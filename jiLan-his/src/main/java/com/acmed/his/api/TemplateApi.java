@@ -331,53 +331,53 @@ public class TemplateApi {
 
 
 
-    //    @ApiOperation(value = "新增/编辑 医嘱模板",hidden = true)
-//    @PostMapping("/advice/save")
-//    public ResponseResult saveAdviceTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody AdviceTplMo mo,
-//                                        @AccessToken AccessInfo info){
-//        if(StringUtils.isEmpty(mo.getCategory())){
-//            return ResponseUtil.setParamEmptyError("category");
-//        }
-//        templateManager.saveAdviceTpl(mo,info.getUser());
-//        return ResponseUtil.setSuccessResult();
-//    }
-//
-//    @ApiOperation(value = "医嘱模板列表",hidden = true)
-//    @PostMapping("/advice/list")
-//    public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceTplList(@RequestBody(required = false) PageBase<TplQueryMo> pageBase,
-//                                                                        @AccessToken AccessInfo info){
-//        return ResponseUtil.setSuccessResult(templateManager.getAdviceTplList(pageBase.getParam(),pageBase.getPageNum(),
-//                pageBase.getPageSize(),info.getUser()));
-//    }
-//
-//    @ApiOperation(value = "医嘱模板-禁用数",hidden = true)
-//    @GetMapping("/advice/disable/num")
-//    public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceDisableNum(@AccessToken AccessInfo info){
-//        TplQueryMo mo = new TplQueryMo();
-//        mo.setIsValid("0");
-//        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",templateManager.getAdviceTplTotal(mo,info.getUser())));
-//    }
-//
-//
-//    @ApiOperation(value = "删除医嘱模板",hidden = true)
-//    @DeleteMapping("/advice/del")
-//    public ResponseResult delAdviceDetail(@ApiParam("模板主键") @RequestParam Integer id,
-//                                          @AccessToken AccessInfo info){
-//
-//        templateManager.delAdviceTpl(id,info.getUser());
-//        return ResponseUtil.setSuccessResult();
-//    }
-//
-//    @ApiOperation(value = "禁用/启用 医嘱模板",hidden = true)
-//    @PostMapping("/advice/switch")
-//    public ResponseResult switchAdviceTpl(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
-//                                          @AccessToken AccessInfo info){
-//        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
-//            return ResponseUtil.setParamEmptyError("id");
-//        }
-//        templateManager.switchAdviceTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
-//        return ResponseUtil.setSuccessResult();
-//    }
+    @ApiOperation(value = "新增/编辑 医嘱模板",hidden = true)
+    @PostMapping("/advice/save")
+    public ResponseResult saveAdviceTpl(@ApiParam("id等于null:新增; id不等于null：编辑") @RequestBody AdviceTplMo mo,
+                                        @AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(mo.getCategory())){
+            return ResponseUtil.setParamEmptyError("category");
+        }
+        templateManager.saveAdviceTpl(mo,info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "医嘱模板列表",hidden = true)
+    @PostMapping("/advice/list")
+    public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceTplList(@RequestBody(required = false) PageBase<TplQueryMo> pageBase,
+                                                                        @AccessToken AccessInfo info){
+        return ResponseUtil.setSuccessResult(templateManager.getAdviceTplList(pageBase.getParam(),pageBase.getPageNum(),
+                pageBase.getPageSize(),info.getUser()));
+    }
+
+    @ApiOperation(value = "医嘱模板-禁用数",hidden = true)
+    @GetMapping("/advice/disable/num")
+    public ResponseResult<PageResult<DiagnosisTplDto>> getAdviceDisableNum(@AccessToken AccessInfo info){
+        TplQueryMo mo = new TplQueryMo();
+        mo.setIsValid("0");
+        return ResponseUtil.setSuccessResult(ImmutableMap.of("num",templateManager.getAdviceTplTotal(mo,info.getUser())));
+    }
+
+
+    @ApiOperation(value = "删除医嘱模板",hidden = true)
+    @DeleteMapping("/advice/del")
+    public ResponseResult delAdviceDetail(@ApiParam("模板主键") @RequestParam Integer id,
+                                          @AccessToken AccessInfo info){
+
+        templateManager.delAdviceTpl(id,info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "禁用/启用 医嘱模板",hidden = true)
+    @PostMapping("/advice/switch")
+    public ResponseResult switchAdviceTpl(@ApiParam("{\"id\":\"\"} id：模板主键") @RequestBody String param,
+                                          @AccessToken AccessInfo info){
+        if(org.apache.commons.lang3.StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("id")){
+            return ResponseUtil.setParamEmptyError("id");
+        }
+        templateManager.switchAdviceTpl(JSONObject.parseObject(param).getInteger("id"),info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
 
     public static void main(String[] args) {
         String str ="12d3";
