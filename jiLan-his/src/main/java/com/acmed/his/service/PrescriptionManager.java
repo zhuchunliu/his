@@ -230,7 +230,7 @@ public class PrescriptionManager {
      * @return
      */
     @Transactional
-    public boolean savePre(PreMo mo, UserInfo userInfo) {
+    public Prescription savePre(PreMo mo, UserInfo userInfo) {
         Apply apply = null;
         if(StringUtils.isEmpty(mo.getId())) {
 
@@ -271,7 +271,7 @@ public class PrescriptionManager {
         if(null != mo.getIsFinish() && 1 == mo.getIsFinish()){
             this.finish(apply.getId(),userInfo);
         }
-        return true;
+        return prescription;
     }
 
     private void handleInject(PreMo mo,  Prescription prescription, UserInfo userInfo) {
@@ -319,6 +319,7 @@ public class PrescriptionManager {
             prescription.setId(UUIDUtil.generate());
             prescription.setApplyId(apply.getId());
 //            prescription.setPrescriptionNo(commonManager.getPrescriptionNo(userInfo.getOrgCode()));
+            prescription.setPrescriptionNo(mo.getPrescriptionNo());
             prescription.setIsPaid("0");
 //            prescription.setIsDispensing("0");
             prescription.setCreateAt(LocalDateTime.now().toString());
