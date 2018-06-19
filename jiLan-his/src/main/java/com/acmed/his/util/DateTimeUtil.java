@@ -1,9 +1,7 @@
 package com.acmed.his.util;
 
-import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -38,8 +36,8 @@ public class DateTimeUtil {
         LocalDate now = LocalDate.now();
         LocalDate birthDate = LocalDate.parse(birth,DateTimeFormatter.ofPattern("yyyyMMdd"));
         int age = now.getYear()-birthDate.getYear();
-        if(birthDate.getMonthValue() > now.getMonthValue()) return age-1;
-        if(birthDate.getDayOfMonth() > now.getDayOfMonth()) return age-1;
+        if(birthDate.getMonthValue() > now.getMonthValue()) age = age-1;
+        if(birthDate.getMonthValue() == now.getMonthValue() && birthDate.getDayOfMonth() > now.getDayOfMonth()) age = age-1;
         return age < 0?0:age;
     }
 
@@ -117,11 +115,11 @@ public class DateTimeUtil {
     }
 
     public static void main(String[] args) {
-        System.err.println(DateTimeUtil.getAge("1987-03-19"));
-        System.err.println(DateTimeUtil.getAge("20170328"));
-        System.err.println(DateTimeUtil.getAge("000000198712195552"));
-        System.err.println(DateTimeUtil.getAge("1987-12-18 10:10:10"));
-        System.err.println(DateTimeUtil.getAge("1987-12-20 10:10:10"));
+        System.err.println(DateTimeUtil.getAge("2017-07-20"));
+//        System.err.println(DateTimeUtil.getAge("20170328"));
+//        System.err.println(DateTimeUtil.getAge("000000198712195552"));
+//        System.err.println(DateTimeUtil.getAge("1987-12-18 10:10:10"));
+//        System.err.println(DateTimeUtil.getAge("1987-12-20 10:10:10"));
 //        System.err.println(DateTimeUtil.parsetLocalDate("1987-12-20 10:10:10"));
 //        System.err.println(DateTimeUtil.parsetDate("1987-12-20"));
     }
