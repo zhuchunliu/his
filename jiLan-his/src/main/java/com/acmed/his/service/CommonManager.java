@@ -78,7 +78,7 @@ public class CommonManager {
         if(StringUtils.isEmpty(appointmentTime)) {
             return this.getFormatVal("AOrg" + orgCode + LocalDate.now().toString(), "000000");
         }else{
-            return this.getFormatVal("AOrg" + orgCode + DateTimeUtil.parsetDate(appointmentTime).toString(), "000000");
+            return this.getFormatVal("AOrg" + orgCode + DateTimeUtil.parsetLocalDate(appointmentTime).toString(), "000000");
         }
     }
 
