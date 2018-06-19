@@ -50,7 +50,7 @@
         <if test="@Ognl@isNotEmpty(isValid)">
             and t1.isvalid = #{isValid}
         </if>
-        order by t1.createat desc
+        order by t1.modifyat desc
     </select>
 
     <select id="getPrescripTplTotal"  resultType="java.lang.Integer">
@@ -87,7 +87,7 @@
     <select id="selectRecentTpl" resultType="com.acmed.his.model.PrescriptionTpl" resultMap="prescriptionTpl">
         select * from t_b_prescription_tpl
         where orgcode = #{orgCode} and tplname = #{tplName} and createby = #{createBy}
-        order by createat DESC
+        order by modifyat DESC
         limit 1
     </select>
 
@@ -104,6 +104,6 @@
         <if test="@Ognl@isNotEmpty(category)">
             and t1.category = #{category}
         </if>
-        order by t1.createat desc
+        order by t1.modifyat desc
     </select>
 </mapper>

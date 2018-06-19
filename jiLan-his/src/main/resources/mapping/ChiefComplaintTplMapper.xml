@@ -8,7 +8,7 @@
     where t1.removed = '0'  and t1.isvalid = 1
     and ((t1.orgcode = #{userInfo.orgCode} AND (t1.ispublic = 1 or  t1.createby = #{userInfo.id})) or
           (t1.orgcode is null AND t1.ispublic = 1))
-    order by t1.orgcode desc , t1.modifyat desc, t1.createat desc
+    order by t1.orgcode desc , t1.modifyat desc
     </select>
 
     <select id="getChiefComplaintTplPageList" resultType="com.acmed.his.model.dto.ChiefComplaintTplDto">

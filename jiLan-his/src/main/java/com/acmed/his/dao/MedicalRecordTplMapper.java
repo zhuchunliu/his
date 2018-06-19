@@ -3,6 +3,7 @@ package com.acmed.his.dao;
 import com.acmed.his.model.MedicalRecordTpl;
 import com.acmed.his.model.dto.MedicalRecordTplDto;
 import com.acmed.his.util.TkMapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface MedicalRecordTplMapper extends TkMapper<MedicalRecordTpl>{
      * @return
      */
     List<MedicalRecordTplDto> selectByParam(MedicalRecordTpl medicalRecordTpl);
+
+    Integer getForbiddenMedicalRecordTotal(@Param("userId") Integer userId);
 }

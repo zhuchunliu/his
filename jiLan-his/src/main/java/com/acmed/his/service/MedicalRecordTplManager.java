@@ -10,6 +10,7 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ public class MedicalRecordTplManager {
         medicalRecordTpl.setRemoved("0");
         medicalRecordTpl.setIsValid("1");
         medicalRecordTpl.setCreateAt(LocalDateTime.now().toString());
+        medicalRecordTpl.setModifyAt(LocalDateTime.now().toString());
         medicalRecordTplMapper.insert(medicalRecordTpl);
         return medicalRecordTpl.getId();
     }
@@ -92,4 +94,7 @@ public class MedicalRecordTplManager {
         return medicalRecordTplMapper.selectByPrimaryKey(id);
     }
 
+    public Integer getForbiddenMedicalRecordTotal(Integer userId) {
+        return medicalRecordTplMapper.getForbiddenMedicalRecordTotal(userId);
+    }
 }

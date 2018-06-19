@@ -21,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class MedicalRecordTplApi {
         MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
         medicalRecordTpl.setId(id);
         medicalRecordTpl.setModifyBy(info.getUserId().toString());
-        medicalRecordTpl.setRemoved("0");
+        medicalRecordTpl.setIsValid("0");
         medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
         return ResponseUtil.setSuccessResult();
     }
@@ -121,6 +122,7 @@ public class MedicalRecordTplApi {
             medicalRecordTpl.setDept(info.getUser().getDept());
             medicalRecordTpl.setOrgCode(info.getUser().getOrgCode());
             medicalRecordTpl.setCreateBy(info.getUserId().toString());
+            medicalRecordTpl.setModifyBy(info.getUserId().toString());
             return ResponseUtil.setSuccessResult(medicalRecordTplManager.add(medicalRecordTpl));
         }else {
             //修改
@@ -135,6 +137,7 @@ public class MedicalRecordTplApi {
             if (byParam.size() != 0){
                 BeanUtils.copyProperties(param,medicalRecordTpl);
                 medicalRecordTpl.setModifyBy(info.getUserId().toString());
+                medicalRecordTpl.setModifyAt(LocalDateTime.now().toString());
                 medicalRecordTpl.setUserId(null);
                 medicalRecordTpl.setDept(null);
                 medicalRecordTpl.setOrgCode(null);
@@ -150,12 +153,7 @@ public class MedicalRecordTplApi {
     @ApiOperation(value = "禁用病例模板总数")
     @GetMapping("/forbiddennum")
     public ResponseResult forbiddenMedicalRecordTpl(@AccessToken AccessInfo info){
-        MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
-        medicalRecordTpl.setRemoved("0");
-        medicalRecordTpl.setCreateBy(info.getUserId().toString());
-        medicalRecordTpl.setIsValid("0");
-        PageResult<MedicalRecordTplDto> byParamByPage = medicalRecordTplManager.getByParamByPage(medicalRecordTpl, 1, 1);
-        return ResponseUtil.setSuccessResult(byParamByPage.getTotal());
+        return ResponseUtil.setSuccessResult(medicalRecordTplManager.getForbiddenMedicalRecordTotal(info.getUserId()));
     }
 
 
@@ -171,22 +169,15 @@ public class MedicalRecordTplApi {
             medicalRecordTpl.setIsPublic("1");
         }else {
             Integer dept = param.getDept();
-            Integer orgCode = param.getOrgCode();
             medicalRecordTpl.setUserId(info.getUserId());
-            if (orgCode == null){
-                medicalRecordTpl.setOrgCode(info.getUser().getOrgCode());
-            }else if(orgCode == 0){
-                medicalRecordTpl.setOrgCode(null);
-            }else {
-                medicalRecordTpl.setOrgCode(orgCode);
-            }
-            if (dept == null){
-                medicalRecordTpl.setDept(info.getUser().getDept());
-            }else if(dept == 0){
+            medicalRecordTpl.setOrgCode(info.getUser().getOrgCode());
+
+            if (dept == null || dept == 0 || param.getIsValid().equals("0")){
                 medicalRecordTpl.setDept(null);
             }else {
                 medicalRecordTpl.setDept(dept);
             }
+
             medicalRecordTpl.setCategory(param.getCategory());
             medicalRecordTpl.setTplName(param.getTplName());
             medicalRecordTpl.setIsValid(param.getIsValid());

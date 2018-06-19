@@ -122,6 +122,8 @@ public class TemplateManager {
             BeanUtils.copyProperties(mo,diagnosisTpl);
             diagnosisTpl.setCreateAt(LocalDateTime.now().toString());
             diagnosisTpl.setCreateBy(userInfo.getId().toString());
+            diagnosisTpl.setModifyAt(LocalDateTime.now().toString());
+            diagnosisTpl.setModifyBy(userInfo.getId().toString());
             diagnosisTpl.setOrgCode(userInfo.getOrgCode());
             diagnosisTpl.setIsValid("1");
             diagnosisTpl.setRemoved("0");
@@ -270,6 +272,8 @@ public class TemplateManager {
             BeanUtils.copyProperties(mo,chiefComplaintTpl);
             chiefComplaintTpl.setCreateAt(LocalDateTime.now().toString());
             chiefComplaintTpl.setCreateBy(userInfo.getId().toString());
+            chiefComplaintTpl.setModifyAt(LocalDateTime.now().toString());
+            chiefComplaintTpl.setModifyBy(userInfo.getId().toString());
             chiefComplaintTpl.setOrgCode(userInfo.getOrgCode());
             chiefComplaintTpl.setIsValid("1");
             chiefComplaintTpl.setRemoved("0");
@@ -367,6 +371,8 @@ public class TemplateManager {
             prescriptionTpl.setPinYin(Optional.ofNullable(mo.getTplName()).map(PinYinUtil::getPinYinHeadChar).orElse(null));
             prescriptionTpl.setCreateAt(LocalDateTime.now().toString());
             prescriptionTpl.setCreateBy(userInfo.getId().toString());
+            prescriptionTpl.setModifyAt(LocalDateTime.now().toString());
+            prescriptionTpl.setModifyBy(userInfo.getId().toString());
             prescriptionTpl.setIsValid("1");
             prescriptionTpl.setRemoved("0");
             prescriptionTplMapper.insert(prescriptionTpl);

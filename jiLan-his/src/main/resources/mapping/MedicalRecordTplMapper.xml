@@ -10,15 +10,20 @@
         <if test="@Ognl@isNotEmpty(id)">
             and t1.id = #{id}
         </if>
+
         <if test="@Ognl@isNotEmpty(orgCode)">
-                and t1.orgcode = #{orgCode}
+            and ((t1.orgcode = #{orgCode} AND (t1.ispublic = 1 or  t1.userid = #{userId})) or
+            (t1.orgcode is null AND t1.ispublic = 1 AND t1.isvalid = 1))
+        </if>
+        <if test="@Ognl@isEmpty(orgCode)">
+            and t1.orgcode is null
         </if>
         <if test="@Ognl@isNotEmpty(dept)">
             and t1.dept = #{dept}
         </if>
-        <if test="@Ognl@isNotEmpty(userId)">
-            and t1.userid = #{userId}
-        </if>
+        <!--<if test="@Ognl@isNotEmpty(userId)">-->
+            <!--and t1.userid = #{userId}-->
+        <!--</if>-->
         <if test="@Ognl@isNotEmpty(chiefComplaint)">
             and t1.chiefcomplaint = #{chiefComplaint}
         </if>
@@ -49,6 +54,11 @@
         <if test="@Ognl@isNotEmpty(tplName)">
             and (t1.tplname like CONCAT('%',#{tplName},'%') or t1.tplnamepinyin like CONCAT('%',#{tplName},'%'))
         </if>
+        order by t1.orgcode desc,t1.modifyat desc
+    </select>
 
+    <select id="getForbiddenMedicalRecordTotal" resultType="java.lang.Integer">
+        select count(1) from t_b_medicalrecord_tpl t1
+        where t1.removed = '0' and t1.userId = #{userId} and t1.isvalid = '0'
     </select>
 </mapper>
