@@ -126,15 +126,15 @@ public class MedicalRecordTplApi {
             return ResponseUtil.setSuccessResult(medicalRecordTplManager.add(medicalRecordTpl));
         }else {
             //修改
-            MedicalRecordTpl medicalRecordTpl1 = medicalRecordTplManager.medicalRecordTplDetail(id);
-            if (!StringUtils.equals(info.getUserId().toString(),medicalRecordTpl1.getCreateBy())){
-                return ResponseUtil.setErrorMeg(StatusCode.ERROR_PREMISSION,"不能编辑他人模板");
-            }
-            MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
-            medicalRecordTpl.setUserId(info.getUserId());
-            medicalRecordTpl.setId(id);
-            List<MedicalRecordTplDto> byParam = medicalRecordTplManager.getByParam(medicalRecordTpl);
-            if (byParam.size() != 0){
+            MedicalRecordTpl medicalRecordTpl = medicalRecordTplManager.medicalRecordTplDetail(id);
+//            if (!StringUtils.equals(info.getUserId().toString(),medicalRecordTpl1.getCreateBy())){
+//                return ResponseUtil.setErrorMeg(StatusCode.ERROR_PREMISSION,"不能编辑他人模板");
+//            }
+//            MedicalRecordTpl medicalRecordTpl = new MedicalRecordTpl();
+//            medicalRecordTpl.setUserId(info.getUserId());
+//            medicalRecordTpl.setId(id);
+//            List<MedicalRecordTplDto> byParam = medicalRecordTplManager.getByParam(medicalRecordTpl);
+//            if (byParam.size() != 0){
                 BeanUtils.copyProperties(param,medicalRecordTpl);
                 medicalRecordTpl.setModifyBy(info.getUserId().toString());
                 medicalRecordTpl.setModifyAt(LocalDateTime.now().toString());
@@ -143,7 +143,7 @@ public class MedicalRecordTplApi {
                 medicalRecordTpl.setOrgCode(null);
 
                 medicalRecordTplManager.updateMedicalRecordTpl(medicalRecordTpl);
-            }
+//            }
             return ResponseUtil.setSuccessResult();
         }
 
