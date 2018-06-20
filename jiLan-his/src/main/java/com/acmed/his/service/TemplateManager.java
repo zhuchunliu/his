@@ -462,8 +462,10 @@ public class TemplateManager {
                 prescriptionTpl.setCategory(tpl.getCategory());
                 prescriptionTpl.setPinYin(tpl.getPinYin());
                 prescriptionTpl.setDescription(tpl.getDescription());
-                prescriptionTpl.setCreateBy(user.getId().toString());
+                prescriptionTpl.setCreateBy(tpl.getCreateBy());
                 prescriptionTpl.setCreateAt(LocalDateTime.now().toString());
+                prescriptionTpl.setModifyBy(user.getId().toString());
+                prescriptionTpl.setModifyAt(LocalDateTime.now().toString());
                 prescriptionTpl.setIsPublic("1");
                 prescriptionTpl.setIsValid("1");
                 prescriptionTpl.setRemoved("0");
