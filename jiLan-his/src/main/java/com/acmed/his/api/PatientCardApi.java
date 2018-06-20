@@ -79,7 +79,7 @@ public class PatientCardApi {
                 patientCard.setRemoved("0");
                 patientCard.setRelation(patientCardMo.getRelation());
                 patientCard.setSocialCard(patientCardMo.getSocialCard());
-                patientCardManager.add(patientCard);
+                patientCardManager.update(patientCard);
             }
         }else {
             PatientCard patientCard = new PatientCard();
