@@ -115,7 +115,7 @@ public class DateTimeUtil {
     }
 
     public static void main(String[] args) {
-        System.err.println(DateTimeUtil.getAge("2017-07-20"));
+        System.err.println(DateTimeUtil.getAge("000461201806194637"));
 //        System.err.println(DateTimeUtil.getAge("20170328"));
 //        System.err.println(DateTimeUtil.getAge("000000198712195552"));
 //        System.err.println(DateTimeUtil.getAge("1987-12-18 10:10:10"));

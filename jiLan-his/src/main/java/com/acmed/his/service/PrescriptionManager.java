@@ -596,7 +596,7 @@ public class PrescriptionManager {
             apply.setPatientName(patient.getPatientName());
             apply.setPinYin(PinYinUtil.getPinYinHeadChar(patient.getPatientName()));
             apply.setGender(patient.getGender());
-            apply.setAge(Optional.ofNullable(patient.getIdCard()).map(DateTimeUtil::getAge).orElse(null));
+            apply.setAge(patient.getAge());
             if(null == apply.getAge()){
                 apply.setAge(Optional.ofNullable(patient.getDateOfBirth()).map(DateTimeUtil::getAge).orElse(null));
             }
