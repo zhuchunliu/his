@@ -170,32 +170,8 @@ public class DispensingApi {
         return ResponseUtil.setSuccessResult();
     }
 
-    @ApiOperation(value = "确认发药")
-    @PostMapping
-    public ResponseResult dispensing(@ApiParam("{\"applyId\":},applyId：挂号单id") @RequestBody String param,
-                                     @AccessToken AccessInfo info){
-        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
-            return ResponseUtil.setParamEmptyError("applyId");
-        }
-        dispensingManager.dispensing(JSONObject.parseObject(param).getString("applyId"),info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
 
 
-    @ApiOperation(value = "退款",hidden = true)
-//    @PostMapping("/refund")
-    public ResponseResult refund(@RequestBody DispensingRefundMo mo,
-                                 @AccessToken AccessInfo info){
-        Prescription prescription = preMapper.getPreByApply(mo.getApplyId()).get(0);
-        if("0".equals(prescription.getIsPaid())){
-            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"尚未付款，无法退款！");
-        }
-        if("1".equals(prescription.getIsDispensing())){
-            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"已经发药，无法退款！");
-        }
-        dispensingManager.refund(mo,info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
 
     @ApiOperation(value = "退款")
     @PostMapping("/refund")
@@ -242,18 +218,6 @@ public class DispensingApi {
     }
 
 
-    @ApiOperation(value = "发药")
-    @PostMapping("/medicine")
-    public ResponseResult medicine(@ApiParam("{\"applyId\":\"\"},applyId：处方主键") @RequestBody String param,
-                                 @AccessToken AccessInfo info){
-
-        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
-            return ResponseUtil.setParamEmptyError("applyId");
-        }
-        dispensingManager.medicine(JSONObject.parseObject(param).getString("applyId"),info.getUser());
-        return ResponseUtil.setSuccessResult();
-    }
-
     @ApiOperation(value = "发药列表")
     @GetMapping("/medicine/list")
     public ResponseResult<DispensingMedicineVo> getMedicineDetail(@ApiParam("挂号主键") @RequestParam("applyId") String applyId,
@@ -264,7 +228,8 @@ public class DispensingApi {
         Prescription prescription = preMapper.getPreByApply(applyId).get(0);
 
         Example example = new Example(PrescriptionItem.class);
-        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1");
+        example.createCriteria().andEqualTo("applyId",applyId).andEqualTo("payStatus","1")
+        .andIsNull("zyStoreId");//过滤掌药药品信息
         example.orderBy("sn").asc();
         List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
 
@@ -320,5 +285,44 @@ public class DispensingApi {
         MedicalRecord medicalRecord = medicalRecordManager.getMedicalRecordByApplyId(prescription.getApplyId());
         return ResponseUtil.setSuccessResult(new DispensingDetailVo(applyMapper.selectByPrimaryKey(applyId),prescription,medicalRecord,itemList,inspectList,chargeList,
                 map,injectList,baseInfoManager,drugMapper,manufacturerMapper));
+    }
+
+
+    @ApiOperation(value = "退款",hidden = true)
+//    @PostMapping("/refund")
+    public ResponseResult refund(@RequestBody DispensingRefundMo mo,
+                                 @AccessToken AccessInfo info){
+        Prescription prescription = preMapper.getPreByApply(mo.getApplyId()).get(0);
+        if("0".equals(prescription.getIsPaid())){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"尚未付款，无法退款！");
+        }
+        if("1".equals(prescription.getIsDispensing())){
+            return ResponseUtil.setErrorMeg(StatusCode.FAIL,"已经发药，无法退款！");
+        }
+        dispensingManager.refund(mo,info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "发药",hidden = true)
+//    @PostMapping("/medicine")
+    public ResponseResult medicine(@ApiParam("{\"applyId\":\"\"},applyId：处方主键") @RequestBody String param,
+                                   @AccessToken AccessInfo info){
+
+        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
+            return ResponseUtil.setParamEmptyError("applyId");
+        }
+        dispensingManager.medicine(JSONObject.parseObject(param).getString("applyId"),info.getUser());
+        return ResponseUtil.setSuccessResult();
+    }
+
+    @ApiOperation(value = "确认发药",hidden = true)
+    @PostMapping
+    public ResponseResult dispensing(@ApiParam("{\"applyId\":},applyId：挂号单id") @RequestBody String param,
+                                     @AccessToken AccessInfo info){
+        if(StringUtils.isEmpty(param) || null == JSONObject.parseObject(param).get("applyId")){
+            return ResponseUtil.setParamEmptyError("applyId");
+        }
+        dispensingManager.dispensing(JSONObject.parseObject(param).getString("applyId"),info.getUser());
+        return ResponseUtil.setSuccessResult();
     }
 }

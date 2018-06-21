@@ -45,4 +45,7 @@ public class DispensingDto {
 
     @ApiModelProperty("是否包含药品 1:是，0:否")
     private String contanisMedicine;
+
+    @ApiModelProperty("是否包含云药房药品 1:是，0:否")
+    private String contanisZyMedicine;
 }

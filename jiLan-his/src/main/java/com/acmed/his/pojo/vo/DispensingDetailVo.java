@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.util.*;
@@ -98,27 +99,43 @@ public class DispensingDetailVo {
         Map<String,DispensingInfoVo> map = new TreeMap<>();
 
         for(PrescriptionItem item : itemList){
-            if(null == stockMap.get(item.getId()) || 0 == stockMap.get(item.getId()).size()){
-                Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
+            if(null == stockMap.get(item.getId()) || 0 == stockMap.get(item.getId()).size()){//未发药
 
                 MedicalInfoVo medicalDetail = new MedicalInfoVo();
-                medicalDetail.setDrugCode(drug.getDrugCode());
-                medicalDetail.setDrugName(item.getDrugName());
-                medicalDetail.setPrice(item.getFee());
-                medicalDetail.setSpec(drug.getSpec());
-                if(null != item.getNum() && 0 != item.getNum()){
-                    medicalDetail.setNumName(item.getNum()+unitItemName.get(1==item.getUnitType()?drug.getUnit().toString():
-                            (1 == drug.getMinPriceUnitType()?drug.getMinUnit().toString():drug.getDoseUnit().toString())));
+                if(StringUtils.isNotEmpty(item.getZyStoreId())){
+                    medicalDetail.setDrugName(item.getDrugName());
+                    medicalDetail.setPrice(item.getFee());
+                    medicalDetail.setSpec(item.getZyDrugSpec());
+                    if (null != item.getNum() && 0 != item.getNum()) {
+                        medicalDetail.setNumName(item.getNum() + Optional.ofNullable(item.getZyDrugUnitName()).orElse(""));
+                    }
+
+                    medicalDetail.setManufacturerName(item.getZyManufacturerName());
+                    medicalDetail.setFrequencyName(null == item.getFrequency() ? "" : frequencyItemName.get(item.getFrequency().toString()));
+                    medicalDetail.setMemo(item.getMemo());
+                    medicalDetail.setRequirement(item.getRequirement());
+                    medicalDetail.setIsZyDrug(1);
+                }else {
+
+                    Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
+                    medicalDetail.setDrugCode(drug.getDrugCode());
+                    medicalDetail.setDrugName(item.getDrugName());
+                    medicalDetail.setPrice(item.getFee());
+                    medicalDetail.setSpec(drug.getSpec());
+                    if (null != item.getNum() && 0 != item.getNum()) {
+                        medicalDetail.setNumName(item.getNum() + unitItemName.get(1 == item.getUnitType() ? drug.getUnit().toString() :
+                                (1 == drug.getMinPriceUnitType() ? drug.getMinUnit().toString() : drug.getDoseUnit().toString())));
+                    }
+
+                    medicalDetail.setManufacturerName(null == drug.getManufacturer() ? "" : manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
+                    medicalDetail.setFrequencyName(null == item.getFrequency() ? "" : frequencyItemName.get(item.getFrequency().toString()));
+                    medicalDetail.setSingleDose(item.getSingleDose());
+                    medicalDetail.setMemo(item.getMemo());
+                    medicalDetail.setRequirement(item.getRequirement());
+                    medicalDetail.setDoseUnitName(null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString()));
+                    medicalDetail.setSingleDoseUnitName(null == drug.getSingleDoseUnit() ? "" : unitItemName.get(drug.getSingleDoseUnit().toString()));
+                    medicalDetail.setIsZyDrug(0);
                 }
-
-                medicalDetail.setManufacturerName(null == drug.getManufacturer()?"":manufacturerMapper.selectByPrimaryKey(drug.getManufacturer()).getName());
-                medicalDetail.setFrequencyName(null == item.getFrequency()?"":frequencyItemName.get(item.getFrequency().toString()));
-                medicalDetail.setSingleDose(item.getSingleDose());
-                medicalDetail.setMemo(item.getMemo());
-                medicalDetail.setRequirement(item.getRequirement());
-                medicalDetail.setDoseUnitName(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
-                medicalDetail.setSingleDoseUnitName(null == drug.getSingleDoseUnit()?"":unitItemName.get(drug.getSingleDoseUnit().toString()));
-
                 this.totalFee += medicalDetail.getPrice();
                 if(!map.containsKey(item.getGroupNum())){
                     map.put(item.getGroupNum(),new DispensingInfoVo(medicalDetail,null,null
@@ -135,6 +152,7 @@ public class DispensingDetailVo {
                 BeanUtils.copyProperties(item,medicalDetail);
                 Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                 medicalDetail.setSpec(drug.getSpec());
+                medicalDetail.setIsZyDrug(0);
                 if(null != stock.getNum() && 0 != stock.getNum()){
                     medicalDetail.setPrice(drug.getRetailPrice()*stock.getNum());
                     medicalDetail.setNumName(Optional.ofNullable(medicalDetail.getNumName()).orElse("")+stock.getNum()+
@@ -289,6 +307,8 @@ public class DispensingDetailVo {
         @ApiModelProperty("备注")
         private String memo;
 
+        @ApiModelProperty("是否是云药房药品 0:否，1:是")
+        private Integer isZyDrug;
 
     }
 

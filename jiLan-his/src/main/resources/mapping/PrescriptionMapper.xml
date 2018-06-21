@@ -34,7 +34,8 @@
         SELECT apply.id as applyid,apply.clinicno,apply.patientname,apply.gender,apply.age,
         patient.mobile,user.username as doctorname,
         pre.fee,pre.isdispensing,pre.ispaid,pre.createat as diagnosedate,
-        case isdispensing when 2 THEN 0 ELSE 1 END AS contanisMedicine
+        case isdispensing when 2 THEN 0 ELSE 1 END AS contanisMedicine,
+        case iszydispensing when 2 THEN 0 ELSE 1 END AS contanisZyMedicine
         from t_b_apply apply
         JOIN t_b_prescription pre on apply.id = pre.applyid
         JOIN t_b_patient_item patient on apply.patientitemid = patient.id

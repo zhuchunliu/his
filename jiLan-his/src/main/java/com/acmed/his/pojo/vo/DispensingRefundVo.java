@@ -8,7 +8,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Id;
 import java.util.*;
@@ -49,26 +51,33 @@ public class DispensingRefundVo {
         if(null != itemList && 0 != itemList.size()){
             itemList.forEach(obj->{
                 DispensingRefundVo.DisItemVo item = new DispensingRefundVo.DisItemVo();
-                Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
-                if(1 == obj.getUnitType()){
-                    item.setUnit(null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString()));
-                }else{
-                    if(1 == obj.getMinPriceUnitType()){
-                        item.setUnit(null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString()));
-                    }else{
-                        item.setUnit(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString()));
+                BeanUtils.copyProperties(obj,item);
+                if(StringUtils.isNotEmpty(obj.getZyStoreId())){
+                    item.setNumName(obj.getNum()+Optional.ofNullable(obj.getZyDrugUnitName()).orElse(""));
+                    item.setIsZyDrug(1);
+                }else {
+                    item.setIsZyDrug(0);
+                    Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+                    if (1 == obj.getUnitType()) {
+                        item.setUnit(null == drug.getUnit() ? "" : unitItemName.get(drug.getUnit().toString()));
+                    } else {
+                        if (1 == obj.getMinPriceUnitType()) {
+                            item.setUnit(null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString()));
+                        } else {
+                            item.setUnit(null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString()));
+                        }
+                    }
+
+                    if (1 == obj.getUnitType()) {
+                        item.setNumName(obj.getNum() + (null == drug.getUnit() ? "" : unitItemName.get(drug.getUnit().toString())));
+                    } else if (1 == obj.getMinPriceUnitType()) {
+                        item.setNumName(obj.getNum() + (null == drug.getMinUnit() ? "" : unitItemName.get(drug.getMinUnit().toString())));
+                    } else {
+                        item.setNumName(obj.getNum() + (null == drug.getDoseUnit() ? "" : unitItemName.get(drug.getDoseUnit().toString())));
                     }
                 }
 
-                if(1 == obj.getUnitType()) {
-                    item.setNumName(obj.getNum() + (null == drug.getUnit()?"":unitItemName.get(drug.getUnit().toString())));
-                }else if(1 == obj.getMinPriceUnitType()){
-                    item.setNumName(obj.getNum()+(null == drug.getMinUnit()?"":unitItemName.get(drug.getMinUnit().toString())));
-                }else{
-                    item.setNumName(obj.getNum()+(null == drug.getDoseUnit()?"":unitItemName.get(drug.getDoseUnit().toString())));
-                }
 
-                BeanUtils.copyProperties(obj,item);
                 if(!map.containsKey(obj.getGroupNum())){
                     map.put(obj.getGroupNum(),new DisPrescriptVo(item,null,null
                             ,obj.getRequirement(),obj.getRemark()));
@@ -221,6 +230,9 @@ public class DispensingRefundVo {
 
         @ApiModelProperty("费用")
         private Double fee;
+
+        @ApiModelProperty("是否是云药房药品 0:否，1:是")
+        private Integer isZyDrug;
     }
 
 

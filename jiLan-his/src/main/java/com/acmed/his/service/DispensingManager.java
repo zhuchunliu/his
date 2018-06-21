@@ -14,6 +14,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -406,6 +407,9 @@ public class DispensingManager {
             List<PrescriptionItem> itemList = preItemMapper.selectByExample(example);
 
             for (PrescriptionItem item : itemList) {
+                if(StringUtils.isNotEmpty(item.getZyStoreId())){//跳过掌药
+                    continue;
+                }
                 List<PrescriptionItemStock> itemStockList = Lists.newArrayList();
                 Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                 //判断库存是否满足：大单位,小单位，剂量单位
