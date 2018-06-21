@@ -26,7 +26,7 @@ public class ZyDispenseOrderDto {
     @ApiModelProperty("提交时间")
     private String submitTime;
 
-    @ApiModelProperty("状态 0:已完成，1:待收货,2：已发放")
+    @ApiModelProperty("状态 0:待收货，1:待发放,2：已发放")
     private Integer status;
 
 }

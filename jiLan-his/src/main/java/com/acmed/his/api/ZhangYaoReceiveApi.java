@@ -47,7 +47,7 @@ public class ZhangYaoReceiveApi {
 
 
     @ApiOperation(value = "待收货/已收货订单")
-    @GetMapping("/recepit/list")
+    @PostMapping("/recepit/list")
     public ResponseResult<List<ReceiveOrderVo>> getRecepitOrder(@RequestBody(required = false) PageBase<ZYReceiveQueryMo> pageBase,
                                                                 @AccessToken AccessInfo info){
         PageResult<ZyOrderItemReceiveDto> result = receiveManager.getReceiveOrder(null == pageBase?new PageBase<>():pageBase,info.getUser());

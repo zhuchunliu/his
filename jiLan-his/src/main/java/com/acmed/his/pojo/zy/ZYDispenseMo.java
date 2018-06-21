@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 @Data
 public class ZYDispenseMo {
 
-    @ApiModelProperty("null:全部 ,0:已完成，1:待收货,2：已发放")
+    @ApiModelProperty("null:全部 ,0:待收货，1:待发放,2：已发放")
     private Integer status = 0;
 
     @ApiModelProperty("开始时间")

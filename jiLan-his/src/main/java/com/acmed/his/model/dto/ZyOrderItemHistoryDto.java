@@ -24,6 +24,9 @@ public class ZyOrderItemHistoryDto {
     @ApiModelProperty("总费用")
     private Double totalFee;
 
+    @ApiModelProperty("实际支付费用")
+    private Double actualFee;
+
     @ApiModelProperty("提交时间")
     private String submitTime;
 

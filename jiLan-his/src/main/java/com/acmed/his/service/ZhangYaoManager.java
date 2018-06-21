@@ -95,6 +95,9 @@ public class ZhangYaoManager implements InitializingBean {
             }
 
             //获取每个药被使用次数
+            if(drugList.size() ==0 ){
+                return result;
+            }
             List<Map<String,Object>> useList = zhangYaoMapper.statisDrugUsed(drugIdList,info.getOrgCode());
             Map<String,Integer> useMap = Maps.newHashMap();
             for(Map<String,Object> map : useList){

@@ -74,7 +74,9 @@ public class ZhangYaoReceiveManager {
         zyOrder.setModifyBy(user.getId().toString());
         zyOrderMapper.updateByPrimaryKey(zyOrder);
 
-        zhangYaoMapper.updatePreItemStatusByIds(preIdList,4);//设置成已收货状态
+        if(0 != preIdList.size()) {
+            zhangYaoMapper.updatePreItemStatusByIds(preIdList, 4);//设置成已收货状态
+        }
 
     }
 

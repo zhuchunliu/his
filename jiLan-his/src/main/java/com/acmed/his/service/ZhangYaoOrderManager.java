@@ -198,6 +198,9 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 zyOrderItemMapper.deleteById(itemId);
                 zyOrder.setDrugFee(zyOrder.getDrugFee()-item.getFee());
                 zyOrder.setTotalFee(zyOrder.getTotalFee()-item.getFee());
+                if(zyOrder.getDrugFee() == 0){
+                    zyOrder.setRemoved("1");//明细全被删之后，订单整体为删除状态
+                }
                 zyOrderMapper.updateByPrimaryKey(zyOrder);
 
                 zhangYaoMapper.updatePreItemStatusById(item.getPreItemId(),3);//设定t_b_prescription_item为取消状态
@@ -259,12 +262,17 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             String groupNum = "GM_"+commonManager.getNextVal("zyGroupNum");
             String submitTime = LocalDateTime.now().toString();
             Double reduceFee = 0d;//优惠费用
+
+            List<String> preItemIdList = Lists.newArrayList();
             for(ZYOrderSubmitPayMo.ZYOrderSubmitPayDetailMo detailMo : mo.getDetailMoList()){
                 List<ZyOrderItem> itemList = zyOrderItemMapper.getItemByOrderIdExclueRemove(detailMo.getOrderId());
                 orderItemMap.put(detailMo.getOrderId(),itemList);
 
                 List<String> itemIdList = Lists.newArrayList();
-                itemList.forEach(obj->itemIdList.add(obj.getId()));
+                itemList.forEach(obj->{
+                    itemIdList.add(obj.getId());
+                    preItemIdList.add(obj.getPreItemId());
+                });
 
                 ZyOrder zyOrder = orderMap.get(detailMo.getOrderId());
                 BeanUtils.copyProperties(mo,zyOrder);//设置地址信息
@@ -310,6 +318,10 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
             //step4:支付
             String url = this.pay(mo.getFeeType(),orderMap);
+
+            //step5：设置处方详情为已下单状态
+            zhangYaoMapper.updatePreItemStatusByIds(preItemIdList,2);
+
             return ImmutableMap.of("url",url,"reduceFee",reduceFee);
         }
 
@@ -344,12 +356,16 @@ public class ZhangYaoOrderManager  implements InitializingBean {
         String groupNum = "GM_"+commonManager.getNextVal("zyGroupNum");
         String submitTime = LocalDateTime.now().toString();
         Double reduceFee = 0d;//优惠费用
+        List<String> preItemIdList = Lists.newArrayList();
         for(ZYOrderSubmitPayMo.ZYOrderSubmitPayDetailMo detailMo : mo.getDetailMoList()){
             List<ZyOrderItem> itemList = zyOrderItemMapper.getItemByOrderIdExclueRemove(detailMo.getOrderId());
             orderItemMap.put(detailMo.getOrderId(),itemList);
 
             List<String> itemIdList = Lists.newArrayList();
-            itemList.forEach(obj->itemIdList.add(obj.getId()));
+            itemList.forEach(obj->{
+                itemIdList.add(obj.getId());
+                preItemIdList.add(obj.getPreItemId());
+            });
 
             ZyOrder zyOrder = orderMap.get(detailMo.getOrderId());
             BeanUtils.copyProperties(mo,zyOrder);//设置地址信息
@@ -389,6 +405,10 @@ public class ZhangYaoOrderManager  implements InitializingBean {
 
         //step4:支付
         String url = this.pay(mo.getFeeType(),orderMap);
+
+        //step5：设置处方详情为已下单状态
+        zhangYaoMapper.updatePreItemStatusByIds(preItemIdList,2);
+
         return ImmutableMap.of("url",url,"reduceFee",reduceFee);
     }
 
@@ -649,6 +669,9 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             zyOrderItemMapper.deleteById(itemId);
             zyOrder.setDrugFee(zyOrder.getDrugFee()-item.getFee());
             zyOrder.setTotalFee(zyOrder.getTotalFee()-item.getFee());
+            if(zyOrder.getDrugFee() == 0){
+                zyOrder.setRemoved("1");//明细全被删之后，订单整体为删除状态
+            }
             zyOrderMapper.updateByPrimaryKey(zyOrder);
 
             zhangYaoMapper.updatePreItemStatusById(item.getPreItemId(),3);//设定t_b_prescription_item为取消状态
@@ -693,6 +716,9 @@ public class ZhangYaoOrderManager  implements InitializingBean {
     @Transactional
     public void refund(UserInfo user, String orderId) {
         ZyOrder zyOrder = zyOrderMapper.selectByPrimaryKey(orderId);
+        if(StringUtils.isNotEmpty(zyOrder.getExpressNo())){
+            throw new BaseException(StatusCode.FAIL,"云药房已经发货，无法退款");
+        }
         zyOrder.setPayStatus(4);//退款中
         zyOrder.setModifyAt(LocalDateTime.now().toString());
         zyOrder.setModifyBy(user.getId().toString());
