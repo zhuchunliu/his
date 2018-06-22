@@ -201,7 +201,7 @@
 
     <select id="getDispenseDetail" resultType="com.acmed.his.model.dto.ZyDispenseOrderDetailDto">
         select t1.drugname,t1.zymanufacturername as manufacturername,t1.retailprice,t1.num,t1.fee,
-        CASE t1.zyorderstatus WHEN 4 THEN 1 ELSE 0 END status,
+        CASE t1.zyorderstatus WHEN 4 THEN 1 ELSE 0 END isRecepit,
         t2.orderid,t3.expressname,t3.expressno
         from t_b_prescription_item t1
         LEFT JOIN t_zy_order_item t2 on t1.id = t2.preitemid
