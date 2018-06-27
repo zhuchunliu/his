@@ -181,8 +181,10 @@ public class PrescriptionManager {
                     item.setDrugName(obj.getDrugName());
                     item.setDrugId(obj.getZyDrugId());
                     item.setNumName(obj.getNum()+Optional.ofNullable(obj.getZyDrugUnitName()).orElse(""));
+                    item.setIsZyDrug(1);
                 }else {
                     Drug drug = drugMapper.selectByPrimaryKey(obj.getDrugId());
+                    item.setIsZyDrug(0);
                     if (null != drug) {
                         item.setDoseUnitName(Optional.ofNullable(drug.getDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));
                         item.setSingleDoseUnitName(Optional.ofNullable(drug.getSingleDoseUnit()).map(unit -> unitItemName.get(unit.toString())).orElse(""));

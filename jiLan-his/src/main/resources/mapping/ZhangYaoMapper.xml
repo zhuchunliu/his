@@ -10,7 +10,7 @@
     </select>
 
     <select id="getUnSubmitOrder" resultType="com.acmed.his.model.ZyOrder">
-        select * from t_zy_order where paystatus = 0 and orgcode = #{orgCode}
+        select * from t_zy_order where paystatus = 0 and orgcode = #{orgCode} and removed='0'
         and zystoreid in
         <foreach collection="storeIdList" separator="," open="(" close=")" item="zyStoreId">
             #{zyStoreId}

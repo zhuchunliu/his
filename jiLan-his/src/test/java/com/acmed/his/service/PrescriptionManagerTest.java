@@ -22,7 +22,7 @@ public class PrescriptionManagerTest {
 
     @Test
     public void getPreByApply() {
-        prescriptionManager.getPreByApply("1").forEach((obj)->System.err.println(obj));
+        prescriptionManager.getPreByApply("e666dec71ec84cdda08066e077d8f244").forEach((obj)->System.err.println(obj));
     }
 
 

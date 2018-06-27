@@ -50,5 +50,8 @@ public class PreDrugVo {
         @ApiModelProperty("总价")
         private Double totalFee;
 
+        @ApiModelProperty("是否是云药房药品 0:否，1:是")
+        private Integer isZyDrug;
+
     }
 }
