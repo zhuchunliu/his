@@ -291,7 +291,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
                 zyOrder.setExpressName(detailMo.getExpressName());
                 zyOrder.setSubmitTime(submitTime);
                 zyOrder.setTotalFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
-                if(null != zyOrder.getFullReduceFee() && zyOrder.getDrugFee() >= zyOrder.getFullReduceFee()){
+                if(null != zyOrder.getFullReduceFee() && 0 != zyOrder.getFullReduceFee() && zyOrder.getDrugFee() >= zyOrder.getFullReduceFee()){
                     zyOrder.setActualFee(zyOrder.getDrugFee());
                 }else{
                     zyOrder.setActualFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
@@ -383,7 +383,7 @@ public class ZhangYaoOrderManager  implements InitializingBean {
             zyOrder.setExpressName(detailMo.getExpressName());
             zyOrder.setSubmitTime(submitTime);
             zyOrder.setTotalFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
-            if(null != zyOrder.getFullReduceFee() && zyOrder.getDrugFee() >= zyOrder.getFullReduceFee()){
+            if(null != zyOrder.getFullReduceFee() && 0 != zyOrder.getFullReduceFee() && zyOrder.getDrugFee() >= zyOrder.getFullReduceFee()){
                 zyOrder.setActualFee(zyOrder.getDrugFee());
             }else{
                 zyOrder.setActualFee(zyOrder.getDrugFee()+zyOrder.getExpressFee());
