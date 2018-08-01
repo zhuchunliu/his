@@ -53,6 +53,7 @@ public class AccompanyingOrderPatientVo {
      * 医生名字
      */
     private String doctorName;
+    private Integer level;
 
     /**
      * 医院名

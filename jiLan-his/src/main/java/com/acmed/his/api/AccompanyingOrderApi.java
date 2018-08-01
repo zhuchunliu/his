@@ -358,6 +358,8 @@ public class AccompanyingOrderApi {
                 suppliersOrderVo.setMobile(item.getMobile());
                 suppliersOrderVo.setCaseDetail(item.getCaseDetail());
                 suppliersOrderVo.setCasePictures(item.getCasePictures());
+                suppliersOrderVo.setIsAccompanying(item.getIsAccompanying());
+                suppliersOrderVo.setLevel(item.getLevel());
                 if (accompanyingOrderConfirmations.size() != 0){
                     for (AccompanyingOrderConfirmation ittem : accompanyingOrderConfirmations){
                         suppliersOrderVo.setDoctorName(ittem.getDoctorName());
