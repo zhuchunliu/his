@@ -1,6 +1,7 @@
 package com.acmed.his.api;
 
 import com.acmed.his.constants.StatusCode;
+import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.*;
 import com.acmed.his.model.dto.InvitationDto;
 import com.acmed.his.pojo.mo.AddAccompanyingOrderConfirmationModel;
@@ -107,13 +108,21 @@ public class AccompanyingOrderApi {
                 accompanyingOrder.setTotalBalance(gradeTwoPrice);
             }
         }
-        else {
+        else if (level == 3){
             BigDecimal gradeThreePrice = accompanyingPrice.getGradeThreePrice();
             accompanyingOrder.setServiceCharge(gradeThreePrice);
             if (isAccompanying == 1){
                 accompanyingOrder.setTotalBalance(gradeThreePrice.add(accompanyingPrice1));
             }else {
                 accompanyingOrder.setTotalBalance(gradeThreePrice);
+            }
+        }else {
+            BigDecimal gradeFourPrice = accompanyingPrice.getGradeFourPrice();
+            accompanyingOrder.setServiceCharge(gradeFourPrice);
+            if (isAccompanying == 1){
+                accompanyingOrder.setTotalBalance(gradeFourPrice.add(accompanyingPrice1));
+            }else {
+                accompanyingOrder.setTotalBalance(gradeFourPrice);
             }
         }
         AccompanyingOrder accompanyingOrder1 = accompanyingOrderManager.addAccompanyingOrder(accompanyingOrder);
@@ -153,8 +162,12 @@ public class AccompanyingOrderApi {
 
     @ApiOperation(value = "创建附属订单")
     @PostMapping("addAccompanyingOrderConfirmation")
-    @Transactional
     public ResponseResult addAccompanyingOrderConfirmation(@RequestBody AddAccompanyingOrderConfirmationModel model,@AccessToken AccessInfo info){
+        addAccompanyingOrderConfirmationP(model,info);
+        return ResponseUtil.setSuccessResult();
+    }
+    @Transactional
+    public void addAccompanyingOrderConfirmationP(AddAccompanyingOrderConfirmationModel model,AccessInfo info){
         AccompanyingOrderConfirmation accompanyingOrderConfirmation = new AccompanyingOrderConfirmation();
         BeanUtils.copyProperties(model,accompanyingOrderConfirmation);
         accompanyingOrderConfirmation.setCreateBy(info.getUserId().toString());
@@ -170,8 +183,8 @@ public class AccompanyingOrderApi {
         accompanyingOrder.setStatus(4);
         accompanyingOrder.setOrderCode(model.getOrderCode());
         accompanyingOrderManager.update(accompanyingOrder);
-        return ResponseUtil.setSuccessResult();
     }
+
 
     @ApiOperation(value = "预约失败")
     @GetMapping("yuyueshibai")
@@ -225,8 +238,13 @@ public class AccompanyingOrderApi {
 
     @ApiOperation(value = "标记为同意取消")
     @GetMapping("agreedCancel")
+    public ResponseResult agreedCancel(@RequestParam("orderCode") String orderCode) {
+        return agreedCancelP(orderCode);
+
+    }
+
     @Transactional
-    public ResponseResult agreedCancel(@RequestParam("orderCode") String orderCode) throws Exception {
+    public ResponseResult agreedCancelP(String orderCode){
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setStatus(8);
         accompanyingOrder.setOrderCode(orderCode);
@@ -234,7 +252,13 @@ public class AccompanyingOrderApi {
         if (update == 1){
             BigDecimal totalBalance = accompanyingOrderManager.getByOrderCode(orderCode).getTotalBalance();
             String fee = totalBalance.multiply(new BigDecimal(100)).intValue()+"";
-            Map<String, String> refund = wxManager.refund(orderCode, fee, "退款", fee);
+            Map<String, String> refund = null;
+            try {
+                refund = wxManager.refund(orderCode, fee, "退款", fee);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new BaseException(StatusCode.FAIL,"退款异常");
+            }
             String returnCode = refund.get("return_code");
             if (StringUtils.equals("SUCCESS",returnCode)){
                 // 退款成功
@@ -249,10 +273,10 @@ public class AccompanyingOrderApi {
                 accompanyingOrderManager.update(param);
                 return ResponseUtil.setSuccessResult();
             }else {
-                return ResponseUtil.setErrorMeg(StatusCode.ERROR_REFUND_ERR,"退款失败");
+                throw new BaseException(StatusCode.FAIL,"退款异常");
             }
         }
-        return ResponseUtil.setErrorMeg(StatusCode.ERROR_REFUND_ERR,"退款失败");
+        throw new BaseException(StatusCode.FAIL,"退款异常");
     }
 
 
@@ -437,17 +461,27 @@ public class AccompanyingOrderApi {
      */
     @ApiOperation(value = "取消订单")
     @GetMapping("cancelOrder")
-    @Transactional
     public ResponseResult cancelOrder(@RequestParam("orderCode") String orderCode,@AccessToken AccessInfo info) throws Exception {
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setStatus(5);
         accompanyingOrder.setOrderCode(orderCode);
         accompanyingOrder.setModifyBy(info.getPatientId());
+        return cancelOrderP(accompanyingOrder,orderCode);
+
+    }
+    @Transactional
+    public ResponseResult cancelOrderP(AccompanyingOrder accompanyingOrder,String orderCode){
         int update = accompanyingOrderManager.update(accompanyingOrder);
         if (update == 1){
             BigDecimal totalBalance = accompanyingOrderManager.getByOrderCode(orderCode).getTotalBalance();
             String fee = totalBalance.multiply(new BigDecimal(100)).intValue()+"";
-            Map<String, String> refund = wxManager.refund(orderCode, fee, "退款", fee);
+            Map<String, String> refund = null;
+            try {
+                refund = wxManager.refund(orderCode, fee, "退款", fee);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new BaseException(StatusCode.FAIL,"退款异常");
+            }
             String returnCode = refund.get("return_code");
             String resultCode = refund.get("result_code");
             if (StringUtils.equals("SUCCESS",returnCode) && StringUtils.equals("SUCCESS",resultCode)){
@@ -463,11 +497,14 @@ public class AccompanyingOrderApi {
                 accompanyingOrderManager.update(param);
                 return ResponseUtil.setSuccessResult();
             }else {
-                return ResponseUtil.setErrorMeg(StatusCode.ERROR_REFUND_ERR,"取消订单失败");
+                throw new BaseException(StatusCode.FAIL,"退款异常");
             }
         }
-        return ResponseUtil.setErrorMeg(StatusCode.ERROR_REFUND_ERR,"取消订单失败");
+        throw new BaseException(StatusCode.FAIL,"退款异常");
     }
+
+
+
 
     /**
      * 评价订单

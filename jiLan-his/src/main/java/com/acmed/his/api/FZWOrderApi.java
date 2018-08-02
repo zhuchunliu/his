@@ -11,6 +11,7 @@ import com.acmed.his.service.FZWOrderManager;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
 import com.acmed.his.support.WithoutToken;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseResult;
 import com.acmed.his.util.ResponseUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -95,15 +96,15 @@ public class FZWOrderApi {
     }
 
     @ApiOperation(value = "同意退款")
-    @GetMapping(" agreeRefund")
+    @GetMapping("agreeRefund")
     public ResponseResult agreeRefund(@ApiParam("订单id")@RequestParam(value = "id")String id,@AccessToken AccessInfo info){
         boolean refund = fzwOrderManager.refund(id, info.getUserId().toString());
         if (refund){
             return ResponseUtil.setSuccessResult();
         }
         return ResponseUtil.setErrorMeg(StatusCode.FAIL,"退款失败");
-
     }
+
 
 
     @WithoutToken
@@ -143,6 +144,16 @@ public class FZWOrderApi {
         redisTemplate.expire(RedisKeyConstants.FZW_DOCTOR_LIST,60, TimeUnit.MINUTES);
 
         return ResponseUtil.setSuccessResult(list);
+    }
+
+    @ApiOperation(value = "订单列表")
+    @GetMapping("pageListByStatus")
+    public ResponseResult<PageResult<FZWOrder>> orderList(@ApiParam("页码") @RequestParam(value = "pageNum" )Integer pageNum,
+                                    @ApiParam("每页记录数") @RequestParam(value = "pageSize" )Integer pageSize,
+                                    @ApiParam("状态") @RequestParam(value = "status" ,required = false)Integer status){
+
+        PageResult<FZWOrder> byStatus = fzwOrderManager.getByStatus(pageNum, pageSize, status);
+        return ResponseUtil.setSuccessResult(byStatus);
     }
 
 }

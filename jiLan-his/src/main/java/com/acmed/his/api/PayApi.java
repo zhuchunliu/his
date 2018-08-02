@@ -4,6 +4,7 @@ import com.acmed.his.constants.StatusCode;
 import com.acmed.his.exceptions.BaseException;
 import com.acmed.his.model.*;
 import com.acmed.his.model.fzw.FZWOrder;
+import com.acmed.his.pojo.wxmb.WxTplMsg;
 import com.acmed.his.service.*;
 import com.acmed.his.support.AccessInfo;
 import com.acmed.his.support.AccessToken;
@@ -14,6 +15,7 @@ import com.alibaba.druid.support.json.JSONUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import java.util.Map;
  * @author jimson
  * @date 2017/12/25
  */
+@Slf4j
 @Controller
 @RequestMapping("pay")
 @Api(tags = "支付管理")
@@ -59,6 +62,9 @@ public class PayApi {
 
     @Autowired
     private ApplyManager applyManager;
+
+    @Autowired
+    private WxMsgManager wxMsgManager;
 
     @Autowired
     private InsuranceOrderManager insuranceOrderManager;
@@ -164,6 +170,39 @@ public class PayApi {
                                 if (update == 1) {
                                     // 回调成功
                                     respString = "SUCCESS";
+                                    try {
+                                        WxTplMsg wxTplMsg = new WxTplMsg();
+                                        wxTplMsg.setTouser("oTAaixJPBOtwrvbqbeZU4ZtXmSOo");
+                                        wxTplMsg.setTemplate_id("ZRO6hHafw6k4FG8rysVLVZVA6ZT6IheuzFXEEj1DVpU");
+                                        WxTplMsg.DataBean dataBean = new WxTplMsg.DataBean();
+                                        WxTplMsg.DataBean.FirstBean firstBean = new WxTplMsg.DataBean.FirstBean();
+                                        firstBean.setColor("#173177");
+                                        firstBean.setValue("北上广订单提醒");
+                                        WxTplMsg.DataBean.Keyword1Bean keyword1 = new WxTplMsg.DataBean.Keyword1Bean();
+                                        keyword1.setColor("#173177");
+                                        keyword1.setValue(byOrderCode.getRealName());
+                                        WxTplMsg.DataBean.Keyword2Bean keyword2 = new WxTplMsg.DataBean.Keyword2Bean();
+                                        keyword2.setColor("#173177");
+                                        keyword2.setValue(byOrderCode.getOrgName());
+                                        WxTplMsg.DataBean.Keyword3Bean keyword3 = new WxTplMsg.DataBean.Keyword3Bean();
+                                        keyword3.setColor("#173177");
+                                        keyword3.setValue(byOrderCode.getDept());
+                                        WxTplMsg.DataBean.Keyword4Bean keyword4 = new WxTplMsg.DataBean.Keyword4Bean();
+                                        keyword4.setColor("#173177");
+                                        keyword4.setValue(byOrderCode.getStartTime());
+                                        WxTplMsg.DataBean.Keyword5Bean keyword5 = new WxTplMsg.DataBean.Keyword5Bean();
+                                        keyword5.setColor("#173177");
+                                        keyword5.setValue(byOrderCode.getRemark());
+                                        dataBean.setFirst(firstBean);
+                                        dataBean.setKeyword1(keyword1);
+                                        dataBean.setKeyword2(keyword2);
+                                        dataBean.setKeyword3(keyword3);
+                                        dataBean.setKeyword4(keyword4);
+                                        dataBean.setKeyword5(keyword5);
+                                        wxMsgManager.sendtplmsg(wxTplMsg);
+                                    }catch (Exception e){
+                                        log.error("就医北上广通知异常");
+                                    }
                                 }
                             }
                         }
@@ -512,6 +551,40 @@ public class PayApi {
                                     boolean b = fzwOrderManager.sendOrderToFzw(byId1);
                                     if(b){
                                         respString = "SUCCESS";
+                                        try {
+                                            WxTplMsg wxTplMsg = new WxTplMsg();
+                                            wxTplMsg.setTouser("oTAaixJPBOtwrvbqbeZU4ZtXmSOo");
+                                            wxTplMsg.setTemplate_id("ZRO6hHafw6k4FG8rysVLVZVA6ZT6IheuzFXEEj1DVpU");
+                                            WxTplMsg.DataBean dataBean = new WxTplMsg.DataBean();
+                                            WxTplMsg.DataBean.FirstBean firstBean = new WxTplMsg.DataBean.FirstBean();
+                                            firstBean.setColor("#173177");
+                                            firstBean.setValue("肺诊网通知");
+                                            WxTplMsg.DataBean.Keyword1Bean keyword1 = new WxTplMsg.DataBean.Keyword1Bean();
+                                            keyword1.setColor("#173177");
+                                            keyword1.setValue(byId1.getName());
+                                            WxTplMsg.DataBean.Keyword2Bean keyword2 = new WxTplMsg.DataBean.Keyword2Bean();
+                                            keyword2.setColor("#173177");
+                                            keyword2.setValue(byId1.getHospital());
+                                            WxTplMsg.DataBean.Keyword3Bean keyword3 = new WxTplMsg.DataBean.Keyword3Bean();
+                                            keyword3.setColor("#173177");
+                                            keyword3.setValue("胸外科");
+                                            WxTplMsg.DataBean.Keyword4Bean keyword4 = new WxTplMsg.DataBean.Keyword4Bean();
+                                            keyword4.setColor("#173177");
+                                            keyword4.setValue(byId1.getModifyAt());
+                                            WxTplMsg.DataBean.Keyword5Bean keyword5 = new WxTplMsg.DataBean.Keyword5Bean();
+                                            keyword5.setColor("#173177");
+                                            keyword5.setValue(byId1.getRemark());
+                                            dataBean.setFirst(firstBean);
+                                            dataBean.setKeyword1(keyword1);
+                                            dataBean.setKeyword2(keyword2);
+                                            dataBean.setKeyword3(keyword3);
+                                            dataBean.setKeyword4(keyword4);
+                                            dataBean.setKeyword5(keyword5);
+                                            wxMsgManager.sendtplmsg(wxTplMsg);
+                                        }catch (Exception e){
+                                            log.error("肺诊网通知异常");
+                                        }
+
                                     }
                                 }
                             }

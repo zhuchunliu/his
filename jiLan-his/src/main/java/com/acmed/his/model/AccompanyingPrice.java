@@ -35,6 +35,10 @@ public class AccompanyingPrice {
      */
     private BigDecimal gradeThreePrice;
     /**
+     * 知名专家
+     */
+    private BigDecimal gradeFourPrice;
+    /**
      * 陪诊费
      */
     private BigDecimal accompanyingPrice;

@@ -49,6 +49,8 @@ public class WxTplMsg {
         private Keyword1Bean keyword1;
         private Keyword2Bean keyword2;
         private Keyword3Bean keyword3;
+        private Keyword4Bean keyword4;
+        private Keyword5Bean keyword5;
         private RemarkBean remark;
 
         @Data
@@ -86,6 +88,30 @@ public class WxTplMsg {
 
         @Data
         public static class Keyword3Bean {
+            /**
+             * value : 2014年9月22日
+             * color : #173177
+             */
+
+            private String value;
+            private String color;
+
+        }
+
+        @Data
+        public static class Keyword4Bean {
+            /**
+             * value : 2014年9月22日
+             * color : #173177
+             */
+
+            private String value;
+            private String color;
+
+        }
+
+        @Data
+        public static class Keyword5Bean {
             /**
              * value : 2014年9月22日
              * color : #173177

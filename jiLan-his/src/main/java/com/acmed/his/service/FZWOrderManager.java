@@ -8,10 +8,13 @@ import com.acmed.his.model.AccompanyingOrder;
 import com.acmed.his.model.fzw.FZWOrder;
 import com.acmed.his.model.fzw.FZWServicePackage;
 import com.acmed.his.pojo.mo.FZWOrderMo;
+import com.acmed.his.util.PageResult;
 import com.acmed.his.util.ResponseUtil;
 import com.acmed.his.util.UUIDUtil;
 import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -116,6 +119,20 @@ public class FZWOrderManager {
         fzwOrderMapper.updateByPrimaryKey(fzwOrder);
     }
 
+    public PageResult<FZWOrder> getByStatus(Integer pageNum,Integer pageSize,Integer status){
+        FZWOrder fzwOrder = new FZWOrder();
+        fzwOrder.setStatus(status);
+        PageHelper.startPage(pageNum,pageSize);
+        List<FZWOrder> select = fzwOrderMapper.select(fzwOrder);
+        PageInfo<FZWOrder> fzwOrderPageInfo = new PageInfo<>(select);
+        PageResult<FZWOrder> pageResult = new PageResult<>();
+        pageResult.setData(select);
+        pageResult.setTotal(fzwOrderPageInfo.getTotal());
+        pageResult.setPageNum(pageNum);
+        pageResult.setPageSize(pageSize);
+        return pageResult;
+    }
+
     public int update(String id,Integer status,String feeType,String returnOrderCode,String otherReturnOrderCode,String otherOrderCode,String modifyBy,Integer isSend){
         FZWOrder fzwOrder = new FZWOrder();
         fzwOrder.setId(id);
@@ -189,6 +206,7 @@ public class FZWOrderManager {
         return this.fzwOrderMapper.select(fzwOrder);
     }
 
+    @Transactional
     public boolean refund(String id,String modifyBy){
         FZWOrder fzwOrder = this.fzwOrderMapper.selectByPrimaryKey(id);
         Map<String, String> refund = null;
@@ -211,7 +229,8 @@ public class FZWOrderManager {
             if (update!=0){
                 return true;
             }else {
-                return false;
+                log.error("fzw退款失败{}",refund);
+                throw new BaseException(StatusCode.FAIL,"微信退款失败");
             }
         }
         log.error("fzw退款失败{}",refund);
