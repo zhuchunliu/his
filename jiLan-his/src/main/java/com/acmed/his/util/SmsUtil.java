@@ -66,7 +66,7 @@ public class SmsUtil {
         String templateId = null;
         switch (type){
             case 1 :
-                templateId="167811";
+                templateId="309462";
                 break;
             default:
                 templateId = null;
