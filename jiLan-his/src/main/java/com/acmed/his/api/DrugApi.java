@@ -26,6 +26,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
@@ -239,11 +240,12 @@ public class DrugApi {
     @ApiOperation("导出-模板")
     @GetMapping("/export/templet")
     @WithoutToken
-    public void getTemplet(HttpServletResponse response) throws Exception{
-        Workbook book = drugManager.getTemplet();
+    public void getTemplet(HttpServletResponse response,
+                           @ApiParam("0:老版本Excel，1:新版本Excel")@RequestParam(value = "type",defaultValue = "1")Integer type) throws Exception{
+        Workbook book = drugManager.getTemplet(type);
         try {
             response.setHeader("content-Type", "application/vnd.ms-excel");
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("药品模板.xls", "utf-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(String.format("药品模板.%s",0==type?"xls":"xlsx"), "utf-8"));
 
             book.write(response.getOutputStream());
         } catch (IOException ex) {

@@ -20,6 +20,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -334,17 +335,17 @@ public class DrugManager {
 
     /**
      *
-     *
+     * @param type 0:老版本Excel，1:新版本Excel
      * @return
      */
-    public Workbook getTemplet() {
+    public Workbook getTemplet(Integer type) {
 
-        HSSFWorkbook book =  new HSSFWorkbook();
+        Workbook book = 0 == type? new HSSFWorkbook():new XSSFWorkbook();
 
         //文件初始化
-        HSSFSheet sheet = book.createSheet("药品模板");
+        Sheet sheet = book.createSheet("药品模板");
 
-        HSSFCellStyle titleStyle = book.createCellStyle();
+        CellStyle titleStyle = book.createCellStyle();
         titleStyle.setBorderBottom(BorderStyle.THIN);
         titleStyle.setBorderLeft(BorderStyle.THIN);
         titleStyle.setBorderRight(BorderStyle.THIN);
@@ -367,7 +368,7 @@ public class DrugManager {
         sheet.addMergedRegion(new CellRangeAddress(0,1,14,14));
         sheet.addMergedRegion(new CellRangeAddress(0,1,15,15));
 
-        HSSFRow first = sheet.createRow(0);
+        Row first = sheet.createRow(0);
         first.setRowStyle(titleStyle);
         first.createCell(0).setCellValue("药品通用名");
         first.createCell(1).setCellValue("商品名");
@@ -385,7 +386,7 @@ public class DrugManager {
         first.createCell(14).setCellValue("单次用量");
         first.createCell(15).setCellValue("单次用量单位");
 
-        HSSFRow second = sheet.createRow(1);
+        Row second = sheet.createRow(1);
         for(int index =0 ;index <7; index++){
             second.createCell(index);
         }
@@ -448,9 +449,9 @@ public class DrugManager {
         this.setValidate(book,sheet,unit,2,15,15);
 
         // TODO Excel整数限制
-        this.setDataValidate(book,sheet,9,Integer.class);
-        this.setDataValidate(book,sheet,10,Double.class);
-        this.setDataValidate(book,sheet,14,Integer.class);
+//        this.setDataValidate(book,sheet,9,Integer.class);
+//        this.setDataValidate(book,sheet,10,Double.class);
+//        this.setDataValidate(book,sheet,14,Integer.class);
         for(int index = 0; index < 16; index++ ) {
             sheet.setColumnWidth(index,4000);
         }
@@ -458,19 +459,19 @@ public class DrugManager {
 
     }
 
-    private void setDataValidate(HSSFWorkbook workbook,HSSFSheet sheet,int col,Class clazz){
-        HSSFCellStyle contextstyle =workbook.createCellStyle();
-        if(clazz == Integer.class){
-            HSSFDataFormat df = workbook.createDataFormat();
-            contextstyle.setDataFormat(df.getBuiltinFormat("#,#0"));//数据格式只显示整数
-
-        }
-        if(clazz == Double.class){
-            HSSFDataFormat df = workbook.createDataFormat();
-            contextstyle.setDataFormat(df.getBuiltinFormat("#,##0.00"));//保留两位小数点
-
-        }
-        sheet.setDefaultColumnStyle(col,contextstyle);
+    private void setDataValidate(Workbook workbook,Sheet sheet,int col,Class clazz){
+//        HSSFCellStyle contextstyle =workbook.createCellStyle();
+//        if(clazz == Integer.class){
+//            HSSFDataFormat df = workbook.createDataFormat();
+//            contextstyle.setDataFormat(df.getBuiltinFormat("#,#0"));//数据格式只显示整数
+//
+//        }
+//        if(clazz == Double.class){
+//            HSSFDataFormat df = workbook.createDataFormat();
+//            contextstyle.setDataFormat(df.getBuiltinFormat("#,##0.00"));//保留两位小数点
+//
+//        }
+//        sheet.setDefaultColumnStyle(col,contextstyle);
     }
 
     /**
@@ -478,29 +479,66 @@ public class DrugManager {
      *
      * @return
      */
-    private void setValidate(HSSFWorkbook workbook,HSSFSheet sheet,String[] value,int startRow,int firstCol , int lastCol){
-        if(value.length > 10){
-            HSSFWorkbook book = (HSSFWorkbook)workbook;
-            HSSFSheet hiddenSheet = book.createSheet("sheet"+firstCol);
-            int cellNum = 0;
-            for (int i = 0, length = value.length; i < length; i++) { // 循环赋值（为了防止下拉框的行数与隐藏域的行数相对应来获取>=选中行数的数组，将隐藏域加到结束行之后）
-                hiddenSheet.createRow(i).createCell(cellNum).setCellValue(value[i]);
+    private void setValidate(Workbook workbook,Sheet sheet,String[] value,int startRow,int firstCol , int lastCol){
+        if(workbook instanceof HSSFWorkbook) {
+            if (value.length > 10) {
+                HSSFWorkbook book = (HSSFWorkbook) workbook;
+                HSSFSheet hiddenSheet = book.createSheet("sheet" + firstCol);
+                int cellNum = 0;
+                for (int i = 0, length = value.length; i < length; i++) { // 循环赋值（为了防止下拉框的行数与隐藏域的行数相对应来获取>=选中行数的数组，将隐藏域加到结束行之后）
+                    hiddenSheet.createRow(i).createCell(cellNum).setCellValue(value[i]);
+                }
+
+                Name category1Name = book.createName();
+                category1Name.setNameName("abc" + firstCol);
+                category1Name.setRefersToFormula(hiddenSheet.getSheetName() + "!A1:A" + (value.length)); // A1:A代表隐藏域创建第?列createCell(?)时。以A1列开始A行数据获取下拉数组
+
+                DVConstraint constraint = DVConstraint.createFormulaListConstraint(category1Name.getRefersToFormula());
+                CellRangeAddressList regions = new CellRangeAddressList(startRow, Integer.MAX_VALUE, firstCol, lastCol);
+                sheet.addValidationData(new HSSFDataValidation(regions, constraint));
+                book.setSheetHidden(book.getSheetIndex(hiddenSheet), true);
+            }else {
+                DVConstraint constraint = DVConstraint.createExplicitListConstraint(value);
+                CellRangeAddressList regions = new CellRangeAddressList(startRow, Integer.MAX_VALUE, firstCol, lastCol);
+                sheet.addValidationData(new HSSFDataValidation(regions, constraint));
+            }
+        }else{
+            if(value.length > 20){
+                XSSFWorkbook book = (XSSFWorkbook) workbook;
+                XSSFSheet hiddenSheet = book.createSheet("sheet"+firstCol);
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet), true);
+
+                int cellNum = 0;
+                for (int i = 0, length = value.length; i < length; i++) { // 循环赋值（为了防止下拉框的行数与隐藏域的行数相对应来获取>=选中行数的数组，将隐藏域加到结束行之后）
+                    hiddenSheet.createRow(i).createCell(cellNum).setCellValue(value[i]);
+                }
+
+                Name category1Name = workbook.createName();
+                category1Name.setNameName("hidden" + firstCol);
+                category1Name.setRefersToFormula(hiddenSheet.getSheetName() + "!A1:A" + (value.length)); // A1:A代表隐藏域创建第?列createCell(?)时。以A1列开始A行数据获取下拉数组
+
+
+                CellRangeAddressList regions = new CellRangeAddressList(startRow, 10000, firstCol, firstCol);
+
+
+                XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper((XSSFSheet) sheet);
+                XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper
+                        .createFormulaListConstraint(category1Name.getRefersToFormula());
+                XSSFDataValidation validation =  (XSSFDataValidation) dvHelper.createValidation(
+                        dvConstraint, regions);
+
+                sheet.addValidationData(validation);
+            }else {
+
+                XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper((XSSFSheet)sheet);
+                XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper
+                        .createExplicitListConstraint(value);
+                CellRangeAddressList addressList = new CellRangeAddressList(startRow, 10000, firstCol, firstCol);
+                XSSFDataValidation validation = (XSSFDataValidation) dvHelper.createValidation(
+                        dvConstraint, addressList);
+                sheet.addValidationData(validation);
             }
 
-            Name category1Name = book.createName();
-            category1Name.setNameName("abc"+firstCol);
-            category1Name.setRefersToFormula(hiddenSheet.getSheetName() + "!A1:A" + (value.length)); // A1:A代表隐藏域创建第?列createCell(?)时。以A1列开始A行数据获取下拉数组
-
-            DVConstraint constraint = DVConstraint.createFormulaListConstraint(category1Name.getRefersToFormula());
-            CellRangeAddressList regions = new CellRangeAddressList(startRow, Integer.MAX_VALUE, firstCol, lastCol);
-            sheet.addValidationData(new HSSFDataValidation(regions, constraint));
-            book.setSheetHidden(book.getSheetIndex(hiddenSheet), true);
-            return;
         }
-
-        DVConstraint constraint = DVConstraint.createExplicitListConstraint(value);
-        CellRangeAddressList regions = new CellRangeAddressList(startRow, Integer.MAX_VALUE, firstCol, lastCol);
-        sheet.addValidationData(new HSSFDataValidation(regions, constraint));
-
     }
 }
