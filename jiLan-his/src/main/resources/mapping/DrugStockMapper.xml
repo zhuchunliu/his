@@ -5,7 +5,7 @@
 
     <select id="getByDrugId"  resultType="com.acmed.his.model.DrugStock">
         select * from t_b_drug_stock
-        where drugId = #{drugId} and removed = '0' and num != 0
+        where drugId = #{drugId} and removed = '0'
         order by expiryDate ASC
     </select>
 
