@@ -150,6 +150,7 @@ public class DispensingDetailVo {
                 MedicalInfoVo medicalDetail = new MedicalInfoVo();
                 BeanUtils.copyProperties(stock,medicalDetail);
                 BeanUtils.copyProperties(item,medicalDetail);
+                medicalDetail.setPrice(item.getFee());
                 Drug drug = drugMapper.selectByPrimaryKey(item.getDrugId());
                 medicalDetail.setSpec(drug.getSpec());
                 medicalDetail.setIsZyDrug(0);
