@@ -16,6 +16,7 @@ import com.acmed.his.util.*;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.util.*;
  * @author jimson
  * @date 2017/12/22
  */
+@Slf4j
 @Api(tags = "就医北上广")
 @RestController
 @RequestMapping("accompanying")
@@ -192,8 +194,7 @@ public class AccompanyingOrderApi {
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setStatus(6);
         accompanyingOrder.setOrderCode(orderCode);
-        accompanyingOrderManager.update(accompanyingOrder);
-        return ResponseUtil.setSuccessResult();
+        return cancelOrderP(accompanyingOrder,orderCode);
     }
 
     @ApiOperation(value = "标记为已经处理")
@@ -245,6 +246,7 @@ public class AccompanyingOrderApi {
 
     @Transactional
     public ResponseResult agreedCancelP(String orderCode){
+        log.info("退款{}",orderCode);
         AccompanyingOrder accompanyingOrder = new AccompanyingOrder();
         accompanyingOrder.setStatus(8);
         accompanyingOrder.setOrderCode(orderCode);
@@ -473,6 +475,7 @@ public class AccompanyingOrderApi {
     public ResponseResult cancelOrderP(AccompanyingOrder accompanyingOrder,String orderCode){
         int update = accompanyingOrderManager.update(accompanyingOrder);
         if (update == 1){
+            log.info("取消订单 退款{}",orderCode);
             BigDecimal totalBalance = accompanyingOrderManager.getByOrderCode(orderCode).getTotalBalance();
             String fee = totalBalance.multiply(new BigDecimal(100)).intValue()+"";
             Map<String, String> refund = null;
