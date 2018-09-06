@@ -105,5 +105,6 @@ public class WxMsgManager {
         headers.add("Accept", MediaType.APPLICATION_JSON.toString());
         HttpEntity<String> formEntity = new HttpEntity<String>(JSONObject.toJSON(wxTplMsg).toString(), headers);
         String result = restTemplate.postForObject(url, formEntity, String.class);
+        log.info("微信推送成功");
     }
 }

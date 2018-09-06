@@ -170,6 +170,7 @@ public class PayApi {
                                 if (update == 1) {
                                     // 回调成功
                                     respString = "SUCCESS";
+                                    log.info("就医北上广回调 准备发送微信通知");
                                     try {
                                         WxTplMsg wxTplMsg = new WxTplMsg();
                                         wxTplMsg.setTouser("oTAaixJPBOtwrvbqbeZU4ZtXmSOo");
