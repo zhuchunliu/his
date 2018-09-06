@@ -42,6 +42,12 @@ public class OrgDto extends Org{
      */
     @ApiModelProperty("知名专家")
     private BigDecimal gradeThreePrice;
+
+    /**
+     * 知名专家
+     */
+    @ApiModelProperty("知名专家")
+    private BigDecimal gradeFourPrice;
     /**
      * 陪诊费
      */

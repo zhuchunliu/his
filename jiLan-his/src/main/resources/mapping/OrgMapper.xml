@@ -48,6 +48,7 @@
         t8.gradeoneprice,
         t8.gradetwoprice,
         t8.gradethreeprice,
+        t8.gradefourprice,
         t8.accompanyingprice
         FROM t_p_s_org t1
         LEFT JOIN (

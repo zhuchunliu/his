@@ -157,7 +157,7 @@ public class AccompanyingOrderApi {
 
     @ApiOperation(value = "获取价格")
     @GetMapping("getAccompanyingPrice")
-    public ResponseResult addAccompanyingPrice(@RequestParam("orgCode") Integer orgCode){
+    public ResponseResult<AccompanyingPrice> addAccompanyingPrice(@RequestParam("orgCode") Integer orgCode){
         return ResponseUtil.setSuccessResult(accompanyingPriceManager.getByOrgCode(orgCode));
     }
 
