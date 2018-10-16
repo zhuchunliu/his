@@ -1,0 +1,59 @@
+server:
+  port: 8990
+  context-path: /user
+spring:
+  application:
+    name: his
+  tomcat:
+    max-threads: 2000
+    max-connections: 2000
+    remote-ip-header: x-forwarded-for
+    protocol-header: x-forwarded-proto
+    port-header: X-Forwarded-Port
+    protocol-header-https-value: https
+  datasource:
+      url: jdbc:mysql://rm-bp15o6j0b0602z9qx.mysql.rds.aliyuncs.com/his?characterEncoding=utf8&useSSL=true&nullNamePatternMatchesAll=true
+      username: acmed
+      password: Acmedhis8686
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      type: com.alibaba.druid.pool.DruidDataSource
+      filters: stat
+      maxActive: 20
+      initialSize: 5
+      maxWait: 60000
+      minIdle: 1
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: select 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxOpenPreparedStatements: 20
+
+redis:
+  ip: localhost
+  port: 6379
+  password: acmedhis123456
+
+mybatis:
+  mapperLocations: classpath*:mapping/*.xml
+logging:
+  config: classpath:logback.xml
+
+
+mapper:
+    mappers:
+        - com.acmed.his.util.TkMapper
+    not-empty: false
+    identity: MYSQL
+
+pagehelper:
+    helperDialect: mysql
+#    reasonable: true
+#    supportMethodsArguments: true
+#    params: count=countSql
+
+weixin:
+  appid: wx3d71d42f9956d861
+  secret: 0cfc86874245070901f8b7059376fb1c
