@@ -173,6 +173,7 @@ public class PayApi {
                                     log.info("就医北上广回调 准备发送微信通知");
                                     try {
                                         WxTplMsg wxTplMsg = new WxTplMsg();
+                                        // 发送给小莫
                                         wxTplMsg.setTouser("oTAaixJPBOtwrvbqbeZU4ZtXmSOo");
                                         wxTplMsg.setTemplate_id("ZRO6hHafw6k4FG8rysVLVZVA6ZT6IheuzFXEEj1DVpU");
                                         WxTplMsg.DataBean dataBean = new WxTplMsg.DataBean();
@@ -200,6 +201,7 @@ public class PayApi {
                                         dataBean.setKeyword3(keyword3);
                                         dataBean.setKeyword4(keyword4);
                                         dataBean.setKeyword5(keyword5);
+                                        wxTplMsg.setData(dataBean);
                                         wxMsgManager.sendtplmsg(wxTplMsg);
                                     }catch (Exception e){
                                         log.error("就医北上广通知异常");
@@ -581,6 +583,7 @@ public class PayApi {
                                             dataBean.setKeyword3(keyword3);
                                             dataBean.setKeyword4(keyword4);
                                             dataBean.setKeyword5(keyword5);
+                                            wxTplMsg.setData(dataBean);
                                             wxMsgManager.sendtplmsg(wxTplMsg);
                                         }catch (Exception e){
                                             log.error("肺诊网通知异常");
